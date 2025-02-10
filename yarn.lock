@@ -756,6 +756,11 @@
   dependencies:
     undici-types "~6.20.0"
 
+"@types/qs@^6.9.18":
+  version "6.9.18"
+  resolved "https://registry.npmmirror.com/@types/qs/-/qs-6.9.18.tgz#877292caa91f7c1b213032b34626505b746624c2"
+  integrity sha512-kK7dgTYDyGqS+e2Q4aK9X3D7q234CIZ1Bv0q/7Z5IwRDoADNU81xXJK/YVyLbLTZCoIwUoDoffFeF+p/eIklAA==
+
 "@types/react-dom@^19.0.3":
   version "19.0.3"
   resolved "https://registry.npmmirror.com/@types/react-dom/-/react-dom-19.0.3.tgz#0804dfd279a165d5a0ad8b53a5b9e65f338050a4"
