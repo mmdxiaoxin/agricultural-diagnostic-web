@@ -1,0 +1,45 @@
+import { AxiosCanceler } from "@/api/helper/axiosCancel";
+import { HOME_URL } from "@/config/config";
+import { rootRouter } from "@/routes/index";
+import { RootState } from "@/store";
+import { searchRoute } from "@/utils";
+import { PropsWithChildren } from "react";
+import { useSelector } from "react-redux";
+import { Navigate, useLocation } from "react-router";
+
+const axiosCanceler = new AxiosCanceler();
+
+export type AuthRouterProps = PropsWithChildren<{}>;
+
+/**
+ * @description 路由守卫组件
+ * */
+const AuthRouter = (props: AuthRouterProps) => {
+	const { pathname } = useLocation();
+	const route = searchRoute(pathname, rootRouter);
+
+	// * 在跳转路由之前，清除所有的请求
+	axiosCanceler.removeAllPending();
+
+	// * 判断当前路由是否需要访问权限(不需要权限直接放行)
+	if (!route.meta?.requiresAuth) return props.children;
+
+	// * 从 Redux 中获取 token 和动态路由
+	const token = useSelector((state: RootState) => state.auth.token);
+	const dynamicRouter = useSelector((state: RootState) => state.auth.authRouter);
+
+	// * 判断是否有Token
+	if (!token) return <Navigate to="/login" replace />;
+
+	// * Static Router(静态路由，必须配置首页地址，否则不能进首页获取菜单、按钮权限等数据)
+	const staticRouter = [HOME_URL, "/403"];
+	const routerList = dynamicRouter.concat(staticRouter);
+
+	// * 如果访问的地址没有在路由表中重定向到403页面
+	if (routerList.indexOf(pathname) === -1) return <Navigate to="/403" />;
+
+	// * 当前账号有权限返回 Router，正常访问页面
+	return props.children;
+};
+
+export default AuthRouter;

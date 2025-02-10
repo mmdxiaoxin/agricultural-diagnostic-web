@@ -1,28 +1,28 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-// 定义 token 类型
 interface AuthState {
 	token: string | null;
+	authRouter: string[];
 }
 
 const initialState: AuthState = {
-	token: null
+	token: null,
+	authRouter: [] // 这里存储动态路由
 };
 
-// 创建 authSlice
 const authSlice = createSlice({
 	name: "auth",
 	initialState,
 	reducers: {
-		setToken: (state, action: PayloadAction<string>) => {
-			state.token = action.payload; // 设置 token
+		setToken: (state, action: PayloadAction<string | null>) => {
+			state.token = action.payload;
 		},
-		clearToken: state => {
-			state.token = null; // 清除 token
+		setAuthRouter: (state, action: PayloadAction<string[]>) => {
+			state.authRouter = action.payload;
 		}
 	}
 });
 
-// 导出 action 和 reducer
-export const { setToken, clearToken } = authSlice.actions;
+// 导出 actions 和 reducer
+export const { setToken, setAuthRouter } = authSlice.actions;
 export default authSlice.reducer;

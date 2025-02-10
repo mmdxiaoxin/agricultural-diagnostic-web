@@ -13,6 +13,7 @@ const persistConfig = {
 
 const persistedAuthReducer = persistReducer(persistConfig, authReducer);
 
+export type RootState = ReturnType<typeof store.getState>;
 // 创建 Redux store
 export const store = configureStore({
 	reducer: {
