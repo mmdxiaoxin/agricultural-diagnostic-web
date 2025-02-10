@@ -1,14 +1,15 @@
-import { connect } from "react-redux";
+import { useAppSelector } from "@/hooks/useAppSelector";
 import "./index.scss";
 
-const LayoutFooter = (props: any) => {
-	const { themeConfig } = props;
+const LayoutFooter = () => {
+	const { themeConfig } = useAppSelector(state => state.global);
+
 	return (
 		<>
 			{!themeConfig.footer && (
 				<div className="footer">
 					<a href="http://www.spicyboy.cn/" target="_blank" rel="noreferrer">
-						2022 © Hooks-Admin By Hooks Technology.
+						2025 © mmdxiaoxin By NWAFU.
 					</a>
 				</div>
 			)}
@@ -16,5 +17,4 @@ const LayoutFooter = (props: any) => {
 	);
 };
 
-const mapStateToProps = (state: any) => state.global;
-export default connect(mapStateToProps)(LayoutFooter);
+export default LayoutFooter;
