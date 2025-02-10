@@ -1,9 +1,10 @@
 import Login from "@/views/login/index";
 import { Navigate, useRoutes } from "react-router";
+import diagnosisRouter from "./modules/diagnosis";
 import errorRouter from "./modules/error";
 import homeRouter from "./modules/home";
 
-export const routerArray = [...errorRouter, ...homeRouter];
+export const routerArray = [...errorRouter, ...homeRouter, ...diagnosisRouter];
 
 export const rootRouter = [
 	{
