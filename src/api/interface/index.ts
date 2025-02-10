@@ -1,5 +1,5 @@
 export interface Result {
-	code: string;
+	code: number;
 	msg: string;
 }
 
@@ -7,3 +7,5 @@ export interface Result {
 export interface ResultData<T = any> extends Result {
 	data?: T;
 }
+
+export * from "./login";

@@ -1,13 +1,18 @@
+import { loginApi } from "@/api/modules/login";
 import loginLeft from "@/assets/images/login.svg";
 import logo from "@/assets/images/logo.svg";
-import { Button, Form, Input, Row, Col, Flex } from "antd";
-import { useState } from "react";
-import { useNavigate } from "react-router";
-import "./index.scss";
+import { setToken } from "@/store/modules/authSlice";
 import { CloseCircleOutlined, LockOutlined, UserOutlined } from "@ant-design/icons";
+import { Button, Col, Flex, Form, Input, message, Row } from "antd";
+import { useState } from "react";
+import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router";
+
+import "./index.scss";
 
 const Login = () => {
 	const navigate = useNavigate();
+	const dispatch = useDispatch();
 	const [form] = Form.useForm();
 	const [loading, setLoading] = useState<boolean>(false);
 
@@ -15,16 +20,21 @@ const Login = () => {
 	const onFinish = async () => {
 		try {
 			setLoading(true);
-			// TODO: 待实现登陆
-			navigate("/home/index");
+			const response = await loginApi({
+				username: form.getFieldValue("username"),
+				password: form.getFieldValue("password")
+			});
+			if (response.code === 200 && response.data) {
+				dispatch(setToken(response.data.token));
+				navigate("/home/index");
+			} else {
+				message.error(response.msg);
+			}
+		} catch (error) {
+			message.error("登录失败" + error);
 		} finally {
 			setLoading(false);
 		}
-	};
-
-	const onFinishFailed = (errorInfo: any) => {
-		// TODO: 登陆失败提示
-		console.log("Failed:", errorInfo);
 	};
 
 	return (
@@ -48,7 +58,6 @@ const Login = () => {
 							labelCol={{ span: 5 }}
 							initialValues={{ remember: true }}
 							onFinish={onFinish}
-							onFinishFailed={onFinishFailed}
 							size="large"
 							autoComplete="off"
 						>

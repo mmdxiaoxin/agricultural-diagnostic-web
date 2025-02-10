@@ -1,6 +1,9 @@
-import { Navigate, useRoutes } from "react-router";
 import Login from "@/views/login/index";
+import { Navigate, useRoutes } from "react-router";
 import errorRouter from "./modules/error";
+import homeRouter from "./modules/home";
+
+export const routerArray = [...errorRouter, ...homeRouter];
 
 export const rootRouter = [
 	{
@@ -16,7 +19,7 @@ export const rootRouter = [
 			key: "login"
 		}
 	},
-	...errorRouter,
+	...routerArray,
 	{
 		path: "*",
 		element: <Navigate to="/404" />

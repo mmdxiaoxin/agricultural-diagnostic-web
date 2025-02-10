@@ -3,11 +3,15 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 interface AuthState {
 	token: string | null;
 	authRouter: string[];
+	authButtons: {
+		[propName: string]: any;
+	};
 }
 
 const initialState: AuthState = {
 	token: null,
-	authRouter: [] // 这里存储动态路由
+	authRouter: [],
+	authButtons: []
 };
 
 const authSlice = createSlice({
@@ -19,10 +23,18 @@ const authSlice = createSlice({
 		},
 		setAuthRouter: (state, action: PayloadAction<string[]>) => {
 			state.authRouter = action.payload;
+		},
+		setAuthButtons: (
+			state,
+			action: PayloadAction<{
+				[propName: string]: any;
+			}>
+		) => {
+			state.authButtons = action.payload;
 		}
 	}
 });
 
 // 导出 actions 和 reducer
-export const { setToken, setAuthRouter } = authSlice.actions;
+export const { setToken, setAuthRouter, setAuthButtons } = authSlice.actions;
 export default authSlice.reducer;
