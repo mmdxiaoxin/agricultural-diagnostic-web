@@ -1,8 +1,8 @@
 import SwitchDark from "@/components/SwitchDark";
 import { setThemeConfig } from "@/store/modules/globalSlice";
 import { setCollapse } from "@/store/modules/menuSlice";
-import { FireOutlined, SettingOutlined } from "@ant-design/icons";
-import { Divider, Drawer, Switch } from "antd";
+import { FireOutlined, FontSizeOutlined, SettingOutlined } from "@ant-design/icons";
+import { Button, Divider, Drawer, Switch } from "antd";
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -34,12 +34,17 @@ const Theme: React.FC = () => {
 
 	return (
 		<>
-			<i className="icon-style iconfont icon-zhuti" onClick={() => setVisible(true)}></i>
+			<Button
+				type="text"
+				className="icon-style"
+				icon={<FontSizeOutlined />}
+				onClick={() => setVisible(true)}
+			/>
 			<Drawer
 				title="布局设置"
 				closable={false}
 				onClose={() => setVisible(false)}
-				visible={visible}
+				open={visible}
 				width={320}
 			>
 				{/* 全局主题 */}

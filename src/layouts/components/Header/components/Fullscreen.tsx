@@ -1,6 +1,7 @@
-import screenfull from "screenfull";
-import { message } from "antd";
+import { ExpandOutlined } from "@ant-design/icons";
+import { Button, message } from "antd";
 import { useEffect, useState } from "react";
+import screenfull from "screenfull";
 
 const Fullscreen = () => {
 	const [fullScreen, setFullScreen] = useState<boolean>(screenfull.isFullscreen);
@@ -18,7 +19,12 @@ const Fullscreen = () => {
 		screenfull.toggle();
 	};
 	return (
-		<i className={["icon-style iconfont", fullScreen ? "icon-suoxiao" : "icon-fangda"].join(" ")} onClick={handleFullScreen}></i>
+		<Button
+			className="icon-style"
+			onClick={handleFullScreen}
+			icon={<ExpandOutlined />}
+			type="text"
+		/>
 	);
 };
 export default Fullscreen;
