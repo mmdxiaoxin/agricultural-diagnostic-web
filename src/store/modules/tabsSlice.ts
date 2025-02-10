@@ -23,23 +23,11 @@ const tabsSlice = createSlice({
 		setTabsList(state, action: PayloadAction<Tab[]>) {
 			state.tabsList = action.payload;
 		},
-		addTab(state, action: PayloadAction<Tab>) {
-			const index = state.tabsList.findIndex(item => item.path === action.payload.path);
-			if (index === -1) {
-				state.tabsList.push(action.payload);
-			}
-		},
-		delTab(state, action: PayloadAction<string>) {
-			const index = state.tabsList.findIndex(item => item.path === action.payload);
-			if (index !== -1) {
-				state.tabsList.splice(index, 1);
-			}
-		},
 		setTabsActive(state, action: PayloadAction<string>) {
 			state.tabsActive = action.payload;
 		}
 	}
 });
 
-export const { setTabsList, setTabsActive, addTab, delTab } = tabsSlice.actions;
+export const { setTabsList, setTabsActive } = tabsSlice.actions;
 export default tabsSlice.reducer;

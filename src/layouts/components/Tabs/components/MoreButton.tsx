@@ -1,12 +1,16 @@
 import { HOME_URL } from "@/config/config";
 import { useAppDispatch } from "@/hooks/useAppDispatch";
 import { useAppSelector } from "@/hooks/useAppSelector";
-import { delTab, setTabsList } from "@/store/modules/tabsSlice";
+import { setTabsList } from "@/store/modules/tabsSlice";
 import { DownOutlined } from "@ant-design/icons";
 import { Button, Dropdown, MenuProps } from "antd";
 import { useLocation, useNavigate } from "react-router";
 
-const MoreButton = () => {
+export type MoreButtonProps = {
+	delTabs: (tabPath?: string) => void;
+};
+
+const MoreButton = ({ delTabs }: MoreButtonProps) => {
 	const { pathname } = useLocation();
 	const navigate = useNavigate();
 	const { tabsList } = useAppSelector(state => state.tabs);
@@ -25,7 +29,7 @@ const MoreButton = () => {
 		{
 			key: "1",
 			label: <span>{"关闭当前"}</span>,
-			onClick: () => dispatch(delTab(pathname))
+			onClick: () => delTabs(pathname)
 		},
 		{
 			key: "2",

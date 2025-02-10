@@ -84,7 +84,7 @@ const LayoutTabs = () => {
 							);
 						})}
 					</Tabs>
-					<MoreButton />
+					<MoreButton delTabs={delTabs} />
 				</div>
 			)}
 		</>
