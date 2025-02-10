@@ -1,10 +1,10 @@
 import { getAuthorButtons } from "@/api/modules/login";
-import { RootState } from "@/store";
+import { useAppDispatch } from "@/hooks/useAppDispatch";
+import { useAppSelector } from "@/hooks/useAppSelector";
 import { setAuthButtons } from "@/store/modules/authSlice";
 import { setCollapse } from "@/store/modules/menuSlice";
 import { Layout } from "antd";
 import { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { Outlet } from "react-router";
 import LayoutFooter from "./components/Footer";
 import LayoutHeader from "./components/Header";
@@ -19,8 +19,8 @@ export interface LayoutIndexProps {
 
 const LayoutIndex = () => {
 	const { Sider, Content } = Layout;
-	const dispatch = useDispatch();
-	const isCollapse = useSelector((state: RootState) => state.menu.isCollapse);
+	const dispatch = useAppDispatch();
+	const isCollapse = useAppSelector(state => state.menu.isCollapse);
 
 	// 获取按钮权限列表
 	const getAuthButtonsList = async () => {

@@ -1,11 +1,11 @@
-import { RootState } from "@/store";
+import { useAppDispatch } from "@/hooks/useAppDispatch";
+import { useAppSelector } from "@/hooks/useAppSelector";
 import { setCollapse } from "@/store/modules/menuSlice";
 import { MenuFoldOutlined, MenuUnfoldOutlined } from "@ant-design/icons";
-import { useDispatch, useSelector } from "react-redux";
 
 const CollapseIcon = () => {
-	const isCollapse = useSelector((state: RootState) => state.menu.isCollapse);
-	const dispatch = useDispatch();
+	const isCollapse = useAppSelector(state => state.menu.isCollapse);
+	const dispatch = useAppDispatch();
 	return (
 		<div
 			className="collapsed"

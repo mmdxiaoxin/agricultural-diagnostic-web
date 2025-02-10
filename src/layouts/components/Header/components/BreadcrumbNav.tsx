@@ -1,14 +1,13 @@
 import { HOME_URL } from "@/config/config";
-import { RootState } from "@/store";
+import { useAppSelector } from "@/hooks/useAppSelector";
 import { Breadcrumb } from "antd";
-import { useSelector } from "react-redux";
 import { useLocation } from "react-router";
 
 const BreadcrumbNav = () => {
 	const { pathname } = useLocation();
 
-	const global = useSelector((state: RootState) => state.global);
-	const breadcrumb = useSelector((state: RootState) => state.breadcrumb);
+	const global = useAppSelector(state => state.global);
+	const breadcrumb = useAppSelector(state => state.breadcrumb);
 
 	const { themeConfig } = global;
 	const breadcrumbList = breadcrumb.breadcrumbList[pathname] || [];

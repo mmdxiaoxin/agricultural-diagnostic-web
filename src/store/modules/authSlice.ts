@@ -9,7 +9,7 @@ interface AuthState {
 }
 
 const initialState: AuthState = {
-	token: null,
+	token: localStorage.getItem("auth_token") || null,
 	authRouter: [],
 	authButtons: []
 };
@@ -18,8 +18,15 @@ const authSlice = createSlice({
 	name: "auth",
 	initialState,
 	reducers: {
-		setToken: (state, action: PayloadAction<string | null>) => {
+		setToken: (state, action: PayloadAction<string>) => {
 			state.token = action.payload;
+			if (action.payload) {
+				localStorage.setItem("auth_token", action.payload);
+			}
+		},
+		removeToken(state) {
+			state.token = null;
+			localStorage.removeItem("auth_token");
 		},
 		setAuthRouter: (state, action: PayloadAction<string[]>) => {
 			state.authRouter = action.payload;
@@ -36,5 +43,5 @@ const authSlice = createSlice({
 });
 
 // 导出 actions 和 reducer
-export const { setToken, setAuthRouter, setAuthButtons } = authSlice.actions;
+export const { setToken, removeToken, setAuthRouter, setAuthButtons } = authSlice.actions;
 export default authSlice.reducer;

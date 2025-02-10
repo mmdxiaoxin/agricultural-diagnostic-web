@@ -1,4 +1,6 @@
 import { getMenuList } from "@/api/modules/login";
+import { useAppDispatch } from "@/hooks/useAppDispatch";
+import { useAppSelector } from "@/hooks/useAppSelector";
 import { setAuthRouter } from "@/store/modules/authSlice";
 import { setBreadcrumbList } from "@/store/modules/breadcrumbSlice";
 import { setMenuList } from "@/store/modules/menuSlice";
@@ -7,15 +9,15 @@ import * as Icons from "@ant-design/icons";
 import type { MenuProps } from "antd";
 import { Menu, Spin } from "antd";
 import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useNavigate } from "react-router";
 import Logo from "./components/Logo";
 import "./index.scss";
 
 const LayoutMenu = () => {
 	const { pathname } = useLocation();
-	const { isCollapse } = useSelector((state: any) => state.menu); // 获取collapse状态
-	const dispatch = useDispatch(); // 获取dispatch
+	const { isCollapse } = useAppSelector(state => state.menu);
+	const dispatch = useAppDispatch();
+
 	const [selectedKeys, setSelectedKeys] = useState<string[]>([pathname]);
 	const [openKeys, setOpenKeys] = useState<string[]>([]);
 

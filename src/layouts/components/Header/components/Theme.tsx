@@ -1,21 +1,20 @@
 import SwitchDark from "@/components/SwitchDark";
+import { useAppDispatch } from "@/hooks/useAppDispatch";
+import { useAppSelector } from "@/hooks/useAppSelector";
 import { setThemeConfig } from "@/store/modules/globalSlice";
 import { setCollapse } from "@/store/modules/menuSlice";
-import { FireOutlined, FontSizeOutlined, SettingOutlined } from "@ant-design/icons";
+import { AppstoreOutlined, FireOutlined, SettingOutlined } from "@ant-design/icons";
 import { Button, Divider, Drawer, Switch } from "antd";
 import React, { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
 
 const Theme: React.FC = () => {
 	const [visible, setVisible] = useState<boolean>(false);
 
-	// 使用 useSelector 从 Redux store 中获取 global 和 menu 的状态
-	const { themeConfig } = useSelector((state: any) => state.global);
+	const { themeConfig } = useAppSelector(state => state.global);
 	const { weakOrGray, breadcrumb, tabs, footer } = themeConfig;
-	const { isCollapse } = useSelector((state: any) => state.menu);
+	const { isCollapse } = useAppSelector(state => state.menu);
 
-	// 使用 useDispatch 来获取 dispatch 函数
-	const dispatch = useDispatch();
+	const dispatch = useAppDispatch();
 
 	// 设置灰色模式或色弱模式
 	const setWeakOrGray = (checked: boolean, theme: string) => {
@@ -37,7 +36,7 @@ const Theme: React.FC = () => {
 			<Button
 				type="text"
 				className="icon-style"
-				icon={<FontSizeOutlined />}
+				icon={<AppstoreOutlined />}
 				onClick={() => setVisible(true)}
 			/>
 			<Drawer

@@ -5,15 +5,17 @@ import { setToken } from "@/store/modules/authSlice";
 import { CloseCircleOutlined, LockOutlined, UserOutlined } from "@ant-design/icons";
 import { Button, Col, Flex, Form, Input, message, Row } from "antd";
 import { useState } from "react";
-import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router";
 
+import { useAppDispatch } from "@/hooks/useAppDispatch";
 import "./index.scss";
 
 const Login = () => {
 	const navigate = useNavigate();
-	const dispatch = useDispatch();
+	const dispatch = useAppDispatch();
+
 	const [form] = Form.useForm();
+
 	const [loading, setLoading] = useState<boolean>(false);
 
 	// 登录

@@ -1,15 +1,14 @@
 import { HOME_URL } from "@/config/config";
-import { RootState } from "@/store";
+import { useAppSelector } from "@/hooks/useAppSelector";
 import { delTabsList, setTabsList } from "@/store/modules/tabsSlice";
 import { DownOutlined } from "@ant-design/icons";
-import { Button, Dropdown, Menu } from "antd";
-import { useSelector } from "react-redux";
+import { Button, Dropdown, MenuProps } from "antd";
 import { useLocation, useNavigate } from "react-router";
 
 const MoreButton = () => {
 	const { pathname } = useLocation();
 	const navigate = useNavigate();
-	const tabs = useSelector((state: RootState) => state.tabs);
+	const tabs = useAppSelector(state => state.tabs);
 
 	// close multipleTab
 	const closeMultipleTab = (tabPath?: string) => {
@@ -20,29 +19,30 @@ const MoreButton = () => {
 		tabPath ?? navigate(HOME_URL);
 	};
 
-	const menu = (
-		<Menu
-			items={[
-				{
-					key: "1",
-					label: <span>{"关闭当前"}</span>,
-					onClick: () => delTabsList(pathname)
-				},
-				{
-					key: "2",
-					label: <span>{"关闭其他"}</span>,
-					onClick: () => closeMultipleTab(pathname)
-				},
-				{
-					key: "3",
-					label: <span>{"关闭所有"}</span>,
-					onClick: () => closeMultipleTab()
-				}
-			]}
-		/>
-	);
+	const items: MenuProps["items"] = [
+		{
+			key: "1",
+			label: <span>{"关闭当前"}</span>,
+			onClick: () => delTabsList(pathname)
+		},
+		{
+			key: "2",
+			label: <span>{"关闭其他"}</span>,
+			onClick: () => closeMultipleTab(pathname)
+		},
+		{
+			key: "3",
+			label: <span>{"关闭所有"}</span>,
+			onClick: () => closeMultipleTab()
+		}
+	];
 	return (
-		<Dropdown overlay={menu} placement="bottom" arrow={{ pointAtCenter: true }} trigger={["click"]}>
+		<Dropdown
+			menu={{ items }}
+			placement="bottom"
+			arrow={{ pointAtCenter: true }}
+			trigger={["click"]}
+		>
 			<Button className="more-button" type="primary" size="small">
 				{"更多"} <DownOutlined />
 			</Button>

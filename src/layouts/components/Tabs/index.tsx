@@ -1,23 +1,24 @@
 import { HOME_URL } from "@/config/config";
+import { useAppDispatch } from "@/hooks/useAppDispatch";
+import { useAppSelector } from "@/hooks/useAppSelector";
 import { routerArray } from "@/routes";
 import { setTabsList } from "@/store/modules/tabsSlice"; // 直接导入slice
 import { searchRoute } from "@/utils/index";
 import { HomeFilled } from "@ant-design/icons";
 import { Tabs, message } from "antd";
 import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useNavigate } from "react-router";
 import MoreButton from "./components/MoreButton";
 import "./index.scss";
-import { RootState } from "@/store";
 
 const LayoutTabs = () => {
-	const { tabsList } = useSelector((state: RootState) => state.tabs);
-	const { themeConfig } = useSelector((state: RootState) => state.global); // 获取全局配置
-	const dispatch = useDispatch(); // 获取dispatch方法
+	const { tabsList } = useAppSelector(state => state.tabs);
+	const { themeConfig } = useAppSelector(state => state.global); // 获取全局配置
+	const dispatch = useAppDispatch(); // 获取dispatch方法
 	const { TabPane } = Tabs;
 	const { pathname } = useLocation();
 	const navigate = useNavigate();
+
 	const [activeValue, setActiveValue] = useState<string>(pathname);
 
 	useEffect(() => {

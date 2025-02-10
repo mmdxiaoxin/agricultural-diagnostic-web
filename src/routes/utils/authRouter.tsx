@@ -1,10 +1,9 @@
 import { AxiosCanceler } from "@/api/helper/axiosCancel";
 import { HOME_URL } from "@/config/config";
+import { useAppSelector } from "@/hooks/useAppSelector";
 import { rootRouter } from "@/routes/index";
-import { RootState } from "@/store";
 import { searchRoute } from "@/utils";
 import { PropsWithChildren } from "react";
-import { useSelector } from "react-redux";
 import { Navigate, useLocation } from "react-router";
 
 const axiosCanceler = new AxiosCanceler();
@@ -25,8 +24,8 @@ const AuthRouter = (props: AuthRouterProps) => {
 	if (!route.meta?.requiresAuth) return props.children;
 
 	// * 从 Redux 中获取 token 和动态路由
-	const token = useSelector((state: RootState) => state.auth.token);
-	const dynamicRouter = useSelector((state: RootState) => state.auth.authRouter);
+	const token = useAppSelector(state => state.auth.token);
+	const dynamicRouter = useAppSelector(state => state.auth.authRouter);
 
 	// * 判断是否有Token
 	if (!token) return <Navigate to="/login" replace />;
