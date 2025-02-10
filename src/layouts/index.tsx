@@ -22,29 +22,27 @@ const LayoutIndex = () => {
 	const dispatch = useAppDispatch();
 	const isCollapse = useAppSelector(state => state.menu.isCollapse);
 
-	// 获取按钮权限列表
-	const getAuthButtonsList = async () => {
-		const { data } = await getAuthorButtons();
-		dispatch(setAuthButtons(data || {}));
-	};
-
-	// 监听窗口大小变化
-	const listeningWindow = () => {
-		window.onresize = () => {
-			const screenWidth = document.body.clientWidth;
-			if (!isCollapse && screenWidth < 1200) {
-				dispatch(setCollapse(true));
-			}
-			if (!isCollapse && screenWidth > 1200) {
-				dispatch(setCollapse(false));
-			}
-		};
-	};
-
 	useEffect(() => {
-		listeningWindow();
+		// 获取按钮权限列表
+		const getAuthButtonsList = async () => {
+			const { data } = await getAuthorButtons();
+			dispatch(setAuthButtons(data || {}));
+		};
 		getAuthButtonsList();
-	}, [isCollapse, dispatch]);
+		// 监听窗口大小变化
+		const listeningWindow = () => {
+			window.onresize = () => {
+				const screenWidth = document.body.clientWidth;
+				if (!isCollapse && screenWidth < 1200) {
+					dispatch(setCollapse(true));
+				}
+				if (!isCollapse && screenWidth > 1200) {
+					dispatch(setCollapse(false));
+				}
+			};
+		};
+		listeningWindow();
+	}, []);
 
 	return (
 		<section className="container">
