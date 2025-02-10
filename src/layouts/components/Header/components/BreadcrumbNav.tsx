@@ -12,18 +12,17 @@ const BreadcrumbNav = () => {
 	const { themeConfig } = global;
 	const breadcrumbList = breadcrumb.breadcrumbList[pathname] || [];
 
-	return (
-		<>
-			{!themeConfig.breadcrumb && (
-				<Breadcrumb>
-					<Breadcrumb.Item href={`#${HOME_URL}`}>首页</Breadcrumb.Item>
-					{breadcrumbList.map((item: string) => {
-						return <Breadcrumb.Item key={item}>{item !== "首页" ? item : null}</Breadcrumb.Item>;
-					})}
-				</Breadcrumb>
-			)}
-		</>
-	);
+	// 生成面包屑项
+	const breadcrumbItems = [
+		{
+			title: <a href={`#${HOME_URL}`}>首页</a>
+		},
+		...breadcrumbList.map((item: any) => ({
+			title: item !== "首页" ? item : null
+		}))
+	];
+
+	return <>{!themeConfig.breadcrumb && <Breadcrumb items={breadcrumbItems} separator=">" />}</>;
 };
 
 export default BreadcrumbNav;

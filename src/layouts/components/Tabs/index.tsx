@@ -2,7 +2,7 @@ import { HOME_URL } from "@/config/config";
 import { useAppDispatch } from "@/hooks/useAppDispatch";
 import { useAppSelector } from "@/hooks/useAppSelector";
 import { routerArray } from "@/routes";
-import { setTabsList } from "@/store/modules/tabsSlice"; // 直接导入slice
+import { setTabsList } from "@/store/modules/tabsSlice";
 import { searchRoute } from "@/utils/index";
 import { HomeFilled } from "@ant-design/icons";
 import { Tabs } from "antd";
@@ -13,9 +13,8 @@ import "./index.scss";
 
 const LayoutTabs = () => {
 	const { tabsList } = useAppSelector(state => state.tabs);
-	const { themeConfig } = useAppSelector(state => state.global); // 获取全局配置
-	const dispatch = useAppDispatch(); // 获取dispatch方法
-	const { TabPane } = Tabs;
+	const { themeConfig } = useAppSelector(state => state.global);
+	const dispatch = useAppDispatch();
 	const { pathname } = useLocation();
 	const navigate = useNavigate();
 
@@ -55,6 +54,18 @@ const LayoutTabs = () => {
 		dispatch(setTabsList(tabsList.filter((item: any) => item.path !== tabPath)));
 	};
 
+	// 使用新版 items 属性来渲染 Tab
+	const tabItems = tabsList.map((item: any) => ({
+		key: item.path,
+		label: (
+			<span>
+				{item.path === HOME_URL ? <HomeFilled /> : null}
+				{item.title}
+			</span>
+		),
+		closable: item.path !== HOME_URL
+	}));
+
 	return (
 		<>
 			{!themeConfig.tabs && (
@@ -68,22 +79,8 @@ const LayoutTabs = () => {
 						onEdit={path => {
 							delTabs(path as string);
 						}}
-					>
-						{tabsList.map((item: any) => {
-							return (
-								<TabPane
-									key={item.path}
-									tab={
-										<span>
-											{item.path === HOME_URL ? <HomeFilled /> : ""}
-											{item.title}
-										</span>
-									}
-									closable={item.path !== HOME_URL}
-								></TabPane>
-							);
-						})}
-					</Tabs>
+						items={tabItems} // 使用新版 items 来替代 TabPane
+					/>
 					<MoreButton delTabs={delTabs} />
 				</div>
 			)}
