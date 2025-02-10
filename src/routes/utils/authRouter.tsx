@@ -1,7 +1,7 @@
 import { AxiosCanceler } from "@/api/helper/axiosCancel";
 import { HOME_URL } from "@/config/config";
-import { useAppSelector } from "@/hooks/useAppSelector";
 import { rootRouter } from "@/routes/index";
+import { store } from "@/store";
 import { searchRoute } from "@/utils";
 import { PropsWithChildren } from "react";
 import { Navigate, useLocation } from "react-router";
@@ -24,13 +24,15 @@ const AuthRouter = (props: AuthRouterProps) => {
 	if (!route.meta?.requiresAuth) return props.children;
 
 	// * 从 Redux 中获取 token 和动态路由
-	const token = useAppSelector(state => state.auth.token);
-	const dynamicRouter = useAppSelector(state => state.auth.authRouter);
+	const token = store.getState().auth.token;
+
+	// * Dynamic Router(动态路由，根据后端返回的菜单数据生成的一维数组)
+	const dynamicRouter = store.getState().auth.authRouter;
 
 	// * 判断是否有Token
 	if (!token) return <Navigate to="/login" replace />;
 
-	// * Static Router(静态路由，必须配置首页地址，否则不能进首页获取菜单、按钮权限等数据)
+	// * Static Router(静态路由，必须配置首页地址，否则不能进首页获取菜单、按钮权限等数据)，获取数据的时候会loading，所有配置首页地址也没问题
 	const staticRouter = [HOME_URL, "/403"];
 	const routerList = dynamicRouter.concat(staticRouter);
 
