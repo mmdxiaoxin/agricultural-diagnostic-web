@@ -4,7 +4,7 @@ import { useAppSelector } from "@/hooks/useAppSelector";
 import { setAuthButtons } from "@/store/modules/authSlice";
 import { setCollapse } from "@/store/modules/menuSlice";
 import { Layout } from "antd";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Outlet } from "react-router";
 import LayoutFooter from "./components/Footer";
 import LayoutHeader from "./components/Header";
@@ -19,8 +19,11 @@ export interface LayoutIndexProps {
 
 const LayoutIndex = () => {
 	const { Sider, Content } = Layout;
+
 	const dispatch = useAppDispatch();
 	const isCollapse = useAppSelector(state => state.menu.isCollapse);
+
+	const [screenWidth, setScreenWidth] = useState<number>(window.innerWidth);
 
 	useEffect(() => {
 		// 获取按钮权限列表
@@ -35,24 +38,23 @@ const LayoutIndex = () => {
 		// 监听窗口大小变化
 		const handleResize = () => {
 			const screenWidth = window.innerWidth;
-			if (screenWidth < 1200 && !isCollapse) {
-				dispatch(setCollapse(true));
-			} else if (screenWidth >= 1200 && isCollapse) {
-				dispatch(setCollapse(false));
-			}
+			setScreenWidth(screenWidth);
 		};
-
 		// 绑定事件
 		window.addEventListener("resize", handleResize);
-
-		// 初始化时检查一次
-		handleResize();
-
-		// 清理事件
 		return () => {
 			window.removeEventListener("resize", handleResize);
 		};
-	}, [isCollapse]);
+	}, []);
+
+	// 根据屏幕宽度判断是否展开
+	useEffect(() => {
+		if (screenWidth < 1200) {
+			dispatch(setCollapse(true));
+		} else {
+			dispatch(setCollapse(false));
+		}
+	}, [screenWidth]);
 
 	return (
 		<section className="container">
