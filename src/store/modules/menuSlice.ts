@@ -7,7 +7,7 @@ interface MenuState {
 }
 
 const initialState: MenuState = {
-	menuList: [],
+	menuList: JSON.parse(localStorage.getItem("menuList") || "[]"),
 	isCollapse: false
 };
 
@@ -15,8 +15,13 @@ const menuSlice = createSlice({
 	name: "menu",
 	initialState,
 	reducers: {
-		setMenuList(state, action: PayloadAction<any[]>) {
+		setMenuList(state, action: PayloadAction<Menu.MenuOptions[]>) {
 			state.menuList = action.payload;
+			localStorage.setItem("menuList", JSON.stringify(action.payload));
+		},
+		removeMenuList(state) {
+			state.menuList = [];
+			localStorage.removeItem("menuList");
 		},
 		setCollapse(state, action: PayloadAction<boolean>) {
 			state.isCollapse = action.payload;
@@ -25,5 +30,5 @@ const menuSlice = createSlice({
 });
 
 // 导出 action 和 reducer
-export const { setMenuList, setCollapse } = menuSlice.actions;
+export const { setMenuList, removeMenuList, setCollapse } = menuSlice.actions;
 export default menuSlice.reducer;

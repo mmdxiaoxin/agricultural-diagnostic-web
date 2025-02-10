@@ -1,7 +1,8 @@
 import avatar from "@/assets/images/avatar.png";
 import { HOME_URL } from "@/config/config";
 import { useAppDispatch } from "@/hooks/useAppDispatch";
-import { removeToken } from "@/store/modules/authSlice";
+import { removeAuthButtons, removeAuthRouter, removeToken } from "@/store/modules/authSlice";
+import { removeMenuList } from "@/store/modules/menuSlice";
 import { ExclamationCircleOutlined } from "@ant-design/icons";
 import { Avatar, Dropdown, MenuProps, message, Modal } from "antd";
 import { useRef } from "react";
@@ -30,6 +31,9 @@ const AvatarIcon = () => {
 			cancelText: "取消",
 			onOk: () => {
 				dispatch(removeToken());
+				dispatch(removeAuthButtons());
+				dispatch(removeAuthRouter());
+				dispatch(removeMenuList());
 				message.success("退出登录成功！");
 				navigate("/login");
 			}

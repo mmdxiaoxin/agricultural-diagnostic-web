@@ -1,4 +1,4 @@
-import { loginApi } from "@/api/modules/login";
+import { loginApi } from "@/api/modules/auth";
 import loginLeft from "@/assets/images/login.svg";
 import logo from "@/assets/images/logo.svg";
 import { setToken } from "@/store/modules/authSlice";

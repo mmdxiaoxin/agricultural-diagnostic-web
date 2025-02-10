@@ -2,7 +2,7 @@ import NProgress from "@/config/nprogress";
 import { showFullScreenLoading, tryHideFullScreenLoading } from "@/config/serviceLoading";
 import { ResultEnum } from "@/enums/httpEnum";
 import { store } from "@/store/index"; // 导入 store
-import { setToken } from "@/store/modules/authSlice";
+import { removeToken } from "@/store/modules/authSlice";
 import { message } from "antd";
 import axios, {
 	AxiosError,
@@ -23,10 +23,6 @@ const config = {
 	withCredentials: true
 };
 
-const getToken = () => {
-	return store.getState().auth.token;
-};
-
 class RequestHttp {
 	service: AxiosInstance;
 	public constructor(config: AxiosRequestConfig) {
@@ -40,7 +36,7 @@ class RequestHttp {
 				axiosCanceler.addPending(config);
 				// * 如果当前请求不需要显示 loading,在api服务中通过指定的第三个参数: { headers: { noLoading: true } }来控制不显示loading
 				config.headers!.noLoading || showFullScreenLoading();
-				const token = getToken(); // 获取 token
+				const token = store.getState().auth.token;
 				config.headers = new axios.AxiosHeaders({
 					...config.headers,
 					Authorization: `Bearer ${token}`
@@ -61,8 +57,8 @@ class RequestHttp {
 				tryHideFullScreenLoading();
 				// * 登录失效（code == 599）
 				if (data.code == ResultEnum.OVERDUE) {
-					store.dispatch(setToken("")); // 直接通过 store.dispatch 处理 token
-					message.error(data.msg);
+					store.dispatch(removeToken());
+					message.error(data.message);
 					window.location.hash = "/login";
 					return Promise.reject(data);
 				}

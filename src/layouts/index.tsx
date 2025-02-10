@@ -1,4 +1,4 @@
-import { getAuthorButtons } from "@/api/modules/login";
+import { getAuthorButtons } from "@/api/modules/auth";
 import { useAppDispatch } from "@/hooks/useAppDispatch";
 import { useAppSelector } from "@/hooks/useAppSelector";
 import { setAuthButtons } from "@/store/modules/authSlice";

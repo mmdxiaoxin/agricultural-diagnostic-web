@@ -1,4 +1,4 @@
-import { getMenuList } from "@/api/modules/login";
+import { getMenuList } from "@/api/modules/auth";
 import { useAppDispatch } from "@/hooks/useAppDispatch";
 import { useAppSelector } from "@/hooks/useAppSelector";
 import { setAuthRouter } from "@/store/modules/authSlice";
