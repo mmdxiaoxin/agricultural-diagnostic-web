@@ -29,20 +29,30 @@ const LayoutIndex = () => {
 			dispatch(setAuthButtons(data || {}));
 		};
 		getAuthButtonsList();
-		// 监听窗口大小变化
-		const listeningWindow = () => {
-			window.onresize = () => {
-				const screenWidth = document.body.clientWidth;
-				if (!isCollapse && screenWidth < 1200) {
-					dispatch(setCollapse(true));
-				}
-				if (!isCollapse && screenWidth > 1200) {
-					dispatch(setCollapse(false));
-				}
-			};
-		};
-		listeningWindow();
 	}, []);
+
+	useEffect(() => {
+		// 监听窗口大小变化
+		const handleResize = () => {
+			const screenWidth = window.innerWidth;
+			if (screenWidth < 1200 && !isCollapse) {
+				dispatch(setCollapse(true));
+			} else if (screenWidth >= 1200 && isCollapse) {
+				dispatch(setCollapse(false));
+			}
+		};
+
+		// 绑定事件
+		window.addEventListener("resize", handleResize);
+
+		// 初始化时检查一次
+		handleResize();
+
+		// 清理事件
+		return () => {
+			window.removeEventListener("resize", handleResize);
+		};
+	}, [isCollapse]);
 
 	return (
 		<section className="container">
