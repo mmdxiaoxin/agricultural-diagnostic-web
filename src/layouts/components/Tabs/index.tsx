@@ -5,7 +5,7 @@ import { routerArray } from "@/routes";
 import { setTabsList } from "@/store/modules/tabsSlice"; // 直接导入slice
 import { searchRoute } from "@/utils/index";
 import { HomeFilled } from "@ant-design/icons";
-import { Tabs, message } from "antd";
+import { Tabs } from "antd";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router";
 import MoreButton from "./components/MoreButton";
@@ -33,17 +33,17 @@ const LayoutTabs = () => {
 	// 添加tabs
 	const addTabs = () => {
 		const route = searchRoute(pathname, routerArray);
-		let newTabsList = [...tabsList]; // 使用扩展运算符复制tabsList
+		let newTabsList = [...tabsList];
 		if (tabsList.every((item: any) => item.path !== route.path)) {
-			newTabsList.push({ title: route.meta!.title, path: route.path });
+			newTabsList.push({ title: route.meta!.title, path: route.path as string });
 		}
-		dispatch(setTabsList(newTabsList)); // 更新tabsList
+		dispatch(setTabsList(newTabsList));
 		setActiveValue(pathname);
 	};
 
 	// 删除tab
 	const delTabs = (tabPath?: string) => {
-		if (tabPath === HOME_URL) return; // 不能删除首页tab
+		if (tabPath === HOME_URL) return;
 		if (pathname === tabPath) {
 			tabsList.forEach((item: any, index: number) => {
 				if (item.path !== pathname) return;
@@ -52,8 +52,7 @@ const LayoutTabs = () => {
 				navigate(nextTab.path);
 			});
 		}
-		message.success("你删除了Tabs标签 😆😆😆");
-		dispatch(setTabsList(tabsList.filter((item: any) => item.path !== tabPath))); // 更新tabsList
+		dispatch(setTabsList(tabsList.filter((item: any) => item.path !== tabPath)));
 	};
 
 	return (
@@ -85,7 +84,7 @@ const LayoutTabs = () => {
 							);
 						})}
 					</Tabs>
-					<MoreButton tabsList={tabsList} delTabs={delTabs} setTabsList={setTabsList} />
+					<MoreButton />
 				</div>
 			)}
 		</>

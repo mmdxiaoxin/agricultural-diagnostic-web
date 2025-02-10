@@ -1,6 +1,7 @@
 import { HOME_URL } from "@/config/config";
+import { useAppDispatch } from "@/hooks/useAppDispatch";
 import { useAppSelector } from "@/hooks/useAppSelector";
-import { delTabsList, setTabsList } from "@/store/modules/tabsSlice";
+import { delTab, setTabsList } from "@/store/modules/tabsSlice";
 import { DownOutlined } from "@ant-design/icons";
 import { Button, Dropdown, MenuProps } from "antd";
 import { useLocation, useNavigate } from "react-router";
@@ -8,14 +9,15 @@ import { useLocation, useNavigate } from "react-router";
 const MoreButton = () => {
 	const { pathname } = useLocation();
 	const navigate = useNavigate();
-	const tabs = useAppSelector(state => state.tabs);
+	const { tabsList } = useAppSelector(state => state.tabs);
+	const dispatch = useAppDispatch();
 
 	// close multipleTab
 	const closeMultipleTab = (tabPath?: string) => {
-		const handleTabsList = tabs.tabsList.filter((item: Menu.MenuOptions) => {
+		const handleTabsList = tabsList.filter((item: Menu.MenuOptions) => {
 			return item.path === tabPath || item.path === HOME_URL;
 		});
-		setTabsList(handleTabsList);
+		dispatch(setTabsList(handleTabsList));
 		tabPath ?? navigate(HOME_URL);
 	};
 
@@ -23,7 +25,7 @@ const MoreButton = () => {
 		{
 			key: "1",
 			label: <span>{"关闭当前"}</span>,
-			onClick: () => delTabsList(pathname)
+			onClick: () => dispatch(delTab(pathname))
 		},
 		{
 			key: "2",
@@ -36,6 +38,7 @@ const MoreButton = () => {
 			onClick: () => closeMultipleTab()
 		}
 	];
+
 	return (
 		<Dropdown
 			menu={{ items }}
