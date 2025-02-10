@@ -7,11 +7,11 @@ import "./styles/index.css";
 import { persistor, store } from "./store/index.ts";
 
 createRoot(document.getElementById("root")!).render(
-    <StrictMode>
-        <Provider store={store}>
-            <PersistGate loading={<div>Loading...</div>} persistor={persistor}>
-                <App />
-            </PersistGate>
-        </Provider>
-    </StrictMode>
+	<StrictMode>
+		<Provider store={store}>
+			<PersistGate loading={<div>Loading...</div>} persistor={persistor}>
+				<App />
+			</PersistGate>
+		</Provider>
+	</StrictMode>
 );

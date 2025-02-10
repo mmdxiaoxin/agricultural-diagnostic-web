@@ -1,0 +1,149 @@
+.login-container {
+	position: relative;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 300px;
+	height: 100vh;
+	min-height: 500px;
+	background-image: url("@/assets/images/login_bg.svg");
+	background-position: 50%;
+	background-size: 100% 100%;
+	background-size: cover;
+
+	.login-box {
+		box-sizing: border-box;
+		display: flex;
+		align-items: center;
+		justify-content: space-around;
+		width: 96%;
+		height: 94%;
+		padding: 0 4% 0 20px;
+		overflow: hidden;
+		border-radius: 10px;
+
+		.login-left {
+			width: 600px;
+
+			img {
+				width: 100%;
+				height: 100%;
+			}
+		}
+
+		.login-form {
+			padding: 40px 45px 25px;
+			border-radius: 10px;
+
+			@media screen and (min-width: 1025px) {
+				padding: 40px 45px 25px;
+			}
+
+			@media screen and (min-width: 769px) and (max-width: 1024px) {
+				padding: 30px 30px 20px;
+			}
+
+			@media screen and (max-width: 768px) and (min-width: 426px) {
+				padding: 25px 25px 10px;
+			}
+
+			@media screen and (max-width: 425px) {
+				padding: 20px 20px 5px;
+			}
+
+			.login-logo {
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				margin-bottom: 40px;
+
+				.login-icon {
+					width: 70px;
+
+					@media screen and (min-width: 1025px) {
+						width: 70px;
+					}
+
+					@media screen and (min-width: 769px) and (max-width: 1024px) {
+						width: 60px;
+					}
+
+					@media screen and (max-width: 768px) and (min-width: 426px) {
+						width: 50px;
+					}
+
+					@media screen and (max-width: 425px) {
+						width: 40px;
+					}
+				}
+
+				.logo-text {
+					padding-left: 25px;
+					font-size: 48px;
+					font-weight: bold;
+					white-space: nowrap;
+
+					@media screen and (min-width: 1025px) {
+						font-size: 48px;
+					}
+
+					@media screen and (min-width: 769px) and (max-width: 1024px) {
+						font-size: 44px;
+					}
+
+					@media screen and (max-width: 768px) and (min-width: 426px) {
+						font-size: 36px;
+					}
+
+					@media screen and (max-width: 425px) {
+						font-size: 28px;
+					}
+				}
+			}
+
+			.ant-form-item {
+				height: 75px;
+				margin-bottom: 0;
+
+				.ant-input-prefix {
+					margin-right: 10px;
+				}
+
+				.ant-input-affix-wrapper-lg {
+					padding: 8.3px 11px;
+				}
+
+				.ant-input-affix-wrapper,
+				.ant-input-lg {
+					font-size: 14px;
+				}
+
+				.ant-input-affix-wrapper {
+					color: #bfbfbf;
+				}
+			}
+
+			.login-btn {
+				width: 100%;
+				margin-top: 10px;
+				white-space: nowrap;
+
+				.ant-btn {
+					font-size: 14px;
+
+					@media screen and (min-width: 1025px) {
+						width: 180px;
+					}
+
+					@media screen and (min-width: 769px) and (max-width: 1024px) {
+						width: 140px;
+					}
+
+					@media screen and (max-width: 768px) {
+						width: 120px;
+					}
+				}
+			}
+		}
+	}
+}
