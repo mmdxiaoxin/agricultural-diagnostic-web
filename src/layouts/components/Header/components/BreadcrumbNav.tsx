@@ -15,7 +15,7 @@ const BreadcrumbNav = () => {
 	// 生成面包屑项
 	const breadcrumbItems = [
 		{
-			title: <a href={`#${HOME_URL}`}>首页</a>
+			title: <a href={`${HOME_URL}`}>首页</a>
 		},
 		...breadcrumbList.map((item: any) => ({
 			title: item !== "首页" ? item : null
