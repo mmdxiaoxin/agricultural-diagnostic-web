@@ -3,7 +3,7 @@ import { Form, Input, message, Modal } from "antd";
 import { forwardRef, useImperativeHandle, useState } from "react";
 
 export interface PasswordModalProps {
-	onSave?: () => void;
+	onReset?: () => void;
 }
 export interface PasswordModalRef {
 	open: () => void;
@@ -14,7 +14,7 @@ interface PasswordForm {
 	newPassword: string;
 }
 
-const PasswordModal = forwardRef<PasswordModalRef, PasswordModalProps>(({ onSave }, ref) => {
+const PasswordModal = forwardRef<PasswordModalRef, PasswordModalProps>(({ onReset }, ref) => {
 	const [form] = Form.useForm();
 
 	const [isModalVisible, setIsModalVisible] = useState(false);
@@ -52,9 +52,9 @@ const PasswordModal = forwardRef<PasswordModalRef, PasswordModalProps>(({ onSave
 			if (res.code !== 200) throw new Error(res.message);
 
 			setFormData(values);
-			onSave?.();
 			handleClose();
 			message.success("密码修改成功 🎉");
+			onReset?.();
 		} catch (error: any) {
 			message.error(error.message);
 		}

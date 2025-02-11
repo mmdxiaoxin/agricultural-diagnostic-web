@@ -54,6 +54,14 @@ const AvatarIcon = () => {
 		});
 	};
 
+	const handleReset = () => {
+		dispatch(removeToken());
+		dispatch(removeAuthButtons());
+		dispatch(removeAuthRouter());
+		dispatch(removeMenuList());
+		navigate("/login");
+	};
+
 	// Dropdown Menu
 	const items: MenuProps["items"] = [
 		{
@@ -88,7 +96,7 @@ const AvatarIcon = () => {
 				<Avatar size="large" src={avatar} />
 			</Dropdown>
 			<InfoModal ref={infoRef}></InfoModal>
-			<PasswordModal ref={passRef}></PasswordModal>
+			<PasswordModal ref={passRef} onReset={handleReset}></PasswordModal>
 		</>
 	);
 };
