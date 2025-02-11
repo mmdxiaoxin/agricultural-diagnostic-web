@@ -129,7 +129,10 @@ const InfoDrawer = forwardRef<InfoDrawerRef, InfoDrawerProps>(({ onSave }, ref) 
 				</Form.Item>
 
 				<Form.Item label="角色" name="role_id">
-					<Select options={roleOptions} disabled={type === "view"} />
+					<Select
+						options={roleOptions}
+						disabled={type === "view" || userDetail.username === "admin"}
+					/>
 				</Form.Item>
 
 				<Form.Item label="姓名" name="name">
