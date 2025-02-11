@@ -1,8 +1,8 @@
 import http from "@/api";
-import { OSSFile } from "../interface";
+import { ReqFileList, ResFileList } from "../interface";
 
 // 文件列表接口
-export const getFileList = async (params: OSSFile.ReqFileList) => {
+export const getFileList = async (params: ReqFileList) => {
 	return http.get("/file/list", params);
 };
 
@@ -10,7 +10,7 @@ export const getFileList = async (params: OSSFile.ReqFileList) => {
 export const uploadFile = async (file: File) => {
 	const formData = new FormData();
 	formData.append("file", file);
-	return http.post<OSSFile.ResFileList>("/file/upload/single", formData, {
+	return http.post<ResFileList>("/file/upload/single", formData, {
 		headers: {
 			"Content-Type": "multipart/form-data"
 		}
