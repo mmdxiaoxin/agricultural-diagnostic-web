@@ -1,37 +1,64 @@
-import { useState, useImperativeHandle, Ref } from "react";
-import { Modal, Input, message, Button, Form, InputNumber, DatePicker } from "antd";
-import { UserOutlined, PhoneOutlined, HomeOutlined } from "@ant-design/icons";
+import { ResUserProfile } from "@/api/interface";
+import { getRoleDict } from "@/api/modules/auth";
+import { getUserProfile, updateUserProfile } from "@/api/modules/user";
+import { ROLE_COLOR } from "@/enums";
+import { HomeOutlined, PhoneOutlined, UserOutlined } from "@ant-design/icons";
+import { Button, Form, Input, message, Modal, Space, Tag } from "antd";
 import moment from "moment";
+import { Ref, useImperativeHandle, useState } from "react";
 
-interface Props {
-	innerRef: Ref<{ showModal: (params: any) => void } | undefined>;
+interface InfoModalProps {
+	innerRef: Ref<{ showModal: () => void } | undefined>;
 }
 
-const InfoModal = (props: Props) => {
+type UserForm = {
+	role: string;
+} & ResUserProfile;
+
+const InfoModal = (props: InfoModalProps) => {
 	const [modalVisible, setModalVisible] = useState(false);
-	const [userInfo, setUserInfo] = useState({
-		username: "john_doe", // Example initial value
-		role: "user", // Example initial value
-		name: "John Doe", // Example initial value
-		phone: "1234567890", // Example initial value
-		address: "123 Main St", // Example initial value
-		createdAt: moment().subtract(1, "year") // Example initial value
+	const [formData, setFormData] = useState<UserForm>({
+		username: "",
+		role_id: 0,
+		role: "",
+		name: "",
+		phone: "",
+		address: "",
+		createdAt: ""
 	});
 
-	const [isEditing, setIsEditing] = useState(false); // Whether user is in editing mode
+	const [isEditing, setIsEditing] = useState(false);
 
 	useImperativeHandle(props.innerRef, () => ({
 		showModal
 	}));
 
-	const showModal = (params: { name: number }) => {
-		console.log(params);
-		setModalVisible(true);
+	const fetchUser = () => {
+		try {
+			Promise.all([getUserProfile(), getRoleDict()]).then(([userRes, roleRes]) => {
+				if (userRes.code !== 200 || !userRes.data) throw new Error(userRes.message);
+				const user = userRes.data;
+				const role = roleRes.data?.find(item => item.key === user.role_id);
+				if (!role) throw new Error("未找到角色信息");
+
+				setFormData({
+					...user,
+					role: role.value
+				});
+				setModalVisible(true);
+			});
+		} catch (error) {
+			message.error("获取用户信息失败");
+		}
+	};
+
+	const showModal = () => {
+		fetchUser();
 	};
 
 	const handleOk = () => {
+		handleSave(formData);
 		setModalVisible(false);
-		message.success("修改用户信息成功 🎉🎉🎉");
 	};
 
 	const handleCancel = () => {
@@ -39,13 +66,25 @@ const InfoModal = (props: Props) => {
 	};
 
 	const handleEdit = () => {
-		setIsEditing(true); // Enable editing mode
+		setIsEditing(true);
 	};
 
-	const handleSave = (values: any) => {
-		setUserInfo({ ...userInfo, ...values });
-		setIsEditing(false); // Disable editing mode
-		message.success("信息已更新！");
+	const handleSave = async (values: UserForm) => {
+		try {
+			const newInfo = {
+				name: values.name,
+				phone: values.phone,
+				address: values.address
+			};
+			const res = await updateUserProfile(newInfo);
+			if (res.code !== 200) throw new Error(res.message);
+
+			setFormData({ ...formData, ...newInfo });
+			setIsEditing(false);
+			message.success("修改用户信息成功 🎉🎉🎉");
+		} catch (error: any) {
+			message.error("更新用户信息失败: " + error.message);
+		}
 	};
 
 	return (
@@ -75,30 +114,26 @@ const InfoModal = (props: Props) => {
 				wrapperCol={{ span: 18 }}
 				layout="horizontal"
 				onFinish={handleSave}
-				initialValues={userInfo}
+				initialValues={formData}
 			>
 				<Form.Item label="用户名" name="username">
-					<Input
-						prefix={<UserOutlined />}
-						disabled={!isEditing}
-						value={userInfo.username}
-						onChange={e => setUserInfo({ ...userInfo, username: e.target.value })}
-					/>
+					<Space>
+						<UserOutlined />
+						{formData.username}
+					</Space>
 				</Form.Item>
 
 				<Form.Item label="角色" name="role">
-					<Input
-						disabled={!isEditing}
-						value={userInfo.role}
-						onChange={e => setUserInfo({ ...userInfo, role: e.target.value })}
-					/>
+					<Tag color={ROLE_COLOR[formData.role as keyof typeof ROLE_COLOR] || "default"}>
+						{formData.role}
+					</Tag>
 				</Form.Item>
 
 				<Form.Item label="姓名" name="name">
 					<Input
 						disabled={!isEditing}
-						value={userInfo.name}
-						onChange={e => setUserInfo({ ...userInfo, name: e.target.value })}
+						value={formData.name}
+						onChange={e => setFormData({ ...formData, name: e.target.value })}
 					/>
 				</Form.Item>
 
@@ -106,8 +141,8 @@ const InfoModal = (props: Props) => {
 					<Input
 						prefix={<PhoneOutlined />}
 						disabled={!isEditing}
-						value={userInfo.phone}
-						onChange={e => setUserInfo({ ...userInfo, phone: e.target.value })}
+						value={formData.phone}
+						onChange={e => setFormData({ ...formData, phone: e.target.value })}
 					/>
 				</Form.Item>
 
@@ -115,17 +150,13 @@ const InfoModal = (props: Props) => {
 					<Input
 						prefix={<HomeOutlined />}
 						disabled={!isEditing}
-						value={userInfo.address}
-						onChange={e => setUserInfo({ ...userInfo, address: e.target.value })}
+						value={formData.address}
+						onChange={e => setFormData({ ...formData, address: e.target.value })}
 					/>
 				</Form.Item>
 
 				<Form.Item label="创建时间" name="createdAt">
-					<DatePicker
-						disabled={!isEditing}
-						value={userInfo.createdAt}
-						onChange={date => setUserInfo({ ...userInfo, createdAt: date })}
-					/>
+					<span>{moment(formData.createdAt).format("YYYY-MM-DD HH:mm:ss")}</span>
 				</Form.Item>
 
 				{isEditing && (

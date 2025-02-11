@@ -20,7 +20,6 @@ const LayoutHeader = () => {
 				<AssemblySize />
 				<Theme />
 				<Fullscreen />
-				<span className="username">xiaoxin</span>
 				<AvatarIcon />
 			</div>
 		</Header>

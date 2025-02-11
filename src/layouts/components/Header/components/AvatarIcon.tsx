@@ -5,13 +5,14 @@ import { removeAuthButtons, removeAuthRouter, removeToken } from "@/store/module
 import { removeMenuList } from "@/store/modules/menuSlice";
 import { ExclamationCircleOutlined } from "@ant-design/icons";
 import { Avatar, Dropdown, MenuProps, message, Modal } from "antd";
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router";
 import InfoModal from "./InfoModal";
 import PasswordModal from "./PasswordModal";
+import { getUserProfile } from "@/api/modules/user";
 
 interface ModalProps {
-	showModal: (params: { name: number }) => void;
+	showModal: () => void;
 }
 
 const AvatarIcon = () => {
@@ -20,6 +21,23 @@ const AvatarIcon = () => {
 
 	const passRef = useRef<ModalProps>(null);
 	const infoRef = useRef<ModalProps>(null);
+
+	const [username, setUsername] = useState("未知用户");
+
+	useEffect(() => {
+		const fetchUser = async () => {
+			try {
+				const res = await getUserProfile();
+				if (res.code !== 200 || !res.data) {
+					throw new Error(res.message);
+				}
+				setUsername(res.data.username);
+			} catch (error: any) {
+				message.error(error.message);
+			}
+		};
+		fetchUser();
+	}, []);
 
 	// 退出登录
 	const logout = () => {
@@ -50,12 +68,12 @@ const AvatarIcon = () => {
 		{
 			key: "2",
 			label: <span className="dropdown-item">个人信息</span>,
-			onClick: () => infoRef.current!.showModal({ name: 11 })
+			onClick: () => infoRef.current!.showModal()
 		},
 		{
 			key: "3",
 			label: <span className="dropdown-item">修改密码</span>,
-			onClick: () => passRef.current!.showModal({ name: 11 })
+			onClick: () => passRef.current!.showModal()
 		},
 		{
 			type: "divider"
@@ -69,6 +87,7 @@ const AvatarIcon = () => {
 
 	return (
 		<>
+			<span className="username">{username}</span>
 			<Dropdown menu={{ items }} placement="bottom" arrow trigger={["click"]}>
 				<Avatar size="large" src={avatar} />
 			</Dropdown>

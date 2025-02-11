@@ -1,16 +1,11 @@
 import { DictItem, UserItem, UserListParams } from "@/api/interface";
 import { getRoleDict } from "@/api/modules/auth";
 import { getUserList } from "@/api/modules/user";
+import { ROLE_COLOR } from "@/enums";
 import { DeleteOutlined, EditOutlined, EyeOutlined, ReloadOutlined } from "@ant-design/icons";
-import { Button, Input, message, Space, Table, TableProps, Tag, Collapse, Row, Col } from "antd";
+import { Button, Col, Collapse, Input, message, Row, Space, Table, TableProps, Tag } from "antd";
 import { useEffect, useState } from "react";
 import styles from "./index.module.scss";
-
-const ROLE_COLOR = {
-	专家: "blue",
-	农民: "green",
-	管理员: "orange"
-};
 
 const User = () => {
 	const [loading, setLoading] = useState(false);
@@ -218,6 +213,7 @@ const User = () => {
 			{/* 表格部分 */}
 			<div style={{ padding: 16 }}>
 				<Table<UserItem>
+					rowKey="id"
 					loading={loading}
 					columns={columns}
 					dataSource={userList}

@@ -21,3 +21,9 @@ export type UserListParams = {
 } & Partial<UserItem>;
 // * 用户列表响应
 export type ResUserList = PageData<UserItem>;
+
+// * 用户详情参数
+export type UserProfileParams = Omit<ResUserProfile, "role_id" | "createdAt" | "username">;
+
+// * 用户详情响应
+export type ResUserProfile = Omit<User, "password" | "updatedAt" | "id">;
