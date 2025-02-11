@@ -230,6 +230,7 @@ const User = () => {
 						},
 						onChange(page, pageSize) {
 							setQueryParams({ ...queryParams, page, pageSize });
+							fetchData({ ...queryParams, page, pageSize });
 						}
 					}}
 				/>

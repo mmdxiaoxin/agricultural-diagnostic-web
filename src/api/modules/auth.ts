@@ -14,4 +14,4 @@ export const getAuthorButtons = () => http.get<ResAuthButtons>(`/auth/buttons`);
 export const getMenuList = () => http.get<Menu.MenuOptions[]>(`/auth/route`);
 
 // * 获取角色字典
-export const getRoleDict = () => http.get<ResAuthDict>(`/auth/role-dict`);
+export const getRoleDict = () => http.get<ResAuthDict>(`/auth/role-dict`, {}, { loading: false });
