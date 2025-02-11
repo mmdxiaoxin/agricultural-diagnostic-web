@@ -77,6 +77,7 @@ const User = () => {
 			dataIndex: "createdAt",
 			key: "createdAt",
 			sortDirections: ["descend", "ascend"],
+			render: text => new Date(text).toLocaleString(),
 			sorter: (a, b) => {
 				if (a.createdAt && b.createdAt) {
 					const aTime = new Date(a.createdAt).getTime();
@@ -92,6 +93,7 @@ const User = () => {
 			dataIndex: "updatedAt",
 			key: "updatedAt",
 			sortDirections: ["descend", "ascend"],
+			render: text => new Date(text).toLocaleString(),
 			sorter: (a, b) => {
 				if (a.createdAt && b.createdAt) {
 					const aTime = new Date(a.createdAt).getTime();
