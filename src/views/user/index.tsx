@@ -1,8 +1,14 @@
 import { DictItem, UserItem, UserListParams } from "@/api/interface";
 import { getRoleDict } from "@/api/modules/auth";
-import { getUserList } from "@/api/modules/user";
+import { deleteUserById, getUserList, resetUserPassword } from "@/api/modules/user";
 import { ROLE_COLOR } from "@/enums";
-import { DeleteOutlined, EditOutlined, EyeOutlined, ReloadOutlined } from "@ant-design/icons";
+import {
+	DeleteOutlined,
+	EditOutlined,
+	EyeOutlined,
+	QuestionCircleOutlined,
+	ReloadOutlined
+} from "@ant-design/icons";
 import {
 	Button,
 	Col,
@@ -10,16 +16,20 @@ import {
 	CollapseProps,
 	Input,
 	message,
+	Popconfirm,
 	Row,
 	Space,
 	Table,
 	TableProps,
 	Tag
 } from "antd";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import styles from "./index.module.scss";
+import InfoDrawer, { InfoDrawerRef } from "./InfoDrawer";
 
 const User = () => {
+	const infoDrawerRef = useRef<InfoDrawerRef>(null);
+
 	const [loading, setLoading] = useState(false);
 	const [queryParams, setQueryParams] = useState<UserListParams>({ page: 1, pageSize: 10 });
 	const [roleDict, setRoleDict] = useState<DictItem[]>([]);
@@ -37,6 +47,35 @@ const User = () => {
 			...prev,
 			[key]: value
 		}));
+	};
+
+	const handleView = (user_id: number | string) => {
+		infoDrawerRef.current?.open(user_id);
+	};
+
+	const handleEdit = (user_id: number | string) => {
+		infoDrawerRef.current?.open(user_id, "edit");
+	};
+
+	const handleResetPassword = async (user_id: number | string) => {
+		try {
+			const res = await resetUserPassword(user_id);
+			if (res.code !== 200) throw new Error(res.message);
+			message.success("密码重置成功 🎉");
+			fetchData(queryParams);
+		} catch (error: any) {
+			message.error(error.message);
+		}
+	};
+
+	const handleDelete = async (user_id: number | string) => {
+		try {
+			await deleteUserById(user_id);
+			message.success("用户删除成功 🎉");
+			fetchData(queryParams);
+		} catch (error: any) {
+			message.error(error.message);
+		}
 	};
 
 	const columns: TableProps<UserItem>["columns"] = [
@@ -124,27 +163,37 @@ const User = () => {
 			align: "center",
 			render: (_, record) => (
 				<Space size="small">
-					<Button type="text" icon={<EyeOutlined />} onClick={() => console.log("查看", record)}>
+					<Button type="text" icon={<EyeOutlined />} onClick={() => handleView(record.id)}>
 						查看
 					</Button>
-					<Button type="text" icon={<EditOutlined />} onClick={() => console.log("编辑", record)}>
+					<Button type="text" icon={<EditOutlined />} onClick={() => handleEdit(record.id)}>
 						编辑
 					</Button>
-					<Button
-						type="text"
-						icon={<ReloadOutlined />}
-						onClick={() => console.log("重置密码", record)}
+					<Popconfirm
+						placement="top"
+						title={`确定要重置吗？`}
+						description={<span>重置后密码将恢复为初始密码 123456</span>}
+						okText="确认"
+						cancelText="取消"
+						onConfirm={() => handleResetPassword(record.id)}
 					>
-						重置密码
-					</Button>
-					<Button
-						type="text"
-						icon={<DeleteOutlined />}
-						danger
-						onClick={() => console.log("删除", record)}
+						<Button type="text" icon={<ReloadOutlined />}>
+							重置密码
+						</Button>
+					</Popconfirm>
+					<Popconfirm
+						placement="top"
+						title={`确定要删除吗？`}
+						okButtonProps={{ danger: true }}
+						okText="确认"
+						cancelText="取消"
+						icon={<QuestionCircleOutlined style={{ color: "red" }} />}
+						onConfirm={() => handleDelete(record.id)}
 					>
-						删除
-					</Button>
+						<Button type="text" icon={<DeleteOutlined />} danger>
+							删除
+						</Button>
+					</Popconfirm>
 				</Space>
 			)
 		}
@@ -264,6 +313,8 @@ const User = () => {
 					}}
 				/>
 			</div>
+
+			<InfoDrawer ref={infoDrawerRef} onSave={() => fetchData(queryParams)} />
 		</div>
 	);
 };
