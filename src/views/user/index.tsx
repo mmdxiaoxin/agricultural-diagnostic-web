@@ -177,36 +177,53 @@ const User = () => {
 			key: "1",
 			label: "筛选搜索",
 			children: (
-				<Row gutter={16}>
-					<Col span={6}>
-						<Input
-							placeholder="用户名"
-							value={queryParams.username}
-							onChange={e => handleSearchChange("username", e.target.value)}
-						/>
-					</Col>
-					<Col span={6}>
-						<Input
-							placeholder="姓名"
-							value={queryParams.name}
-							onChange={e => handleSearchChange("name", e.target.value)}
-						/>
-					</Col>
-					<Col span={6}>
-						<Input
-							placeholder="手机号"
-							value={queryParams.phone}
-							onChange={e => handleSearchChange("phone", e.target.value)}
-						/>
-					</Col>
-					<Col span={6}>
-						<Input
-							placeholder="地址"
-							value={queryParams.address}
-							onChange={e => handleSearchChange("address", e.target.value)}
-						/>
-					</Col>
-				</Row>
+				<>
+					<Row gutter={16}>
+						<Col span={6}>
+							<Input
+								placeholder="用户名"
+								value={queryParams.username}
+								onChange={e => handleSearchChange("username", e.target.value)}
+							/>
+						</Col>
+						<Col span={6}>
+							<Input
+								placeholder="姓名"
+								value={queryParams.name}
+								onChange={e => handleSearchChange("name", e.target.value)}
+							/>
+						</Col>
+						<Col span={6}>
+							<Input
+								placeholder="手机号"
+								value={queryParams.phone}
+								onChange={e => handleSearchChange("phone", e.target.value)}
+							/>
+						</Col>
+						<Col span={6}>
+							<Input
+								placeholder="地址"
+								value={queryParams.address}
+								onChange={e => handleSearchChange("address", e.target.value)}
+							/>
+						</Col>
+					</Row>
+					<Row style={{ marginTop: 16 }}>
+						<Space>
+							<Button type="primary" onClick={() => fetchData(queryParams)}>
+								搜索
+							</Button>
+							<Button
+								onClick={() => {
+									setQueryParams({ page: 1, pageSize: 10 });
+									fetchData({ page: 1, pageSize: 10 });
+								}}
+							>
+								重置
+							</Button>
+						</Space>
+					</Row>
+				</>
 			)
 		}
 	];
