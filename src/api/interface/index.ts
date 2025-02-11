@@ -24,3 +24,4 @@ export interface PageData<T = any> {
 export * from "./file";
 export * from "./auth";
 export * from "./diagnosis";
+export * from "./user";

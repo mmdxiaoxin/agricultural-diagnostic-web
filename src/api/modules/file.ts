@@ -1,12 +1,12 @@
 import http from "@/api";
-import { ReqFileList, ResFileList, ResUploadFile } from "../interface";
+import { ReqFileListParams, ResFileList, ResUploadFile } from "../interface";
 
-// 文件列表接口
-export const getFileList = async (params: ReqFileList) => {
+// * 文件列表接口
+export const getFileList = async (params: ReqFileListParams) => {
 	return http.get<ResFileList>("/file/list", params);
 };
 
-// 文件上传接口
+// * 文件上传接口
 export const uploadFile = async (file: File) => {
 	const formData = new FormData();
 	formData.append("file", file);
@@ -17,14 +17,11 @@ export const uploadFile = async (file: File) => {
 	});
 };
 
-// 文件下载接口
-export const downloadFile = (fileId: string | number) => {
-	return http.get(`/file/download/${fileId}`, undefined, {
+// * 文件下载接口
+export const downloadFile = (fileId: string | number) =>
+	http.get(`/file/download/${fileId}`, undefined, {
 		responseType: "blob"
 	});
-};
 
-// 文件删除接口
-export const deleteFile = (fileId: string | number) => {
-	return http.delete(`/file/delete/${fileId}`);
-};
+// * 文件删除接口
+export const deleteFile = (fileId: string | number) => http.delete(`/file/delete/${fileId}`);

@@ -1,22 +1,17 @@
 import http from "@/api";
-import { ReqLogin, ResAuthButtons, ResLogin } from "../interface";
+import { ReqLogin, ResAuthButtons, ResAuthDict, ResLogin } from "../interface";
 
-/**
- * @name 登录模块
- */
 // * 用户登录接口
-export const loginApi = (params: ReqLogin) => {
-	return http.post<ResLogin>(`/auth/login`, {
+export const loginApi = (params: ReqLogin) =>
+	http.post<ResLogin>(`/auth/login`, {
 		...params
 	});
-};
 
 // * 获取按钮权限
-export const getAuthorButtons = () => {
-	return http.get<ResAuthButtons>(`/auth/buttons`);
-};
+export const getAuthorButtons = () => http.get<ResAuthButtons>(`/auth/buttons`);
 
 // * 获取菜单列表
-export const getMenuList = () => {
-	return http.get<Menu.MenuOptions[]>(`/auth/route`);
-};
+export const getMenuList = () => http.get<Menu.MenuOptions[]>(`/auth/route`);
+
+// * 获取角色字典
+export const getRoleDict = () => http.get<ResAuthDict>(`/auth/role-dict`);

@@ -16,10 +16,10 @@ export interface FileMeta {
 	version: number;
 }
 
-export interface ReqFileList {
+export type ReqFileListParams = {
 	page: number;
 	page_size: number;
-}
+} & Partial<Pick<FileMeta, "id" | "original_file_name" | "file_type">>;
+export type ResFileList = PageData<FileMeta>;
 
 export type ResUploadFile = FileMeta;
-export type ResFileList = PageData<FileMeta>;
