@@ -1,3 +1,4 @@
+import { getUserProfile } from "@/api/modules/user";
 import avatar from "@/assets/images/avatar.png";
 import { HOME_URL } from "@/config/config";
 import { useAppDispatch } from "@/hooks/useAppDispatch";
@@ -7,20 +8,15 @@ import { ExclamationCircleOutlined } from "@ant-design/icons";
 import { Avatar, Dropdown, MenuProps, message, Modal } from "antd";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router";
-import InfoModal from "./InfoModal";
-import PasswordModal from "./PasswordModal";
-import { getUserProfile } from "@/api/modules/user";
-
-interface ModalProps {
-	showModal: () => void;
-}
+import InfoModal, { InfoModalRef } from "./InfoModal";
+import PasswordModal, { PasswordModalRef } from "./PasswordModal";
 
 const AvatarIcon = () => {
 	const navigate = useNavigate();
 	const dispatch = useAppDispatch();
 
-	const passRef = useRef<ModalProps>(null);
-	const infoRef = useRef<ModalProps>(null);
+	const passRef = useRef<PasswordModalRef>(null);
+	const infoRef = useRef<InfoModalRef>(null);
 
 	const [username, setUsername] = useState("未知用户");
 
@@ -68,12 +64,12 @@ const AvatarIcon = () => {
 		{
 			key: "2",
 			label: <span className="dropdown-item">个人信息</span>,
-			onClick: () => infoRef.current!.showModal()
+			onClick: () => infoRef.current?.open()
 		},
 		{
 			key: "3",
 			label: <span className="dropdown-item">修改密码</span>,
-			onClick: () => passRef.current!.showModal()
+			onClick: () => passRef.current?.open()
 		},
 		{
 			type: "divider"
@@ -91,8 +87,8 @@ const AvatarIcon = () => {
 			<Dropdown menu={{ items }} placement="bottom" arrow trigger={["click"]}>
 				<Avatar size="large" src={avatar} />
 			</Dropdown>
-			<InfoModal innerRef={infoRef}></InfoModal>
-			<PasswordModal innerRef={passRef}></PasswordModal>
+			<InfoModal ref={infoRef}></InfoModal>
+			<PasswordModal ref={passRef}></PasswordModal>
 		</>
 	);
 };

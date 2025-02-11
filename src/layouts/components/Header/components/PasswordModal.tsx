@@ -1,42 +1,85 @@
-import { useState, useImperativeHandle, Ref } from "react";
-import { Modal, message } from "antd";
+import { resetUserPassword } from "@/api/modules/user";
+import { Form, Input, message, Modal } from "antd";
+import { forwardRef, useImperativeHandle, useState } from "react";
 
-interface Props {
-	innerRef: Ref<{ showModal: (params: any) => void }>;
+export interface PasswordModalProps {
+	onSave?: () => void;
+}
+export interface PasswordModalRef {
+	open: () => void;
 }
 
-const PasswordModal = (props: Props) => {
-	const [isModalVisible, setIsModalVisible] = useState(false);
+interface PasswordForm {
+	currentPassword: string;
+	newPassword: string;
+}
 
-	useImperativeHandle(props.innerRef, () => ({
-		showModal
+const PasswordModal = forwardRef<PasswordModalRef, PasswordModalProps>(({ onSave }, ref) => {
+	const [form] = Form.useForm();
+
+	const [isModalVisible, setIsModalVisible] = useState(false);
+	const [formData, setFormData] = useState<PasswordForm>({
+		currentPassword: "",
+		newPassword: ""
+	});
+
+	useImperativeHandle(ref, () => ({
+		open: handleOpen
 	}));
 
-	const showModal = (params: { name: number }) => {
-		console.log(params);
+	const handleOpen = () => {
 		setIsModalVisible(true);
 	};
 
 	const handleOk = () => {
-		setIsModalVisible(false);
-		message.success("修改密码成功 🎉🎉🎉");
+		form
+			.validateFields()
+			.then(_ => {
+				form.submit();
+			})
+			.catch(error => {
+				message.error("请检查输入是否正确: " + error.errorFields[0].errors[0]);
+			});
 	};
 
-	const handleCancel = () => {
+	const handleClose = () => {
 		setIsModalVisible(false);
 	};
+
+	const handleSave = async (values: PasswordForm) => {
+		try {
+			const res = await resetUserPassword(values);
+			if (res.code !== 200) throw new Error(res.message);
+
+			setFormData(values);
+			onSave?.();
+			handleClose();
+			message.success("密码修改成功 🎉");
+		} catch (error: any) {
+			message.error(error.message);
+		}
+	};
+
 	return (
-		<Modal
-			title="修改密码"
-			open={isModalVisible}
-			onOk={handleOk}
-			onCancel={handleCancel}
-			destroyOnClose={true}
-		>
-			<p>Some Password...</p>
-			<p>Some Password...</p>
-			<p>Some Password...</p>
+		<Modal title="修改密码" open={isModalVisible} onOk={handleOk} onCancel={handleClose}>
+			<Form
+				form={form}
+				labelCol={{ span: 6 }}
+				wrapperCol={{ span: 18 }}
+				layout="horizontal"
+				onFinish={handleSave}
+				initialValues={formData}
+			>
+				<Form.Item label="当前密码" name="currentPassword">
+					<Input type="password" />
+				</Form.Item>
+
+				<Form.Item label="新密码" name="newPassword">
+					<Input type="password" />
+				</Form.Item>
+			</Form>
 		</Modal>
 	);
-};
+});
+
 export default PasswordModal;

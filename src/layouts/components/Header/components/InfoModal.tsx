@@ -5,17 +5,20 @@ import { ROLE_COLOR } from "@/enums";
 import { HomeOutlined, PhoneOutlined, UserOutlined } from "@ant-design/icons";
 import { Button, Form, Input, message, Modal, Space, Tag } from "antd";
 import moment from "moment";
-import { Ref, useImperativeHandle, useState } from "react";
+import { forwardRef, useImperativeHandle, useState } from "react";
 
-interface InfoModalProps {
-	innerRef: Ref<{ showModal: () => void } | undefined>;
+export interface InfoModalProps {
+	onSave?: (values: UserForm) => void;
+}
+export interface InfoModalRef {
+	open: () => void;
 }
 
 type UserForm = {
 	role: string;
 } & ResUserProfile;
 
-const InfoModal = (props: InfoModalProps) => {
+const InfoModal = forwardRef<InfoModalRef, InfoModalProps>(({ onSave }, ref) => {
 	const [modalVisible, setModalVisible] = useState(false);
 	const [formData, setFormData] = useState<UserForm>({
 		username: "",
@@ -29,8 +32,8 @@ const InfoModal = (props: InfoModalProps) => {
 
 	const [isEditing, setIsEditing] = useState(false);
 
-	useImperativeHandle(props.innerRef, () => ({
-		showModal
+	useImperativeHandle(ref, () => ({
+		open: handleOpen
 	}));
 
 	const fetchUser = () => {
@@ -52,7 +55,7 @@ const InfoModal = (props: InfoModalProps) => {
 		}
 	};
 
-	const showModal = () => {
+	const handleOpen = () => {
 		fetchUser();
 	};
 
@@ -80,6 +83,7 @@ const InfoModal = (props: InfoModalProps) => {
 			if (res.code !== 200) throw new Error(res.message);
 
 			setFormData({ ...formData, ...newInfo });
+			onSave?.(values);
 			setIsEditing(false);
 			message.success("修改用户信息成功 🎉🎉🎉");
 		} catch (error: any) {
@@ -169,6 +173,6 @@ const InfoModal = (props: InfoModalProps) => {
 			</Form>
 		</Modal>
 	);
-};
+});
 
 export default InfoModal;

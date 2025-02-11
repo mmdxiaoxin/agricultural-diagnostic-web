@@ -1,6 +1,6 @@
 import { DictItem, UserItem, UserListParams } from "@/api/interface";
 import { getRoleDict } from "@/api/modules/auth";
-import { deleteUserById, getUserList, resetUserPassword } from "@/api/modules/user";
+import { deleteUserById, getUserList, resetUserById } from "@/api/modules/user";
 import { ROLE_COLOR } from "@/enums";
 import {
 	DeleteOutlined,
@@ -60,7 +60,7 @@ const User = () => {
 
 	const handleResetPassword = async (user_id: number | string) => {
 		try {
-			const res = await resetUserPassword(user_id);
+			const res = await resetUserById(user_id);
 			if (res.code !== 200) throw new Error(res.message);
 			message.success("密码重置成功 🎉");
 			fetchData(queryParams);
