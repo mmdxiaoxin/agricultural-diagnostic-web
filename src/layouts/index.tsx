@@ -3,7 +3,7 @@ import { useAppDispatch } from "@/hooks/useAppDispatch";
 import { useAppSelector } from "@/hooks/useAppSelector";
 import { setAuthButtons } from "@/store/modules/authSlice";
 import { setCollapse } from "@/store/modules/menuSlice";
-import { Layout } from "antd";
+import { ConfigProvider, Layout } from "antd";
 import { useEffect, useState } from "react";
 import { Outlet } from "react-router";
 import LayoutFooter from "./components/Footer";
@@ -22,6 +22,7 @@ const LayoutIndex = () => {
 
 	const dispatch = useAppDispatch();
 	const isCollapse = useAppSelector(state => state.menu.isCollapse);
+	const { componentSize: size } = useAppSelector(state => state.global);
 
 	const [screenWidth, setScreenWidth] = useState<number>(window.innerWidth);
 
@@ -58,17 +59,19 @@ const LayoutIndex = () => {
 
 	return (
 		<section className="container">
-			<Sider trigger={null} collapsed={isCollapse} width={220} theme="dark">
-				<LayoutMenu />
-			</Sider>
-			<Layout>
-				<LayoutHeader />
-				<LayoutTabs />
-				<Content>
-					<Outlet />
-				</Content>
-				<LayoutFooter />
-			</Layout>
+			<ConfigProvider componentSize={size}>
+				<Sider trigger={null} collapsed={isCollapse} width={220} theme="dark">
+					<LayoutMenu />
+				</Sider>
+				<Layout>
+					<LayoutHeader />
+					<LayoutTabs />
+					<Content>
+						<Outlet />
+					</Content>
+					<LayoutFooter />
+				</Layout>
+			</ConfigProvider>
 		</section>
 	);
 };

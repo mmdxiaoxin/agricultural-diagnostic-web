@@ -5,6 +5,7 @@ import CollapseIcon from "./components/CollapseIcon";
 import Fullscreen from "./components/Fullscreen";
 import Theme from "./components/Theme";
 import "./index.scss";
+import AssemblySize from "./components/AssemblySize";
 
 const LayoutHeader = () => {
 	const { Header } = Layout;
@@ -16,6 +17,7 @@ const LayoutHeader = () => {
 				<BreadcrumbNav />
 			</div>
 			<div className="header-ri">
+				<AssemblySize />
 				<Theme />
 				<Fullscreen />
 				<span className="username">xiaoxin</span>

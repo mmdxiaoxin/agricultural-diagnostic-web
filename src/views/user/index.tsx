@@ -164,7 +164,7 @@ const User = () => {
 				defaultActiveKey={expandSearch ? ["1"] : []}
 				onChange={() => setExpandSearch(prev => !prev)}
 				accordion
-				style={{ marginBottom: 16 }}
+				bordered={false}
 			>
 				<Collapse.Panel header="筛选搜索" key="1">
 					<Row gutter={16}>
@@ -216,7 +216,7 @@ const User = () => {
 			</Collapse>
 
 			{/* 表格部分 */}
-			<div>
+			<div style={{ padding: 16 }}>
 				<Table<UserItem>
 					loading={loading}
 					columns={columns}

@@ -11,10 +11,12 @@ export interface ThemeConfigProp {
 
 // 定义菜单状态的类型
 interface GlobalState {
+	componentSize: "small" | "middle" | "large";
 	themeConfig: ThemeConfigProp;
 }
 
 const initialState: GlobalState = {
+	componentSize: "middle",
 	themeConfig: JSON.parse(localStorage.getItem("themeConfig") || "{}") || {
 		// 默认 primary 主题颜色
 		primary: "#1890ff",
@@ -35,6 +37,10 @@ const globalSlice = createSlice({
 	name: "global",
 	initialState,
 	reducers: {
+		// 设置尺寸
+		setComponentSize(state, action: PayloadAction<"small" | "middle" | "large">) {
+			state.componentSize = action.payload;
+		},
 		// 设置主题配置
 		setThemeConfig(state, action: PayloadAction<ThemeConfigProp>) {
 			state.themeConfig = action.payload;
@@ -44,5 +50,5 @@ const globalSlice = createSlice({
 });
 
 // 导出 action 和 reducer
-export const { setThemeConfig } = globalSlice.actions;
+export const { setThemeConfig, setComponentSize } = globalSlice.actions;
 export default globalSlice.reducer;
