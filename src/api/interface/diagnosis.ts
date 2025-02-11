@@ -1,9 +1,7 @@
-import { ApiResponse } from ".";
-
 export interface ReqDiagnoseDisease {
 	fileId: string;
 }
 
-export type ResDiagnoseDisease = ApiResponse<{
+export type ResDiagnoseDisease = {
 	[propName: string]: any;
-}>;
+};

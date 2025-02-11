@@ -1,13 +1,11 @@
-import { ApiResponse } from ".";
 export interface ReqLogin {
 	username: string;
 	password: string;
 }
 
-export type ResLogin = ApiResponse<{
+export type ResLogin = {
 	token: string;
-}>;
-
-export type ResAuthButtons = ApiResponse<{
+};
+export type ResAuthButtons = {
 	[propName: string]: any;
-}>;
+};

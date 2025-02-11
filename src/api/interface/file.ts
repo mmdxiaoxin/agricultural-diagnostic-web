@@ -1,4 +1,4 @@
-import { ApiResponse, PageData } from ".";
+import { PageData } from ".";
 
 export interface FileMeta {
 	id: number;
@@ -21,4 +21,5 @@ export interface ReqFileList {
 	page_size: number;
 }
 
-export type ResFileList = ApiResponse<PageData<FileMeta>>;
+export type ResUploadFile = FileMeta;
+export type ResFileList = PageData<FileMeta>;
