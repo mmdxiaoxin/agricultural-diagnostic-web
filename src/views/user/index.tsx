@@ -44,7 +44,8 @@ const User = () => {
 			title: "用户名",
 			dataIndex: "username",
 			key: "username",
-			render: text => <a>{text}</a>
+			render: text => <a>{text}</a>,
+			align: "center"
 		},
 		{
 			title: "权限",
@@ -59,6 +60,7 @@ const User = () => {
 					</Tag>
 				);
 			},
+			align: "center",
 			filters: roleDict.map(item => ({ text: item.value, value: item.key })),
 			onFilter(value, record) {
 				return record.role_id === value;
@@ -67,22 +69,26 @@ const User = () => {
 		{
 			title: "姓名",
 			dataIndex: "name",
-			key: "name"
+			key: "name",
+			align: "center"
 		},
 		{
 			title: "手机号",
 			dataIndex: "phone",
-			key: "phone"
+			key: "phone",
+			align: "center"
 		},
 		{
 			title: "地址",
 			dataIndex: "address",
-			key: "address"
+			key: "address",
+			align: "center"
 		},
 		{
 			title: "创建时间",
 			dataIndex: "createdAt",
 			key: "createdAt",
+			align: "center",
 			sortDirections: ["descend", "ascend"],
 			render: text => new Date(text).toLocaleString(),
 			sorter: (a, b) => {
@@ -99,6 +105,7 @@ const User = () => {
 			title: "修改时间",
 			dataIndex: "updatedAt",
 			key: "updatedAt",
+			align: "center",
 			sortDirections: ["descend", "ascend"],
 			render: text => new Date(text).toLocaleString(),
 			sorter: (a, b) => {
@@ -114,6 +121,7 @@ const User = () => {
 		{
 			title: "操作",
 			key: "action",
+			align: "center",
 			render: (_, record) => (
 				<Space size="small">
 					<Button type="text" icon={<EyeOutlined />} onClick={() => console.log("查看", record)}>
