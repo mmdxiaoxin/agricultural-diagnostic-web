@@ -50,7 +50,7 @@ const MoreButton = ({ delTabs }: MoreButtonProps) => {
 			arrow={{ pointAtCenter: true }}
 			trigger={["click"]}
 		>
-			<Button className="more-button" type="primary" size="small">
+			<Button className="more-button" type="text" size="small">
 				{"更多"} <DownOutlined />
 			</Button>
 		</Dropdown>
