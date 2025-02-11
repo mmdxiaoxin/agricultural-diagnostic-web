@@ -1,23 +1,25 @@
-export interface Result {
+export interface BaseResponse {
 	code: number;
-	msg: string;
+	message: string;
 }
 
 // * 请求响应参数(包含data)
-export interface ResultData<T = any> extends Result {
+export interface ApiResponse<T = any> extends BaseResponse {
 	data?: T;
 }
 
-export interface PageData<T = any> extends Result {
-	data?: {
-		list: T[];
-		pagination: {
-			page: number;
-			pageSize: number;
-			total: number;
-		};
+export interface ListData<T = any> {
+	list: T[];
+}
+
+export interface PageData<T = any> {
+	list: T[];
+	pagination: {
+		page: number;
+		pageSize: number;
+		total: number;
 	};
 }
 
 export * from "./file";
-export * from "./login";
+export * from "./auth";

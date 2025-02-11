@@ -3,8 +3,9 @@ import { Navigate, useRoutes } from "react-router";
 import diagnosisRouter from "./modules/diagnosis";
 import errorRouter from "./modules/error";
 import homeRouter from "./modules/home";
+import userRouter from "./modules/user";
 
-export const routerArray = [...errorRouter, ...homeRouter, ...diagnosisRouter];
+export const routerArray = [...errorRouter, ...homeRouter, ...diagnosisRouter, ...userRouter];
 
 export const rootRouter = [
 	{

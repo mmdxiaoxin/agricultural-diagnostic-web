@@ -1,0 +1,22 @@
+import { LayoutIndex } from "@/routes/constant";
+import React from "react";
+import lazyLoad from "../utils/lazyLoad";
+
+const userRouter = [
+	{
+		element: <LayoutIndex />,
+		children: [
+			{
+				path: "/user/index",
+				element: lazyLoad(React.lazy(() => import("@/views/user/index"))),
+				meta: {
+					requiresAuth: true,
+					title: "用户管理",
+					key: "user"
+				}
+			}
+		]
+	}
+];
+
+export default userRouter;

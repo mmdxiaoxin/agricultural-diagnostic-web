@@ -1,3 +1,5 @@
+import { ApiResponse, PageData } from ".";
+
 export namespace OSSFile {
 	export interface FileMeta {
 		id: number;
@@ -15,10 +17,10 @@ export namespace OSSFile {
 		version: number;
 	}
 
-	export interface FileListReq {
+	export interface ReqFileList {
 		page: number;
 		page_size: number;
 	}
 
-	export type FileListRes = FileMeta[];
+	export type ResFileList = ApiResponse<PageData<FileMeta>>;
 }

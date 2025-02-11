@@ -30,7 +30,7 @@ const Login = () => {
 				dispatch(setToken(response.data.token));
 				navigate("/home/index");
 			} else {
-				message.error(response.msg);
+				message.error(response.message);
 			}
 		} catch (error) {
 			message.error("登录失败" + error);
