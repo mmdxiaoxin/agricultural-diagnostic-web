@@ -3,7 +3,19 @@ import { getRoleDict } from "@/api/modules/auth";
 import { getUserList } from "@/api/modules/user";
 import { ROLE_COLOR } from "@/enums";
 import { DeleteOutlined, EditOutlined, EyeOutlined, ReloadOutlined } from "@ant-design/icons";
-import { Button, Col, Collapse, Input, message, Row, Space, Table, TableProps, Tag } from "antd";
+import {
+	Button,
+	Col,
+	Collapse,
+	CollapseProps,
+	Input,
+	message,
+	Row,
+	Space,
+	Table,
+	TableProps,
+	Tag
+} from "antd";
 import { useEffect, useState } from "react";
 import styles from "./index.module.scss";
 
@@ -152,6 +164,45 @@ const User = () => {
 		fetchData(queryParams);
 	}, []);
 
+	const collapseItems: CollapseProps["items"] = [
+		{
+			key: "1",
+			label: "筛选搜索",
+			children: (
+				<Row gutter={16}>
+					<Col span={6}>
+						<Input
+							placeholder="用户名"
+							value={queryParams.username}
+							onChange={e => handleSearchChange("username", e.target.value)}
+						/>
+					</Col>
+					<Col span={6}>
+						<Input
+							placeholder="姓名"
+							value={queryParams.name}
+							onChange={e => handleSearchChange("name", e.target.value)}
+						/>
+					</Col>
+					<Col span={6}>
+						<Input
+							placeholder="手机号"
+							value={queryParams.phone}
+							onChange={e => handleSearchChange("phone", e.target.value)}
+						/>
+					</Col>
+					<Col span={6}>
+						<Input
+							placeholder="地址"
+							value={queryParams.address}
+							onChange={e => handleSearchChange("address", e.target.value)}
+						/>
+					</Col>
+				</Row>
+			)
+		}
+	];
+
 	return (
 		<div className={styles.container}>
 			{/* 搜索部分 */}
@@ -160,54 +211,9 @@ const User = () => {
 				onChange={() => setExpandSearch(prev => !prev)}
 				accordion
 				bordered={false}
+				items={collapseItems} // 使用新的写法
 			>
-				<Collapse.Panel header="筛选搜索" key="1">
-					<Row gutter={16}>
-						<Col span={6}>
-							<Input
-								placeholder="用户名"
-								value={queryParams.username}
-								onChange={e => handleSearchChange("username", e.target.value)}
-							/>
-						</Col>
-						<Col span={6}>
-							<Input
-								placeholder="姓名"
-								value={queryParams.name}
-								onChange={e => handleSearchChange("name", e.target.value)}
-							/>
-						</Col>
-						<Col span={6}>
-							<Input
-								placeholder="手机号"
-								value={queryParams.phone}
-								onChange={e => handleSearchChange("phone", e.target.value)}
-							/>
-						</Col>
-						<Col span={6}>
-							<Input
-								placeholder="地址"
-								value={queryParams.address}
-								onChange={e => handleSearchChange("address", e.target.value)}
-							/>
-						</Col>
-					</Row>
-					<div style={{ marginTop: 16 }}>
-						<Space>
-							<Button type="primary" onClick={() => fetchData(queryParams)}>
-								搜索
-							</Button>
-							<Button
-								onClick={() => {
-									setQueryParams({ page: 1, pageSize: 10 });
-									fetchData({ page: 1, pageSize: 10 });
-								}}
-							>
-								重置
-							</Button>
-						</Space>
-					</div>
-				</Collapse.Panel>
+				{/* Collapse 使用新写法，不需要 Panel 了 */}
 			</Collapse>
 
 			{/* 表格部分 */}
