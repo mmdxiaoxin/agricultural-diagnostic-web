@@ -1,5 +1,4 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-
 export interface ThemeConfigProp {
 	primary: string;
 	isDark: boolean;
@@ -11,11 +10,13 @@ export interface ThemeConfigProp {
 
 // 定义菜单状态的类型
 interface GlobalState {
+	language: "zhCN" | "enUS";
 	componentSize: "small" | "middle" | "large";
 	themeConfig: ThemeConfigProp;
 }
 
 const initialState: GlobalState = {
+	language: "zhCN",
 	componentSize: "middle",
 	themeConfig: JSON.parse(localStorage.getItem("themeConfig") || "{}") || {
 		// 默认 primary 主题颜色
@@ -37,6 +38,10 @@ const globalSlice = createSlice({
 	name: "global",
 	initialState,
 	reducers: {
+		// 设置语言
+		setLanguage(state, action: PayloadAction<"zhCN" | "enUS">) {
+			state.language = action.payload;
+		},
 		// 设置尺寸
 		setComponentSize(state, action: PayloadAction<"small" | "middle" | "large">) {
 			state.componentSize = action.payload;
@@ -50,5 +55,5 @@ const globalSlice = createSlice({
 });
 
 // 导出 action 和 reducer
-export const { setThemeConfig, setComponentSize } = globalSlice.actions;
+export const { setThemeConfig, setComponentSize, setLanguage } = globalSlice.actions;
 export default globalSlice.reducer;

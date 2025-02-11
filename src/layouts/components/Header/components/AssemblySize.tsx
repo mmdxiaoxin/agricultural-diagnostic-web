@@ -2,7 +2,7 @@ import { useAppDispatch } from "@/hooks/useAppDispatch";
 import { useAppSelector } from "@/hooks/useAppSelector";
 import { setComponentSize } from "@/store/modules/globalSlice";
 import { FontSizeOutlined } from "@ant-design/icons";
-import { Dropdown, MenuProps } from "antd";
+import { Button, Dropdown, MenuProps } from "antd";
 
 const AssemblySize = () => {
 	const { componentSize } = useAppSelector(state => state.global);
@@ -36,7 +36,7 @@ const AssemblySize = () => {
 
 	return (
 		<Dropdown menu={{ items }} placement="bottom" trigger={["click"]} arrow={true}>
-			<FontSizeOutlined className="icon-style" />
+			<Button type="text" className="icon-style" icon={<FontSizeOutlined />} />
 		</Dropdown>
 	);
 };

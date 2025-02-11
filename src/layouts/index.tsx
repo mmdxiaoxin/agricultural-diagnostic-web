@@ -4,6 +4,9 @@ import { useAppSelector } from "@/hooks/useAppSelector";
 import { setAuthButtons } from "@/store/modules/authSlice";
 import { setCollapse } from "@/store/modules/menuSlice";
 import { ConfigProvider, Layout } from "antd";
+import { Locale } from "antd/es/locale";
+import enUS from "antd/locale/en_US";
+import zhCN from "antd/locale/zh_CN";
 import { useEffect, useState } from "react";
 import { Outlet } from "react-router";
 import LayoutFooter from "./components/Footer";
@@ -22,9 +25,19 @@ const LayoutIndex = () => {
 
 	const dispatch = useAppDispatch();
 	const isCollapse = useAppSelector(state => state.menu.isCollapse);
-	const { componentSize: size } = useAppSelector(state => state.global);
+	const { componentSize, language } = useAppSelector(state => state.global);
 
 	const [screenWidth, setScreenWidth] = useState<number>(window.innerWidth);
+	const [locale, setLocal] = useState<Locale>(zhCN);
+
+	useEffect(() => {
+		// 设置语言
+		if (language === "zhCN") {
+			setLocal(zhCN);
+		} else {
+			setLocal(enUS);
+		}
+	}, [language]);
 
 	useEffect(() => {
 		// 获取按钮权限列表
@@ -59,7 +72,7 @@ const LayoutIndex = () => {
 
 	return (
 		<section className="container">
-			<ConfigProvider componentSize={size}>
+			<ConfigProvider componentSize={componentSize} locale={locale}>
 				<Sider trigger={null} collapsed={isCollapse} width={220} theme="dark">
 					<LayoutMenu />
 				</Sider>
