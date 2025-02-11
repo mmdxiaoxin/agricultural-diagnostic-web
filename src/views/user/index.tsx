@@ -134,16 +134,12 @@ const User = () => {
 		}
 	];
 
-	const handleQuery = () => {
-		fetchData();
-	};
-
-	const fetchData = async () => {
+	const fetchData = async (params: UserListParams) => {
 		setLoading(true);
 		try {
 			const dictRes = await getRoleDict();
 			if (dictRes.code !== 200) throw new Error(dictRes.message);
-			const userRes = await getUserList(queryParams);
+			const userRes = await getUserList(params);
 			if (userRes.code !== 200) throw new Error(userRes.message);
 
 			setRoleDict(dictRes.data || []);
@@ -157,7 +153,7 @@ const User = () => {
 	};
 
 	useEffect(() => {
-		fetchData();
+		fetchData(queryParams);
 	}, []);
 
 	return (
@@ -201,32 +197,44 @@ const User = () => {
 						</Col>
 					</Row>
 					<div style={{ marginTop: 16 }}>
-						<Button type="primary" onClick={handleQuery}>
-							搜索
-						</Button>
+						<Space>
+							<Button type="primary" onClick={() => fetchData(queryParams)}>
+								搜索
+							</Button>
+							<Button
+								onClick={() => {
+									setQueryParams({ page: 1, pageSize: 10 });
+									fetchData({ page: 1, pageSize: 10 });
+								}}
+							>
+								重置
+							</Button>
+						</Space>
 					</div>
 				</Panel>
 			</Collapse>
 
 			{/* 表格部分 */}
-			<Table<UserItem>
-				loading={loading}
-				columns={columns}
-				dataSource={userList}
-				pagination={{
-					current: pagination?.page,
-					pageSize: pagination?.pageSize,
-					total: pagination?.total,
-					showSizeChanger: true,
-					showQuickJumper: true,
-					showTotal(total) {
-						return `共 ${total} 条`;
-					},
-					onChange(page, pageSize) {
-						setQueryParams({ ...queryParams, page, pageSize });
-					}
-				}}
-			/>
+			<div>
+				<Table<UserItem>
+					loading={loading}
+					columns={columns}
+					dataSource={userList}
+					pagination={{
+						current: pagination?.page,
+						pageSize: pagination?.pageSize,
+						total: pagination?.total,
+						showSizeChanger: true,
+						showQuickJumper: true,
+						showTotal(total) {
+							return `共 ${total} 条`;
+						},
+						onChange(page, pageSize) {
+							setQueryParams({ ...queryParams, page, pageSize });
+						}
+					}}
+				/>
+			</div>
 		</div>
 	);
 };
