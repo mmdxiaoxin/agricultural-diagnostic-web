@@ -2,10 +2,11 @@ import { DictItem, UserItem, UserListParams } from "@/api/interface";
 import { getRoleDict } from "@/api/modules/auth";
 import { getUserList } from "@/api/modules/user";
 import { DeleteOutlined, EditOutlined, EyeOutlined, ReloadOutlined } from "@ant-design/icons";
-import { Button, message, Space, Table, TableProps, Tag } from "antd";
+import { Button, Input, message, Space, Table, TableProps, Tag, Collapse, Row, Col } from "antd";
 import { useEffect, useState } from "react";
-import "./index.scss";
+import styles from "./index.module.scss";
 
+const { Panel } = Collapse;
 const ROLE_COLOR = {
 	专家: "blue",
 	农民: "green",
@@ -22,6 +23,15 @@ const User = () => {
 		pageSize: number;
 		total: number;
 	}>();
+	const [expandSearch, setExpandSearch] = useState(false);
+
+	// 搜索条件改变时更新查询参数
+	const handleSearchChange = (key: string, value: string) => {
+		setQueryParams(prev => ({
+			...prev,
+			[key]: value
+		}));
+	};
 
 	const columns: TableProps<UserItem>["columns"] = [
 		{
@@ -38,14 +48,8 @@ const User = () => {
 				const role = roleDict.find(item => item.key === role_id);
 				if (!role) return null;
 				return (
-					<Tag
-						color={
-							role?.value in ROLE_COLOR
-								? ROLE_COLOR[role.value as keyof typeof ROLE_COLOR]
-								: "default"
-						}
-					>
-						{role?.value}
+					<Tag color={ROLE_COLOR[role.value as keyof typeof ROLE_COLOR] || "default"}>
+						{role.value}
 					</Tag>
 				);
 			},
@@ -130,31 +134,81 @@ const User = () => {
 		}
 	];
 
-	const handleQuery = () => {};
+	const handleQuery = () => {
+		fetchData();
+	};
+
+	const fetchData = async () => {
+		setLoading(true);
+		try {
+			const dictRes = await getRoleDict();
+			if (dictRes.code !== 200) throw new Error(dictRes.message);
+			const userRes = await getUserList(queryParams);
+			if (userRes.code !== 200) throw new Error(userRes.message);
+
+			setRoleDict(dictRes.data || []);
+			setUserList(userRes.data?.list || []);
+			setPagination(userRes.data?.pagination || { page: 1, pageSize: 10, total: 0 });
+		} catch (error: any) {
+			message.error(error.message);
+		} finally {
+			setLoading(false);
+		}
+	};
 
 	useEffect(() => {
-		const fetchData = async () => {
-			setLoading(true);
-			try {
-				const dictRes = await getRoleDict();
-				if (dictRes.code !== 200) throw new Error(dictRes.message);
-				const userRes = await getUserList(queryParams);
-				if (userRes.code !== 200) throw new Error(userRes.message);
-
-				setRoleDict(dictRes.data || []);
-				setUserList(userRes.data?.list || []);
-				setPagination(userRes.data?.pagination || { page: 1, pageSize: 10, total: 0 });
-			} catch (error: any) {
-				message.error(error.message);
-			} finally {
-				setLoading(false);
-			}
-		};
 		fetchData();
 	}, []);
 
 	return (
-		<div>
+		<div className={styles.container}>
+			{/* 搜索部分 */}
+			<Collapse
+				defaultActiveKey={expandSearch ? ["1"] : []}
+				onChange={() => setExpandSearch(prev => !prev)}
+				accordion
+				style={{ marginBottom: 16 }}
+			>
+				<Panel header="筛选搜索" key="1">
+					<Row gutter={16}>
+						<Col span={6}>
+							<Input
+								placeholder="用户名"
+								value={queryParams.username}
+								onChange={e => handleSearchChange("username", e.target.value)}
+							/>
+						</Col>
+						<Col span={6}>
+							<Input
+								placeholder="姓名"
+								value={queryParams.name}
+								onChange={e => handleSearchChange("name", e.target.value)}
+							/>
+						</Col>
+						<Col span={6}>
+							<Input
+								placeholder="手机号"
+								value={queryParams.phone}
+								onChange={e => handleSearchChange("phone", e.target.value)}
+							/>
+						</Col>
+						<Col span={6}>
+							<Input
+								placeholder="地址"
+								value={queryParams.address}
+								onChange={e => handleSearchChange("address", e.target.value)}
+							/>
+						</Col>
+					</Row>
+					<div style={{ marginTop: 16 }}>
+						<Button type="primary" onClick={handleQuery}>
+							搜索
+						</Button>
+					</div>
+				</Panel>
+			</Collapse>
+
+			{/* 表格部分 */}
 			<Table<UserItem>
 				loading={loading}
 				columns={columns}
@@ -169,7 +223,7 @@ const User = () => {
 						return `共 ${total} 条`;
 					},
 					onChange(page, pageSize) {
-						console.log(page, pageSize);
+						setQueryParams({ ...queryParams, page, pageSize });
 					}
 				}}
 			/>

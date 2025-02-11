@@ -1,1 +1,18 @@
 $primary-color: #1890ff;
+
+// light theme
+$light-bg-color: #ffffff;
+$light-main-bg-color: #f0f2f5;
+$light-border-color: #e4e7ed;
+$light-border-header-color: #f6f6f6;
+$light-text-color: rgba(0, 0, 0, 0.85);
+$light-shadow-color: 0 0 12px #0000000d;
+$light-scrollbar-bg-color: #dddee0;
+
+// dark theme
+$dark-main-bg-color: #141414;
+$dark-bg-color: #1f1f1f;
+$dark-border-color: #414243;
+$dark-text-color: #d9d9d9;
+$dark-shadow-color: 5px 5px 15px rgb(255 255 255 / 20%);
+$dark-scrollbar-bg-color: #686868;
