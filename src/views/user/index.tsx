@@ -6,7 +6,6 @@ import { Button, Input, message, Space, Table, TableProps, Tag, Collapse, Row, C
 import { useEffect, useState } from "react";
 import styles from "./index.module.scss";
 
-const { Panel } = Collapse;
 const ROLE_COLOR = {
 	专家: "blue",
 	农民: "green",
@@ -165,7 +164,7 @@ const User = () => {
 				accordion
 				style={{ marginBottom: 16 }}
 			>
-				<Panel header="筛选搜索" key="1">
+				<Collapse.Panel header="筛选搜索" key="1">
 					<Row gutter={16}>
 						<Col span={6}>
 							<Input
@@ -211,7 +210,7 @@ const User = () => {
 							</Button>
 						</Space>
 					</div>
-				</Panel>
+				</Collapse.Panel>
 			</Collapse>
 
 			{/* 表格部分 */}
