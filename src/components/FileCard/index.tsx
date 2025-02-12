@@ -5,7 +5,7 @@ import IconComponent, { Icons } from "../IconComponent";
 import styles from "./index.module.scss"; // 样式文件
 
 // 组件属性接口
-interface FileCardProps {
+interface FileCardProps extends React.HTMLAttributes<HTMLDivElement> {
 	size: number; // 文件大小 (字节)
 	type: string; // 文件类型，如 '文件'
 	lastUpdated: string; // 上次更新时间，如 '2023.11.17 11:11'
@@ -18,10 +18,11 @@ const FileCard: React.FC<FileCardProps> = ({
 	type,
 	lastUpdated,
 	icon,
-	color = "#655df0"
+	color = "#655df0",
+	...props
 }) => {
 	return (
-		<div className={styles.container}>
+		<div className={styles.container} {...props}>
 			<div className={styles.card}>
 				<div className={styles.details}>
 					<div className={styles.size}>{formatSize(size)}</div>
