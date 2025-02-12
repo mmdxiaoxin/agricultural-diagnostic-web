@@ -2,6 +2,7 @@ import React from "react";
 
 // 使用到的 antd-icon 组件
 export const Icons = {
+	HomeOutlined: React.lazy(() => import("@ant-design/icons/HomeOutlined")),
 	HomeFilled: React.lazy(() => import("@ant-design/icons/HomeFilled")),
 	TableOutlined: React.lazy(() => import("@ant-design/icons/TableOutlined")),
 	AppstoreOutlined: React.lazy(() => import("@ant-design/icons/AppstoreOutlined")),
