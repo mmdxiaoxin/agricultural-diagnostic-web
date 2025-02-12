@@ -9,10 +9,11 @@ import { Tabs, TabsProps } from "antd";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router";
 import MoreButton from "./components/MoreButton";
-import "./index.scss";
+import styles from "./index.module.scss";
 
 const LayoutTabs = () => {
 	const { tabsList } = useAppSelector(state => state.tabs);
+
 	const { themeConfig } = useAppSelector(state => state.global);
 
 	const { pathname } = useLocation();
@@ -35,9 +36,14 @@ const LayoutTabs = () => {
 	const addTabs = () => {
 		const route = searchRoute(pathname, routerArray);
 		let newTabsList = [...tabsList];
+
 		if (tabsList.every((item: any) => item.path !== route.path)) {
-			newTabsList.push({ title: route.meta!.title, path: route.path as string });
+			newTabsList.push({
+				title: route.meta!.title,
+				path: route.path as string
+			});
 		}
+
 		dispatch(setTabsList(newTabsList));
 		setActiveValue(pathname);
 	};
@@ -45,6 +51,7 @@ const LayoutTabs = () => {
 	// 删除tab
 	const delTabs = (tabPath?: string) => {
 		if (tabPath === HOME_URL) return;
+
 		if (pathname === tabPath) {
 			tabsList.forEach((item: any, index: number) => {
 				if (item.path !== pathname) return;
@@ -53,10 +60,10 @@ const LayoutTabs = () => {
 				navigate(nextTab.path);
 			});
 		}
+
 		dispatch(setTabsList(tabsList.filter((item: any) => item.path !== tabPath)));
 	};
 
-	// 使用新版 items 属性来渲染 Tab
 	const tabItems: TabsProps["items"] = tabsList.map((item: any) => ({
 		key: item.path,
 		label: item.title,
@@ -67,17 +74,17 @@ const LayoutTabs = () => {
 	return (
 		<>
 			{!themeConfig.tabs && (
-				<div className="tabs">
+				<div className={styles.container}>
 					<Tabs
 						animated
 						activeKey={activeValue}
 						onChange={clickTabs}
 						hideAdd
 						type="editable-card"
+						items={tabItems}
 						onEdit={path => {
 							delTabs(path as string);
 						}}
-						items={tabItems}
 					/>
 					<MoreButton delTabs={delTabs} />
 				</div>

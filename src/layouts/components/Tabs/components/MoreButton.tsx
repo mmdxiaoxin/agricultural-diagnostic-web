@@ -5,6 +5,7 @@ import { setTabsList } from "@/store/modules/tabsSlice";
 import { DownOutlined } from "@ant-design/icons";
 import { Button, Dropdown, MenuProps } from "antd";
 import { useLocation, useNavigate } from "react-router";
+import styles from "../index.module.scss";
 
 export type MoreButtonProps = {
 	delTabs: (tabPath?: string) => void;
@@ -16,7 +17,6 @@ const MoreButton = ({ delTabs }: MoreButtonProps) => {
 	const { tabsList } = useAppSelector(state => state.tabs);
 	const dispatch = useAppDispatch();
 
-	// close multipleTab
 	const closeMultipleTab = (tabPath?: string) => {
 		const handleTabsList = tabsList.filter((item: Menu.MenuOptions) => {
 			return item.path === tabPath || item.path === HOME_URL;
@@ -50,7 +50,7 @@ const MoreButton = ({ delTabs }: MoreButtonProps) => {
 			arrow={{ pointAtCenter: true }}
 			trigger={["click"]}
 		>
-			<Button className="more-button" type="text" size="small">
+			<Button className={styles["more-button"]} type="text" size="small">
 				{"更多"} <DownOutlined />
 			</Button>
 		</Dropdown>
