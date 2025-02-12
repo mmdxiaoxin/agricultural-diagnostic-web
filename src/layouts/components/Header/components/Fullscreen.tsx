@@ -2,6 +2,7 @@ import { FullscreenExitOutlined, FullscreenOutlined } from "@ant-design/icons";
 import { Button, message } from "antd";
 import { useEffect, useState } from "react";
 import screenfull from "screenfull";
+import styles from "../index.module.scss";
 
 const Fullscreen = () => {
 	const [fullScreen, setFullScreen] = useState<boolean>(screenfull.isFullscreen);
@@ -20,7 +21,7 @@ const Fullscreen = () => {
 	};
 	return (
 		<Button
-			className="icon-style"
+			className={styles["icon-style"]}
 			onClick={handleFullScreen}
 			icon={fullScreen ? <FullscreenExitOutlined /> : <FullscreenOutlined />}
 			type="text"

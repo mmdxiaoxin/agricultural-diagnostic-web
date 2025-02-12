@@ -6,18 +6,18 @@ import CollapseIcon from "./components/CollapseIcon";
 import Fullscreen from "./components/Fullscreen";
 import Language from "./components/Language";
 import Theme from "./components/Theme";
-import "./index.scss";
+import styles from "./index.module.scss";
 
 const LayoutHeader = () => {
 	const { Header } = Layout;
 
 	return (
-		<Header>
-			<div className="header-lf">
+		<Header className={styles["header"]}>
+			<div className={styles["header-lf"]}>
 				<CollapseIcon />
 				<BreadcrumbNav />
 			</div>
-			<div className="header-ri">
+			<div className={styles["header-ri"]}>
 				<Language />
 				<AssemblySize />
 				<Theme />

@@ -10,6 +10,7 @@ import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router";
 import InfoModal, { InfoModalRef } from "./InfoModal";
 import PasswordModal, { PasswordModalRef } from "./PasswordModal";
+import styles from "../index.module.scss";
 
 const AvatarIcon = () => {
 	const navigate = useNavigate();
@@ -66,17 +67,17 @@ const AvatarIcon = () => {
 	const items: MenuProps["items"] = [
 		{
 			key: "1",
-			label: <span className="dropdown-item">首页</span>,
+			label: <span className={styles["dropdown-item"]}>首页</span>,
 			onClick: () => navigate(HOME_URL)
 		},
 		{
 			key: "2",
-			label: <span className="dropdown-item">个人信息</span>,
+			label: <span className={styles["dropdown-item"]}>个人信息</span>,
 			onClick: () => infoRef.current?.open()
 		},
 		{
 			key: "3",
-			label: <span className="dropdown-item">修改密码</span>,
+			label: <span className={styles["dropdown-item"]}>修改密码</span>,
 			onClick: () => passRef.current?.open()
 		},
 		{
@@ -84,16 +85,16 @@ const AvatarIcon = () => {
 		},
 		{
 			key: "4",
-			label: <span className="dropdown-item">退出登录</span>,
+			label: <span className={styles["dropdown-item"]}>退出登录</span>,
 			onClick: logout
 		}
 	];
 
 	return (
 		<>
-			<span className="username">{username}</span>
+			<span className={styles["username"]}>{username}</span>
 			<Dropdown menu={{ items }} placement="bottom" arrow trigger={["click"]}>
-				<Avatar size="large" src={avatar} />
+				<Avatar className={styles["avatar"]} size="large" src={avatar} />
 			</Dropdown>
 			<InfoModal ref={infoRef}></InfoModal>
 			<PasswordModal ref={passRef} onReset={handleReset}></PasswordModal>

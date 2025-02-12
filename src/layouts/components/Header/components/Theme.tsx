@@ -6,6 +6,7 @@ import { setCollapse } from "@/store/modules/menuSlice";
 import { AppstoreOutlined, FireOutlined, SettingOutlined } from "@ant-design/icons";
 import { Button, Divider, Drawer, Switch } from "antd";
 import React, { useState } from "react";
+import styles from "../index.module.scss";
 
 const Theme: React.FC = () => {
 	const [visible, setVisible] = useState<boolean>(false);
@@ -35,7 +36,7 @@ const Theme: React.FC = () => {
 		<>
 			<Button
 				type="text"
-				className="icon-style"
+				className={styles["icon-style"]}
 				icon={<AppstoreOutlined />}
 				onClick={() => setVisible(true)}
 			/>
@@ -47,41 +48,41 @@ const Theme: React.FC = () => {
 				width={320}
 			>
 				{/* 全局主题 */}
-				<Divider className="divider">
+				<Divider className={styles["divider"]}>
 					<FireOutlined />
 					全局主题
 				</Divider>
-				<div className="theme-item">
+				<div className={styles["theme-item"]}>
 					<span>暗黑模式</span>
 					<SwitchDark />
 				</div>
-				<div className="theme-item">
+				<div className={styles["theme-item"]}>
 					<span>灰色模式</span>
 					<Switch checked={weakOrGray === "gray"} onChange={e => setWeakOrGray(e, "gray")} />
 				</div>
-				<div className="theme-item">
+				<div className={styles["theme-item"]}>
 					<span>色弱模式</span>
 					<Switch checked={weakOrGray === "weak"} onChange={e => setWeakOrGray(e, "weak")} />
 				</div>
 				<br />
 				{/* 界面设置 */}
-				<Divider className="divider">
+				<Divider className={styles["divider"]}>
 					<SettingOutlined />
 					界面设置
 				</Divider>
-				<div className="theme-item">
+				<div className={styles["theme-item"]}>
 					<span>折叠菜单</span>
 					<Switch checked={isCollapse} onChange={updateCollapse} />
 				</div>
-				<div className="theme-item">
+				<div className={styles["theme-item"]}>
 					<span>面包屑导航</span>
 					<Switch checked={!breadcrumb} onChange={e => onChange(e, "breadcrumb")} />
 				</div>
-				<div className="theme-item">
+				<div className={styles["theme-item"]}>
 					<span>标签栏</span>
 					<Switch checked={!tabs} onChange={e => onChange(e, "tabs")} />
 				</div>
-				<div className="theme-item">
+				<div className={styles["theme-item"]}>
 					<span>页脚</span>
 					<Switch checked={!footer} onChange={e => onChange(e, "footer")} />
 				</div>

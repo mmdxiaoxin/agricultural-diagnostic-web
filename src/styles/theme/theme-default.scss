@@ -41,18 +41,6 @@ body {
             border-color: $light-border-color !important;
         }
 
-        .ant-layout-header {
-            height: 55px;
-            padding: 0 40px 0 20px;
-            background-color: $light-bg-color !important;
-            border-color: $light-border-header-color !important;
-
-            .icon-style,
-            .username {
-                color: $light-text-color !important;
-            }
-        }
-
         .card {
             box-shadow: $light-shadow-color !important;
 
