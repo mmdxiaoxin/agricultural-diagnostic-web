@@ -3,6 +3,7 @@ import {
 	ResUserDetail,
 	ResUserList,
 	ResUserProfile,
+	UserCreateParams,
 	UserListParams,
 	UserProfileParams,
 	UserUpdateParams
@@ -18,6 +19,8 @@ export const updateUserProfile = (data: UserProfileParams) => http.put<null>("/u
 
 export const resetUserPassword = (data: { currentPassword: string; newPassword: string }) =>
 	http.put<null>("/user/reset/password", data, { loading: false });
+
+export const createUser = (data: UserCreateParams) => http.post<null>("/user/create", data);
 
 export const getUserById = (id: number | string) =>
 	http.get<ResUserDetail>(`/user/${id}`, {}, { loading: false });

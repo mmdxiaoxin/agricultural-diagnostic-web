@@ -64,8 +64,6 @@ const LayoutTabs = () => {
 		icon: item.path === HOME_URL ? <IconComponent name="HomeFilled" /> : undefined
 	}));
 
-	console.log("tabsList", tabsList);
-
 	return (
 		<>
 			{!themeConfig.tabs && (

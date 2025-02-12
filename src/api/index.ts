@@ -75,7 +75,12 @@ class RequestHttp {
 				}
 
 				// * 全局错误信息拦截（防止下载文件得时候返回数据流，没有code，直接报错）
-				if (data.code && data.code !== ResultEnum.SUCCESS) {
+				if (
+					data.code &&
+					data.code !== ResultEnum.SUCCESS &&
+					data.code !== ResultEnum.CREATE_SUCCESS &&
+					data.code !== ResultEnum.NO_CONTENT
+				) {
 					message.error(data.msg);
 					return Promise.reject(data);
 				}

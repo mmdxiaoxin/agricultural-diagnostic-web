@@ -14,6 +14,7 @@ import {
 	Col,
 	Collapse,
 	CollapseProps,
+	Flex,
 	Input,
 	message,
 	Popconfirm,
@@ -51,11 +52,11 @@ const User = () => {
 	};
 
 	const handleView = (user_id: number | string) => {
-		infoDrawerRef.current?.open(user_id);
+		infoDrawerRef.current?.open("view", user_id);
 	};
 
 	const handleEdit = (user_id: number | string) => {
-		infoDrawerRef.current?.open(user_id, "edit");
+		infoDrawerRef.current?.open("edit", user_id);
 	};
 
 	const handleResetPassword = async (user_id: number | string) => {
@@ -164,10 +165,10 @@ const User = () => {
 			align: "center",
 			render: (_, record) => (
 				<Space size="small">
-					<Button type="text" icon={<EyeOutlined />} onClick={() => handleView(record.id)}>
+					<Button type="link" icon={<EyeOutlined />} onClick={() => handleView(record.id)}>
 						查看
 					</Button>
-					<Button type="text" icon={<EditOutlined />} onClick={() => handleEdit(record.id)}>
+					<Button type="link" icon={<EditOutlined />} onClick={() => handleEdit(record.id)}>
 						编辑
 					</Button>
 					<Popconfirm
@@ -178,7 +179,7 @@ const User = () => {
 						cancelText="取消"
 						onConfirm={() => handleResetPassword(record.id)}
 					>
-						<Button type="text" icon={<ReloadOutlined />}>
+						<Button type="link" icon={<ReloadOutlined />}>
 							重置密码
 						</Button>
 					</Popconfirm>
@@ -191,7 +192,7 @@ const User = () => {
 						icon={<QuestionCircleOutlined style={{ color: "red" }} />}
 						onConfirm={() => handleDelete(record.id)}
 					>
-						<Button type="text" icon={<DeleteOutlined />} danger>
+						<Button type="link" icon={<DeleteOutlined />} danger>
 							删除
 						</Button>
 					</Popconfirm>
@@ -225,7 +226,18 @@ const User = () => {
 	const collapseItems: CollapseProps["items"] = [
 		{
 			key: "1",
-			label: "筛选搜索",
+			label: <span>{"筛选搜索"}</span>,
+			extra: (
+				<Button
+					type="primary"
+					onClick={event => {
+						infoDrawerRef.current?.open("add");
+						event.stopPropagation();
+					}}
+				>
+					添加新用户
+				</Button>
+			),
 			children: (
 				<>
 					<Row gutter={16}>
@@ -286,10 +298,8 @@ const User = () => {
 				onChange={() => setExpandSearch(prev => !prev)}
 				accordion
 				bordered={false}
-				items={collapseItems} // 使用新的写法
-			>
-				{/* Collapse 使用新写法，不需要 Panel 了 */}
-			</Collapse>
+				items={collapseItems}
+			/>
 
 			{/* 表格部分 */}
 			<div style={{ padding: 16 }}>

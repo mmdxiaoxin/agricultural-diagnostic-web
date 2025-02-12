@@ -22,6 +22,9 @@ export type UserListParams = {
 // * 用户列表响应
 export type ResUserList = PageData<UserItem>;
 
+// * 用户创建参数
+export type UserCreateParams = Omit<User, "createdAt" | "updatedAt" | "id" | "password">;
+
 // * 用户详情参数
 export type UserProfileParams = Omit<ResUserProfile, "role_id" | "createdAt" | "username">;
 
