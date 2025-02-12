@@ -1,7 +1,49 @@
 .dashboard {
     min-width: 900px;
 
-    .dashboard-l {}
+    .dashboard-l {
+        .disk-card {
+            border-radius: 20px;
+            margin: 0 10px;
+            box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
+            transition: all 0.3s;
+
+            &:hover {
+                box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.2);
+                transform: scale(1.02);
+
+            }
+
+            .disk-box {
+                display: flex;
+                flex-direction: row;
+                justify-content: space-between;
+
+                .disk-info {
+                    flex: 1;
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: center;
+
+                    .title {
+                        font-size: 20px;
+                        font-weight: 'bold';
+                        color: #333;
+                    }
+
+                    .subtitle {
+                        font-size: 14px;
+                        color: #979595;
+                    }
+                }
+
+                .disk-chart {
+                    width: 180px;
+                    height: 180px;
+                }
+            }
+        }
+    }
 
     .dashboard-r {}
 }

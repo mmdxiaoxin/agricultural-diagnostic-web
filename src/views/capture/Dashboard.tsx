@@ -1,17 +1,33 @@
 import DiskSpaceUsageChart from "@/components/ECharts/DiskSpaceUsageChart";
-import { Card, Col, Row } from "antd";
-import styles from "./Dashboard.module.scss";
 import FileCard from "@/components/FileCard";
+import { formatSize } from "@/utils";
+import { Card, Col, Row } from "antd";
+import { useMemo, useState } from "react";
+import styles from "./Dashboard.module.scss";
+
+const totalSpace = 1_000_000_000; // 1GB
 
 const Dashboard = () => {
+	const [usedSpace, setUsedSpace] = useState<number>(10412000);
+	const formattedUsedSpace = useMemo<string>(() => formatSize(usedSpace), [usedSpace]);
+	const formattedTotalSpace = formatSize(totalSpace);
+
 	return (
 		<Row className={styles["dashboard"]}>
 			<Col span={12} className={styles["dashboard-l"]}>
 				<Row>
 					<Col span={24}>
-						<Card className={styles.storeCard}>
-							<div style={{ height: 250, width: 250 }}>
-								<DiskSpaceUsageChart usedSpace={10412000} />
+						<Card className={styles["disk-card"]}>
+							<div className={styles["disk-box"]}>
+								<div className={styles["disk-info"]}>
+									<div className={styles["title"]}>空间使用情况</div>
+									<div className={styles["subtitle"]}>
+										{`已用 ${formattedUsedSpace} / 总空间 ${formattedTotalSpace}`}
+									</div>
+								</div>
+								<div className={styles["disk-chart"]}>
+									<DiskSpaceUsageChart usedSpace={usedSpace} />
+								</div>
 							</div>
 						</Card>
 					</Col>

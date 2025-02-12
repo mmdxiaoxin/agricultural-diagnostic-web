@@ -1,5 +1,4 @@
 import { useEcharts } from "@/hooks/useEcharts";
-import { formatSize } from "@/utils";
 import * as echarts from "echarts";
 import styles from "./index.module.scss";
 
@@ -10,31 +9,15 @@ export interface DiskSpaceUsageChartProps {
 
 const DiskSpaceUsageChart: React.FC<DiskSpaceUsageChartProps> = ({
 	usedSpace = 0,
-	totalSpace = 1_000_000_000,
+	totalSpace = 1_000_000_000, // 默认值为 1GB
 	...props
 }) => {
 	// 计算剩余空间（字节）
 	const remainingSpaceInBytes = totalSpace - usedSpace;
-
-	// 格式化显示
-	const formattedUsedSpace = formatSize(usedSpace);
-	const formattedTotalSpace = formatSize(totalSpace);
-	// const formattedRemainingSpace = formatSize(remainingSpaceInBytes);
-
 	let option: echarts.EChartsOption = {
-		title: {
-			text: "空间使用情况",
-			subtext: `已用 ${formattedUsedSpace} / 总空间 ${formattedTotalSpace}`,
-			left: "center",
-			top: "center",
-			textStyle: {
-				fontSize: 16,
-				fontWeight: "bold"
-			}
-		},
 		tooltip: {
 			trigger: "item",
-			formatter: "{a} <br/>{b}: {c} ({d}%)"
+			formatter: "{a} <br/>{b}: {c} MB ({d}%)"
 		},
 		series: [
 			{
@@ -43,8 +26,12 @@ const DiskSpaceUsageChart: React.FC<DiskSpaceUsageChartProps> = ({
 				radius: ["40%", "70%"], // 设置内外半径，使其成为环形图
 				avoidLabelOverlap: false,
 				label: {
-					show: false,
-					position: "center"
+					show: true,
+					position: "center",
+					formatter: `{d}%`, // 显示占用百分比
+					fontSize: 16,
+					fontWeight: "bold",
+					color: "#333" // 文字颜色
 				},
 				emphasis: {
 					label: {
@@ -59,17 +46,17 @@ const DiskSpaceUsageChart: React.FC<DiskSpaceUsageChartProps> = ({
 				},
 				data: [
 					{
-						value: usedSpace / 1_000_000_000, // 转换为 GB 显示
+						value: usedSpace / 1_000_000,
 						name: "已用空间",
 						itemStyle: {
-							color: "#FF5733" // 红色表示已用空间
+							color: "#1890ff"
 						}
 					},
 					{
-						value: remainingSpaceInBytes / 1_000_000_000, // 转换为 GB 显示
+						value: remainingSpaceInBytes / 1_000_000,
 						name: "剩余空间",
 						itemStyle: {
-							color: "#33FF57" // 绿色表示剩余空间
+							color: "#81b2ff"
 						}
 					}
 				]
