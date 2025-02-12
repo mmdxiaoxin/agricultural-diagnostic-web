@@ -95,6 +95,7 @@ const Dashboard = () => {
 					<Col span={12}>
 						<FileCard
 							type="文件"
+							color="#ff4848"
 							size={111234124}
 							lastUpdated="2024.11.17 19:11"
 							onClick={() => setFileType("")}
@@ -105,6 +106,8 @@ const Dashboard = () => {
 							type="图片"
 							size={12345245}
 							lastUpdated="2022.12.17 21:11"
+							icon="FileImageOutlined"
+							color="#4892ff"
 							onClick={() => setFileType("image")}
 						/>
 					</Col>
@@ -114,6 +117,8 @@ const Dashboard = () => {
 						<FileCard
 							type="视频、音频"
 							size={43536}
+							color="#aa48ff"
+							icon="VideoCameraOutlined"
 							lastUpdated="2024.7.17 11:11"
 							onClick={() => setFileType("audio")}
 						/>
@@ -122,6 +127,7 @@ const Dashboard = () => {
 						<FileCard
 							type="其他"
 							size={98586}
+							icon="FileZipOutlined"
 							lastUpdated="2024.2.17 11:11"
 							onClick={() => setFileType("application/pdf")}
 						/>

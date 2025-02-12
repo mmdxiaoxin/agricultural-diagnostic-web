@@ -15,7 +15,8 @@ export const Icons = {
 	FileImageOutlined: React.lazy(() => import("@ant-design/icons/FileImageOutlined")),
 	UploadOutlined: React.lazy(() => import("@ant-design/icons/UploadOutlined")),
 	DownloadOutlined: React.lazy(() => import("@ant-design/icons/DownloadOutlined")),
-	FileOutlined: React.lazy(() => import("@ant-design/icons/FileOutlined"))
+	FileOutlined: React.lazy(() => import("@ant-design/icons/FileOutlined")),
+	VideoCameraOutlined: React.lazy(() => import("@ant-design/icons/VideoCameraOutlined"))
 } as const;
 
 export type IconComponentProps = {
