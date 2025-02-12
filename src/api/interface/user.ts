@@ -32,7 +32,7 @@ export type UserProfileParams = Omit<ResUserProfile, "role_id" | "createdAt" | "
 export type ResUserProfile = Omit<User, "password" | "updatedAt" | "id">;
 
 // * 用户修改参数
-export type UserUpdateParams = Omit<ResUserProfile, "createdAt" | "username">;
+export type UserUpdateParams = Omit<ResUserProfile, "createdAt">;
 
 // * 单个用户信息
 export type ResUserDetail = UserItem;

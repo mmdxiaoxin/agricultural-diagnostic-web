@@ -105,6 +105,7 @@ const InfoDrawer = forwardRef<InfoDrawerRef, InfoDrawerProps>(({ onSave }, ref) 
 			if (type === "edit") {
 				// 编辑模式
 				const res = await updateUserById(userDetail.id, {
+					username: values.username,
 					address: values.address,
 					name: values.name,
 					phone: values.phone,
