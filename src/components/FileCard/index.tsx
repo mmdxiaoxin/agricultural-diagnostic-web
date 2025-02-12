@@ -1,5 +1,5 @@
 import { formatSize } from "@/utils";
-import { Divider } from "antd";
+import { Card, Divider } from "antd";
 import React from "react";
 import IconComponent, { Icons } from "../IconComponent";
 import styles from "./index.module.scss"; // 样式文件
@@ -23,7 +23,7 @@ const FileCard: React.FC<FileCardProps> = ({
 }) => {
 	return (
 		<div className={styles.container} {...props}>
-			<div className={styles.card}>
+			<Card className={styles.card}>
 				<div className={styles.details}>
 					<div className={styles.size}>{formatSize(size)}</div>
 					<div className={styles.type}>{type}</div>
@@ -33,7 +33,7 @@ const FileCard: React.FC<FileCardProps> = ({
 						<span>{lastUpdated}</span>
 					</div>
 				</div>
-			</div>
+			</Card>
 			<div className={styles.icon} style={{ backgroundColor: color }}>
 				<IconComponent name={icon || "FileOutlined"} color="white" size={18} />
 			</div>

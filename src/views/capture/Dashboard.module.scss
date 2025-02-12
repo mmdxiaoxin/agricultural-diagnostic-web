@@ -1,5 +1,5 @@
 .dashboard {
-    min-width: 900px;
+    min-width: 1200px;
 
     .dashboard-l {
         .disk-card {
@@ -45,5 +45,12 @@
         }
     }
 
-    .dashboard-r {}
+    .dashboard-r {
+        .file-card {
+            border-radius: 20px;
+            margin: 0 10px;
+            box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
+            transition: all 0.3s;
+        }
+    }
 }
