@@ -9,7 +9,7 @@ import { Tabs, TabsProps } from "antd";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router";
 import MoreButton from "./components/MoreButton";
-import styles from "./index.module.scss";
+import "./index.scss";
 
 const LayoutTabs = () => {
 	const { tabsList } = useAppSelector(state => state.tabs);
@@ -71,26 +71,25 @@ const LayoutTabs = () => {
 		icon: item.path === HOME_URL ? <IconComponent name="HomeFilled" /> : undefined
 	}));
 
-	return (
-		<>
-			{!themeConfig.tabs && (
-				<div className={styles.container}>
-					<Tabs
-						animated
-						activeKey={activeValue}
-						onChange={clickTabs}
-						hideAdd
-						type="editable-card"
-						items={tabItems}
-						onEdit={path => {
-							delTabs(path as string);
-						}}
-					/>
-					<MoreButton delTabs={delTabs} />
-				</div>
-			)}
-		</>
-	);
+	if (themeConfig.tabs) return null;
+	else
+		return (
+			<Tabs
+				className={"tabs"}
+				animated
+				activeKey={activeValue}
+				onChange={clickTabs}
+				hideAdd
+				type="editable-card"
+				items={tabItems}
+				onEdit={path => {
+					delTabs(path as string);
+				}}
+				tabBarExtraContent={{
+					right: <MoreButton delTabs={delTabs} />
+				}}
+			/>
+		);
 };
 
 export default LayoutTabs;

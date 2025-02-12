@@ -5,7 +5,6 @@ import { setTabsList } from "@/store/modules/tabsSlice";
 import { DownOutlined } from "@ant-design/icons";
 import { Button, Dropdown, MenuProps } from "antd";
 import { useLocation, useNavigate } from "react-router";
-import styles from "../index.module.scss";
 
 export type MoreButtonProps = {
 	delTabs: (tabPath?: string) => void;
@@ -50,7 +49,7 @@ const MoreButton = ({ delTabs }: MoreButtonProps) => {
 			arrow={{ pointAtCenter: true }}
 			trigger={["click"]}
 		>
-			<Button className={styles["more-button"]} type="text" size="small">
+			<Button type="text" size="small">
 				{"更多"} <DownOutlined />
 			</Button>
 		</Dropdown>
