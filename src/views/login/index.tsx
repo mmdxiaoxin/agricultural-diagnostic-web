@@ -1,6 +1,8 @@
 import { loginApi } from "@/api/modules/auth";
 import loginLeft from "@/assets/images/login.svg";
 import logo from "@/assets/images/logo.svg";
+import { useAppDispatch } from "@/hooks/useAppDispatch";
+import { store } from "@/store";
 import { setToken } from "@/store/modules/authSlice";
 import {
 	CloseCircleOutlined,
@@ -11,9 +13,7 @@ import {
 } from "@ant-design/icons";
 import { Button, Col, Flex, FloatButton, Form, Input, message, Row } from "antd";
 import { useState } from "react";
-import { useNavigate } from "react-router";
-
-import { useAppDispatch } from "@/hooks/useAppDispatch";
+import { Navigate, useNavigate } from "react-router";
 import "./index.scss";
 
 const Login = () => {
@@ -52,6 +52,12 @@ const Login = () => {
 	const handleForgotPassword = () => {
 		message.info("请联系管理员重置密码");
 	};
+
+	const token = store.getState().auth.token;
+
+	if (token) {
+		return <Navigate to="/home/index" />;
+	}
 
 	return (
 		<div className="login-container">

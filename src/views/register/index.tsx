@@ -1,9 +1,11 @@
 import { registerApi } from "@/api/modules/auth";
+import { store } from "@/store";
 import { LockOutlined, UserOutlined } from "@ant-design/icons";
 import { Button, Col, Form, Input, message, Row, Space } from "antd";
 import React, { useState } from "react";
-import { useNavigate } from "react-router";
+import { Navigate, useNavigate } from "react-router";
 import "./index.scss";
+
 type RegisterProps = {};
 
 const Register: React.FC<RegisterProps> = () => {
@@ -29,6 +31,12 @@ const Register: React.FC<RegisterProps> = () => {
 			setLoading(false);
 		}
 	};
+
+	const token = store.getState().auth.token;
+
+	if (token) {
+		return <Navigate to="/home/index" />;
+	}
 
 	return (
 		<div className="register-container">
