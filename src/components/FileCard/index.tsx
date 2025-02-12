@@ -24,14 +24,12 @@ const FileCard: React.FC<FileCardProps> = ({
 	return (
 		<div className={styles.container} {...props}>
 			<Card className={styles.card}>
-				<div className={styles.details}>
-					<div className={styles.size}>{formatSize(size)}</div>
-					<div className={styles.type}>{type}</div>
-					<Divider className={styles.divider} />
-					<div className={styles.updated}>
-						<span>{`上次更新`}</span>
-						<span>{lastUpdated}</span>
-					</div>
+				<div className={styles.size}>{formatSize(size)}</div>
+				<div className={styles.type}>{type}</div>
+				<Divider className={styles.divider} />
+				<div className={styles.updated}>
+					<span>{`上次更新`}</span>
+					<span>{lastUpdated}</span>
 				</div>
 			</Card>
 			<div className={styles.icon} style={{ backgroundColor: color }}>

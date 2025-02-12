@@ -20,7 +20,7 @@ const Dashboard = () => {
 
 	// 分页数据
 	const [fileList, setFileList] = useState<FileMeta[]>([]);
-	const [pagination, setPagination] = useState({ page: 1, pageSize: 8, total: 0 });
+	const [pagination, setPagination] = useState({ page: 1, pageSize: 7, total: 0 });
 
 	const fetchFileList = async (page: number, pageSize: number, fileType?: string) => {
 		try {
@@ -72,9 +72,9 @@ const Dashboard = () => {
 	];
 
 	return (
-		<Row className={styles["dashboard"]}>
+		<Row className={styles["dashboard"]} gutter={10}>
 			<Col span={12} className={styles["dashboard-l"]}>
-				<Row>
+				<Row className={styles["dashboard-row"]}>
 					<Col span={24}>
 						<Card className={styles["disk-card"]}>
 							<div className={styles["disk-box"]}>
@@ -91,7 +91,7 @@ const Dashboard = () => {
 						</Card>
 					</Col>
 				</Row>
-				<Row gutter={16}>
+				<Row className={styles["dashboard-row"]} gutter={16}>
 					<Col span={12}>
 						<FileCard
 							type="文件"
