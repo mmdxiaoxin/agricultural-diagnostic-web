@@ -3,7 +3,7 @@ import "./index.scss";
 
 const Home = () => {
 	return (
-		<div className="home card">
+		<div className="home">
 			<img src={welcome} alt="welcome" />
 		</div>
 	);
