@@ -56,6 +56,7 @@ const Login = () => {
 	const token = store.getState().auth.token;
 
 	if (token) {
+		message.error("请勿重复登陆! 😀", 1.5);
 		return <Navigate to="/home/index" />;
 	}
 
