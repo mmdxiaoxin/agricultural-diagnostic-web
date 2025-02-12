@@ -1,4 +1,5 @@
 import Login from "@/views/login/index";
+import Register from "@/views/register";
 import { Navigate, useRoutes } from "react-router";
 import { RouteObjectEx } from "./interface";
 import diagnosisRouter from "./modules/diagnosis";
@@ -25,6 +26,15 @@ export const rootRouter: RouteObjectEx[] = [
 			requiresAuth: false,
 			title: "登录页",
 			key: "login"
+		}
+	},
+	{
+		path: "/register",
+		element: <Register />,
+		meta: {
+			requiresAuth: false,
+			title: "注册页",
+			key: "register"
 		}
 	},
 	...routerArray,

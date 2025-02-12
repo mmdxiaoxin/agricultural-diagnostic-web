@@ -8,6 +8,8 @@ export interface ReqLogin {
 	password: string;
 }
 
+export interface ReqRegister extends ReqLogin {}
+
 export type ResLogin = {
 	token: string;
 };

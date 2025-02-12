@@ -1,9 +1,15 @@
 import http from "@/api";
-import { ReqLogin, ResAuthButtons, ResAuthDict, ResLogin } from "../interface";
+import { ReqLogin, ReqRegister, ResAuthButtons, ResAuthDict, ResLogin } from "../interface";
 
 // * 用户登录接口
 export const loginApi = (params: ReqLogin) =>
 	http.post<ResLogin>(`/auth/login`, {
+		...params
+	});
+
+// * 用户注册接口
+export const registerApi = (params: ReqRegister) =>
+	http.post<null>(`/auth/register`, {
 		...params
 	});
 

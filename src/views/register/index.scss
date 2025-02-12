@@ -1,0 +1,40 @@
+.register-container {
+    background-color: #f7f7f7;
+    background-image: url("@/assets/images/login_bg.svg");
+}
+
+.register-form-container {
+    background-color: #fff;
+    padding: 30px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+}
+
+.register-title {
+    text-align: center;
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 30px;
+}
+
+.register-button {
+    font-size: 16px;
+    height: 40px;
+    background-color: #1890ff;
+    border-color: #1890ff;
+}
+
+.register-button:hover {
+    background-color: #40a9ff;
+    border-color: #40a9ff;
+}
+
+.login-link {
+    font-size: 14px;
+    color: #1890ff;
+    text-align: center;
+}
+
+.login-link:hover {
+    text-decoration: underline;
+}

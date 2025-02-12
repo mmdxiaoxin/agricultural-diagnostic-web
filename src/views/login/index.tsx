@@ -2,8 +2,14 @@ import { loginApi } from "@/api/modules/auth";
 import loginLeft from "@/assets/images/login.svg";
 import logo from "@/assets/images/logo.svg";
 import { setToken } from "@/store/modules/authSlice";
-import { CloseCircleOutlined, LockOutlined, UserOutlined } from "@ant-design/icons";
-import { Button, Col, Flex, Form, Input, message, Row } from "antd";
+import {
+	CloseCircleOutlined,
+	LockOutlined,
+	SyncOutlined,
+	UserAddOutlined,
+	UserOutlined
+} from "@ant-design/icons";
+import { Button, Col, Flex, FloatButton, Form, Input, message, Row } from "antd";
 import { useState } from "react";
 import { useNavigate } from "react-router";
 
@@ -39,6 +45,14 @@ const Login = () => {
 		}
 	};
 
+	const handleRegister = () => {
+		navigate("/register");
+	};
+
+	const handleForgotPassword = () => {
+		message.info("请联系管理员重置密码");
+	};
+
 	return (
 		<div className="login-container">
 			<Row gutter={16} className="login-box">
@@ -52,7 +66,7 @@ const Login = () => {
 					<div className="login-form">
 						<div className="login-logo">
 							<img className="login-icon" src={logo} alt="logo" />
-							<span className="logo-text">病虫害智能诊断系统</span>
+							<span className="logo-text">病害智能诊断系统</span>
 						</div>
 						<Form
 							form={form}
@@ -73,6 +87,7 @@ const Login = () => {
 									prefix={<LockOutlined />}
 								/>
 							</Form.Item>
+
 							<Form.Item className="login-btn">
 								<Flex justify={"space-between"} align={"center"}>
 									<Button
@@ -93,6 +108,18 @@ const Login = () => {
 									</Button>
 								</Flex>
 							</Form.Item>
+							<FloatButton.Group trigger="click" type="primary" style={{ insetInlineEnd: 70 }}>
+								<FloatButton
+									icon={<UserAddOutlined />}
+									tooltip={"账号注册"}
+									onClick={handleRegister}
+								/>
+								<FloatButton
+									icon={<SyncOutlined />}
+									tooltip={"忘记密码"}
+									onClick={handleForgotPassword}
+								/>
+							</FloatButton.Group>
 						</Form>
 					</div>
 				</Col>
