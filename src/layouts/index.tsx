@@ -78,7 +78,7 @@ const LayoutIndex = () => {
 				theme={{
 					components: {
 						Layout: {
-							bodyBg: "#ffffff",
+							bodyBg: "#f0f2f5",
 							headerBg: "#ffffff",
 							footerBg: "#ffffff",
 							siderBg: "#ffffff"

@@ -1,19 +1,7 @@
 import { useEcharts } from "@/hooks/useEcharts";
+import { formatSize } from "@/utils";
 import * as echarts from "echarts";
 import styles from "./index.module.scss";
-
-// 用于换算单位的函数
-const formatSize = (sizeInBytes: number) => {
-	if (sizeInBytes >= 1_000_000_000) {
-		return (sizeInBytes / 1_000_000_000).toFixed(2) + " GB"; // GB
-	} else if (sizeInBytes >= 1_000_000) {
-		return (sizeInBytes / 1_000_000).toFixed(2) + " MB"; // MB
-	} else if (sizeInBytes >= 1_000) {
-		return (sizeInBytes / 1_000).toFixed(2) + " KB"; // KB
-	} else {
-		return sizeInBytes + " B"; // B
-	}
-};
 
 export interface DiskSpaceUsageChartProps {
 	usedSpace?: number; // 单位：字节（B）
@@ -35,12 +23,12 @@ const DiskSpaceUsageChart: React.FC<DiskSpaceUsageChartProps> = ({
 
 	let option: echarts.EChartsOption = {
 		title: {
-			text: "文件空间使用情况",
+			text: "空间使用情况",
 			subtext: `已用 ${formattedUsedSpace} / 总空间 ${formattedTotalSpace}`,
 			left: "center",
 			top: "center",
 			textStyle: {
-				fontSize: 18,
+				fontSize: 16,
 				fontWeight: "bold"
 			}
 		},

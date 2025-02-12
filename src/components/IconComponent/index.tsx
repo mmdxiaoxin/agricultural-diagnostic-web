@@ -14,16 +14,23 @@ export const Icons = {
 	ExperimentOutlined: React.lazy(() => import("@ant-design/icons/ExperimentOutlined")),
 	FileImageOutlined: React.lazy(() => import("@ant-design/icons/FileImageOutlined")),
 	UploadOutlined: React.lazy(() => import("@ant-design/icons/UploadOutlined")),
-	DownloadOutlined: React.lazy(() => import("@ant-design/icons/DownloadOutlined"))
+	DownloadOutlined: React.lazy(() => import("@ant-design/icons/DownloadOutlined")),
+	FileOutlined: React.lazy(() => import("@ant-design/icons/FileOutlined"))
 } as const;
 
 export type IconComponentProps = {
 	name: keyof typeof Icons;
+	color?: string;
+	size?: number;
 };
-const IconComponent: React.FC<IconComponentProps> = ({ name }) => {
+const IconComponent: React.FC<IconComponentProps> = ({ name, color, size }) => {
 	// 动态加载 Icon
 	const DynamicIcon = Icons[name] ?? null;
-	return <React.Suspense fallback={null}>{DynamicIcon && <DynamicIcon />}</React.Suspense>;
+	return (
+		<React.Suspense fallback={null}>
+			{DynamicIcon && <DynamicIcon style={{ color, fontSize: size }} />}
+		</React.Suspense>
+	);
 };
 
 export default IconComponent;
