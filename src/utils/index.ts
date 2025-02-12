@@ -1,4 +1,4 @@
-import { RouteObject } from "@/routes/interface";
+import { RouteObjectEx } from "@/routes/interface";
 
 /**
  * @description 获取localStorage
@@ -46,6 +46,7 @@ export const localClear = () => {
  * @return string
  */
 export const getBrowserLang = () => {
+	// @ts-ignore
 	let browserLang = navigator.language ? navigator.language : navigator.browserLanguage;
 	let defaultBrowserLang = "";
 	if (
@@ -82,8 +83,8 @@ export const getOpenKeys = (path: string) => {
  * @param {Array} routes 路由列表
  * @returns array
  */
-export const searchRoute = (path: string, routes: RouteObject[] = []): RouteObject => {
-	let result: RouteObject = {};
+export const searchRoute = (path: string, routes: RouteObjectEx[] = []): RouteObjectEx => {
+	let result: RouteObjectEx = {};
 	for (let item of routes) {
 		if (item.path === path) return item;
 		if (item.children) {

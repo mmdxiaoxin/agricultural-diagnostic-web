@@ -1,8 +1,9 @@
 import lazyLoad from "@/routes/utils/lazyLoad";
 import React from "react";
+import { RouteObjectEx } from "../interface";
 
 // 错误页面模块
-const errorRouter = [
+const errorRouter: RouteObjectEx[] = [
 	{
 		path: "/403",
 		element: lazyLoad(React.lazy(() => import("@/components/ErrorMessage/403"))),

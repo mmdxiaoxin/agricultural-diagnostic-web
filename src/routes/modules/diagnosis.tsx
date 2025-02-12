@@ -1,8 +1,9 @@
 import { LayoutIndex } from "@/routes/constant";
 import lazyLoad from "@/routes/utils/lazyLoad";
 import React from "react";
+import { RouteObjectEx } from "../interface";
 
-const diagnosisRouter = [
+const diagnosisRouter: RouteObjectEx[] = [
 	{
 		element: <LayoutIndex />,
 		meta: {

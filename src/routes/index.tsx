@@ -1,13 +1,19 @@
 import Login from "@/views/login/index";
 import { Navigate, useRoutes } from "react-router";
+import { RouteObjectEx } from "./interface";
 import diagnosisRouter from "./modules/diagnosis";
 import errorRouter from "./modules/error";
 import homeRouter from "./modules/home";
 import userRouter from "./modules/user";
 
-export const routerArray = [...errorRouter, ...homeRouter, ...diagnosisRouter, ...userRouter];
+export const routerArray: RouteObjectEx[] = [
+	...errorRouter,
+	...homeRouter,
+	...diagnosisRouter,
+	...userRouter
+];
 
-export const rootRouter = [
+export const rootRouter: RouteObjectEx[] = [
 	{
 		path: "/",
 		element: <Navigate to="/login" />

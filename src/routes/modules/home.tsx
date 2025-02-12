@@ -1,8 +1,9 @@
 import { LayoutIndex } from "@/routes/constant";
 import Home from "@/views/home/index";
+import { RouteObjectEx } from "../interface";
 
 // 首页模块
-const homeRouter = [
+const homeRouter: RouteObjectEx[] = [
 	{
 		element: <LayoutIndex />,
 		children: [

@@ -1,11 +1,12 @@
 import { getMenuList } from "@/api/modules/auth";
+import IconComponent, { Icons } from "@/components/IconComponent";
 import { useAppDispatch } from "@/hooks/useAppDispatch";
 import { useAppSelector } from "@/hooks/useAppSelector";
+import { RouteObjectEx } from "@/routes/interface";
 import { setAuthRouter } from "@/store/modules/authSlice";
 import { setBreadcrumbList } from "@/store/modules/breadcrumbSlice";
 import { setMenuList } from "@/store/modules/menuSlice";
 import { findAllBreadcrumb, getOpenKeys, handleRouter, searchRoute } from "@/utils/index";
-import * as Icons from "@ant-design/icons";
 import type { MenuProps } from "antd";
 import { Menu, Spin } from "antd";
 import React, { useEffect, useState } from "react";
@@ -53,20 +54,21 @@ const LayoutMenu = () => {
 		} as MenuItem;
 	};
 
-	// 动态渲染 Icon 图标
-	const customIcons: { [key: string]: any } = Icons;
-	const addIcon = (name: string) => {
-		return React.createElement(customIcons[name]);
-	};
-
 	// 处理后台返回菜单 key 值为 antd 菜单需要的 key 值
 	const deepLoopFloat = (menuList: Menu.MenuOptions[], newArr: MenuItem[] = []) => {
 		menuList.forEach((item: Menu.MenuOptions) => {
 			// 下面判断代码解释 *** !item?.children?.length   ==>   (!item.children || item.children.length === 0)
 			if (!item?.children?.length)
-				return newArr.push(getItem(item.title, item.path, addIcon(item.icon!)));
+				return newArr.push(
+					getItem(item.title, item.path, <IconComponent name={item.icon! as keyof typeof Icons} />)
+				);
 			newArr.push(
-				getItem(item.title, item.path, addIcon(item.icon!), deepLoopFloat(item.children))
+				getItem(
+					item.title,
+					item.path,
+					<IconComponent name={item.icon! as keyof typeof Icons} />,
+					deepLoopFloat(item.children)
+				)
 			);
 		});
 		return newArr;
@@ -100,7 +102,7 @@ const LayoutMenu = () => {
 	// 点击当前菜单跳转页面
 	const navigate = useNavigate();
 	const clickMenu: MenuProps["onClick"] = ({ key }: { key: string }) => {
-		const route = searchRoute(key, menuList);
+		const route = searchRoute(key, menuList as RouteObjectEx[]);
 		if (route.isLink) window.open(route.isLink, "_blank");
 		navigate(key);
 	};

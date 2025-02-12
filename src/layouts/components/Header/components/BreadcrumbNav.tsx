@@ -1,18 +1,11 @@
+import IconComponent, { Icons } from "@/components/IconComponent";
 import { HOME_URL } from "@/config/config";
 import { useAppSelector } from "@/hooks/useAppSelector";
-import * as Icons from "@ant-design/icons";
 import { Breadcrumb, BreadcrumbProps } from "antd";
-import React from "react";
 import { useLocation } from "react-router";
 
 const BreadcrumbNav = () => {
 	const { pathname } = useLocation();
-
-	// 动态渲染 Icon 图标
-	const DynamicIcon: { [key: string]: any } = Icons;
-	const RenderIconByName = (name: string) => {
-		return React.createElement(DynamicIcon[name]);
-	};
 
 	const global = useAppSelector(state => state.global);
 	const breadcrumb = useAppSelector(state => state.breadcrumb);
@@ -30,7 +23,7 @@ const BreadcrumbNav = () => {
 			title:
 				item.title !== "首页" ? (
 					<>
-						{RenderIconByName(item.icon)}
+						<IconComponent name={item.icon as keyof typeof Icons} />
 						{item.title}
 					</>
 				) : null

@@ -1,11 +1,11 @@
+import IconComponent from "@/components/IconComponent";
 import { HOME_URL } from "@/config/config";
 import { useAppDispatch } from "@/hooks/useAppDispatch";
 import { useAppSelector } from "@/hooks/useAppSelector";
 import { routerArray } from "@/routes";
 import { setTabsList } from "@/store/modules/tabsSlice";
 import { searchRoute } from "@/utils/index";
-import { HomeFilled } from "@ant-design/icons";
-import { Tabs } from "antd";
+import { Tabs, TabsProps } from "antd";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router";
 import MoreButton from "./components/MoreButton";
@@ -14,9 +14,11 @@ import "./index.scss";
 const LayoutTabs = () => {
 	const { tabsList } = useAppSelector(state => state.tabs);
 	const { themeConfig } = useAppSelector(state => state.global);
-	const dispatch = useAppDispatch();
+
 	const { pathname } = useLocation();
+
 	const navigate = useNavigate();
+	const dispatch = useAppDispatch();
 
 	const [activeValue, setActiveValue] = useState<string>(pathname);
 
@@ -55,16 +57,14 @@ const LayoutTabs = () => {
 	};
 
 	// 使用新版 items 属性来渲染 Tab
-	const tabItems = tabsList.map((item: any) => ({
+	const tabItems: TabsProps["items"] = tabsList.map((item: any) => ({
 		key: item.path,
-		label: (
-			<span>
-				{item.path === HOME_URL ? <HomeFilled /> : null}
-				{item.title}
-			</span>
-		),
-		closable: item.path !== HOME_URL
+		label: item.title,
+		closable: item.path !== HOME_URL,
+		icon: item.path === HOME_URL ? <IconComponent name="HomeFilled" /> : undefined
 	}));
+
+	console.log("tabsList", tabsList);
 
 	return (
 		<>
@@ -79,7 +79,7 @@ const LayoutTabs = () => {
 						onEdit={path => {
 							delTabs(path as string);
 						}}
-						items={tabItems} // 使用新版 items 来替代 TabPane
+						items={tabItems}
 					/>
 					<MoreButton delTabs={delTabs} />
 				</div>
