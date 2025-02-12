@@ -1,4 +1,5 @@
 import { resetUserPassword } from "@/api/modules/user";
+import { LockOutlined } from "@ant-design/icons";
 import { Form, Input, message, Modal } from "antd";
 import { forwardRef, useImperativeHandle, useState } from "react";
 
@@ -70,12 +71,22 @@ const PasswordModal = forwardRef<PasswordModalRef, PasswordModalProps>(({ onRese
 				onFinish={handleSave}
 				initialValues={formData}
 			>
-				<Form.Item label="当前密码" name="currentPassword">
-					<Input type="password" />
+				<Form.Item
+					label="当前密码"
+					name="currentPassword"
+					rules={[{ required: true, message: "请输入当前密码" }]}
+					style={{ height: 40 }}
+				>
+					<Input.Password prefix={<LockOutlined />} />
 				</Form.Item>
 
-				<Form.Item label="新密码" name="newPassword">
-					<Input type="password" />
+				<Form.Item
+					label="新密码"
+					name="newPassword"
+					rules={[{ required: true, message: "请输入新密码" }]}
+					style={{ height: 40 }}
+				>
+					<Input.Password prefix={<LockOutlined />} />
 				</Form.Item>
 			</Form>
 		</Modal>
