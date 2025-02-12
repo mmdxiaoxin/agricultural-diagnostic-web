@@ -12,7 +12,7 @@ import { Menu, Spin } from "antd";
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router";
 import Logo from "./components/Logo";
-import "./index.scss";
+import styles from "./index.module.scss";
 
 const LayoutMenu = () => {
 	const { pathname } = useLocation();
@@ -108,11 +108,10 @@ const LayoutMenu = () => {
 	};
 
 	return (
-		<div className="menu">
+		<div className={styles.menu}>
 			<Spin spinning={loading} tip="Loading...">
 				<Logo />
 				<Menu
-					theme="dark"
 					mode="inline"
 					triggerSubMenuAction="click"
 					openKeys={openKeys}

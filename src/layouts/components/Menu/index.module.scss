@@ -10,6 +10,7 @@
         align-items: center;
         justify-content: center;
         height: 93px;
+        border-bottom: 1px solid $light-border-color;
 
         .logo-img {
             width: 50px;
@@ -17,11 +18,20 @@
         }
 
         .logo-text {
-            margin: 0 0 0 10px;
+            margin: 0;
             font-size: 24px;
             font-weight: bold;
-            color: #dadada;
             white-space: nowrap;
+        }
+    }
+
+    .ant-menu {
+        &::-webkit-scrollbar {
+            background-color: #001529 !important;
+        }
+
+        &::-webkit-scrollbar-thumb {
+            background-color: #41444b !important;
         }
     }
 
@@ -29,6 +39,7 @@
         flex: 1;
         overflow-x: hidden;
         overflow-y: auto;
+
     }
 
     /* 去除菜单 Loading 遮罩层 */

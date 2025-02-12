@@ -73,7 +73,7 @@ const LayoutIndex = () => {
 	return (
 		<section className="container">
 			<ConfigProvider componentSize={componentSize} locale={locale}>
-				<Sider trigger={null} collapsed={isCollapse} width={220} theme="dark">
+				<Sider trigger={null} collapsed={isCollapse} width={220} theme="light">
 					<LayoutMenu />
 				</Sider>
 				<Layout>
