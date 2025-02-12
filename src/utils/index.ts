@@ -100,32 +100,35 @@ export const searchRoute = (path: string, routes: RouteObject[] = []): RouteObje
  * @param {Array} menuList 菜单列表
  * @returns array
  */
-export const getBreadcrumbList = (path: string, menuList: Menu.MenuOptions[]) => {
-	let tempPath: any[] = [];
-	try {
-		const getNodePath = (node: Menu.MenuOptions) => {
-			tempPath.push(node);
-			// 找到符合条件的节点，通过throw终止掉递归
-			if (node.path === path) {
-				throw new Error("GOT IT!");
+export const getBreadcrumbList = (
+	path: string,
+	menuList: Menu.MenuOptions[]
+): { title: string; icon: string }[] => {
+	const breadcrumb: { title: string; icon: string }[] = [];
+
+	// 查找路径对应的菜单项，并构建面包屑
+	const findMenuItem = (menu: Menu.MenuOptions[], path: string): Menu.MenuOptions | undefined => {
+		for (const item of menu) {
+			if (item.path === path) {
+				return item;
 			}
-			if (node.children && node.children.length > 0) {
-				for (let i = 0; i < node.children.length; i++) {
-					getNodePath(node.children[i]);
-				}
-				// 当前节点的子节点遍历完依旧没找到，则删除路径中的该节点
-				tempPath.pop();
-			} else {
-				// 找到叶子节点时，删除路径当中的该叶子节点
-				tempPath.pop();
+			if (item.children) {
+				const found = findMenuItem(item.children, path);
+				if (found) return found;
 			}
-		};
-		for (let i = 0; i < menuList.length; i++) {
-			getNodePath(menuList[i]);
 		}
-	} catch (e) {
-		return tempPath.map(item => item.title);
+	};
+
+	const menuItem = findMenuItem(menuList, path);
+	if (menuItem) {
+		// 构建面包屑（假设返回父菜单项的标题和图标）
+		breadcrumb.push({
+			title: menuItem.title,
+			icon: menuItem.icon || "" // 如果没有 icon 则为空字符串
+		});
 	}
+
+	return breadcrumb;
 };
 
 /**
@@ -133,13 +136,22 @@ export const getBreadcrumbList = (path: string, menuList: Menu.MenuOptions[]) =>
  * @param {String} menuList 当前菜单列表
  * @returns object
  */
-export const findAllBreadcrumb = (menuList: Menu.MenuOptions[]): { [key: string]: any } => {
-	let handleBreadcrumbList: any = {};
+export const findAllBreadcrumb = (
+	menuList: Menu.MenuOptions[]
+): { [path: string]: { title: string; icon: string }[] } => {
+	let handleBreadcrumbList: { [path: string]: { title: string; icon: string }[] } = {};
+
 	const loop = (menuItem: Menu.MenuOptions) => {
-		// 下面判断代码解释 *** !item?.children?.length   ==>   (item.children && item.children.length > 0)
-		if (menuItem?.children?.length) menuItem.children.forEach(item => loop(item));
-		else handleBreadcrumbList[menuItem.path] = getBreadcrumbList(menuItem.path, menuList);
+		// 如果有子菜单，则递归遍历子菜单
+		if (menuItem?.children?.length) {
+			menuItem.children.forEach(item => loop(item));
+		} else {
+			// 调用 getBreadcrumbList 返回包含 title 和 icon 的数组
+			handleBreadcrumbList[menuItem.path] = getBreadcrumbList(menuItem.path, menuList);
+		}
 	};
+
+	// 遍历菜单列表，执行递归
 	menuList.forEach(item => loop(item));
 	return handleBreadcrumbList;
 };

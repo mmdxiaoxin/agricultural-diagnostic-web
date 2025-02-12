@@ -3,7 +3,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 // 定义菜单状态的类型
 interface BreadcrumbState {
 	breadcrumbList: {
-		[propName: string]: any;
+		[propName: string]: { title: string; icon: string }[];
 	};
 }
 
