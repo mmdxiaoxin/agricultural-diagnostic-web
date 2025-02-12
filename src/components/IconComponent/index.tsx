@@ -7,7 +7,14 @@ export const Icons = {
 	TableOutlined: React.lazy(() => import("@ant-design/icons/TableOutlined")),
 	AppstoreOutlined: React.lazy(() => import("@ant-design/icons/AppstoreOutlined")),
 	ProfileOutlined: React.lazy(() => import("@ant-design/icons/ProfileOutlined")),
-	TeamOutlined: React.lazy(() => import("@ant-design/icons/TeamOutlined"))
+	TeamOutlined: React.lazy(() => import("@ant-design/icons/TeamOutlined")),
+	DatabaseOutlined: React.lazy(() => import("@ant-design/icons/DatabaseOutlined")),
+	DashboardOutlined: React.lazy(() => import("@ant-design/icons/DashboardOutlined")),
+	FileZipOutlined: React.lazy(() => import("@ant-design/icons/FileZipOutlined")),
+	ExperimentOutlined: React.lazy(() => import("@ant-design/icons/ExperimentOutlined")),
+	FileImageOutlined: React.lazy(() => import("@ant-design/icons/FileImageOutlined")),
+	UploadOutlined: React.lazy(() => import("@ant-design/icons/UploadOutlined")),
+	DownloadOutlined: React.lazy(() => import("@ant-design/icons/DownloadOutlined"))
 } as const;
 
 export type IconComponentProps = {

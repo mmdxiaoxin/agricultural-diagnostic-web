@@ -6,12 +6,14 @@ import diagnosisRouter from "./modules/diagnosis";
 import errorRouter from "./modules/error";
 import homeRouter from "./modules/home";
 import userRouter from "./modules/user";
+import captureRouter from "./modules/capture";
 
 export const routerArray: RouteObjectEx[] = [
 	...errorRouter,
 	...homeRouter,
 	...diagnosisRouter,
-	...userRouter
+	...userRouter,
+	...captureRouter
 ];
 
 export const rootRouter: RouteObjectEx[] = [

@@ -15,7 +15,7 @@ const diagnosisRouter: RouteObjectEx[] = [
 				element: lazyLoad(React.lazy(() => import("@/views/diagnosis/imageDiagnosis/index"))),
 				meta: {
 					requiresAuth: true,
-					title: "病害图片诊断",
+					title: "病害图片分析",
 					key: "imageDiagnosis"
 				}
 			}
