@@ -36,7 +36,6 @@ body {
         background-color: $light-main-bg-color !important;
 
         .tabs,
-        .footer,
         .card {
             background-color: $light-bg-color !important;
             border-color: $light-border-color !important;
@@ -50,12 +49,6 @@ body {
 
             .icon-style,
             .username {
-                color: $light-text-color !important;
-            }
-        }
-
-        .footer {
-            a {
                 color: $light-text-color !important;
             }
         }

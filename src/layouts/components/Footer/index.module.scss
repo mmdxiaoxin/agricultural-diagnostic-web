@@ -4,6 +4,8 @@
     justify-content: center;
     height: 30px;
     border-top: 1px solid #e4e7ed;
+    background-color: $light-bg-color !important;
+    border-color: $light-border-color !important;
 
     a {
         font-size: 14px;

@@ -1,5 +1,5 @@
 import { useAppSelector } from "@/hooks/useAppSelector";
-import "./index.scss";
+import styles from "./index.module.scss";
 
 const LayoutFooter = () => {
 	const { themeConfig } = useAppSelector(state => state.global);
@@ -7,7 +7,7 @@ const LayoutFooter = () => {
 	return (
 		<>
 			{!themeConfig.footer && (
-				<div className="footer">
+				<div className={styles.footer}>
 					<a href="http://www.spicyboy.cn/" target="_blank" rel="noreferrer">
 						2025 © mmdxiaoxin By NWAFU.
 					</a>
