@@ -38,24 +38,16 @@ const Register: React.FC<RegisterProps> = () => {
 						<h2 className="register-title">创建账号</h2>
 						<Form
 							name="register"
+							labelCol={{ span: 5 }}
 							initialValues={{ remember: true }}
 							onFinish={onFinish}
-							layout="vertical"
 							size="large"
 						>
-							<Form.Item
-								label="用户名"
-								name="username"
-								rules={[{ required: true, message: "请输入用户名" }]}
-							>
+							<Form.Item name="username" rules={[{ required: true, message: "请输入用户名" }]}>
 								<Input prefix={<UserOutlined />} placeholder="请输入用户名" autoComplete="off" />
 							</Form.Item>
 
-							<Form.Item
-								label="密码"
-								name="password"
-								rules={[{ required: true, message: "请输入密码" }]}
-							>
+							<Form.Item name="password" rules={[{ required: true, message: "请输入密码" }]}>
 								<Input.Password
 									prefix={<LockOutlined />}
 									placeholder="请输入密码"
@@ -63,11 +55,7 @@ const Register: React.FC<RegisterProps> = () => {
 								/>
 							</Form.Item>
 
-							<Form.Item
-								label="确认密码"
-								name="confirmPassword"
-								rules={[{ required: true, message: "请确认密码" }]}
-							>
+							<Form.Item name="confirmPassword" rules={[{ required: true, message: "请确认密码" }]}>
 								<Input.Password
 									prefix={<LockOutlined />}
 									placeholder="请确认密码"

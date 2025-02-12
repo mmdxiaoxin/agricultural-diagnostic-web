@@ -8,6 +8,28 @@
     padding: 30px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     border-radius: 8px;
+
+    .ant-form-item {
+        height: 70px;
+        margin-bottom: 0;
+
+        .ant-input-prefix {
+            margin-right: 10px;
+        }
+
+        .ant-input-affix-wrapper-lg {
+            padding: 8.3px 11px;
+        }
+
+        .ant-input-affix-wrapper,
+        .ant-input-lg {
+            font-size: 14px;
+        }
+
+        .ant-input-affix-wrapper {
+            color: #bfbfbf;
+        }
+    }
 }
 
 .register-title {
