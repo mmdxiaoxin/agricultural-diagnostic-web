@@ -1,3 +1,4 @@
+import { useAppSelector } from "@/hooks/useAppSelector";
 import { Layout } from "antd";
 import AssemblySize from "./components/AssemblySize";
 import AvatarIcon from "./components/AvatarIcon";
@@ -10,9 +11,13 @@ import styles from "./index.module.scss";
 
 const LayoutHeader = () => {
 	const { Header } = Layout;
+	const { themeConfig } = useAppSelector(state => state.global);
 
 	return (
-		<Header className={styles["header"]}>
+		<Header
+			className={styles["header"]}
+			style={{ borderBottom: themeConfig.tabs ? "1px solid #f0f0f0" : "none" }}
+		>
 			<div className={styles["header-lf"]}>
 				<CollapseIcon />
 				<BreadcrumbNav />

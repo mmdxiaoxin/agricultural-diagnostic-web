@@ -75,6 +75,7 @@ const LayoutTabs = () => {
 	else
 		return (
 			<Tabs
+				style={{ borderBottom: "1px solid #f0f0f0" }}
 				className={"tabs"}
 				animated
 				activeKey={activeValue}
