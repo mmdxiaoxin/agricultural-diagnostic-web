@@ -10,6 +10,8 @@ export const getFileList = async (params: ReqFileListParams) => {
 export const uploadFile = async (file: File) => {
 	const formData = new FormData();
 	formData.append("file", file);
+	formData.append("filename", encodeURIComponent(file.name));
+
 	return http.post<ResUploadFile>("/file/upload/single", formData, {
 		headers: {
 			"Content-Type": "multipart/form-data"

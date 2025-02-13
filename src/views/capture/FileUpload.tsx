@@ -66,7 +66,6 @@ const FileUpload: React.FC<FileUploadProps> = () => {
 		}
 
 		try {
-			// 调用接口上传文件
 			const response = await uploadFile(file as File);
 
 			if (response.code === 200 && response.data) {
