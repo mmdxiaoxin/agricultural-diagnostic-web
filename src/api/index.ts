@@ -64,16 +64,6 @@ class RequestHttp {
 				axiosCanceler.removePending(config);
 				config.loading && tryHideFullScreenLoading();
 
-				// * 登录失效（code == 599）
-				if (data.code == ResultEnum.OVERDUE) {
-					store.dispatch(removeToken());
-					message.error(data.message);
-					// 使用 History API 来跳转
-					window.history.pushState({}, "", "/login");
-					window.location.reload(); // 强制页面刷新
-					return Promise.reject(data);
-				}
-
 				// * 全局错误信息拦截（防止下载文件得时候返回数据流，没有code，直接报错）
 				if (
 					data.code &&
@@ -97,7 +87,15 @@ class RequestHttp {
 				if (error.message.indexOf("Network Error") !== -1) message.error("网络错误！请您稍后重试");
 
 				// 根据响应的错误状态码，做不同的处理
-				if (response) checkStatus(response.status);
+				if (response) {
+					// 登录失效（status == 401）
+					if (response.status == ResultEnum.UNAUTHORIZED) {
+						store.dispatch(removeToken());
+						window.history.pushState({}, "", "/login");
+						window.location.reload();
+					}
+					checkStatus(response.status);
+				}
 
 				// 服务器结果都没有返回(可能服务器错误可能客户端断网) 断网处理:可以跳转到断网页面
 				if (!window.navigator.onLine) {
