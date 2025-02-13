@@ -1,0 +1,44 @@
+.container {
+    position: relative;
+    height: 100%;
+    padding-right: 10px;
+
+    .download-l {
+        height: inherit;
+        overflow-y: scroll;
+        background-color: $light-bg-color;
+        border-radius: 20px;
+
+        &::-webkit-scrollbar {
+            width: 0;
+        }
+
+        .filter-card {
+            border: 0;
+            border-radius: 20px;
+            margin-bottom: 10px;
+        }
+    }
+
+    .download-r {
+        height: inherit;
+        left: 10px;
+        background-color: $light-bg-color;
+        border-radius: 20px;
+
+        .table-card {
+            border: 0;
+            border-radius: 20px;
+            height: inherit;
+            overflow-y: scroll;
+
+            &::-webkit-scrollbar {
+                background-color: $light-main-bg-color !important;
+            }
+
+            &::-webkit-scrollbar-thumb {
+                background-color: $light-scrollbar-bg-color !important;
+            }
+        }
+    }
+}

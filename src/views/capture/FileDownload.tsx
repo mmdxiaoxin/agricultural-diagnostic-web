@@ -1,6 +1,7 @@
 import { FileMeta } from "@/api/interface";
 import { getFileList } from "@/api/modules/file";
 import { MIMETypeValue } from "@/constants/mimeType";
+import { formatSize } from "@/utils";
 import {
 	Button,
 	Card,
@@ -17,6 +18,7 @@ import {
 } from "antd";
 import dayjs from "dayjs";
 import React, { useEffect, useState } from "react";
+import styles from "./FileDownload.module.scss";
 
 type FileDownloadProps = {};
 type FilterParams = {
@@ -133,7 +135,7 @@ const FileDownload: React.FC<FileDownloadProps> = () => {
 			title: "大小",
 			dataIndex: "file_size",
 			key: "file_size",
-			render: (size: number) => `${size} B`
+			render: (size: number) => formatSize(size)
 		},
 		{
 			title: "最后更新",
@@ -144,10 +146,10 @@ const FileDownload: React.FC<FileDownloadProps> = () => {
 	];
 
 	return (
-		<Row gutter={16}>
+		<Row gutter={16} className={styles["container"]}>
 			{/* 左侧筛选区域 */}
-			<Col span={6}>
-				<div style={{ marginBottom: 16 }}>
+			<Col span={6} className={styles["download-l"]}>
+				<Card title="文件筛选" className={styles["filter-card"]}>
 					<Input
 						placeholder="文件名"
 						value={filters.fileName}
@@ -179,12 +181,12 @@ const FileDownload: React.FC<FileDownloadProps> = () => {
 					>
 						搜索
 					</Button>
-				</div>
+				</Card>
 			</Col>
 
 			{/* 右侧表格区域 */}
-			<Col span={18}>
-				<Card title="文件列表">
+			<Col span={18} className={styles["download-r"]}>
+				<Card title="文件列表" className={styles["table-card"]}>
 					<Table<FileMeta>
 						loading={loading}
 						columns={columns}
