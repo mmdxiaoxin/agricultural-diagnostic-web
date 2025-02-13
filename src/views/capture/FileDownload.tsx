@@ -73,7 +73,7 @@ const FileDownload: React.FC<FileDownloadProps> = () => {
 			const res = await getFileList({
 				page: params.page,
 				pageSize: params.pageSize,
-				original_file_name: filters.fileName,
+				original_file_name: params.fileName,
 				...dateRange
 			});
 			if (res.code !== 200 || !res.data) {
@@ -113,8 +113,9 @@ const FileDownload: React.FC<FileDownloadProps> = () => {
 						type="link"
 						style={{
 							padding: 0,
+							margin: 0,
 							height: "auto",
-							maxWidth: "200px",
+							maxWidth: "400px",
 							display: "inline-block",
 							whiteSpace: "nowrap",
 							overflow: "hidden",
@@ -180,6 +181,31 @@ const FileDownload: React.FC<FileDownloadProps> = () => {
 						style={{ width: "100%", marginTop: 16 }}
 					>
 						搜索
+					</Button>
+					<Button
+						onClick={() => {
+							setFilters(prev => ({
+								...prev,
+								page: 1,
+								pageSize: 10,
+								file_type: [],
+								fileName: "",
+								createdDateRange: null,
+								updatedDateRange: null
+							}));
+							handleSearch({
+								...filters,
+								page: 1,
+								pageSize: 10,
+								file_type: [],
+								fileName: "",
+								createdDateRange: null,
+								updatedDateRange: null
+							});
+						}}
+						style={{ width: "100%", marginTop: 16 }}
+					>
+						重置
 					</Button>
 				</Card>
 			</Col>
