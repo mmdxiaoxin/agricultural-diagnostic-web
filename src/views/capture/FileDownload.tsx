@@ -1,17 +1,17 @@
 import { FileMeta } from "@/api/interface";
 import { getFileList } from "@/api/modules/file";
-import { MIMETypeValue } from "@/constants/mimeType";
+import { MIME_TYPE, MIMETypeValue } from "@/constants/mimeType";
 import { formatSize, getFileTypeColor } from "@/utils";
 import {
 	Button,
 	Card,
+	Cascader,
 	Col,
 	DatePicker,
 	Image,
 	Input,
 	message,
 	Row,
-	Select,
 	Table,
 	TableColumnsType,
 	Tag,
@@ -23,7 +23,7 @@ import styles from "./FileDownload.module.scss";
 
 type FileDownloadProps = {};
 type FilterParams = {
-	file_type: MIMETypeValue[];
+	fileType: string[][];
 	fileName: string;
 	createdDateRange: [dayjs.Dayjs | null, dayjs.Dayjs | null] | null;
 	updatedDateRange: [dayjs.Dayjs | null, dayjs.Dayjs | null | null] | null;
@@ -32,11 +32,24 @@ type FilterParams = {
 	total: number;
 };
 
+// 级联选项数据结构
+const fileTypeOptions = Object.keys(MIME_TYPE).map(category => {
+	const types = MIME_TYPE[category as keyof typeof MIME_TYPE];
+	return {
+		value: category,
+		label: category,
+		children: Object.keys(types).map(type => ({
+			value: types[type as keyof typeof types],
+			label: type
+		}))
+	};
+});
+
 const FileDownload: React.FC<FileDownloadProps> = () => {
 	const [loading, setLoading] = useState<boolean>(false);
 	const [files, setFiles] = useState<FileMeta[]>([]);
 	const [filters, setFilters] = useState<FilterParams>({
-		file_type: [],
+		fileType: [],
 		fileName: "",
 		createdDateRange: null,
 		updatedDateRange: null,
@@ -45,10 +58,12 @@ const FileDownload: React.FC<FileDownloadProps> = () => {
 		total: 0
 	});
 
+	// 文件名筛选处理
 	const handleFileNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		setFilters(prev => ({ ...prev, fileName: e.target.value }));
 	};
 
+	// 日期范围筛选处理
 	const handleDateRangeChange = (
 		field: string,
 		dates: [dayjs.Dayjs | null, dayjs.Dayjs | null] | null
@@ -56,6 +71,7 @@ const FileDownload: React.FC<FileDownloadProps> = () => {
 		setFilters(prev => ({ ...prev, [field]: dates }));
 	};
 
+	// 查询文件列表
 	const handleSearch = async (params: FilterParams) => {
 		try {
 			setLoading(true);
@@ -71,10 +87,12 @@ const FileDownload: React.FC<FileDownloadProps> = () => {
 					: undefined,
 				updatedEnd: params.updatedDateRange ? dayjs(params.updatedDateRange[1]).format() : undefined
 			};
+			const file_type = params.fileType.map(types => types[types.length - 1]);
 			const res = await getFileList({
 				page: params.page,
 				pageSize: params.pageSize,
 				original_file_name: params.fileName,
+				file_type: file_type as MIMETypeValue[],
 				...dateRange
 			});
 			if (res.code !== 200 || !res.data) {
@@ -159,10 +177,14 @@ const FileDownload: React.FC<FileDownloadProps> = () => {
 						onChange={handleFileNameChange}
 						style={{ marginBottom: 16 }}
 					/>
-					<Select
-						mode="multiple"
-						placeholder="文件类型"
-						value={filters.file_type}
+					<Cascader
+						options={fileTypeOptions}
+						multiple
+						placeholder="选择文件类型"
+						value={filters.fileType}
+						onChange={(value: string[][]) => {
+							setFilters(prev => ({ ...prev, fileType: value }));
+						}}
 						style={{ width: "100%", marginBottom: 16 }}
 					/>
 					<DatePicker.RangePicker
@@ -190,7 +212,7 @@ const FileDownload: React.FC<FileDownloadProps> = () => {
 								...prev,
 								page: 1,
 								pageSize: 10,
-								file_type: [],
+								fileType: [],
 								fileName: "",
 								createdDateRange: null,
 								updatedDateRange: null
@@ -199,7 +221,7 @@ const FileDownload: React.FC<FileDownloadProps> = () => {
 								...filters,
 								page: 1,
 								pageSize: 10,
-								file_type: [],
+								fileType: [],
 								fileName: "",
 								createdDateRange: null,
 								updatedDateRange: null
