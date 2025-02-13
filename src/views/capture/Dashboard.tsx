@@ -3,7 +3,7 @@ import { getFileList } from "@/api/modules/file";
 import DiskSpaceUsageChart from "@/components/ECharts/DiskSpaceUsageChart";
 import FileCard from "@/components/FileCard";
 import { formatSize } from "@/utils";
-import { Button, Card, Col, message, Row, Table, TableColumnsType, Tooltip } from "antd";
+import { Button, Card, Col, Image, message, Row, Table, TableColumnsType, Tooltip } from "antd";
 import moment from "moment";
 import { CSSProperties, useEffect, useMemo, useState } from "react";
 import styles from "./Dashboard.module.scss";
@@ -66,7 +66,14 @@ const Dashboard = () => {
 			dataIndex: "original_file_name",
 			key: "original_file_name",
 			render: (text: string, record: FileMeta) => (
-				<Tooltip title={text}>
+				<Tooltip
+					title={
+						<div>
+							{record.file_type.startsWith("image") && <Image src={record.temp_link} />}
+							{text}
+						</div>
+					}
+				>
 					<Button
 						type="link"
 						onClick={() => handleSelect(record)}

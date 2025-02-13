@@ -7,6 +7,7 @@ import {
 	Card,
 	Col,
 	Empty,
+	Image,
 	message,
 	Row,
 	Table,
@@ -109,7 +110,14 @@ const FileUpload: React.FC<FileUploadProps> = () => {
 			dataIndex: "original_file_name",
 			key: "original_file_name",
 			render: (text: string, record: FileMeta) => (
-				<Tooltip title={text}>
+				<Tooltip
+					title={
+						<div>
+							{record.file_type.startsWith("image") && <Image src={record.temp_link} />}
+							{text}
+						</div>
+					}
+				>
 					<Button
 						type="link"
 						onClick={() => handleSelect(record)}
