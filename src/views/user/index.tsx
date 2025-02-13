@@ -1,7 +1,7 @@
 import { DictItem, UserItem, UserListParams } from "@/api/interface";
 import { getRoleDict } from "@/api/modules/auth";
 import { deleteUserById, getUserList, resetUserById } from "@/api/modules/user";
-import { ROLE_COLOR } from "@/enums";
+import { ROLE_COLOR } from "@/constants";
 import {
 	DeleteOutlined,
 	EditOutlined,

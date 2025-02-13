@@ -1,6 +1,7 @@
 import { FileMeta, ResUploadFile } from "@/api/interface";
 import { getFileList, uploadFile } from "@/api/modules/file";
-import { formatSize } from "@/utils";
+import { MIMETypeValue } from "@/constants";
+import { formatSize, getFileTypeColor } from "@/utils";
 import { UploadOutlined } from "@ant-design/icons";
 import {
 	Button,
@@ -12,6 +13,7 @@ import {
 	Row,
 	Table,
 	TableColumnsType,
+	Tag,
 	Tooltip,
 	Upload
 } from "antd";
@@ -139,7 +141,8 @@ const FileUpload: React.FC<FileUploadProps> = () => {
 		{
 			title: "文件类型",
 			dataIndex: "file_type",
-			key: "file_type"
+			key: "file_type",
+			render: (type: MIMETypeValue) => <Tag color={getFileTypeColor(type)}>{type}</Tag>
 		},
 		{
 			title: "大小",

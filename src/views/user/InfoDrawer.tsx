@@ -1,7 +1,7 @@
 import { ResUserDetail } from "@/api/interface";
 import { getRoleDict } from "@/api/modules/auth";
 import { createUser, getUserById, updateUserById } from "@/api/modules/user"; // 添加了createUser函数
-import { ROLE_COLOR } from "@/enums";
+import { ROLE_COLOR } from "@/constants";
 import { HomeOutlined, PhoneOutlined } from "@ant-design/icons";
 import { Button, Drawer, Form, Input, message, Select, SelectProps, Space, Tag } from "antd";
 import dayjs from "dayjs";

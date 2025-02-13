@@ -2,9 +2,20 @@ import { FileMeta } from "@/api/interface";
 import { getFileList } from "@/api/modules/file";
 import DiskSpaceUsageChart from "@/components/ECharts/DiskSpaceUsageChart";
 import FileCard from "@/components/FileCard";
-import MIME_TYPE from "@/constants/mimeType";
-import { formatSize } from "@/utils";
-import { Button, Card, Col, Image, message, Row, Table, TableColumnsType, Tooltip } from "antd";
+import MIME_TYPE, { MIMETypeValue } from "@/constants/mimeType";
+import { formatSize, getFileTypeColor } from "@/utils";
+import {
+	Button,
+	Card,
+	Col,
+	Image,
+	message,
+	Row,
+	Table,
+	TableColumnsType,
+	Tag,
+	Tooltip
+} from "antd";
 import dayjs from "dayjs";
 import { CSSProperties, useEffect, useMemo, useState } from "react";
 import styles from "./Dashboard.module.scss";
@@ -114,7 +125,8 @@ const Dashboard = () => {
 		{
 			title: "文件类型",
 			dataIndex: "file_type",
-			key: "file_type"
+			key: "file_type",
+			render: (type: MIMETypeValue) => <Tag color={getFileTypeColor(type)}>{type}</Tag>
 		},
 		{
 			title: "大小",

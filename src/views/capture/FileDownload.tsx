@@ -1,7 +1,7 @@
 import { FileMeta } from "@/api/interface";
 import { getFileList } from "@/api/modules/file";
 import { MIMETypeValue } from "@/constants/mimeType";
-import { formatSize } from "@/utils";
+import { formatSize, getFileTypeColor } from "@/utils";
 import {
 	Button,
 	Card,
@@ -14,6 +14,7 @@ import {
 	Select,
 	Table,
 	TableColumnsType,
+	Tag,
 	Tooltip
 } from "antd";
 import dayjs from "dayjs";
@@ -130,7 +131,8 @@ const FileDownload: React.FC<FileDownloadProps> = () => {
 		{
 			title: "文件类型",
 			dataIndex: "file_type",
-			key: "file_type"
+			key: "file_type",
+			render: (type: MIMETypeValue) => <Tag color={getFileTypeColor(type)}>{type}</Tag>
 		},
 		{
 			title: "大小",
@@ -139,9 +141,9 @@ const FileDownload: React.FC<FileDownloadProps> = () => {
 			render: (size: number) => formatSize(size)
 		},
 		{
-			title: "最后更新",
-			dataIndex: "updatedAt",
-			key: "updatedAt",
+			title: "创建时间",
+			dataIndex: "createdAt",
+			key: "createdAt",
 			render: (updatedAt: string) => dayjs(updatedAt).format("YYYY-MM-DD HH:mm")
 		}
 	];
