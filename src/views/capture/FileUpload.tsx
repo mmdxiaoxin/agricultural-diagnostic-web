@@ -97,8 +97,10 @@ const FileUpload: React.FC<FileUploadProps> = () => {
 		setFileList(fileList);
 	};
 
-	const handleSelect = (id: number) => {
-		console.log("select file id: ", id);
+	const handleSelect = (file: FileMeta) => {
+		if (file.file_type.startsWith("image")) {
+			window.open(file.temp_link);
+		}
 	};
 
 	const columns: TableColumnsType<FileMeta> = [
@@ -110,7 +112,7 @@ const FileUpload: React.FC<FileUploadProps> = () => {
 				<Tooltip title={text}>
 					<Button
 						type="link"
-						onClick={() => handleSelect(record.id)}
+						onClick={() => handleSelect(record)}
 						style={{
 							padding: 0,
 							height: "auto",

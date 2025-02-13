@@ -50,8 +50,10 @@ const Dashboard = () => {
 		boxSizing: "border-box"
 	});
 
-	const handleSelectFile = (id: number) => {
-		console.log("select file id: ", id);
+	const handleSelect = (file: FileMeta) => {
+		if (file.file_type.startsWith("image")) {
+			window.open(file.temp_link);
+		}
 	};
 
 	useEffect(() => {
@@ -67,7 +69,7 @@ const Dashboard = () => {
 				<Tooltip title={text}>
 					<Button
 						type="link"
-						onClick={() => handleSelectFile(record.id)}
+						onClick={() => handleSelect(record)}
 						style={{
 							padding: 0,
 							height: "auto",

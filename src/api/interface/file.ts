@@ -13,6 +13,7 @@ export interface FileMeta {
 	updatedAt?: string;
 	created_by?: string;
 	updated_by?: string;
+	temp_link?: string;
 	version: number;
 }
 
