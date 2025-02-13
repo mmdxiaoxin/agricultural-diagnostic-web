@@ -3,8 +3,9 @@ import { getFileList } from "@/api/modules/file";
 import DiskSpaceUsageChart from "@/components/ECharts/DiskSpaceUsageChart";
 import FileCard from "@/components/FileCard";
 import { formatSize } from "@/utils";
-import { Button, Card, Col, message, Row, Table, TableColumnsType } from "antd";
-import { useEffect, useMemo, useState } from "react";
+import { Button, Card, Col, message, Row, Table, TableColumnsType, Tooltip } from "antd";
+import moment from "moment";
+import { CSSProperties, useEffect, useMemo, useState } from "react";
 import styles from "./Dashboard.module.scss";
 
 const totalSpace = 1_000_000_000; // 1GB
@@ -43,6 +44,16 @@ const Dashboard = () => {
 		}
 	};
 
+	const fileCardStyle = (type: string): CSSProperties => ({
+		border: fileType === type ? "1px solid #1890ff" : "",
+		borderRadius: "20px",
+		boxSizing: "border-box"
+	});
+
+	const handleSelectFile = (id: number) => {
+		console.log("select file id: ", id);
+	};
+
 	useEffect(() => {
 		fetchFileList(pagination.page, pagination.pageSize, fileType);
 	}, [fileType]);
@@ -51,7 +62,26 @@ const Dashboard = () => {
 		{
 			title: "文件名",
 			dataIndex: "original_file_name",
-			key: "original_file_name"
+			key: "original_file_name",
+			render: (text: string, record: FileMeta) => (
+				<Tooltip title={text}>
+					<Button
+						type="link"
+						onClick={() => handleSelectFile(record.id)}
+						style={{
+							padding: 0,
+							height: "auto",
+							maxWidth: "200px",
+							display: "inline-block",
+							whiteSpace: "nowrap",
+							overflow: "hidden",
+							textOverflow: "ellipsis"
+						}}
+					>
+						{text}
+					</Button>
+				</Tooltip>
+			)
 		},
 		{
 			title: "文件类型",
@@ -67,7 +97,8 @@ const Dashboard = () => {
 		{
 			title: "最后更新",
 			dataIndex: "updatedAt",
-			key: "updatedAt"
+			key: "updatedAt",
+			render: (updatedAt: string) => moment(updatedAt).format("YYYY-MM-DD HH:mm")
 		}
 	];
 
@@ -99,6 +130,7 @@ const Dashboard = () => {
 							size={111234124}
 							lastUpdated="2024.11.17 19:11"
 							onClick={() => setFileType("")}
+							style={fileCardStyle("")}
 						/>
 					</Col>
 					<Col span={12}>
@@ -109,6 +141,7 @@ const Dashboard = () => {
 							icon="FileImageOutlined"
 							color="#4892ff"
 							onClick={() => setFileType("image")}
+							style={fileCardStyle("image")}
 						/>
 					</Col>
 				</Row>
@@ -121,6 +154,7 @@ const Dashboard = () => {
 							icon="VideoCameraOutlined"
 							lastUpdated="2024.7.17 11:11"
 							onClick={() => setFileType("audio")}
+							style={fileCardStyle("audio")}
 						/>
 					</Col>
 					<Col span={12}>
@@ -130,6 +164,7 @@ const Dashboard = () => {
 							icon="FileZipOutlined"
 							lastUpdated="2024.2.17 11:11"
 							onClick={() => setFileType("application/pdf")}
+							style={fileCardStyle("application/pdf")}
 						/>
 					</Col>
 				</Row>
