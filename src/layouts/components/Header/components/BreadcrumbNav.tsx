@@ -1,7 +1,7 @@
 import IconComponent, { Icons } from "@/components/IconComponent";
 import { HOME_URL } from "@/config/config";
 import { useAppSelector } from "@/hooks/useAppSelector";
-import { Breadcrumb, BreadcrumbProps } from "antd";
+import { Breadcrumb, BreadcrumbProps, Space } from "antd";
 import { useLocation } from "react-router";
 
 const BreadcrumbNav = () => {
@@ -22,10 +22,10 @@ const BreadcrumbNav = () => {
 		...breadcrumbList.map(item => ({
 			title:
 				item.title !== "首页" ? (
-					<>
+					<Space>
 						<IconComponent name={item.icon as keyof typeof Icons} />
 						{item.title}
-					</>
+					</Space>
 				) : null
 		}))
 	];
