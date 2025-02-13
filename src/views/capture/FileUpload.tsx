@@ -96,12 +96,6 @@ const FileUpload: React.FC<FileUploadProps> = () => {
 		setFileList(fileList);
 	};
 
-	const handleSelect = (file: FileMeta) => {
-		if (file.file_type.startsWith("image")) {
-			window.open(file.temp_link);
-		}
-	};
-
 	const columns: TableColumnsType<FileMeta> = [
 		{
 			title: "文件名",
@@ -118,7 +112,6 @@ const FileUpload: React.FC<FileUploadProps> = () => {
 				>
 					<Button
 						type="link"
-						onClick={() => handleSelect(record)}
 						style={{
 							padding: 0,
 							height: "auto",
