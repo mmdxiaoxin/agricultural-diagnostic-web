@@ -103,7 +103,7 @@ const Dashboard = () => {
 	];
 
 	return (
-		<Row className={styles["dashboard"]} gutter={10}>
+		<Row className={styles["container"]} gutter={10}>
 			<Col span={12} className={styles["dashboard-l"]}>
 				<Row className={styles["dashboard-row"]}>
 					<Col span={24}>

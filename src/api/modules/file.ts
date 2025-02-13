@@ -13,7 +13,8 @@ export const uploadFile = async (file: File) => {
 	return http.post<ResUploadFile>("/file/upload/single", formData, {
 		headers: {
 			"Content-Type": "multipart/form-data"
-		}
+		},
+		loading: false
 	});
 };
 
