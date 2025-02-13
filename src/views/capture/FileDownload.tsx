@@ -239,7 +239,10 @@ const FileDownload: React.FC<FileDownloadProps> = () => {
 					/>
 					<Button
 						type="primary"
-						onClick={() => handleSearch(filters)}
+						onClick={() => {
+							setFilters(prev => ({ ...prev, page: 1 }));
+							handleSearch({ ...filters, page: 1 });
+						}}
 						style={{ width: "100%", marginTop: 16 }}
 					>
 						搜索
