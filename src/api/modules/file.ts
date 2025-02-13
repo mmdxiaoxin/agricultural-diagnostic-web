@@ -22,13 +22,29 @@ export const uploadFile = async (file: File) => {
 	});
 };
 
+export interface DownloadProgress {
+	[fileId: string]: number; // 每个文件的下载进度
+}
+
+export interface DownloadOptions {
+	// 可选的进度回调函数
+	onProgress?: (fileId: string | number, progress: number) => void;
+	// 可选的文件类型映射
+	fileNameMapping?: { [fileId: string]: string };
+	// 是否创建下载链接
+	createLink?: boolean;
+}
+
 // * 文件下载接口 - 支持断点续传
-export const downloadFile = async (fileId: string | number) => {
+export const downloadFile = async (
+	fileId: string | number,
+	options: DownloadOptions = {}
+): Promise<Blob> => {
 	const url = `/api/file/download/${fileId}`; // 后端接口
 	const token = localStorage.getItem("token") || store.getState().auth.token;
-
 	let startByte = 0;
 	let fileBlob: Blob | null = null;
+	let totalDownloaded = 0; // 累计已下载的字节数
 
 	// 请求文件的大小
 	const headResponse = await axios.head(url, { headers: { Authorization: `Bearer ${token}` } });
@@ -50,8 +66,15 @@ export const downloadFile = async (fileId: string | number) => {
 			headers: { Range: range, Authorization: `Bearer ${token}` },
 			responseType: "blob",
 			onDownloadProgress: (progressEvent: AxiosProgressEvent) => {
-				const progress = Math.round((progressEvent.loaded / totalSize) * 100);
-				console.log(`下载进度：${progress}%`);
+				totalDownloaded += progressEvent.loaded;
+
+				// 确保进度不会超过100%
+				const progress = Math.min(Math.round((totalDownloaded / totalSize) * 100), 100);
+
+				// 调用传入的进度回调函数
+				if (options.onProgress) {
+					options.onProgress(fileId, progress);
+				}
 			}
 		});
 
@@ -75,11 +98,26 @@ export const downloadFile = async (fileId: string | number) => {
 		? contentDisposition.split("filename=")[1].replace(/"/g, "")
 		: `file_${fileId}`;
 
-	// 创建文件下载链接
-	const link = document.createElement("a");
-	link.href = URL.createObjectURL(fileBlob);
-	link.download = fileName;
-	link.click();
+	// 创建下载链接
+	if (options.createLink) {
+		const downloadLink = document.createElement("a");
+		downloadLink.href = URL.createObjectURL(fileBlob);
+		downloadLink.download = options.fileNameMapping?.[fileId] || fileName;
+		downloadLink.click();
+	}
+
+	return fileBlob;
+};
+
+// * 批量下载文件
+export const downloadMultipleFiles = async (
+	fileIds: (string | number)[],
+	options: DownloadOptions = {}
+): Promise<Blob[]> => {
+	const downloadPromises = fileIds.map(fileId => downloadFile(fileId, options));
+
+	// 等待所有文件下载完成
+	return await Promise.all(downloadPromises);
 };
 
 // * 文件删除接口

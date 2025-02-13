@@ -1,5 +1,5 @@
 import { FileMeta } from "@/api/interface";
-import { downloadFile, getFileList } from "@/api/modules/file";
+import { downloadMultipleFiles, DownloadProgress, getFileList } from "@/api/modules/file";
 import { MIME_TYPE, MIMETypeValue } from "@/constants/mimeType";
 import { formatSize, getFileTypeColor } from "@/utils";
 import {
@@ -11,6 +11,7 @@ import {
 	Image,
 	Input,
 	message,
+	Progress,
 	Row,
 	Table,
 	TableColumnsType,
@@ -47,6 +48,7 @@ const fileTypeOptions = Object.keys(MIME_TYPE).map(category => {
 });
 
 const FileDownload: React.FC<FileDownloadProps> = () => {
+	const [progress, setProgress] = useState<DownloadProgress>({});
 	const [loading, setLoading] = useState<boolean>(false);
 	const [files, setFiles] = useState<FileMeta[]>([]);
 	const [filters, setFilters] = useState<FilterParams>({
@@ -123,21 +125,20 @@ const FileDownload: React.FC<FileDownloadProps> = () => {
 		}
 
 		try {
-			setLoading(true);
-			// 获取选中的文件
-			const selectedFiles = files.filter(file => selectedRowKeys.includes(file.id));
-			// 批量下载
-			await Promise.all(
-				selectedFiles.map(async file => {
-					await downloadFile(file.id);
-				})
-			);
+			await downloadMultipleFiles(selectedRowKeys, {
+				onProgress: (fileId, progressValue) => {
+					setProgress(prevProgress => ({
+						...prevProgress,
+						[fileId]: progressValue
+					}));
+				},
+				createLink: true
+			});
 		} catch (error: any) {
 			message.error("文件下载失败！");
-		} finally {
-			setLoading(false);
 		}
 
+		setProgress({});
 		message.success("文件下载成功！");
 	};
 
@@ -164,6 +165,7 @@ const FileDownload: React.FC<FileDownloadProps> = () => {
 						</div>
 					}
 				>
+					{progress[record.id] > 0 && <Progress percent={progress[record.id] || 0} size="small" />}
 					<Button
 						type="link"
 						style={{
