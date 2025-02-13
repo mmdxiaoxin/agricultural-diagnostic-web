@@ -17,13 +17,20 @@ const DiskSpaceUsageChart: React.FC<DiskSpaceUsageChartProps> = ({
 	let option: echarts.EChartsOption = {
 		tooltip: {
 			trigger: "item",
-			formatter: "{a} <br/>{b}: {c} MB ({d}%)"
+			formatter: "{a} <br/>{b}: {c} MB ({d}%)",
+			textStyle: {
+				fontSize: 16
+			}
 		},
 		series: [
 			{
 				name: "存储空间",
 				type: "pie",
 				radius: ["40%", "70%"], // 设置内外半径，使其成为环形图
+				padAngle: 5,
+				itemStyle: {
+					borderRadius: 5
+				},
 				avoidLabelOverlap: false,
 				label: {
 					show: true,
@@ -57,6 +64,9 @@ const DiskSpaceUsageChart: React.FC<DiskSpaceUsageChartProps> = ({
 						name: "剩余空间",
 						itemStyle: {
 							color: "#81b2ff"
+						},
+						label: {
+							show: false
 						}
 					}
 				]
