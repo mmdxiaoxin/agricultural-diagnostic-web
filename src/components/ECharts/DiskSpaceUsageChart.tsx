@@ -38,7 +38,7 @@ const DiskSpaceUsageChart: React.FC<DiskSpaceUsageChartProps> = ({
 						show: true,
 						fontSize: "20",
 						fontWeight: "bold",
-						color: "#fff"
+						color: "#1890ff"
 					}
 				},
 				labelLine: {

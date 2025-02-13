@@ -1,3 +1,4 @@
+import { MIMETypeValue } from "@/constants/mimeType";
 import { PageData } from ".";
 
 export interface FileMeta {
@@ -7,7 +8,7 @@ export interface FileMeta {
 	storage_file_name: string;
 	file_path: string;
 	file_size: number;
-	file_type: string;
+	file_type: MIMETypeValue;
 	file_md5: string;
 	createdAt?: string;
 	updatedAt?: string;
@@ -20,7 +21,8 @@ export interface FileMeta {
 export type ReqFileListParams = {
 	page: number;
 	pageSize: number;
-} & Partial<Pick<FileMeta, "id" | "original_file_name" | "file_type">>;
+	file_type?: MIMETypeValue | MIMETypeValue[];
+} & Partial<Pick<FileMeta, "id" | "original_file_name">>;
 export type ResFileList = PageData<FileMeta>;
 
 export type ResUploadFile = FileMeta;

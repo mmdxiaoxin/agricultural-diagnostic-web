@@ -2,6 +2,7 @@ import { FileMeta } from "@/api/interface";
 import { getFileList } from "@/api/modules/file";
 import DiskSpaceUsageChart from "@/components/ECharts/DiskSpaceUsageChart";
 import FileCard from "@/components/FileCard";
+import MIME_TYPE from "@/constants/mimeType";
 import { formatSize } from "@/utils";
 import { Button, Card, Col, Image, message, Row, Table, TableColumnsType, Tooltip } from "antd";
 import moment from "moment";
@@ -17,21 +18,39 @@ const Dashboard = () => {
 	const formattedTotalSpace = formatSize(totalSpace);
 
 	// 文件类型筛选
-	const [fileType, setFileType] = useState<string>();
+	const [selectedType, setSelectedType] = useState<string>();
 
 	// 分页数据
 	const [fileList, setFileList] = useState<FileMeta[]>([]);
 	const [pagination, setPagination] = useState({ page: 1, pageSize: 7, total: 0 });
 
-	const fetchFileList = async (page: number, pageSize: number, fileType?: string) => {
+	const getFileType = (type: string) => {
+		switch (type) {
+			case "image":
+				return Object.values(MIME_TYPE.Image);
+			case "audio-video":
+				return [...Object.values(MIME_TYPE.Video), ...Object.values(MIME_TYPE.Audio)];
+			case "other":
+				return [
+					...Object.values(MIME_TYPE.Application),
+					...Object.values(MIME_TYPE.App),
+					...Object.values(MIME_TYPE.Font)
+				];
+			default:
+				return [];
+		}
+	};
+
+	const fetchFileList = async (page: number, pageSize: number, selectedType?: string) => {
 		try {
 			setLoading(true);
+			const file_type = getFileType(selectedType!);
 			const params = {
 				page,
 				pageSize,
-				file_type: fileType
+				file_type: file_type.length ? file_type : undefined
 			};
-			const res = await getFileList({ ...params });
+			const res = await getFileList(params);
 			if (res.code !== 200 || !res.data) {
 				throw new Error(res.message);
 			}
@@ -45,7 +64,7 @@ const Dashboard = () => {
 	};
 
 	const fileCardStyle = (type: string): CSSProperties => ({
-		border: fileType === type ? "1px solid #1890ff" : "",
+		border: selectedType === type ? "1px solid #1890ff" : "",
 		borderRadius: "20px",
 		boxSizing: "border-box"
 	});
@@ -57,8 +76,8 @@ const Dashboard = () => {
 	};
 
 	useEffect(() => {
-		fetchFileList(pagination.page, pagination.pageSize, fileType);
-	}, [fileType]);
+		fetchFileList(pagination.page, pagination.pageSize, selectedType);
+	}, [selectedType]);
 
 	const columns: TableColumnsType<FileMeta> = [
 		{
@@ -138,8 +157,8 @@ const Dashboard = () => {
 							color="#ff4848"
 							size={111234124}
 							lastUpdated="2024.11.17 19:11"
-							onClick={() => setFileType("")}
-							style={fileCardStyle("")}
+							onClick={() => setSelectedType("All")}
+							style={fileCardStyle("All")}
 						/>
 					</Col>
 					<Col span={12}>
@@ -149,7 +168,7 @@ const Dashboard = () => {
 							lastUpdated="2022.12.17 21:11"
 							icon="FileImageOutlined"
 							color="#4892ff"
-							onClick={() => setFileType("image")}
+							onClick={() => setSelectedType("image")}
 							style={fileCardStyle("image")}
 						/>
 					</Col>
@@ -162,8 +181,8 @@ const Dashboard = () => {
 							color="#aa48ff"
 							icon="VideoCameraOutlined"
 							lastUpdated="2024.7.17 11:11"
-							onClick={() => setFileType("audio")}
-							style={fileCardStyle("audio")}
+							onClick={() => setSelectedType("audio-video")}
+							style={fileCardStyle("audio-video")}
 						/>
 					</Col>
 					<Col span={12}>
@@ -172,8 +191,8 @@ const Dashboard = () => {
 							size={98586}
 							icon="FileZipOutlined"
 							lastUpdated="2024.2.17 11:11"
-							onClick={() => setFileType("application/pdf")}
-							style={fileCardStyle("application/pdf")}
+							onClick={() => setSelectedType("other")}
+							style={fileCardStyle("other")}
 						/>
 					</Col>
 				</Row>
@@ -182,7 +201,7 @@ const Dashboard = () => {
 				<Card
 					title="文件列表"
 					className={styles["file-card"]}
-					extra={<Button onClick={() => setFileType(undefined)}>重置</Button>}
+					extra={<Button onClick={() => setSelectedType(undefined)}>重置</Button>}
 				>
 					<Table<FileMeta>
 						loading={loading}
@@ -192,9 +211,14 @@ const Dashboard = () => {
 							current: pagination.page,
 							pageSize: pagination.pageSize,
 							total: pagination.total,
+							showSizeChanger: true,
+							showQuickJumper: true,
+							showTotal(total) {
+								return `共 ${total} 条`;
+							},
 							onChange(page, pageSize) {
 								setPagination({ ...pagination, page, pageSize });
-								fetchFileList(page, pageSize, fileType);
+								fetchFileList(page, pageSize, selectedType);
 							}
 						}}
 						rowKey="id"

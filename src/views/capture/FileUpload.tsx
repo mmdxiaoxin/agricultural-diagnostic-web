@@ -207,6 +207,11 @@ const FileUpload: React.FC<FileUploadProps> = () => {
 							current: pagination.page,
 							pageSize: pagination.pageSize,
 							total: pagination.total,
+							showSizeChanger: true,
+							showQuickJumper: true,
+							showTotal(total) {
+								return `共 ${total} 条`;
+							},
 							onChange(page, pageSize) {
 								setPagination({ ...pagination, page, pageSize });
 								fetchRecordList(page, pageSize);
