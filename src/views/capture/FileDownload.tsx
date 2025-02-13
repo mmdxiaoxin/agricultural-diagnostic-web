@@ -1,5 +1,5 @@
 import { FileMeta } from "@/api/interface";
-import { getFileList } from "@/api/modules/file";
+import { downloadFile, getFileList } from "@/api/modules/file";
 import { MIME_TYPE, MIMETypeValue } from "@/constants/mimeType";
 import { formatSize, getFileTypeColor } from "@/utils";
 import {
@@ -17,6 +17,7 @@ import {
 	Tag,
 	Tooltip
 } from "antd";
+import { TableRowSelection } from "antd/es/table/interface";
 import dayjs from "dayjs";
 import React, { useEffect, useState } from "react";
 import styles from "./FileDownload.module.scss";
@@ -57,6 +58,11 @@ const FileDownload: React.FC<FileDownloadProps> = () => {
 		pageSize: 10,
 		total: 0
 	});
+	const [selectedRowKeys, setSelectedRowKeys] = useState<number[]>([]);
+
+	const handleSelect = (selectedRowKeys: React.Key[]) => {
+		setSelectedRowKeys(selectedRowKeys as number[]);
+	};
 
 	// 文件名筛选处理
 	const handleFileNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -110,9 +116,39 @@ const FileDownload: React.FC<FileDownloadProps> = () => {
 		}
 	};
 
+	const handleBatchDownload = async () => {
+		if (selectedRowKeys.length === 0) {
+			message.error("请选择至少一个文件进行下载");
+			return;
+		}
+
+		try {
+			setLoading(true);
+			// 获取选中的文件
+			const selectedFiles = files.filter(file => selectedRowKeys.includes(file.id));
+			// 批量下载
+			await Promise.all(
+				selectedFiles.map(async file => {
+					await downloadFile(file.id);
+				})
+			);
+		} catch (error: any) {
+			message.error("文件下载失败！");
+		} finally {
+			setLoading(false);
+		}
+
+		message.success("文件下载成功！");
+	};
+
 	useEffect(() => {
 		handleSearch(filters);
 	}, []);
+
+	const rowSelection: TableRowSelection<FileMeta> = {
+		selectedRowKeys,
+		onChange: handleSelect
+	};
 
 	const columns: TableColumnsType<FileMeta> = [
 		{
@@ -236,10 +272,19 @@ const FileDownload: React.FC<FileDownloadProps> = () => {
 
 			{/* 右侧表格区域 */}
 			<Col span={18} className={styles["download-r"]}>
-				<Card title="文件列表" className={styles["table-card"]}>
+				<Card
+					title="文件列表"
+					className={styles["table-card"]}
+					extra={
+						<Button type="primary" onClick={handleBatchDownload} loading={loading}>
+							批量下载
+						</Button>
+					}
+				>
 					<Table<FileMeta>
 						loading={loading}
 						columns={columns}
+						rowSelection={rowSelection}
 						dataSource={files}
 						rowKey="id"
 						pagination={{
