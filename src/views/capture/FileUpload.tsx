@@ -70,7 +70,6 @@ const FileUpload: React.FC<FileUploadProps> = () => {
 
 			if (response.code === 200 && response.data) {
 				onSuccess?.(response.data, file);
-				message.success("文件上传成功！😀");
 				fetchRecordList(pagination.page, pagination.pageSize);
 			} else {
 				throw new Error(response.message);
@@ -92,9 +91,7 @@ const FileUpload: React.FC<FileUploadProps> = () => {
 	};
 
 	// 处理文件变化
-	const handleChange = (info: UploadChangeParam) => {
-		let fileList = [...info.fileList];
-
+	const handleChange = ({ fileList }: UploadChangeParam<UploadFile<ResUploadFile>>) => {
 		// 更新显示的文件列表
 		setFileList(fileList);
 	};
