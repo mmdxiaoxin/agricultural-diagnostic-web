@@ -4,7 +4,7 @@ import { getUserProfile, updateUserProfile } from "@/api/modules/user";
 import { ROLE_COLOR } from "@/enums";
 import { HomeOutlined, PhoneOutlined, UserOutlined } from "@ant-design/icons";
 import { Button, Form, Input, message, Modal, Space, Tag } from "antd";
-import moment from "moment";
+import dayjs from "dayjs";
 import { forwardRef, useImperativeHandle, useState } from "react";
 
 export interface InfoModalProps {
@@ -160,7 +160,7 @@ const InfoModal = forwardRef<InfoModalRef, InfoModalProps>(({ onSave }, ref) => 
 				</Form.Item>
 
 				<Form.Item label="创建时间" name="createdAt">
-					<span>{moment(formData.createdAt).format("YYYY-MM-DD HH:mm:ss")}</span>
+					<span>{dayjs(formData.createdAt).format("YYYY-MM-DD HH:mm:ss")}</span>
 				</Form.Item>
 
 				{isEditing && (

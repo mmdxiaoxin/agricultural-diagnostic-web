@@ -5,7 +5,7 @@ import FileCard from "@/components/FileCard";
 import MIME_TYPE from "@/constants/mimeType";
 import { formatSize } from "@/utils";
 import { Button, Card, Col, Image, message, Row, Table, TableColumnsType, Tooltip } from "antd";
-import moment from "moment";
+import dayjs from "dayjs";
 import { CSSProperties, useEffect, useMemo, useState } from "react";
 import styles from "./Dashboard.module.scss";
 
@@ -126,7 +126,7 @@ const Dashboard = () => {
 			title: "最后更新",
 			dataIndex: "updatedAt",
 			key: "updatedAt",
-			render: (updatedAt: string) => moment(updatedAt).format("YYYY-MM-DD HH:mm")
+			render: (updatedAt: string) => dayjs(updatedAt).format("YYYY-MM-DD HH:mm")
 		}
 	];
 

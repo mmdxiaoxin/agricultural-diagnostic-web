@@ -21,7 +21,11 @@ export interface FileMeta {
 export type ReqFileListParams = {
 	page: number;
 	pageSize: number;
-	file_type?: MIMETypeValue | MIMETypeValue[];
+	file_type?: MIMETypeValue | "" | MIMETypeValue[];
+	createdStart?: string;
+	createdEnd?: string;
+	updatedStart?: string;
+	updatedEnd?: string;
 } & Partial<Pick<FileMeta, "id" | "original_file_name">>;
 export type ResFileList = PageData<FileMeta>;
 

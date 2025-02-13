@@ -27,7 +27,7 @@ import {
 import { useEffect, useRef, useState } from "react";
 import styles from "./index.module.scss";
 import InfoDrawer, { InfoDrawerRef } from "./InfoDrawer";
-import moment from "moment";
+import dayjs from "dayjs";
 
 const User = () => {
 	const infoDrawerRef = useRef<InfoDrawerRef>(null);
@@ -131,7 +131,7 @@ const User = () => {
 			key: "createdAt",
 			align: "center",
 			sortDirections: ["descend", "ascend"],
-			render: text => <span>{moment(text).format("YYYY-MM-DD HH:mm:ss")}</span>,
+			render: text => <span>{dayjs(text).format("YYYY-MM-DD HH:mm:ss")}</span>,
 			sorter: (a, b) => {
 				if (a.createdAt && b.createdAt) {
 					const aTime = new Date(a.createdAt).getTime();
@@ -148,7 +148,7 @@ const User = () => {
 			key: "updatedAt",
 			align: "center",
 			sortDirections: ["descend", "ascend"],
-			render: text => <span>{moment(text).format("YYYY-MM-DD HH:mm:ss")}</span>,
+			render: text => <span>{dayjs(text).format("YYYY-MM-DD HH:mm:ss")}</span>,
 			sorter: (a, b) => {
 				if (a.createdAt && b.createdAt) {
 					const aTime = new Date(a.createdAt).getTime();

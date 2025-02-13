@@ -16,7 +16,7 @@ import {
 	Upload
 } from "antd";
 import type { RcFile, UploadChangeParam, UploadFile, UploadProps } from "antd/es/upload";
-import moment from "moment";
+import dayjs from "dayjs";
 import React, { useEffect, useState } from "react";
 import styles from "./FileUpload.module.scss";
 
@@ -151,7 +151,7 @@ const FileUpload: React.FC<FileUploadProps> = () => {
 			title: "最后更新",
 			dataIndex: "updatedAt",
 			key: "updatedAt",
-			render: (updatedAt: string) => moment(updatedAt).format("YYYY-MM-DD HH:mm")
+			render: (updatedAt: string) => dayjs(updatedAt).format("YYYY-MM-DD HH:mm")
 		}
 	];
 
