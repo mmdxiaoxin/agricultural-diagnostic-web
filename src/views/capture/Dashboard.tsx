@@ -211,7 +211,6 @@ const Dashboard = () => {
 							current: pagination.page,
 							pageSize: pagination.pageSize,
 							total: pagination.total,
-							showSizeChanger: true,
 							showQuickJumper: true,
 							showTotal(total) {
 								return `共 ${total} 条`;
