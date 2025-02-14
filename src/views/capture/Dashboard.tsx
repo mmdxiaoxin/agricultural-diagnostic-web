@@ -33,7 +33,7 @@ const Dashboard = () => {
 
 	// 分页数据
 	const [fileList, setFileList] = useState<FileMeta[]>([]);
-	const [pagination, setPagination] = useState({ page: 1, pageSize: 7, total: 0 });
+	const [pagination, setPagination] = useState({ page: 1, pageSize: 10, total: 0 });
 
 	const getFileType = (type: string) => {
 		switch (type) {
@@ -104,19 +104,7 @@ const Dashboard = () => {
 						</div>
 					}
 				>
-					<Button
-						type="link"
-						onClick={() => handleSelect(record)}
-						style={{
-							padding: 0,
-							height: "auto",
-							maxWidth: "200px",
-							display: "inline-block",
-							whiteSpace: "nowrap",
-							overflow: "hidden",
-							textOverflow: "ellipsis"
-						}}
-					>
+					<Button type="link" onClick={() => handleSelect(record)}>
 						{text}
 					</Button>
 				</Tooltip>
@@ -212,7 +200,7 @@ const Dashboard = () => {
 			<Col span={12} className={styles["dashboard-r"]}>
 				<Card
 					title="文件列表"
-					className={styles["file-card"]}
+					className={styles["table-card"]}
 					extra={<Button onClick={() => setSelectedType(undefined)}>重置</Button>}
 				>
 					<Table<FileMeta>
@@ -223,6 +211,7 @@ const Dashboard = () => {
 							current: pagination.page,
 							pageSize: pagination.pageSize,
 							total: pagination.total,
+							showSizeChanger: true,
 							showQuickJumper: true,
 							showTotal(total) {
 								return `共 ${total} 条`;

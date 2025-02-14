@@ -1,11 +1,20 @@
 .container {
-    min-width: 1200px;
+    position: relative;
+    height: 100%;
 
     .dashboard-row {
         margin-bottom: 10px;
     }
 
     .dashboard-l {
+        height: inherit;
+        overflow-y: scroll;
+        border-radius: 20px;
+
+        &::-webkit-scrollbar {
+            width: 0;
+        }
+
         .disk-card {
             border: 0;
             border-radius: 20px;
@@ -50,12 +59,21 @@
     }
 
     .dashboard-r {
-        .file-card {
+        height: inherit;
+
+        .table-card {
             border: 0;
-            min-height: 100%;
             border-radius: 20px;
-            box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
-            transition: all 0.3s;
+            height: inherit;
+            overflow-y: scroll;
+
+            &::-webkit-scrollbar {
+                background-color: $light-main-bg-color !important;
+            }
+
+            &::-webkit-scrollbar-thumb {
+                background-color: $light-scrollbar-bg-color !important;
+            }
         }
     }
 }
