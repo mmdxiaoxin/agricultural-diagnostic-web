@@ -109,7 +109,7 @@ export const downloadFile = async (
 	// 获取文件名和扩展名
 	const contentDisposition = headResponse.headers["content-disposition"];
 	const fileName = contentDisposition
-		? contentDisposition.split("filename=")[1].replace(/"/g, "")
+		? decodeURIComponent(contentDisposition.split("filename=")[1].replace(/"/g, ""))
 		: `file_${fileId}`;
 
 	// 创建下载链接
