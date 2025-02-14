@@ -1,14 +1,14 @@
 import { FileMeta } from "@/api/interface";
 import { deleteFile, getFileList, renameFile } from "@/api/modules/file";
+import DatasetsList from "@/components/DatasetsList";
 import { MIMETypeValue } from "@/constants";
-import { formatSize, getFileTypeColor } from "@/utils";
+import { concurrencyQueue, formatSize, getFileTypeColor } from "@/utils";
 import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
 import {
 	Button,
 	Flex,
 	Image,
 	Input,
-	List,
 	message,
 	Modal,
 	Popconfirm,
@@ -22,7 +22,6 @@ import { TableRowSelection } from "antd/es/table/interface";
 import dayjs from "dayjs";
 import React, { useEffect, useState } from "react";
 import styles from "./FileManage.module.scss";
-import DatasetsList from "@/components/DatasetsList";
 
 export type FileManageProps = {};
 
@@ -102,6 +101,24 @@ const FileManage: React.FC<FileManageProps> = () => {
 		}
 	};
 
+	const handleBatchDelete = async () => {
+		if (selectedRowKeys.length === 0) {
+			message.error("请选择要删除的文件");
+			return;
+		}
+		try {
+			const deletePromises = selectedRowKeys.map(fileId => () => deleteFile(fileId));
+			await concurrencyQueue(deletePromises, { concurrency: 3 });
+
+			message.success("文件删除成功");
+		} catch (error) {
+			message.error("删除文件失败");
+		} finally {
+			fetchFileList();
+			setSelectedRowKeys([]);
+		}
+	};
+
 	const columns: TableColumnsType<FileMeta> = [
 		{
 			title: "文件名",
@@ -167,7 +184,7 @@ const FileManage: React.FC<FileManageProps> = () => {
 						okText="确认"
 						cancelText="取消"
 					>
-						<Button type="link" icon={<DeleteOutlined />}>
+						<Button type="link" danger icon={<DeleteOutlined />}>
 							删除
 						</Button>
 					</Popconfirm>
@@ -192,15 +209,17 @@ const FileManage: React.FC<FileManageProps> = () => {
 					className={styles["content__left"]}
 				>
 					<Flex className={styles["header"]}>
-						<div>工具栏</div>
+						<Button type="primary">添加新数据集</Button>
 					</Flex>
 					<div className={styles["main"]}>
 						<DatasetsList />
 					</div>
 				</Splitter.Panel>
 				<Splitter.Panel className={styles["content__right"]}>
-					<Flex className={styles["header"]}>
-						<div>工具栏</div>
+					<Flex className={styles["header"]} align="center" justify="space-between">
+						<Button type="primary" danger onClick={handleBatchDelete}>
+							批量删除
+						</Button>
 					</Flex>
 					<div className={styles["main"]}>
 						<Table

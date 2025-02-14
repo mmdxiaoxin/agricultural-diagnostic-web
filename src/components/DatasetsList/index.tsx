@@ -82,7 +82,7 @@ const DatasetsList: React.FC<DatasetsListProps> = () => {
 								okText="确认"
 								cancelText="取消"
 							>
-								<Button type="link" icon={<DeleteOutlined />}>
+								<Button type="link" danger icon={<DeleteOutlined />}>
 									删除
 								</Button>
 							</Popconfirm>
