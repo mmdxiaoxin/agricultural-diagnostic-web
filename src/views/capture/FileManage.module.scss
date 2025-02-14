@@ -38,11 +38,11 @@
                 overflow-y: scroll;
 
                 &::-webkit-scrollbar {
-                    background-color: $light-main-bg-color !important;
+                    width: 0;
                 }
 
                 &::-webkit-scrollbar-thumb {
-                    background-color: $light-scrollbar-bg-color !important;
+                    width: 0;
                 }
             }
         }

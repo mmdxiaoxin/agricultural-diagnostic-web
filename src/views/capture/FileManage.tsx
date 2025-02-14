@@ -6,7 +6,7 @@ import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
 import {
 	Button,
 	Card,
-	Flex,
+	Image,
 	Input,
 	List,
 	message,
@@ -105,8 +105,27 @@ const FileManage: React.FC<FileManageProps> = () => {
 			title: "文件名",
 			dataIndex: "original_file_name",
 			render: (text: string, record: FileMeta) => (
-				<Tooltip title={text}>
-					<Button type="link" onClick={() => handleRename(record)}>
+				<Tooltip
+					title={
+						<div>
+							{record.file_type.startsWith("image") && <Image src={record.temp_link} />}
+							{text}
+						</div>
+					}
+				>
+					<Button
+						type="link"
+						style={{
+							padding: 0,
+							margin: 0,
+							height: "auto",
+							maxWidth: "250px",
+							display: "inline-block",
+							whiteSpace: "nowrap",
+							overflow: "hidden",
+							textOverflow: "ellipsis"
+						}}
+					>
 						{text}
 					</Button>
 				</Tooltip>
@@ -154,9 +173,7 @@ const FileManage: React.FC<FileManageProps> = () => {
 
 	return (
 		<div className={styles["container"]}>
-			<Flex className={styles["toolbar"]}>
-				<div>工具栏</div>
-			</Flex>
+			<Card className={styles["toolbar"]}>工具栏</Card>
 			<Splitter className={styles["content"]}>
 				<Splitter.Panel
 					collapsible
@@ -165,7 +182,7 @@ const FileManage: React.FC<FileManageProps> = () => {
 					max="40%"
 					className={styles["content-l"]}
 				>
-					<Card title="数据集管理" className={styles["dataset-card"]}>
+					<Card className={styles["dataset-card"]}>
 						<List
 							loading={loading}
 							itemLayout="vertical"
@@ -200,7 +217,7 @@ const FileManage: React.FC<FileManageProps> = () => {
 					</Card>
 				</Splitter.Panel>
 				<Splitter.Panel className={styles["content-r"]}>
-					<Card title="文件列表" className={styles["file-card"]}>
+					<Card className={styles["file-card"]}>
 						<Table
 							rowSelection={rowSelection}
 							columns={columns}
