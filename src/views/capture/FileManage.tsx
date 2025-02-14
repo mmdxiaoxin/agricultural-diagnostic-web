@@ -22,6 +22,7 @@ import { TableRowSelection } from "antd/es/table/interface";
 import dayjs from "dayjs";
 import React, { useEffect, useState } from "react";
 import styles from "./FileManage.module.scss";
+import DatasetsList from "@/components/DatasetsList";
 
 export type FileManageProps = {};
 
@@ -194,41 +195,7 @@ const FileManage: React.FC<FileManageProps> = () => {
 						<div>工具栏</div>
 					</Flex>
 					<div className={styles["main"]}>
-						<List
-							loading={loading}
-							itemLayout="vertical"
-							dataSource={files}
-							renderItem={file => (
-								<List.Item
-									key={file.id}
-									actions={[
-										<Button type="link" icon={<EditOutlined />} onClick={() => handleRename(file)}>
-											重命名
-										</Button>,
-										<Popconfirm
-											title="确认删除?"
-											description="删除文件后不可恢复"
-											onConfirm={() => handleDelete(file.id)}
-											okText="确认"
-											cancelText="取消"
-										>
-											<Button type="link" icon={<DeleteOutlined />}>
-												删除
-											</Button>
-										</Popconfirm>
-									]}
-								>
-									<List.Item.Meta
-										title={file.original_file_name}
-										description={dayjs(file.createdAt).format("YYYY-MM-DD HH:mm")}
-									/>
-									<div>
-										<Tag color={getFileTypeColor(file.file_type)}>{file.file_type}</Tag>
-										<span>{formatSize(file.file_size)}</span>
-									</div>
-								</List.Item>
-							)}
-						/>
+						<DatasetsList />
 					</div>
 				</Splitter.Panel>
 				<Splitter.Panel className={styles["content__right"]}>

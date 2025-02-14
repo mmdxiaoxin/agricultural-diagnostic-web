@@ -2,7 +2,15 @@ import http from "@/api";
 import { store } from "@/store";
 import { concurrencyQueue } from "@/utils";
 import axios, { AxiosProgressEvent } from "axios";
-import { ReqFileListParams, ResFileList, ResUploadFile } from "../interface";
+import {
+	ReqCreateDataset,
+	ReqFileListParams,
+	ReqUpdateDataset,
+	ResDatasetDetail,
+	ResDatasetList,
+	ResFileList,
+	ResUploadFile
+} from "../interface";
 
 // * 文件列表接口
 export const getFileList = async (params: ReqFileListParams) => {
@@ -139,3 +147,22 @@ export const renameFile = (fileId: string | number, newFileName: string) =>
 
 // * 文件删除接口
 export const deleteFile = (fileId: string | number) => http.delete(`/file/delete/${fileId}`);
+
+// * 获取数据集列表
+export const getDatasetsList = async () =>
+	http.get<ResDatasetList>("/file/datasets/list", {}, { loading: false });
+
+// * 获取数据集详情
+export const getDatasetDetail = async (datasetId: number) =>
+	http.get<ResDatasetDetail>(`/file/datasets/${datasetId}`, {}, { loading: false });
+
+// * 创建数据集
+export const createDataset = (params: ReqCreateDataset) =>
+	http.post<null>("/file/datasets/create", params, { loading: false });
+
+// * 修改数据集
+export const updateDataset = (datasetId: number, params: ReqUpdateDataset) =>
+	http.put(`/file/datasets/${datasetId}`, params, { loading: false });
+
+// * 删除数据集
+export const deleteDataset = (datasetId: number) => http.delete(`/file/datasets/${datasetId}`);

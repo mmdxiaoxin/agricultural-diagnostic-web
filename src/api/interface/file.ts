@@ -18,6 +18,19 @@ export interface FileMeta {
 	version: number;
 }
 
+export interface DatasetMeta {
+	id: number;
+	name: string;
+	description: string;
+	creator_id: number;
+	created_at: string;
+	updated_at: string;
+	created_by: string;
+	updated_by: string;
+	dataset_size: number;
+	file_count: string;
+}
+
 export type ReqFileListParams = {
 	page: number;
 	pageSize: number;
@@ -30,3 +43,17 @@ export type ReqFileListParams = {
 export type ResFileList = PageData<FileMeta>;
 
 export type ResUploadFile = FileMeta;
+
+export type ReqCreateDataset = {
+	name: string;
+	description: string;
+	file_ids: number[];
+};
+
+export type ReqUpdateDataset = Partial<ReqCreateDataset>;
+
+export type ResCreateDataset = DatasetMeta;
+
+export type ResDatasetDetail = DatasetMeta;
+
+export type ResDatasetList = PageData<DatasetMeta>;
