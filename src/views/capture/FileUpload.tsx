@@ -17,7 +17,7 @@ import {
 	Tooltip,
 	Upload
 } from "antd";
-import type { RcFile, UploadChangeParam, UploadFile, UploadProps } from "antd/es/upload";
+import type { UploadChangeParam, UploadFile, UploadProps } from "antd/es/upload";
 import dayjs from "dayjs";
 import React, { useEffect, useState } from "react";
 import styles from "./FileUpload.module.scss";
@@ -81,14 +81,14 @@ const FileUpload: React.FC<FileUploadProps> = () => {
 	};
 
 	// 图片类型校验
-	const beforeUpload = (file: RcFile) => {
-		const isImage = file.type.startsWith("image/") || file.type.startsWith("video/");
-		if (!isImage) {
-			message.error("只能上传图片以及视频文件!");
-			return Upload.LIST_IGNORE;
-		}
-		return isImage;
-	};
+	// const beforeUpload = (file: RcFile) => {
+	// 	const isImage = file.type.startsWith("image/") || file.type.startsWith("video/");
+	// 	if (!isImage) {
+	// 		message.error("只能上传图片以及视频文件!");
+	// 		return Upload.LIST_IGNORE;
+	// 	}
+	// 	return isImage;
+	// };
 
 	// 处理文件变化
 	const handleChange = ({ fileList }: UploadChangeParam<UploadFile<ResUploadFile>>) => {
@@ -144,7 +144,7 @@ const FileUpload: React.FC<FileUploadProps> = () => {
 						customRequest={customRequest}
 						onChange={handleChange}
 						fileList={fileList}
-						beforeUpload={beforeUpload}
+						// beforeUpload={beforeUpload}
 						showUploadList={false}
 						style={{
 							maxHeight: "200px"
@@ -164,7 +164,7 @@ const FileUpload: React.FC<FileUploadProps> = () => {
 						fileList={fileList}
 						onChange={handleChange}
 						customRequest={customRequest}
-						beforeUpload={beforeUpload}
+						// beforeUpload={beforeUpload}
 						showUploadList={{ showRemoveIcon: true }}
 					>
 						<Button icon={<UploadOutlined />}>点击上传</Button>
