@@ -91,6 +91,8 @@ class RequestHttp {
 					// 登录失效（status == 401）
 					if (response.status == ResultEnum.UNAUTHORIZED) {
 						store.dispatch(removeToken());
+						message.error("登录失效，请重新登录");
+						// 跳转到登录页面
 						window.history.pushState({}, "", "/login");
 						window.location.reload();
 					}
