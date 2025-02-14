@@ -30,7 +30,7 @@ const FileUpload: React.FC<FileUploadProps> = () => {
 	const [loading, setLoading] = useState<boolean>(false);
 	const [fileList, setFileList] = useState<UploadFile[]>([]);
 	const [recordList, setRecordList] = useState<FileMeta[]>([]);
-	const [pagination, setPagination] = useState({ page: 1, pageSize: 7, total: 0 });
+	const [pagination, setPagination] = useState({ page: 1, pageSize: 10, total: 0 });
 
 	const fetchRecordList = async (page: number, pageSize: number) => {
 		try {
@@ -110,20 +110,7 @@ const FileUpload: React.FC<FileUploadProps> = () => {
 						</div>
 					}
 				>
-					<Button
-						type="link"
-						style={{
-							padding: 0,
-							height: "auto",
-							maxWidth: "240px",
-							display: "inline-block",
-							whiteSpace: "nowrap",
-							overflow: "hidden",
-							textOverflow: "ellipsis"
-						}}
-					>
-						{text}
-					</Button>
+					<Button type="link">{text}</Button>
 				</Tooltip>
 			)
 		},
@@ -199,6 +186,7 @@ const FileUpload: React.FC<FileUploadProps> = () => {
 							current: pagination.page,
 							pageSize: pagination.pageSize,
 							total: pagination.total,
+							showSizeChanger: true,
 							showQuickJumper: true,
 							showTotal(total) {
 								return `共 ${total} 条`;
