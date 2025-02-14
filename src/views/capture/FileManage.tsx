@@ -5,7 +5,7 @@ import { formatSize, getFileTypeColor } from "@/utils";
 import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
 import {
 	Button,
-	Card,
+	Flex,
 	Image,
 	Input,
 	List,
@@ -173,16 +173,18 @@ const FileManage: React.FC<FileManageProps> = () => {
 
 	return (
 		<div className={styles["container"]}>
-			<Card className={styles["toolbar"]}>工具栏</Card>
 			<Splitter className={styles["content"]}>
 				<Splitter.Panel
 					collapsible
 					defaultSize="40%"
 					min="20%"
 					max="40%"
-					className={styles["content-l"]}
+					className={styles["content__left"]}
 				>
-					<Card className={styles["dataset-card"]}>
+					<Flex className={styles["header"]}>
+						<div>工具栏</div>
+					</Flex>
+					<div className={styles["main"]}>
 						<List
 							loading={loading}
 							itemLayout="vertical"
@@ -214,10 +216,13 @@ const FileManage: React.FC<FileManageProps> = () => {
 								</List.Item>
 							)}
 						/>
-					</Card>
+					</div>
 				</Splitter.Panel>
-				<Splitter.Panel className={styles["content-r"]}>
-					<Card className={styles["file-card"]}>
+				<Splitter.Panel className={styles["content__right"]}>
+					<Flex className={styles["header"]}>
+						<div>工具栏</div>
+					</Flex>
+					<div className={styles["main"]}>
 						<Table
 							rowSelection={rowSelection}
 							columns={columns}
@@ -231,7 +236,7 @@ const FileManage: React.FC<FileManageProps> = () => {
 								onChange: (page, pageSize) => setFilters({ ...filters, page, pageSize })
 							}}
 						/>
-					</Card>
+					</div>
 				</Splitter.Panel>
 			</Splitter>
 			<Modal

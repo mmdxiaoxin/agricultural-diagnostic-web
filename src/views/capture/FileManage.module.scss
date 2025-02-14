@@ -1,49 +1,38 @@
-.container {
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-
-    .toolbar {
-        height: 64px;
+// Base Styles
+%scrollbar {
+    &::-webkit-scrollbar {
+        width: 0;
     }
 
+    &::-webkit-scrollbar-thumb {
+        width: 0;
+    }
+}
+
+// Container
+.container {
+    height: 100%;
+
     .content {
-        height: calc(100% - 64px);
+        height: 100%;
 
-        &-l {
+        &__left,
+        &__right {
             height: 100%;
+            background-color: $light-bg-color;
+            display: flex;
+            flex-direction: column;
 
-            .dataset-card {
-                border: 0;
-                height: inherit;
-                overflow-y: scroll;
-
-                &::-webkit-scrollbar {
-                    width: 0;
-                }
-
-                &::-webkit-scrollbar-thumb {
-                    width: 0;
-                }
-
+            .header {
+                min-height: 64px;
+                background-color: $light-bg-color;
+                border-bottom: 1px solid $light-border-color;
             }
-        }
 
-        &-r {
-            height: 100%;
-
-            .file-card {
-                border: 0;
-                height: inherit;
+            .main {
+                flex: 1;
                 overflow-y: scroll;
-
-                &::-webkit-scrollbar {
-                    width: 0;
-                }
-
-                &::-webkit-scrollbar-thumb {
-                    width: 0;
-                }
+                @extend %scrollbar;
             }
         }
     }
