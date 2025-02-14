@@ -13,7 +13,9 @@ const DiskSpaceUsageChart: React.FC<DiskSpaceUsageChartProps> = ({
 	...props
 }) => {
 	// 计算剩余空间（字节）
-	const remainingSpaceInBytes = totalSpace - usedSpace;
+	const usedSpaceInMB = usedSpace / 1_000_000;
+	const remainingSpaceInMB = (totalSpace - usedSpace) / 1_000_000;
+
 	let option: echarts.EChartsOption = {
 		tooltip: {
 			trigger: "item",
@@ -53,14 +55,14 @@ const DiskSpaceUsageChart: React.FC<DiskSpaceUsageChartProps> = ({
 				},
 				data: [
 					{
-						value: usedSpace / 1_000_000,
+						value: usedSpaceInMB,
 						name: "已用空间",
 						itemStyle: {
 							color: "#1890ff"
 						}
 					},
 					{
-						value: remainingSpaceInBytes / 1_000_000,
+						value: remainingSpaceInMB,
 						name: "剩余空间",
 						itemStyle: {
 							color: "#81b2ff"
@@ -74,7 +76,7 @@ const DiskSpaceUsageChart: React.FC<DiskSpaceUsageChartProps> = ({
 		]
 	};
 
-	const [echartsRef] = useEcharts(option);
+	const [echartsRef] = useEcharts(option, [usedSpaceInMB, remainingSpaceInMB]);
 
 	return <div ref={echartsRef} className={styles["chart-container"]} {...props} />;
 };

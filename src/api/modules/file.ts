@@ -3,6 +3,7 @@ import { store } from "@/store";
 import { concurrencyQueue } from "@/utils";
 import axios, { AxiosProgressEvent } from "axios";
 import {
+	DiskUsageReport,
 	ReqCreateDataset,
 	ReqFileListParams,
 	ReqUpdateDataset,
@@ -166,3 +167,7 @@ export const updateDataset = (datasetId: number, params: ReqUpdateDataset) =>
 
 // * 删除数据集
 export const deleteDataset = (datasetId: number) => http.delete(`/file/datasets/${datasetId}`);
+
+// * 获取空间使用情况
+export const getDiskUsage = async () =>
+	http.get<DiskUsageReport>("/file/disk-usage", {}, { loading: false });

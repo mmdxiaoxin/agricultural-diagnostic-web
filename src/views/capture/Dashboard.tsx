@@ -1,5 +1,5 @@
-import { FileMeta } from "@/api/interface";
-import { getFileList } from "@/api/modules/file";
+import { DiskUsageReport, FileMeta } from "@/api/interface";
+import { getDiskUsage, getFileList } from "@/api/modules/file";
 import DiskSpaceUsageChart from "@/components/ECharts/DiskSpaceUsageChart";
 import FileCard from "@/components/FileCard";
 import { MIMETypeValue } from "@/constants/mimeType";
@@ -24,8 +24,12 @@ const totalSpace = 1_000_000_000; // 1GB
 
 const Dashboard = () => {
 	const [loading, setLoading] = useState<boolean>(false);
-	const [usedSpace] = useState<number>(704120000); // TODO: 从接口获取已使用空间
-	const formattedUsedSpace = useMemo<string>(() => formatSize(usedSpace), [usedSpace]);
+	const [totalUsage, setTotalUsage] = useState<number>(0);
+	const [diskReport, setDiskReport] = useState<DiskUsageReport>();
+	const formattedUsedSpace = useMemo<string>(
+		() => formatSize(parseInt(diskReport?.total.used || "0")),
+		[diskReport?.total]
+	);
 	const formattedTotalSpace = formatSize(totalSpace);
 
 	// 文件类型筛选
@@ -34,6 +38,26 @@ const Dashboard = () => {
 	// 分页数据
 	const [fileList, setFileList] = useState<FileMeta[]>([]);
 	const [pagination, setPagination] = useState({ page: 1, pageSize: 10, total: 0 });
+
+	const fetchDiskReport = async () => {
+		try {
+			setLoading(true);
+			const res = await getDiskUsage();
+			if (res.code !== 200 || !res.data) {
+				throw new Error(res.message);
+			}
+			setDiskReport(res.data);
+			setTotalUsage(parseInt(res.data.total.used || "0"));
+		} catch (error: any) {
+			message.error(error.message);
+		} finally {
+			setLoading(false);
+		}
+	};
+
+	useEffect(() => {
+		fetchDiskReport();
+	}, []);
 
 	const fetchFileList = async (page: number, pageSize: number, selectedType?: string) => {
 		try {
@@ -127,7 +151,7 @@ const Dashboard = () => {
 									</div>
 								</div>
 								<div className={styles["disk-chart"]}>
-									<DiskSpaceUsageChart usedSpace={usedSpace} />
+									<DiskSpaceUsageChart usedSpace={totalUsage} />
 								</div>
 							</div>
 						</Card>
@@ -136,19 +160,17 @@ const Dashboard = () => {
 				<Row className={styles["dashboard-row"]} gutter={16}>
 					<Col span={12}>
 						<FileCard
+							info={diskReport?.application}
 							type="文档"
 							color="#ff4848"
-							size={111234124}
-							lastUpdated="2024.11.17 19:11"
 							onClick={() => setSelectedType("application")}
 							style={fileCardStyle("application")}
 						/>
 					</Col>
 					<Col span={12}>
 						<FileCard
+							info={diskReport?.image}
 							type="图片"
-							size={12345245}
-							lastUpdated="2022.12.17 21:11"
 							icon="FileImageOutlined"
 							color="#4892ff"
 							onClick={() => setSelectedType("image")}
@@ -159,21 +181,19 @@ const Dashboard = () => {
 				<Row className={styles["dashboard-row"]} gutter={16}>
 					<Col span={12}>
 						<FileCard
+							info={diskReport?.video}
 							type="视频"
-							size={43536}
 							color="#aa48ff"
 							icon="VideoCameraOutlined"
-							lastUpdated="2024.7.17 11:11"
 							onClick={() => setSelectedType("video")}
 							style={fileCardStyle("video")}
 						/>
 					</Col>
 					<Col span={12}>
 						<FileCard
+							info={diskReport?.audio}
 							type="音频"
-							size={98586}
 							icon="FileZipOutlined"
-							lastUpdated="2024.2.17 11:11"
 							onClick={() => setSelectedType("audio")}
 							style={fileCardStyle("audio")}
 						/>
@@ -182,22 +202,20 @@ const Dashboard = () => {
 				<Row gutter={16}>
 					<Col span={12}>
 						<FileCard
+							info={diskReport?.app}
 							type="压缩包"
-							size={43536}
 							color="#ccc200"
 							icon="FileZipOutlined"
-							lastUpdated="2024.7.17 11:11"
 							onClick={() => setSelectedType("app")}
 							style={fileCardStyle("app")}
 						/>
 					</Col>
 					<Col span={12}>
 						<FileCard
+							info={diskReport?.other}
 							type="其他"
-							size={98586}
 							color="#ffaa00"
 							icon="FileZipOutlined"
-							lastUpdated="2024.2.17 11:11"
 							onClick={() => setSelectedType("other")}
 							style={fileCardStyle("other")}
 						/>

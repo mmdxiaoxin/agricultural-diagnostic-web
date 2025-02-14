@@ -31,6 +31,18 @@ export interface DatasetMeta {
 	file_count: string;
 }
 
+export type DiskSpaceStatus = { used: string | null; last_updated: string | null };
+
+export interface DiskUsageReport {
+	total: DiskSpaceStatus;
+	application: DiskSpaceStatus;
+	image: DiskSpaceStatus;
+	video: DiskSpaceStatus;
+	audio: DiskSpaceStatus;
+	app: DiskSpaceStatus;
+	other: DiskSpaceStatus;
+}
+
 export type ReqFileListParams = {
 	page: number;
 	pageSize: number;
