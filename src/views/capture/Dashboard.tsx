@@ -134,7 +134,22 @@ const Dashboard = () => {
 			title: "文件类型",
 			dataIndex: "file_type",
 			key: "file_type",
-			render: (type: MIMETypeValue) => <Tag color={getFileTypeColor(type)}>{type}</Tag>
+			render: (type: MIMETypeValue) => (
+				<Tooltip title={type}>
+					<Tag
+						color={getFileTypeColor(type)}
+						style={{
+							maxWidth: "200px",
+							display: "inline-block",
+							whiteSpace: "nowrap",
+							overflow: "hidden",
+							textOverflow: "ellipsis"
+						}}
+					>
+						{type}
+					</Tag>
+				</Tooltip>
+			)
 		},
 		{
 			title: "大小",
