@@ -234,6 +234,30 @@ export const formatSize = (sizeInBytes: number) => {
 };
 
 /**
+ * @description 获取二级文件类型
+ * @param {String} type 一级文件类型
+ * @return array
+ */
+export const getFileType = (type: string): MIMETypeValue[] => {
+	switch (type) {
+		case "image":
+			return Object.values(MIME_TYPE.Image);
+		case "video":
+			return [...Object.values(MIME_TYPE.Video)];
+		case "application":
+			return [...Object.values(MIME_TYPE.Application)];
+		case "audio":
+			return [...Object.values(MIME_TYPE.Audio)];
+		case "app":
+			return [...Object.values(MIME_TYPE.App)];
+		case "other":
+			return [...Object.values(MIME_TYPE.Other), ...Object.values(MIME_TYPE.Font)];
+		default:
+			return [];
+	}
+};
+
+/**
  * @description 获取文件类型对应颜色
  * @param {String} mimeType 文件类型
  * @return string

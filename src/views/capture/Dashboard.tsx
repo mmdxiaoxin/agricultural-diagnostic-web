@@ -2,8 +2,8 @@ import { FileMeta } from "@/api/interface";
 import { getFileList } from "@/api/modules/file";
 import DiskSpaceUsageChart from "@/components/ECharts/DiskSpaceUsageChart";
 import FileCard from "@/components/FileCard";
-import MIME_TYPE, { MIMETypeValue } from "@/constants/mimeType";
-import { formatSize, getFileTypeColor } from "@/utils";
+import { MIMETypeValue } from "@/constants/mimeType";
+import { formatSize, getFileType, getFileTypeColor } from "@/utils";
 import {
 	Button,
 	Card,
@@ -34,23 +34,6 @@ const Dashboard = () => {
 	// 分页数据
 	const [fileList, setFileList] = useState<FileMeta[]>([]);
 	const [pagination, setPagination] = useState({ page: 1, pageSize: 10, total: 0 });
-
-	const getFileType = (type: string) => {
-		switch (type) {
-			case "image":
-				return Object.values(MIME_TYPE.Image);
-			case "audio-video":
-				return [...Object.values(MIME_TYPE.Video), ...Object.values(MIME_TYPE.Audio)];
-			case "other":
-				return [
-					...Object.values(MIME_TYPE.Application),
-					...Object.values(MIME_TYPE.App),
-					...Object.values(MIME_TYPE.Font)
-				];
-			default:
-				return [];
-		}
-	};
 
 	const fetchFileList = async (page: number, pageSize: number, selectedType?: string) => {
 		try {
@@ -153,12 +136,12 @@ const Dashboard = () => {
 				<Row className={styles["dashboard-row"]} gutter={16}>
 					<Col span={12}>
 						<FileCard
-							type="文件"
+							type="文档"
 							color="#ff4848"
 							size={111234124}
 							lastUpdated="2024.11.17 19:11"
-							onClick={() => setSelectedType("All")}
-							style={fileCardStyle("All")}
+							onClick={() => setSelectedType("application")}
+							style={fileCardStyle("application")}
 						/>
 					</Col>
 					<Col span={12}>
@@ -173,22 +156,46 @@ const Dashboard = () => {
 						/>
 					</Col>
 				</Row>
-				<Row gutter={16}>
+				<Row className={styles["dashboard-row"]} gutter={16}>
 					<Col span={12}>
 						<FileCard
-							type="视频、音频"
+							type="视频"
 							size={43536}
 							color="#aa48ff"
 							icon="VideoCameraOutlined"
 							lastUpdated="2024.7.17 11:11"
-							onClick={() => setSelectedType("audio-video")}
-							style={fileCardStyle("audio-video")}
+							onClick={() => setSelectedType("video")}
+							style={fileCardStyle("video")}
+						/>
+					</Col>
+					<Col span={12}>
+						<FileCard
+							type="音频"
+							size={98586}
+							icon="FileZipOutlined"
+							lastUpdated="2024.2.17 11:11"
+							onClick={() => setSelectedType("audio")}
+							style={fileCardStyle("audio")}
+						/>
+					</Col>
+				</Row>
+				<Row gutter={16}>
+					<Col span={12}>
+						<FileCard
+							type="压缩包"
+							size={43536}
+							color="#ccc200"
+							icon="FileZipOutlined"
+							lastUpdated="2024.7.17 11:11"
+							onClick={() => setSelectedType("app")}
+							style={fileCardStyle("app")}
 						/>
 					</Col>
 					<Col span={12}>
 						<FileCard
 							type="其他"
 							size={98586}
+							color="#ffaa00"
 							icon="FileZipOutlined"
 							lastUpdated="2024.2.17 11:11"
 							onClick={() => setSelectedType("other")}
