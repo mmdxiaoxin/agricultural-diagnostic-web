@@ -1,5 +1,6 @@
 import http from "@/api";
 import { store } from "@/store";
+import { concurrencyQueue } from "@/utils";
 import axios, { AxiosProgressEvent } from "axios";
 import { ReqFileListParams, ResFileList, ResUploadFile } from "../interface";
 
@@ -29,10 +30,14 @@ export interface DownloadProgress {
 export interface DownloadOptions {
 	// 可选的进度回调函数
 	onProgress?: (fileId: string | number, progress: number) => void;
+	// 可选的总体进度回调函数
+	onOverallProgress?: (completed: number, total: number) => void;
 	// 可选的文件类型映射
 	fileNameMapping?: { [fileId: string]: string };
 	// 是否创建下载链接
 	createLink?: boolean;
+	// 并发数
+	concurrency?: number;
 }
 
 // * 文件下载接口 - 支持断点续传
@@ -114,10 +119,18 @@ export const downloadMultipleFiles = async (
 	fileIds: (string | number)[],
 	options: DownloadOptions = {}
 ): Promise<Blob[]> => {
-	const downloadPromises = fileIds.map(fileId => downloadFile(fileId, options));
+	const downloadPromises = fileIds.map(fileId => () => downloadFile(fileId, options));
 
-	// 等待所有文件下载完成
-	return await Promise.all(downloadPromises);
+	// 通过并发队列来控制文件下载的并发数
+	return await concurrencyQueue(downloadPromises, {
+		concurrency: options.concurrency || 3, // 控制并发数
+		onProgress: (completed, total) => {
+			// 批量下载进度的回调
+			const overallProgress = Math.round((completed / total) * 100);
+			options.onOverallProgress?.(completed, total);
+			console.log(`总体下载进度：${overallProgress}%`);
+		}
+	});
 };
 
 // * 文件删除接口
