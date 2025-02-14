@@ -110,7 +110,21 @@ const FileUpload: React.FC<FileUploadProps> = () => {
 						</div>
 					}
 				>
-					<Button type="link">{text}</Button>
+					<Button
+						type="link"
+						style={{
+							padding: 0,
+							margin: 0,
+							height: "auto",
+							maxWidth: "400px",
+							display: "inline-block",
+							whiteSpace: "nowrap",
+							overflow: "hidden",
+							textOverflow: "ellipsis"
+						}}
+					>
+						{text}
+					</Button>
 				</Tooltip>
 			)
 		},
