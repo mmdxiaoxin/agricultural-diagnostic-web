@@ -11,6 +11,7 @@ import {
 	List,
 	message,
 	Modal,
+	Popconfirm,
 	Splitter,
 	Table,
 	TableColumnsType,
@@ -158,9 +159,17 @@ const FileManage: React.FC<FileManageProps> = () => {
 					<Button type="link" icon={<EditOutlined />} onClick={() => handleRename(record)}>
 						重命名
 					</Button>
-					<Button type="link" icon={<DeleteOutlined />} onClick={() => handleDelete(record.id)}>
-						删除
-					</Button>
+					<Popconfirm
+						title="确认删除?"
+						description="删除文件后不可恢复"
+						onConfirm={() => handleDelete(record.id)}
+						okText="确认"
+						cancelText="取消"
+					>
+						<Button type="link" icon={<DeleteOutlined />}>
+							删除
+						</Button>
+					</Popconfirm>
 				</>
 			)
 		}
@@ -196,13 +205,17 @@ const FileManage: React.FC<FileManageProps> = () => {
 										<Button type="link" icon={<EditOutlined />} onClick={() => handleRename(file)}>
 											重命名
 										</Button>,
-										<Button
-											type="link"
-											icon={<DeleteOutlined />}
-											onClick={() => handleDelete(file.id)}
+										<Popconfirm
+											title="确认删除?"
+											description="删除文件后不可恢复"
+											onConfirm={() => handleDelete(file.id)}
+											okText="确认"
+											cancelText="取消"
 										>
-											删除
-										</Button>
+											<Button type="link" icon={<DeleteOutlined />}>
+												删除
+											</Button>
+										</Popconfirm>
 									]}
 								>
 									<List.Item.Meta
