@@ -1,4 +1,4 @@
-import SwitchDark from "@/components/SwitchDark";
+// import SwitchDark from "@/components/SwitchDark";
 import { useAppDispatch } from "@/hooks/useAppDispatch";
 import { useAppSelector } from "@/hooks/useAppSelector";
 import { setThemeConfig } from "@/store/modules/globalSlice";
@@ -49,7 +49,7 @@ const Theme: React.FC = () => {
 				width={320}
 			>
 				<div className="theme-drawer">
-					{/* 全局主题 */}
+					{/* 全局主题
 					<Divider className={"divider"}>
 						<FireOutlined />
 						全局主题
@@ -66,7 +66,7 @@ const Theme: React.FC = () => {
 						<span>色弱模式</span>
 						<Switch checked={weakOrGray === "weak"} onChange={e => setWeakOrGray(e, "weak")} />
 					</div>
-					<br />
+					<br /> */}
 					{/* 界面设置 */}
 					<Divider className={"divider"}>
 						<SettingOutlined />
