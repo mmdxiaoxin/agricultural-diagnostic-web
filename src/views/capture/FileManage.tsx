@@ -1,6 +1,13 @@
 import { FileMeta } from "@/api/interface";
-import { deleteFile, getFileList, renameFile } from "@/api/modules/file";
-import DatasetsList from "@/components/DatasetsList";
+import {
+	deleteFile,
+	downloadMultipleFiles,
+	DownloadProgress,
+	getFileList,
+	renameFile
+} from "@/api/modules/file";
+import DownloadList from "@/components/DownloadList";
+import FileFilter from "@/components/FileFilter";
 import { MIMETypeValue } from "@/constants";
 import { concurrencyQueue, formatSize, getFileTypeColor } from "@/utils";
 import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
@@ -15,6 +22,8 @@ import {
 	Splitter,
 	Table,
 	TableColumnsType,
+	Tabs,
+	TabsProps,
 	Tag,
 	Tooltip
 } from "antd";
@@ -24,15 +33,21 @@ import React, { useEffect, useState } from "react";
 import styles from "./FileManage.module.scss";
 
 export type FileManageProps = {};
+export type FilterParams = {
+	fileType?: string[][];
+	fileName?: string;
+	createdDateRange?: [dayjs.Dayjs | null, dayjs.Dayjs | null] | null;
+	updatedDateRange?: [dayjs.Dayjs | null, dayjs.Dayjs | null | null] | null;
+	page: number;
+	pageSize: number;
+};
 
 const FileManage: React.FC<FileManageProps> = () => {
 	const [files, setFiles] = useState<FileMeta[]>([]);
 	const [loading, setLoading] = useState<boolean>(false);
+	const [progress, setProgress] = useState<DownloadProgress>({});
 	const [selectedRowKeys, setSelectedRowKeys] = useState<number[]>([]);
-	const [filters, setFilters] = useState({
-		fileName: "",
-		fileType: [],
-		createdDateRange: null,
+	const [pagination, setPagination] = useState({
 		page: 1,
 		pageSize: 10,
 		total: 0
@@ -40,28 +55,50 @@ const FileManage: React.FC<FileManageProps> = () => {
 	const [currentFile, setCurrentFile] = useState<FileMeta | null>(null);
 	const [newFileName, setNewFileName] = useState("");
 
-	const fetchFileList = async () => {
-		setLoading(true);
+	// 查询文件列表
+	const handleSearch = async (params: FilterParams) => {
 		try {
-			const response = await getFileList(filters);
-			if (response.code !== 200 || !response.data) {
-				throw new Error(response.message);
+			setLoading(true);
+			const dateRange = {
+				createdStart: params.createdDateRange
+					? dayjs(params.createdDateRange[0]).format()
+					: undefined,
+				createdEnd: params.createdDateRange
+					? dayjs(params.createdDateRange[1]).format()
+					: undefined,
+				updatedStart: params.updatedDateRange
+					? dayjs(params.updatedDateRange[0]).format()
+					: undefined,
+				updatedEnd: params.updatedDateRange ? dayjs(params.updatedDateRange[1]).format() : undefined
+			};
+			const file_type = params.fileType
+				? params.fileType.map(types => types[types.length - 1])
+				: [];
+			const res = await getFileList({
+				page: params.page,
+				pageSize: params.pageSize,
+				original_file_name: params.fileName,
+				file_type: file_type as MIMETypeValue[],
+				...dateRange
+			});
+			if (res.code !== 200 || !res.data) {
+				throw new Error(res.message);
 			}
-			setFiles(response.data.list);
-			setFilters(prev => ({
+			setFiles(res.data.list);
+			setPagination(prev => ({
 				...prev,
-				total: response.data ? response.data.pagination.total : 0
+				total: res.data ? res.data.pagination.total : 0
 			}));
-		} catch (error) {
-			message.error("加载文件列表失败");
+		} catch (error: any) {
+			message.error(error.message);
 		} finally {
 			setLoading(false);
 		}
 	};
 
 	useEffect(() => {
-		fetchFileList();
-	}, [filters.page, filters.pageSize]);
+		handleSearch(pagination);
+	}, []);
 
 	const handleFileSelect = (selectedRowKeys: React.Key[]) => {
 		setSelectedRowKeys(selectedRowKeys as number[]);
@@ -76,7 +113,7 @@ const FileManage: React.FC<FileManageProps> = () => {
 		try {
 			await deleteFile(fileId);
 			message.success("文件删除成功");
-			fetchFileList();
+			handleSearch({ page: 1, pageSize: 10 });
 		} catch (error) {
 			message.error("删除文件失败");
 		}
@@ -91,7 +128,7 @@ const FileManage: React.FC<FileManageProps> = () => {
 			try {
 				await renameFile(currentFile.id, newFileName);
 				message.success("文件名更新成功");
-				fetchFileList();
+				handleSearch(pagination);
 			} catch (error) {
 				message.error("重命名失败");
 			} finally {
@@ -99,6 +136,30 @@ const FileManage: React.FC<FileManageProps> = () => {
 				setNewFileName("");
 			}
 		}
+	};
+
+	// 批量下载
+	const handleBatchDownload = async () => {
+		if (selectedRowKeys.length === 0) {
+			message.error("请选择至少一个文件进行下载");
+			return;
+		}
+
+		try {
+			await downloadMultipleFiles(selectedRowKeys, {
+				onProgress: (fileId, progressValue) => {
+					setProgress(prevProgress => ({
+						...prevProgress,
+						[fileId]: progressValue
+					}));
+				},
+				createLink: true,
+				concurrency: 3
+			});
+		} catch (error: any) {
+			message.error("文件下载失败！");
+		}
+		message.success("文件下载结束！");
 	};
 
 	const handleBatchDelete = async () => {
@@ -114,7 +175,7 @@ const FileManage: React.FC<FileManageProps> = () => {
 		} catch (error) {
 			message.error("删除文件失败");
 		} finally {
-			fetchFileList();
+			handleSearch(pagination);
 			setSelectedRowKeys([]);
 		}
 	};
@@ -208,6 +269,41 @@ const FileManage: React.FC<FileManageProps> = () => {
 		}
 	];
 
+	const items: TabsProps["items"] = [
+		{
+			key: "1",
+			label: "数据筛选",
+			children: (
+				<FileFilter
+					onSearch={values => {
+						handleSearch({ ...values, page: 1, pageSize: 10 });
+					}}
+					onReset={() =>
+						handleSearch({
+							page: 1,
+							pageSize: 10
+						})
+					}
+				/>
+			)
+		},
+		{
+			key: "2",
+			label: "数据上传",
+			children: "Content of Tab Pane 2"
+		},
+		{
+			key: "3",
+			label: "下载列表",
+			children: (
+				<DownloadList
+					progress={progress}
+					downloadList={files.filter(item => selectedRowKeys.includes(item.id))}
+				/>
+			)
+		}
+	];
+
 	const rowSelection: TableRowSelection<FileMeta> = {
 		selectedRowKeys,
 		onChange: handleFileSelect
@@ -218,20 +314,31 @@ const FileManage: React.FC<FileManageProps> = () => {
 			<Splitter className={styles["content"]}>
 				<Splitter.Panel
 					collapsible
-					defaultSize="40%"
+					defaultSize="30%"
 					min="20%"
 					max="40%"
 					className={styles["content__left"]}
 				>
-					<Flex className={styles["header"]}>
-						<Button type="primary">添加新数据集</Button>
-					</Flex>
-					<div className={styles["main"]}>
-						<DatasetsList />
-					</div>
+					<Tabs style={{ padding: 16 }} defaultActiveKey="1" items={items} />;
 				</Splitter.Panel>
 				<Splitter.Panel className={styles["content__right"]}>
-					<Flex className={styles["header"]} align="center" justify="space-between">
+					<Flex className={styles["header"]} align="center" gap={16}>
+						<Popconfirm
+							title="确认下载"
+							description="点击确认后将自动开启下载。"
+							onConfirm={handleBatchDownload}
+							okText="确认"
+							cancelText="取消"
+						>
+							<Button type="primary" loading={loading}>
+								批量下载
+							</Button>
+						</Popconfirm>
+
+						<Button onClick={() => setProgress({})} loading={loading}>
+							重置进度
+						</Button>
+
 						<Button type="primary" danger onClick={handleBatchDelete}>
 							批量删除
 						</Button>
@@ -244,10 +351,10 @@ const FileManage: React.FC<FileManageProps> = () => {
 							rowKey="id"
 							loading={loading}
 							pagination={{
-								current: filters.page,
-								pageSize: filters.pageSize,
-								total: filters.total,
-								onChange: (page, pageSize) => setFilters({ ...filters, page, pageSize })
+								current: pagination.page,
+								pageSize: pagination.pageSize,
+								total: pagination.total,
+								onChange: (page, pageSize) => setPagination({ ...pagination, page, pageSize })
 							}}
 						/>
 					</div>
