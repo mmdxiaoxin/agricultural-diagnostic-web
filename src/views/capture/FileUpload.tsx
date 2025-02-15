@@ -18,6 +18,7 @@ import {
 	Upload
 } from "antd";
 import type { UploadChangeParam, UploadFile, UploadProps } from "antd/es/upload";
+import { RcFile } from "antd/lib/upload";
 import dayjs from "dayjs";
 import React, { useEffect, useState } from "react";
 import styles from "./FileUpload.module.scss";
@@ -60,7 +61,7 @@ const FileUpload: React.FC<FileUploadProps> = () => {
 	const customRequest: UploadProps<null>["customRequest"] = async options => {
 		const { onSuccess, onError, file: RcFile } = options;
 
-		const file = RcFile as File | null;
+		const file = RcFile as RcFile | null;
 		if (!file) {
 			message.error("文件不能为空");
 			return;
@@ -73,8 +74,18 @@ const FileUpload: React.FC<FileUploadProps> = () => {
 
 		try {
 			const response = isSingle
-				? await uploadChunksFile(file, { chunkSize })
-				: await uploadSingleFile(file);
+				? await uploadSingleFile(file)
+				: await uploadChunksFile(file, {
+						chunkSize,
+						onProgress(fileId, progress) {
+							setFileList(prev => {
+								const index = prev.findIndex(item => item.uid === fileId);
+								const newFileList = [...prev];
+								newFileList[index].percent = progress;
+								return newFileList;
+							});
+						}
+					});
 
 			if (response.code === 200 || response.code === 201) {
 				onSuccess?.(null, file);

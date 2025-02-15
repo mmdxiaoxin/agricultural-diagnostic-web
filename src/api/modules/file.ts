@@ -1,6 +1,7 @@
 import http from "@/api";
 import { store } from "@/store";
 import { concurrencyQueue } from "@/utils";
+import { RcFile } from "antd/es/upload";
 import axios, { AxiosProgressEvent } from "axios";
 import {
 	DiskUsageReport,
@@ -30,7 +31,7 @@ export const getFileList = async (params: ReqFileListParams) => {
 };
 
 // * 文件上传接口
-export const uploadSingleFile = async (file: File) => {
+export const uploadSingleFile = async (file: File | RcFile) => {
 	const formData = new FormData();
 	formData.append("file", file);
 
@@ -43,7 +44,7 @@ export const uploadSingleFile = async (file: File) => {
 };
 
 // * 文件上传接口（分片）
-export const uploadChunksFile = async (file: File, options?: UploadOptions) => {
+export const uploadChunksFile = async (file: File | RcFile, options?: UploadOptions) => {
 	const chunkSize = options?.chunkSize || 10 * 1024 * 1024; // 默认每个文件块的大小 10MB
 	const totalChunks = Math.ceil(file.size / chunkSize); // 总的分片数量
 
@@ -107,9 +108,10 @@ export const uploadChunksFile = async (file: File, options?: UploadOptions) => {
 			onProgress: (completed, total) => {
 				// 显示上传进度
 				if (options?.onProgress) {
-					options.onProgress(file.name, Math.round((completed / total) * 100));
+					if ((file as RcFile).uid)
+						options.onProgress((file as RcFile).uid, Math.round((completed / total) * 100));
+					else options.onProgress(file.name, Math.round((completed / total) * 100));
 				}
-				console.log(`上传进度: ${Math.round((completed / total) * 100)}%`);
 			}
 		});
 
