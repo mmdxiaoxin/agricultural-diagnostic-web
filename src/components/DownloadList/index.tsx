@@ -7,12 +7,13 @@ import {
 	FileOutlined,
 	FileTextOutlined
 } from "@ant-design/icons";
-import { Avatar, List, Progress, Tooltip } from "antd";
+import { Avatar, Button, Flex, List, Progress, Tooltip } from "antd";
 import React from "react";
 
 type DownloadListProps = {
 	downloadList: FileMeta[];
 	progress: DownloadProgress;
+	onClear?: () => void;
 };
 
 // 文件类型图标映射
@@ -38,10 +39,17 @@ const getStatus = (percent: number, file_size?: number) => {
 	return `下载中 ${formatSize((file_size || 0) * (percent / 100))} / ${formatSize(file_size || 0)}`;
 };
 
-const DownloadList: React.FC<DownloadListProps> = ({ progress, downloadList }) => {
+const DownloadList: React.FC<DownloadListProps> = ({ progress, downloadList, onClear }) => {
 	return (
 		<List
 			rowKey={"id"}
+			header={
+				<Flex align="center" justify="space-between">
+					<Button type="primary" onClick={() => onClear?.()}>
+						清空记录
+					</Button>
+				</Flex>
+			}
 			dataSource={downloadList}
 			renderItem={item => {
 				const { id, original_file_name, file_size, file_type } = item;

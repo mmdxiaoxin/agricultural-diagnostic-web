@@ -10,7 +10,7 @@ import DownloadList from "@/components/DownloadList";
 import FileFilter from "@/components/FileFilter";
 import { MIMETypeValue } from "@/constants";
 import { concurrencyQueue, formatSize, getFileTypeColor } from "@/utils";
-import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
+import { DeleteOutlined, DownloadOutlined, EditOutlined } from "@ant-design/icons";
 import {
 	Button,
 	Flex,
@@ -44,6 +44,7 @@ export type FilterParams = {
 
 const FileManage: React.FC<FileManageProps> = () => {
 	const [files, setFiles] = useState<FileMeta[]>([]);
+	const [downloadList, setDownloadList] = useState<FileMeta[]>([]);
 	const [loading, setLoading] = useState<boolean>(false);
 	const [progress, setProgress] = useState<DownloadProgress>({});
 	const [selectedRowKeys, setSelectedRowKeys] = useState<number[]>([]);
@@ -146,6 +147,7 @@ const FileManage: React.FC<FileManageProps> = () => {
 		}
 
 		try {
+			setDownloadList(files.filter(file => selectedRowKeys.includes(file.id)));
 			await downloadMultipleFiles(selectedRowKeys, {
 				onProgress: (fileId, progressValue) => {
 					setProgress(prevProgress => ({
@@ -298,7 +300,11 @@ const FileManage: React.FC<FileManageProps> = () => {
 			children: (
 				<DownloadList
 					progress={progress}
-					downloadList={files.filter(item => selectedRowKeys.includes(item.id))}
+					downloadList={downloadList}
+					onClear={() => {
+						setDownloadList([]);
+						setProgress({});
+					}}
 				/>
 			)
 		}
@@ -325,6 +331,7 @@ const FileManage: React.FC<FileManageProps> = () => {
 					<Flex className={styles["header"]} align="center" gap={16}>
 						<Popconfirm
 							title="确认下载"
+							icon={<DownloadOutlined style={{ color: "green" }} />}
 							description="点击确认后将自动开启下载。"
 							onConfirm={handleBatchDownload}
 							okText="确认"
@@ -334,14 +341,18 @@ const FileManage: React.FC<FileManageProps> = () => {
 								批量下载
 							</Button>
 						</Popconfirm>
-
-						<Button onClick={() => setProgress({})} loading={loading}>
-							重置进度
-						</Button>
-
-						<Button type="primary" danger onClick={handleBatchDelete}>
-							批量删除
-						</Button>
+						<Popconfirm
+							title="确认删除"
+							icon={<DeleteOutlined style={{ color: "red" }} />}
+							description="批量删除之后无法恢复。"
+							onConfirm={handleBatchDelete}
+							okText="确认"
+							cancelText="取消"
+						>
+							<Button type="primary" danger>
+								批量删除
+							</Button>
+						</Popconfirm>
 					</Flex>
 					<div className={styles["main"]}>
 						<Table
