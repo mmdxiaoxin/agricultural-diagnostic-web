@@ -46,6 +46,7 @@ export const uploadChunksFile = async (file: File) => {
 			{
 				file_name: file.name,
 				file_size: file.size,
+				file_type: file.type,
 				total_chunks: totalChunks
 			},
 			{
@@ -248,7 +249,8 @@ export const updateDataset = (datasetId: number, params: ReqUpdateDataset) =>
 	http.put(`/file/datasets/${datasetId}`, params, { loading: false });
 
 // * 删除数据集
-export const deleteDataset = (datasetId: number) => http.delete(`/file/datasets/${datasetId}`);
+export const deleteDataset = (datasetId: number) =>
+	http.delete(`/file/datasets/${datasetId}`, {}, { cancel: false });
 
 // * 获取空间使用情况
 export const getDiskUsage = async () =>
