@@ -57,7 +57,7 @@ const FileUpload: React.FC<FileUploadProps> = () => {
 	}, []);
 
 	// 自定义文件上传处理
-	const customRequest: UploadProps<ResUploadFile>["customRequest"] = async options => {
+	const customRequest: UploadProps<null>["customRequest"] = async options => {
 		const { onSuccess, onError, file } = options;
 
 		if (!file) {
@@ -68,8 +68,8 @@ const FileUpload: React.FC<FileUploadProps> = () => {
 		try {
 			const response = await uploadFile(file as File);
 
-			if (response.code === 200 && response.data) {
-				onSuccess?.(response.data, file);
+			if (response.code === 200) {
+				onSuccess?.(null, file);
 				fetchRecordList(pagination.page, pagination.pageSize);
 			} else {
 				throw new Error(response.message);
