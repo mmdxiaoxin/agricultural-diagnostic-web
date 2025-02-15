@@ -11,8 +11,10 @@ import {
 	Image,
 	Input,
 	message,
+	Popconfirm,
 	Progress,
 	Row,
+	Space,
 	Table,
 	TableColumnsType,
 	Tag,
@@ -133,14 +135,13 @@ const FileDownload: React.FC<FileDownloadProps> = () => {
 						[fileId]: progressValue
 					}));
 				},
-				createLink: true
+				createLink: true,
+				concurrency: 3
 			});
 		} catch (error: any) {
 			message.error("文件下载失败！");
 		}
-
-		setProgress({});
-		message.success("文件下载成功！");
+		message.success("文件下载结束！");
 	};
 
 	useEffect(() => {
@@ -169,6 +170,7 @@ const FileDownload: React.FC<FileDownloadProps> = () => {
 					{progress[record.id] > 0 && <Progress percent={progress[record.id] || 0} size="small" />}
 					<Button
 						type="link"
+						href={record.temp_link}
 						style={{
 							padding: 0,
 							margin: 0,
@@ -217,6 +219,15 @@ const FileDownload: React.FC<FileDownloadProps> = () => {
 			dataIndex: "createdAt",
 			key: "createdAt",
 			render: (updatedAt: string) => dayjs(updatedAt).format("YYYY-MM-DD HH:mm")
+		},
+		{
+			title: "操作",
+			key: "action",
+			render: (_, record: FileMeta) => (
+				<Button type="link" href={record.temp_link}>
+					下载
+				</Button>
+			)
 		}
 	];
 
@@ -297,9 +308,23 @@ const FileDownload: React.FC<FileDownloadProps> = () => {
 					title="文件列表"
 					className={styles["table-card"]}
 					extra={
-						<Button type="primary" onClick={handleBatchDownload} loading={loading}>
-							批量下载
-						</Button>
+						<Space>
+							<Popconfirm
+								title="确认下载"
+								description="点击确认后将自动开启下载。"
+								onConfirm={handleBatchDownload}
+								okText="确认"
+								cancelText="取消"
+							>
+								<Button type="primary" loading={loading}>
+									批量下载
+								</Button>
+							</Popconfirm>
+
+							<Button onClick={() => setProgress({})} loading={loading}>
+								重置进度
+							</Button>
+						</Space>
 					}
 				>
 					<Table<FileMeta>
@@ -318,7 +343,7 @@ const FileDownload: React.FC<FileDownloadProps> = () => {
 								setFilters(prev => ({ ...prev, page, pageSize }));
 								handleSearch({ ...filters, page, pageSize });
 							},
-							showTotal: total => `共 ${total} 条`
+							showTotal: total => <div>共搜索到 {total} 个文件</div>
 						}}
 					/>
 				</Card>
