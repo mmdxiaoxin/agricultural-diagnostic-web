@@ -8,6 +8,7 @@ import {
 } from "@/api/modules/file";
 import DownloadList from "@/components/DownloadList";
 import FileFilter from "@/components/FileFilter";
+import FileUpload from "@/components/FileUpload";
 import { MIMETypeValue } from "@/constants";
 import { concurrencyQueue, formatSize, getFileTypeColor } from "@/utils";
 import { DeleteOutlined, DownloadOutlined, EditOutlined } from "@ant-design/icons";
@@ -292,7 +293,7 @@ const FileManage: React.FC<FileManageProps> = () => {
 		{
 			key: "2",
 			label: "数据上传",
-			children: "Content of Tab Pane 2"
+			children: <FileUpload onUpload={() => handleSearch({ page: 1, pageSize: 10 })} />
 		},
 		{
 			key: "3",
