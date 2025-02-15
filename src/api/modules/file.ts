@@ -39,7 +39,8 @@ export const uploadSingleFile = async (file: File | RcFile) => {
 		headers: {
 			"Content-Type": "multipart/form-data"
 		},
-		loading: false
+		loading: false,
+		cancel: false
 	});
 };
 
