@@ -7,11 +7,20 @@ import {
 	ReqCreateDataset,
 	ReqFileListParams,
 	ReqUpdateDataset,
+	ResCreateTask,
 	ResDatasetDetail,
 	ResDatasetList,
 	ResFileList,
+	ResTaskStatus,
 	ResUploadFile
 } from "../interface";
+
+export interface UploadOptions {
+	// 可选的进度回调函数
+	onProgress?: (fileId: string | number, progress: number) => void;
+	// 并发数
+	concurrency?: number;
+}
 
 // * 文件列表接口
 export const getFileList = async (params: ReqFileListParams) => {
@@ -32,16 +41,13 @@ export const uploadSingleFile = async (file: File) => {
 };
 
 // * 文件上传接口（分片）
-export const uploadChunksFile = async (file: File) => {
+export const uploadChunksFile = async (file: File, options?: UploadOptions) => {
 	const chunkSize = 10 * 1024 * 1024; // 每个文件块的大小 10MB
 	const totalChunks = Math.ceil(file.size / chunkSize); // 总的分片数量
 
 	try {
 		// 1. 创建上传任务
-		const taskResp = await http.post<{
-			task_id: string;
-			total_chunks: number;
-		}>(
+		const taskResp = await http.post<ResCreateTask>(
 			"/file/upload/create",
 			{
 				file_name: file.name,
@@ -53,9 +59,11 @@ export const uploadChunksFile = async (file: File) => {
 				loading: false
 			}
 		);
+
 		if ((taskResp.code !== 200 && taskResp.code !== 201) || !taskResp.data) {
 			throw new Error(taskResp.message);
 		}
+
 		const task_id = taskResp.data.task_id;
 
 		// 2. 上传文件块
@@ -67,7 +75,8 @@ export const uploadChunksFile = async (file: File) => {
 			const chunkEnd = Math.min(chunkStart + chunkSize, file.size);
 			const chunk = file.slice(chunkStart, chunkEnd);
 
-			// 生成上传文件块的请求
+			if (!chunk) continue; // 忽略空的分片
+
 			const uploadTask = async () => {
 				const formData = new FormData();
 				formData.append("task_id", task_id);
@@ -78,6 +87,7 @@ export const uploadChunksFile = async (file: File) => {
 					cancel: false,
 					loading: false
 				});
+
 				if (uploadResp.code !== 200) {
 					throw new Error(`上传第 ${i + 1} 个文件块失败`);
 				}
@@ -89,23 +99,95 @@ export const uploadChunksFile = async (file: File) => {
 		}
 
 		// 使用并发队列执行上传文件块
-		const concurrency = 5; // 设置并发数量
+		const concurrency = options?.concurrency || 5;
 		await concurrencyQueue(uploadTasks, {
 			concurrency,
 			onProgress: (completed, total) => {
 				// 显示上传进度
+				if (options?.onProgress) {
+					options.onProgress(file.name, Math.round((completed / total) * 100));
+				}
 				console.log(`上传进度: ${Math.round((completed / total) * 100)}%`);
 			}
 		});
 
 		// 3. 合并文件块
-		const completionResp = await http.post(
-			"/file/upload/complete",
-			{ task_id },
-			{ loading: false }
-		);
-		if (completionResp.code !== 200) {
-			throw new Error(completionResp.message);
+		let completionResp = await http.post("/file/upload/complete", { task_id }, { loading: false });
+
+		// 检查上传完成状态
+		if (completionResp.code === 200) {
+			console.log("文件已上传完成，无需继续处理");
+			return completionResp; // 文件已经上传完成，直接返回
+		} else if (completionResp.code === 201) {
+			console.log("文件分块已合并完成，上传成功");
+			return completionResp; // 分片已经成功合并，上传成功
+		} else if (completionResp.code === 202) {
+			console.log("部分文件块未上传，继续重试上传");
+		} else if (completionResp.code === 400) {
+			console.error("上传任务失败，请检查上传的文件块");
+			throw new Error("上传任务失败");
+		}
+
+		// 4. 断点续传
+		let retryCount = 0;
+		const maxRetryCount = 3; // 最大重试次数
+
+		while (completionResp.code === 202 && retryCount < maxRetryCount) {
+			// 获取任务状态
+			const taskStatusResp = await http.get<ResTaskStatus>(
+				`/file/upload/status/${task_id}`,
+				{},
+				{ loading: false }
+			);
+
+			if (taskStatusResp.code !== 200 || !taskStatusResp.data) {
+				throw new Error(taskStatusResp.message);
+			}
+
+			// 重新上传失败的文件块
+			const failedChunks = taskStatusResp.data.chunk_status;
+			if (!failedChunks) {
+				throw new Error("上传失败，无法获取失败的文件块");
+			}
+
+			const failedChunkIndexes = Object.keys(failedChunks).map(Number);
+			const retryTasks = failedChunkIndexes.map(chunkIndex => {
+				const chunkStart = (chunkIndex - 1) * chunkSize;
+				const chunkEnd = Math.min(chunkStart + chunkSize, file.size);
+				const chunk = file.slice(chunkStart, chunkEnd);
+
+				return async () => {
+					const formData = new FormData();
+					formData.append("task_id", task_id);
+					formData.append("chunkIndex", chunkIndex.toString());
+					formData.append("file", chunk);
+
+					const uploadResp = await http.post("/file/upload/chunk", formData, {
+						cancel: false,
+						loading: false
+					});
+					if (uploadResp.code !== 200) {
+						throw new Error(`上传第 ${chunkIndex} 个文件块失败`);
+					}
+					return uploadResp;
+				};
+			});
+
+			await concurrencyQueue(retryTasks, { concurrency });
+
+			// 重新合并文件块
+			completionResp = await http.post("/file/upload/complete", { task_id }, { loading: false });
+
+			retryCount++; // 重试次数加 1
+			if (retryCount === maxRetryCount) {
+				throw new Error("重试超过最大次数，上传失败");
+			}
+
+			if (completionResp.code === 200 || completionResp.code === 201) {
+				break;
+			}
+
+			if (completionResp.code === 202) continue;
 		}
 
 		return completionResp;

@@ -68,7 +68,7 @@ const FileUpload: React.FC<FileUploadProps> = () => {
 		try {
 			const response = await uploadChunksFile(file as File);
 
-			if (response.code === 200) {
+			if (response.code === 200 || response.code === 201) {
 				onSuccess?.(null, file);
 				fetchRecordList(pagination.page, pagination.pageSize);
 			} else {

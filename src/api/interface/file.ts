@@ -43,6 +43,22 @@ export interface DiskUsageReport {
 	other: DiskSpaceStatus;
 }
 
+export interface TaskMeta {
+	task_id: string;
+	file_name: string;
+	file_type: string;
+	file_size: number;
+	total_chunks: number;
+	uploaded_chunks: number;
+	status?: string;
+	chunk_status?: object;
+	created_at?: string;
+	updated_at?: string;
+	created_by?: string;
+	updated_by?: string;
+	version?: number;
+}
+
 export type ReqFileListParams = {
 	page: number;
 	pageSize: number;
@@ -69,3 +85,10 @@ export type ResCreateDataset = DatasetMeta;
 export type ResDatasetDetail = DatasetMeta;
 
 export type ResDatasetList = PageData<DatasetMeta>;
+
+export type ResCreateTask = Pick<TaskMeta, "task_id"> & { chunk_size: number };
+
+export type ResTaskStatus = Pick<
+	TaskMeta,
+	"task_id" | "status" | "chunk_status" | "total_chunks" | "uploaded_chunks"
+>;
