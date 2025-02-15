@@ -322,7 +322,7 @@ const FileManage: React.FC<FileManageProps> = () => {
 				<Splitter.Panel
 					collapsible
 					defaultSize="30%"
-					min="20%"
+					min="25%"
 					max="40%"
 					className={styles["content__left"]}
 				>
