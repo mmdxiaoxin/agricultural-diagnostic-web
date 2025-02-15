@@ -47,6 +47,8 @@ const FileManage: React.FC<FileManageProps> = () => {
 	const [files, setFiles] = useState<FileMeta[]>([]);
 	const [downloadList, setDownloadList] = useState<FileMeta[]>([]);
 	const [loading, setLoading] = useState<boolean>(false);
+	const [downloadLoading, setDownloadLoading] = useState<boolean>(false);
+	const [activeKey, setActiveKey] = useState("1");
 	const [progress, setProgress] = useState<DownloadProgress>({});
 	const [selectedRowKeys, setSelectedRowKeys] = useState<number[]>([]);
 	const [pagination, setPagination] = useState({
@@ -148,6 +150,8 @@ const FileManage: React.FC<FileManageProps> = () => {
 		}
 
 		try {
+			setActiveKey("3");
+			setDownloadLoading(true);
 			setDownloadList(files.filter(file => selectedRowKeys.includes(file.id)));
 			await downloadMultipleFiles(selectedRowKeys, {
 				onProgress: (fileId, progressValue) => {
@@ -159,10 +163,14 @@ const FileManage: React.FC<FileManageProps> = () => {
 				createLink: true,
 				concurrency: 3
 			});
+
+			message.success("批量下载成功！");
 		} catch (error: any) {
 			message.error("文件下载失败！");
+		} finally {
+			setDownloadLoading(false);
+			setSelectedRowKeys([]);
 		}
-		message.success("文件下载结束！");
 	};
 
 	const handleBatchDelete = async () => {
@@ -326,7 +334,13 @@ const FileManage: React.FC<FileManageProps> = () => {
 					max="40%"
 					className={styles["content__left"]}
 				>
-					<Tabs style={{ padding: 16 }} defaultActiveKey="1" items={items} />;
+					<Tabs
+						style={{ padding: 16 }}
+						defaultActiveKey="1"
+						activeKey={activeKey}
+						onChange={setActiveKey}
+						items={items}
+					/>
 				</Splitter.Panel>
 				<Splitter.Panel className={styles["content__right"]}>
 					<Flex className={styles["header"]} align="center" gap={16}>
@@ -338,7 +352,7 @@ const FileManage: React.FC<FileManageProps> = () => {
 							okText="确认"
 							cancelText="取消"
 						>
-							<Button type="primary" loading={loading}>
+							<Button type="primary" loading={downloadLoading}>
 								批量下载
 							</Button>
 						</Popconfirm>

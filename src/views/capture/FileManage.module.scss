@@ -16,6 +16,16 @@
     .content {
         height: 100%;
 
+        &__left {
+            border-top-left-radius: 20px;
+            border-bottom-left-radius: 20px;
+        }
+
+        &__right {
+            border-top-right-radius: 20px;
+            border-bottom-right-radius: 20px;
+        }
+
         &__left,
         &__right {
             height: 100%;

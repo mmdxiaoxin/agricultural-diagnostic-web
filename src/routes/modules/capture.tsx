@@ -27,24 +27,6 @@ const captureRouter: RouteObjectEx[] = [
 					title: "数据管理",
 					key: "manage"
 				}
-			},
-			{
-				path: "/capture/upload",
-				element: lazyLoad(React.lazy(() => import("@/views/capture/FileUpload"))),
-				meta: {
-					requiresAuth: true,
-					title: "数据上传",
-					key: "upload"
-				}
-			},
-			{
-				path: "/capture/download",
-				element: lazyLoad(React.lazy(() => import("@/views/capture/FileDownload"))),
-				meta: {
-					requiresAuth: true,
-					title: "数据下载",
-					key: "download"
-				}
 			}
 		]
 	}
