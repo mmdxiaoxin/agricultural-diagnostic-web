@@ -1,5 +1,5 @@
 import { FileMeta, ResUploadFile } from "@/api/interface";
-import { getFileList, uploadChunksFile } from "@/api/modules/file";
+import { getFileList, uploadChunksFile, uploadSingleFile } from "@/api/modules/file";
 import { MIMETypeValue } from "@/constants";
 import { formatSize, getFileTypeColor } from "@/utils";
 import { UploadOutlined } from "@ant-design/icons";
@@ -58,15 +58,23 @@ const FileUpload: React.FC<FileUploadProps> = () => {
 
 	// 自定义文件上传处理
 	const customRequest: UploadProps<null>["customRequest"] = async options => {
-		const { onSuccess, onError, file } = options;
+		const { onSuccess, onError, file: RcFile } = options;
 
+		const file = RcFile as File | null;
 		if (!file) {
 			message.error("文件不能为空");
 			return;
 		}
 
+		const file_type = file.type;
+		const file_size = file.size;
+		const chunkSize = file_type.startsWith("video") ? 10 * 1024 * 1024 : 5 * 1024 * 1024;
+		const isSingle = file_size <= chunkSize;
+
 		try {
-			const response = await uploadChunksFile(file as File);
+			const response = isSingle
+				? await uploadChunksFile(file, { chunkSize })
+				: await uploadSingleFile(file);
 
 			if (response.code === 200 || response.code === 201) {
 				onSuccess?.(null, file);
@@ -79,16 +87,6 @@ const FileUpload: React.FC<FileUploadProps> = () => {
 			message.error("上传失败");
 		}
 	};
-
-	// 图片类型校验
-	// const beforeUpload = (file: RcFile) => {
-	// 	const isImage = file.type.startsWith("image/") || file.type.startsWith("video/");
-	// 	if (!isImage) {
-	// 		message.error("只能上传图片以及视频文件!");
-	// 		return Upload.LIST_IGNORE;
-	// 	}
-	// 	return isImage;
-	// };
 
 	// 处理文件变化
 	const handleChange = ({ fileList }: UploadChangeParam<UploadFile<ResUploadFile>>) => {
@@ -173,7 +171,6 @@ const FileUpload: React.FC<FileUploadProps> = () => {
 						customRequest={customRequest}
 						onChange={handleChange}
 						fileList={fileList}
-						// beforeUpload={beforeUpload}
 						showUploadList={false}
 						style={{
 							maxHeight: "200px"
@@ -193,7 +190,6 @@ const FileUpload: React.FC<FileUploadProps> = () => {
 						fileList={fileList}
 						onChange={handleChange}
 						customRequest={customRequest}
-						// beforeUpload={beforeUpload}
 						showUploadList={{ showRemoveIcon: true }}
 					>
 						<Button icon={<UploadOutlined />}>点击上传</Button>

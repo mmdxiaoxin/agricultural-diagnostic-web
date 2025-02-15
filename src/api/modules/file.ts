@@ -20,6 +20,8 @@ export interface UploadOptions {
 	onProgress?: (fileId: string | number, progress: number) => void;
 	// 并发数
 	concurrency?: number;
+	// 分片大小
+	chunkSize?: number;
 }
 
 // * 文件列表接口
@@ -42,7 +44,7 @@ export const uploadSingleFile = async (file: File) => {
 
 // * 文件上传接口（分片）
 export const uploadChunksFile = async (file: File, options?: UploadOptions) => {
-	const chunkSize = 10 * 1024 * 1024; // 每个文件块的大小 10MB
+	const chunkSize = options?.chunkSize || 10 * 1024 * 1024; // 默认每个文件块的大小 10MB
 	const totalChunks = Math.ceil(file.size / chunkSize); // 总的分片数量
 
 	try {
