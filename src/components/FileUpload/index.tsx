@@ -1,6 +1,6 @@
 import { ResUploadFile } from "@/api/interface";
 import { uploadChunksFile, uploadSingleFile } from "@/api/modules/file";
-import { UploadOutlined } from "@ant-design/icons";
+import { BarsOutlined, FolderOutlined, UploadOutlined } from "@ant-design/icons";
 import {
 	Button,
 	Empty,
@@ -104,6 +104,12 @@ const FileUpload: React.FC<FileUploadProps> = ({ onUpload }) => {
 		return "文件";
 	};
 
+	const getOptionIcon = ({ directory, multiple }: { directory: boolean; multiple: boolean }) => {
+		if (directory) return <FolderOutlined />;
+		if (multiple) return <BarsOutlined />;
+		return <UploadOutlined />;
+	};
+
 	return (
 		<>
 			{contextHolder}
@@ -126,7 +132,7 @@ const FileUpload: React.FC<FileUploadProps> = ({ onUpload }) => {
 						}}
 					>
 						<p className="ant-upload-drag-icon">
-							<UploadOutlined />
+							{getOptionIcon({ directory: directoryMode, multiple: multipleMode })}
 						</p>
 						<p className="ant-upload-text">
 							点击或拖拽{getOptionText({ directory: directoryMode, multiple: multipleMode })}
