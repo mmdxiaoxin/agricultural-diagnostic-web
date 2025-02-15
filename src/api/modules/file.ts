@@ -19,10 +19,9 @@ export const getFileList = async (params: ReqFileListParams) => {
 };
 
 // * 文件上传接口
-export const uploadFile = async (file: File) => {
+export const uploadSingleFile = async (file: File) => {
 	const formData = new FormData();
 	formData.append("file", file);
-	formData.append("filename", encodeURIComponent(file.name));
 
 	return http.post<ResUploadFile>("/file/upload/single", formData, {
 		headers: {
@@ -30,6 +29,89 @@ export const uploadFile = async (file: File) => {
 		},
 		loading: false
 	});
+};
+
+// * 文件上传接口（分片）
+export const uploadChunksFile = async (file: File) => {
+	const chunkSize = 10 * 1024 * 1024; // 每个文件块的大小 10MB
+	const totalChunks = Math.ceil(file.size / chunkSize); // 总的分片数量
+
+	try {
+		// 1. 创建上传任务
+		const taskResp = await http.post<{
+			task_id: string;
+			total_chunks: number;
+		}>(
+			"/file/upload/create",
+			{
+				file_name: file.name,
+				file_size: file.size,
+				total_chunks: totalChunks
+			},
+			{
+				loading: false
+			}
+		);
+		if ((taskResp.code !== 200 && taskResp.code !== 201) || !taskResp.data) {
+			throw new Error(taskResp.message);
+		}
+		const task_id = taskResp.data.task_id;
+
+		// 2. 上传文件块
+		const uploadTasks = [];
+
+		// 遍历每个分片并将其上传
+		for (let i = 0; i < totalChunks; i++) {
+			const chunkStart = i * chunkSize;
+			const chunkEnd = Math.min(chunkStart + chunkSize, file.size);
+			const chunk = file.slice(chunkStart, chunkEnd);
+
+			// 生成上传文件块的请求
+			const uploadTask = async () => {
+				const formData = new FormData();
+				formData.append("task_id", task_id);
+				formData.append("chunkIndex", (i + 1).toString()); // 从 1 开始的 chunkIndex
+				formData.append("file", chunk);
+
+				const uploadResp = await http.post("/file/upload/chunk", formData, {
+					cancel: false,
+					loading: false
+				});
+				if (uploadResp.code !== 200) {
+					throw new Error(`上传第 ${i + 1} 个文件块失败`);
+				}
+
+				return uploadResp;
+			};
+
+			uploadTasks.push(uploadTask);
+		}
+
+		// 使用并发队列执行上传文件块
+		const concurrency = 5; // 设置并发数量
+		await concurrencyQueue(uploadTasks, {
+			concurrency,
+			onProgress: (completed, total) => {
+				// 显示上传进度
+				console.log(`上传进度: ${Math.round((completed / total) * 100)}%`);
+			}
+		});
+
+		// 3. 合并文件块
+		const completionResp = await http.post(
+			"/file/upload/complete",
+			{ task_id },
+			{ loading: false }
+		);
+		if (completionResp.code !== 200) {
+			throw new Error(completionResp.message);
+		}
+
+		return completionResp;
+	} catch (error) {
+		console.error("文件上传失败", error);
+		throw error;
+	}
 };
 
 export interface DownloadProgress {

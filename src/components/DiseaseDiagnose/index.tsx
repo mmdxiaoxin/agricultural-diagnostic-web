@@ -1,5 +1,5 @@
 import { diagnoseDisease } from "@/api/modules/diagnosis";
-import { uploadFile } from "@/api/modules/file";
+import { uploadSingleFile } from "@/api/modules/file";
 import { UploadOutlined } from "@ant-design/icons";
 import { Alert, Button, Card, Divider, message, Spin, Upload, UploadFile, UploadProps } from "antd";
 import React, { useState } from "react";
@@ -30,7 +30,7 @@ const DiseaseDiagnose: React.FC = () => {
 		setError(null);
 
 		try {
-			const response = await uploadFile(selectedImage);
+			const response = await uploadSingleFile(selectedImage);
 			if (response.code !== 200) throw new Error("上传失败，请重试！");
 			if (!response.data) throw new Error("上传失败，请重试！");
 			const fileId = response.data.id;

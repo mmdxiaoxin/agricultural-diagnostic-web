@@ -1,5 +1,5 @@
 import { FileMeta, ResUploadFile } from "@/api/interface";
-import { getFileList, uploadFile } from "@/api/modules/file";
+import { getFileList, uploadChunksFile } from "@/api/modules/file";
 import { MIMETypeValue } from "@/constants";
 import { formatSize, getFileTypeColor } from "@/utils";
 import { UploadOutlined } from "@ant-design/icons";
@@ -66,7 +66,7 @@ const FileUpload: React.FC<FileUploadProps> = () => {
 		}
 
 		try {
-			const response = await uploadFile(file as File);
+			const response = await uploadChunksFile(file as File);
 
 			if (response.code === 200) {
 				onSuccess?.(null, file);
