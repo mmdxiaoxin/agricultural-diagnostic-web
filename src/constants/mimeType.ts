@@ -44,6 +44,7 @@ export const MIME_TYPE = {
 		PPTXOpenXML: "application/vnd.openxmlformats-officedocument.presentationml.presentation",
 		JSON: "application/json",
 		XML: "application/xml",
+
 		// 深度学习模型文件类型
 		PyTorch: "application/pytorch-model",
 		TensorFlow: "application/tensorflow-model",
@@ -82,13 +83,22 @@ export const MIME_TYPE = {
 	}
 } as const;
 
+export type VideoTypeValue = (typeof MIME_TYPE.Video)[keyof typeof MIME_TYPE.Video];
+export type AudioTypeValue = (typeof MIME_TYPE.Audio)[keyof typeof MIME_TYPE.Audio];
+export type ImageTypeValue = (typeof MIME_TYPE.Image)[keyof typeof MIME_TYPE.Image];
+export type FontTypeValue = (typeof MIME_TYPE.Font)[keyof typeof MIME_TYPE.Font];
+export type OtherTypeValue = (typeof MIME_TYPE.Other)[keyof typeof MIME_TYPE.Other];
+export type AppTypeValue = (typeof MIME_TYPE.App)[keyof typeof MIME_TYPE.App];
+export type ApplicationTypeValue =
+	(typeof MIME_TYPE.Application)[keyof typeof MIME_TYPE.Application];
+
 export type MIMETypeValue =
-	| (typeof MIME_TYPE.Video)[keyof typeof MIME_TYPE.Video]
-	| (typeof MIME_TYPE.Audio)[keyof typeof MIME_TYPE.Audio]
-	| (typeof MIME_TYPE.Image)[keyof typeof MIME_TYPE.Image]
-	| (typeof MIME_TYPE.Application)[keyof typeof MIME_TYPE.Application]
-	| (typeof MIME_TYPE.App)[keyof typeof MIME_TYPE.App]
-	| (typeof MIME_TYPE.Font)[keyof typeof MIME_TYPE.Font]
-	| (typeof MIME_TYPE.Other)[keyof typeof MIME_TYPE.Other];
+	| VideoTypeValue
+	| AudioTypeValue
+	| ImageTypeValue
+	| ApplicationTypeValue
+	| FontTypeValue
+	| OtherTypeValue
+	| AppTypeValue;
 
 export default MIME_TYPE;

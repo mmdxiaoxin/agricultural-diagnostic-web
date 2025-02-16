@@ -1,6 +1,6 @@
 import http from "@/api";
 import { store } from "@/store";
-import { concurrencyQueue } from "@/utils";
+import { concurrencyQueue, getModelMimeType } from "@/utils";
 import { RcFile } from "antd/es/upload";
 import axios, { AxiosProgressEvent } from "axios";
 import {
@@ -48,6 +48,8 @@ export const uploadSingleFile = async (file: File | RcFile) => {
 export const uploadChunksFile = async (file: File | RcFile, options?: UploadOptions) => {
 	const chunkSize = options?.chunkSize || 10 * 1024 * 1024; // 默认每个文件块的大小 10MB
 	const totalChunks = Math.ceil(file.size / chunkSize); // 总的分片数量
+	const fileExtension = file.name.match(/\.([^\.]+)$/);
+	const file_type = file.type ? file.type : getModelMimeType(fileExtension ? fileExtension[1] : "");
 
 	try {
 		// 1. 创建上传任务
@@ -56,7 +58,7 @@ export const uploadChunksFile = async (file: File | RcFile, options?: UploadOpti
 			{
 				file_name: file.name,
 				file_size: file.size,
-				file_type: file.type,
+				file_type,
 				total_chunks: totalChunks
 			},
 			{

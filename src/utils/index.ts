@@ -339,3 +339,24 @@ export const concurrencyQueue = async <T>(
 
 	return results;
 };
+
+/**
+ * @description 获取模型文件 MIME 类型
+ * @param {String} extension 文件扩展名
+ * @return string
+ */
+export const getModelMimeType = (extension: string): string => {
+	const modelMimeTypes: { [key: string]: string } = {
+		pth: "application/pytorch-model",
+		pt: "application/pytorch-model",
+		h5: "application/tensorflow-model",
+		pb: "application/tensorflow-model",
+		onnx: "application/onnx-model",
+		caffemodel: "application/caffe-model",
+		weights: "application/darknet-weights",
+		params: "application/mxnet-model",
+		bin: "application/huggingface-model"
+	};
+
+	return modelMimeTypes[extension.toLowerCase()] || "application/octet-stream";
+};
