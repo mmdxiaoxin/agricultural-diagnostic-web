@@ -15,6 +15,16 @@ export const getUserList = (data: UserListParams) =>
 export const getUserProfile = () =>
 	http.get<ResUserProfile>("/user/profile", {}, { loading: false });
 
+export const getAvatar = (): Promise<Blob> =>
+	http.get(
+		`/user/avatar`,
+		{},
+		{ loading: false, responseType: "blob" }
+	) as unknown as Promise<Blob>;
+
+export const uploadAvatar = (data: FormData) =>
+	http.post<null>("/user/avatar", data, { loading: false });
+
 export const updateUserProfile = (data: UserProfileParams) => http.put<null>("/user/profile", data);
 
 export const resetUserPassword = (data: { currentPassword: string; newPassword: string }) =>

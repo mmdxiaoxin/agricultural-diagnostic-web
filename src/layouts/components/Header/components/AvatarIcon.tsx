@@ -1,5 +1,5 @@
-import { getUserProfile } from "@/api/modules/user";
-import avatar from "@/assets/images/avatar.png";
+import { getAvatar, getUserProfile } from "@/api/modules/user";
+import defaultAvatar from "@/assets/images/avatar.png";
 import { HOME_URL } from "@/config/config";
 import { useAppDispatch } from "@/hooks/useAppDispatch";
 import { removeAuthButtons, removeAuthRouter, removeToken } from "@/store/modules/authSlice";
@@ -8,9 +8,9 @@ import { ExclamationCircleOutlined } from "@ant-design/icons";
 import { Avatar, Dropdown, MenuProps, message, Modal } from "antd";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router";
+import styles from "../index.module.scss";
 import InfoModal, { InfoModalRef } from "./InfoModal";
 import PasswordModal, { PasswordModalRef } from "./PasswordModal";
-import styles from "../index.module.scss";
 
 const AvatarIcon = () => {
 	const navigate = useNavigate();
@@ -20,20 +20,31 @@ const AvatarIcon = () => {
 	const infoRef = useRef<InfoModalRef>(null);
 
 	const [username, setUsername] = useState("未知用户");
+	const [avatar, setAvatar] = useState<string>(defaultAvatar);
+
+	const fetchUser = async () => {
+		try {
+			const res = await getUserProfile();
+			if (res.code !== 200 || !res.data) {
+				throw new Error(res.message);
+			}
+			setUsername(res.data.username);
+		} catch (error: any) {
+			message.error(error.message);
+		}
+	};
+	const fetchAvatar = async () => {
+		try {
+			const res = await getAvatar();
+			if (res instanceof Blob) setAvatar(URL.createObjectURL(res));
+		} catch (error: any) {
+			message.error(error.message);
+		}
+	};
 
 	useEffect(() => {
-		const fetchUser = async () => {
-			try {
-				const res = await getUserProfile();
-				if (res.code !== 200 || !res.data) {
-					throw new Error(res.message);
-				}
-				setUsername(res.data.username);
-			} catch (error: any) {
-				message.error(error.message);
-			}
-		};
 		fetchUser();
+		fetchAvatar();
 	}, []);
 
 	// 退出登录
@@ -61,6 +72,11 @@ const AvatarIcon = () => {
 		dispatch(removeAuthRouter());
 		dispatch(removeMenuList());
 		navigate("/login");
+	};
+
+	const handleSave = () => {
+		fetchUser();
+		fetchAvatar();
 	};
 
 	// Dropdown Menu
@@ -96,7 +112,7 @@ const AvatarIcon = () => {
 			<Dropdown menu={{ items }} placement="bottom" arrow trigger={["click"]}>
 				<Avatar className={styles["avatar"]} size="large" src={avatar} />
 			</Dropdown>
-			<InfoModal ref={infoRef}></InfoModal>
+			<InfoModal ref={infoRef} onSave={handleSave}></InfoModal>
 			<PasswordModal ref={passRef} onReset={handleReset}></PasswordModal>
 		</>
 	);
