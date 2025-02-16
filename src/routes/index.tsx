@@ -2,18 +2,20 @@ import Login from "@/views/login/index";
 import Register from "@/views/register";
 import { Navigate, useRoutes } from "react-router";
 import { RouteObjectEx } from "./interface";
+import captureRouter from "./modules/capture";
 import diagnosisRouter from "./modules/diagnosis";
 import errorRouter from "./modules/error";
 import homeRouter from "./modules/home";
+import knowledgeRouter from "./modules/knowledge";
 import userRouter from "./modules/user";
-import captureRouter from "./modules/capture";
 
 export const routerArray: RouteObjectEx[] = [
 	...errorRouter,
 	...homeRouter,
 	...diagnosisRouter,
 	...userRouter,
-	...captureRouter
+	...captureRouter,
+	...knowledgeRouter
 ];
 
 export const rootRouter: RouteObjectEx[] = [
