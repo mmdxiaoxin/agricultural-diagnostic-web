@@ -217,14 +217,16 @@ export interface DownloadOptions {
 	createLink?: boolean;
 	// 并发数
 	concurrency?: number;
+	// 是否压缩模式
+	compressMode?: boolean;
 }
 
 // * 文件下载接口 - 支持断点续传
 export const downloadFile = async (
 	fileId: string | number,
-	options: DownloadOptions = {}
+	options: DownloadOptions = {},
+	url: string = `/api/file/download/${fileId}`
 ): Promise<Blob> => {
-	const url = `/api/file/download/${fileId}`; // 后端接口
 	const token = localStorage.getItem("token") || store.getState().auth.token;
 	let startByte = 0;
 	let fileBlob: Blob | null = null;
@@ -297,19 +299,44 @@ export const downloadFile = async (
 export const downloadMultipleFiles = async (
 	fileIds: (string | number)[],
 	options: DownloadOptions = {}
-): Promise<Blob[]> => {
-	const downloadPromises = fileIds.map(fileId => () => downloadFile(fileId, options));
-
-	// 通过并发队列来控制文件下载的并发数
-	return await concurrencyQueue(downloadPromises, {
-		concurrency: options.concurrency || 3, // 控制并发数
-		onProgress: (completed, total) => {
-			// 批量下载进度的回调
-			const overallProgress = Math.round((completed / total) * 100);
-			options.onOverallProgress?.(completed, total);
-			console.log(`总体下载进度：${overallProgress}%`);
+) => {
+	if (options.compressMode) {
+		const response = await http.download(
+			"/file/download/",
+			{ file_ids: fileIds },
+			{
+				loading: false,
+				onDownloadProgress(progressEvent) {
+					const progress = progressEvent.total
+						? Math.round((progressEvent.loaded / progressEvent.total) * 100)
+						: 0;
+					options.onOverallProgress?.(progress, 100);
+				}
+			}
+		);
+		if (!response) throw new Error("下载失败，服务器未返回文件流");
+		// 创建 Blob 对象
+		const fileBlob = new Blob([response]);
+		// 创建下载链接
+		if (options.createLink) {
+			const downloadLink = document.createElement("a");
+			downloadLink.href = URL.createObjectURL(fileBlob);
+			downloadLink.download = `download-${Date.now()}.zip`;
+			downloadLink.click();
 		}
-	});
+	} else {
+		// 通过并发队列来控制文件下载的并发数
+		const downloadPromises = fileIds.map(fileId => () => downloadFile(fileId, options));
+		return concurrencyQueue(downloadPromises, {
+			concurrency: options.concurrency || 3, // 控制并发数
+			onProgress: (completed, total) => {
+				// 批量下载进度的回调
+				const overallProgress = Math.round((completed / total) * 100);
+				options.onOverallProgress?.(completed, total);
+				console.log(`总体下载进度：${overallProgress}%`);
+			}
+		});
+	}
 };
 
 // * 文件名称修改

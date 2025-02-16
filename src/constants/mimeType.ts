@@ -48,7 +48,8 @@ export const MIME_TYPE = {
 
 	// 应用程序文件类型
 	App: {
-		Zip: "application/x-zip-compressed",
+		Zip: "application/zip",
+		XZip: "application/x-zip-compressed",
 		RAR: "application/x-rar-compressed",
 		TAR: "application/x-tar",
 		"7z": "application/x-7z-compressed",

@@ -19,6 +19,23 @@ export interface CustomAxiosRequestConfig extends InternalAxiosRequestConfig {
 	loading?: boolean;
 	cancel?: boolean;
 }
+export type GetConfig = Omit<AxiosRequestConfig, "params"> & {
+	loading?: boolean;
+	cancel?: boolean;
+};
+export type PostConfig = AxiosRequestConfig & {
+	loading?: boolean;
+	cancel?: boolean;
+};
+export type PutConfig = AxiosRequestConfig & {
+	loading?: boolean;
+	cancel?: boolean;
+};
+export type DeleteConfig = Omit<AxiosRequestConfig, "params"> & {
+	loading?: boolean;
+	cancel?: boolean;
+};
+export type DownloadConfig = Omit<PostConfig, "responseType">;
 
 const config = {
 	baseURL: import.meta.env.VITE_API_URL as string,
@@ -110,17 +127,20 @@ class RequestHttp {
 	}
 
 	// * 常用请求方法封装
-	get<T>(url: string, params?: object, _object = {}): Promise<ApiResponse<T>> {
+	get<T>(url: string, params?: object, _object: GetConfig = {}): Promise<ApiResponse<T>> {
 		return this.service.get(url, { params, ..._object });
 	}
-	post<T>(url: string, params?: object, _object = {}): Promise<ApiResponse<T>> {
-		return this.service.post(url, params, _object);
+	post<T>(url: string, data?: object, _object: PostConfig = {}): Promise<ApiResponse<T>> {
+		return this.service.post(url, data, _object);
 	}
-	put<T>(url: string, params?: object, _object = {}): Promise<ApiResponse<T>> {
-		return this.service.put(url, params, _object);
+	put<T>(url: string, data?: object, _object: PutConfig = {}): Promise<ApiResponse<T>> {
+		return this.service.put(url, data, _object);
 	}
-	delete<T>(url: string, params?: any, _object = {}): Promise<ApiResponse<T>> {
+	delete<T>(url: string, params?: any, _object: DeleteConfig = {}): Promise<ApiResponse<T>> {
 		return this.service.delete(url, { params, ..._object });
+	}
+	download(url: string, params?: object, _object: DownloadConfig = {}): Promise<BlobPart> {
+		return this.service.post(url, params, { ..._object, responseType: "blob" });
 	}
 }
 

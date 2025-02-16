@@ -7,12 +7,17 @@ import {
 	FileOutlined,
 	FileTextOutlined
 } from "@ant-design/icons";
-import { Avatar, Button, Flex, List, Progress, Tooltip } from "antd";
+import { Avatar, Button, Flex, List, Progress, Space, Switch, Tooltip } from "antd";
 import React from "react";
 
 type DownloadListProps = {
 	downloadList: FileMeta[];
 	progress: DownloadProgress;
+	compressMode?: boolean;
+	onCheck?: (
+		checked: boolean,
+		event: React.MouseEvent<HTMLButtonElement> | React.KeyboardEvent<HTMLButtonElement>
+	) => void;
 	onClear?: () => void;
 };
 
@@ -39,12 +44,29 @@ const getStatus = (percent: number, file_size?: number) => {
 	return `下载中 ${formatSize((file_size || 0) * (percent / 100))} / ${formatSize(file_size || 0)}`;
 };
 
-const DownloadList: React.FC<DownloadListProps> = ({ progress, downloadList, onClear }) => {
+const DownloadList: React.FC<DownloadListProps> = ({
+	progress,
+	downloadList,
+	onClear,
+	compressMode,
+	onCheck
+}) => {
 	return (
 		<List
 			rowKey={"id"}
 			header={
 				<Flex align="center" justify="space-between">
+					<Space>
+						<Tooltip title="下载列表">
+							<span>压缩模式：</span>
+						</Tooltip>
+						<Switch
+							checkedChildren="开启"
+							unCheckedChildren="关闭"
+							checked={compressMode}
+							onChange={onCheck}
+						/>
+					</Space>
 					<Button type="primary" onClick={() => onClear?.()}>
 						清空记录
 					</Button>

@@ -50,6 +50,7 @@ const FileManage: React.FC<FileManageProps> = () => {
 	const [downloadLoading, setDownloadLoading] = useState<boolean>(false);
 	const [activeKey, setActiveKey] = useState("1");
 	const [progress, setProgress] = useState<DownloadProgress>({});
+	const [compressMode, setCompressMode] = useState<boolean>(false);
 	const [selectedRowKeys, setSelectedRowKeys] = useState<number[]>([]);
 	const [pagination, setPagination] = useState({
 		page: 1,
@@ -152,17 +153,51 @@ const FileManage: React.FC<FileManageProps> = () => {
 		try {
 			setActiveKey("3");
 			setDownloadLoading(true);
-			setDownloadList(files.filter(file => selectedRowKeys.includes(file.id)));
-			await downloadMultipleFiles(selectedRowKeys, {
-				onProgress: (fileId, progressValue) => {
-					setProgress(prevProgress => ({
-						...prevProgress,
-						[fileId]: progressValue
-					}));
-				},
-				createLink: true,
-				concurrency: 3
-			});
+			if (compressMode) {
+				const id = new Date().getTime();
+				setDownloadList(prev => [
+					...prev,
+					{
+						id,
+						original_file_name: `压缩文件-${dayjs().format("YYYY-MM-DD")}.zip`,
+						storage_file_name: "压缩文件.zip",
+						file_path: "",
+						file_type: "application/zip",
+						file_size: selectedRowKeys.reduce(
+							(total, fileId) => total + (files.find(file => file.id === fileId)?.file_size || 0),
+							0
+						),
+						file_md5: "",
+						creator_id: 0,
+						createdAt: dayjs().format(),
+						updatedAt: dayjs().format(),
+						temp_link: "",
+						version: 0
+					}
+				]);
+				await downloadMultipleFiles(selectedRowKeys, {
+					onOverallProgress(completed, total) {
+						setProgress(prevProgress => ({
+							...prevProgress,
+							[id]: Math.round((completed / total) * 100)
+						}));
+					},
+					createLink: true,
+					compressMode
+				});
+			} else {
+				setDownloadList(files.filter(file => selectedRowKeys.includes(file.id)));
+				await downloadMultipleFiles(selectedRowKeys, {
+					onProgress: (fileId, progressValue) => {
+						setProgress(prevProgress => ({
+							...prevProgress,
+							[fileId]: progressValue
+						}));
+					},
+					createLink: true,
+					concurrency: 3
+				});
+			}
 
 			message.success("批量下载成功！");
 		} catch (error: any) {
@@ -310,6 +345,8 @@ const FileManage: React.FC<FileManageProps> = () => {
 				<DownloadList
 					progress={progress}
 					downloadList={downloadList}
+					compressMode={compressMode}
+					onCheck={setCompressMode}
 					onClear={() => {
 						setDownloadList([]);
 						setProgress({});
