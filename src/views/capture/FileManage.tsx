@@ -39,12 +39,10 @@ export type FilterParams = {
 	fileName?: string;
 	createdDateRange?: [dayjs.Dayjs | null, dayjs.Dayjs | null] | null;
 	updatedDateRange?: [dayjs.Dayjs | null, dayjs.Dayjs | null | null] | null;
-	page: number;
-	pageSize: number;
 };
 
 const FileManage: React.FC<FileManageProps> = () => {
-	const [files, setFiles] = useState<FileMeta[]>([]);
+	const [fileList, setFileList] = useState<FileMeta[]>([]);
 	const [downloadList, setDownloadList] = useState<FileMeta[]>([]);
 	const [loading, setLoading] = useState<boolean>(false);
 	const [downloadLoading, setDownloadLoading] = useState<boolean>(false);
@@ -52,6 +50,12 @@ const FileManage: React.FC<FileManageProps> = () => {
 	const [progress, setProgress] = useState<DownloadProgress>({});
 	const [compressMode, setCompressMode] = useState<boolean>(false);
 	const [selectedRowKeys, setSelectedRowKeys] = useState<number[]>([]);
+	const [filterParams, setFilterParams] = useState<FilterParams>({
+		fileType: [],
+		fileName: "",
+		createdDateRange: null,
+		updatedDateRange: null
+	});
 	const [pagination, setPagination] = useState({
 		page: 1,
 		pageSize: 10,
@@ -61,7 +65,12 @@ const FileManage: React.FC<FileManageProps> = () => {
 	const [newFileName, setNewFileName] = useState("");
 
 	// 查询文件列表
-	const handleSearch = async (params: FilterParams) => {
+	const handleSearch = async (
+		params: FilterParams & {
+			page: number;
+			pageSize: number;
+		}
+	) => {
 		try {
 			setLoading(true);
 			const dateRange = {
@@ -89,7 +98,7 @@ const FileManage: React.FC<FileManageProps> = () => {
 			if (res.code !== 200 || !res.data) {
 				throw new Error(res.message);
 			}
-			setFiles(res.data.list);
+			setFileList(res.data.list);
 			setPagination(prev => ({
 				...prev,
 				total: res.data ? res.data.pagination.total : 0
@@ -164,7 +173,8 @@ const FileManage: React.FC<FileManageProps> = () => {
 						file_path: "",
 						file_type: "application/zip",
 						file_size: selectedRowKeys.reduce(
-							(total, fileId) => total + (files.find(file => file.id === fileId)?.file_size || 0),
+							(total, fileId) =>
+								total + (fileList.find(file => file.id === fileId)?.file_size || 0),
 							0
 						),
 						file_md5: "",
@@ -186,7 +196,7 @@ const FileManage: React.FC<FileManageProps> = () => {
 					compressMode
 				});
 			} else {
-				setDownloadList(files.filter(file => selectedRowKeys.includes(file.id)));
+				setDownloadList(fileList.filter(file => selectedRowKeys.includes(file.id)));
 				await downloadMultipleFiles(selectedRowKeys, {
 					onProgress: (fileId, progressValue) => {
 						setProgress(prevProgress => ({
@@ -322,14 +332,22 @@ const FileManage: React.FC<FileManageProps> = () => {
 			children: (
 				<FileFilter
 					onSearch={values => {
+						setFilterParams(values);
 						handleSearch({ ...values, page: 1, pageSize: 10 });
 					}}
-					onReset={() =>
+					onReset={() => {
+						setFilterParams({
+							fileType: [],
+							fileName: "",
+							createdDateRange: null,
+							updatedDateRange: null
+						});
+						setPagination({ page: 1, pageSize: 10, total: 0 });
 						handleSearch({
 							page: 1,
 							pageSize: 10
-						})
-					}
+						});
+					}}
 				/>
 			)
 		},
@@ -372,6 +390,7 @@ const FileManage: React.FC<FileManageProps> = () => {
 					className={styles["content__left"]}
 				>
 					<Tabs
+						centered
 						style={{ padding: 16 }}
 						defaultActiveKey="1"
 						activeKey={activeKey}
@@ -410,14 +429,17 @@ const FileManage: React.FC<FileManageProps> = () => {
 						<Table
 							rowSelection={rowSelection}
 							columns={columns}
-							dataSource={files}
+							dataSource={fileList}
 							rowKey="id"
 							loading={loading}
 							pagination={{
 								current: pagination.page,
 								pageSize: pagination.pageSize,
 								total: pagination.total,
-								onChange: (page, pageSize) => setPagination({ ...pagination, page, pageSize })
+								onChange: (page, pageSize) => {
+									setPagination({ ...pagination, page, pageSize });
+									handleSearch({ ...filterParams, ...pagination, page, pageSize });
+								}
 							}}
 						/>
 					</div>
