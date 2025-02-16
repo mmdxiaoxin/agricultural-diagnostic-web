@@ -43,7 +43,15 @@ export const MIME_TYPE = {
 		ExcelOpenXML: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
 		PPTXOpenXML: "application/vnd.openxmlformats-officedocument.presentationml.presentation",
 		JSON: "application/json",
-		XML: "application/xml"
+		XML: "application/xml",
+		// 深度学习模型文件类型
+		PyTorch: "application/pytorch-model",
+		TensorFlow: "application/tensorflow-model",
+		ONNX: "application/onnx-model",
+		Caffe: "application/caffe-model",
+		Darknet: "application/darknet-weights",
+		MXNet: "application/mxnet-model",
+		HuggingFace: "application/huggingface-model"
 	},
 
 	// 应用程序文件类型
