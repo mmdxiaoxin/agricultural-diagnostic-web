@@ -1,7 +1,18 @@
 import { diagnoseDisease } from "@/api/modules/diagnosis";
 import { uploadSingleFile } from "@/api/modules/file";
 import { UploadOutlined } from "@ant-design/icons";
-import { Alert, Button, Card, Divider, message, Spin, Upload, UploadFile, UploadProps } from "antd";
+import {
+	Alert,
+	Button,
+	Card,
+	Divider,
+	Image,
+	message,
+	Spin,
+	Upload,
+	UploadFile,
+	UploadProps
+} from "antd";
 import React, { useState } from "react";
 
 interface DetectionResult {
@@ -31,12 +42,15 @@ const DiseaseDiagnose: React.FC = () => {
 
 		try {
 			const response = await uploadSingleFile(selectedImage);
-			if (response.code !== 200) throw new Error("上传失败，请重试！");
+			if (response.code !== 200 && response.code !== 201) throw new Error("上传失败，请重试！");
 			if (!response.data) throw new Error("上传失败，请重试！");
 			const fileId = response.data.id;
+
 			const diagnoseResponse = await diagnoseDisease(String(fileId));
-			if (diagnoseResponse.code !== 200) throw new Error("检测失败，请重试！");
+			if (diagnoseResponse.code !== 200 && diagnoseResponse.code !== 201)
+				throw new Error("检测失败，请重试！");
 			const { processed_image, detections } = diagnoseResponse.data;
+
 			setResultImageUrl(processed_image);
 			setDetectionResults(detections);
 			message.success("上传成功，检测完成！");
@@ -110,7 +124,7 @@ const DiseaseDiagnose: React.FC = () => {
 			{resultImageUrl && (
 				<div style={{ marginTop: 16 }}>
 					<Divider>检测结果</Divider>
-					<img src={resultImageUrl} alt="检测结果" style={{ maxWidth: "100%", maxHeight: 300 }} />
+					<Image src={resultImageUrl} alt="检测结果" style={{ maxWidth: "100%", maxHeight: 300 }} />
 					<div style={{ marginTop: 16 }}>
 						<h4>检测到的物体:</h4>
 						<ul>
