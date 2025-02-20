@@ -1,0 +1,17 @@
+.list {
+    &-item {
+        &__content {
+            p {
+                display: -webkit-box;
+                -webkit-line-clamp: 2;
+                /* Limit to two lines */
+                -webkit-box-orient: vertical;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                margin: 0;
+                height: 3rem;
+                /* Set a fixed height (adjust the value as needed) */
+            }
+        }
+    }
+}

@@ -1,0 +1,36 @@
+// Base Styles
+%scrollbar {
+    &::-webkit-scrollbar {
+        width: 0;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        width: 0;
+    }
+}
+
+// Container
+.container {
+    height: 100%;
+    padding: 16px;
+    border-radius: 20px;
+    background-color: $light-bg-color;
+    display: flex;
+    flex-direction: column;
+
+    .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 16px;
+        padding: 16px;
+        border-radius: 20px;
+        background-color: $light-border-header-color;
+    }
+
+    .content {
+        flex: 1;
+        overflow-y: auto;
+        @extend %scrollbar;
+    }
+}
