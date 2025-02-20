@@ -3,10 +3,11 @@ import { Spin } from "antd";
 
 /**
  * @description 路由懒加载
- * @param {Element} Comp 需要访问的组件
- * @returns element
+ * @param {Element} Comp 需要懒加载的组件
+ * @param {Object} props 传递给懒加载组件的额外 props
+ * @returns React节点
  */
-const lazyLoad = (Comp: React.LazyExoticComponent<any>): React.ReactNode => {
+const lazyLoad = (Comp: React.LazyExoticComponent<any>, props?: any): React.ReactNode => {
 	return (
 		<Suspense
 			fallback={
@@ -21,7 +22,7 @@ const lazyLoad = (Comp: React.LazyExoticComponent<any>): React.ReactNode => {
 				/>
 			}
 		>
-			<Comp />
+			<Comp {...props} />
 		</Suspense>
 	);
 };

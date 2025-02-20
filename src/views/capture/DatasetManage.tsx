@@ -1,8 +1,9 @@
 import { DatasetMeta } from "@/api/interface";
 import { deleteDataset, getDatasetsList } from "@/api/modules/file";
 import DatasetsList from "@/components/DatasetsList";
-import { message } from "antd";
+import { Button, message } from "antd";
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router";
 import styles from "./DatasetManage.module.scss";
 
 export type DatasetManageProps = {};
@@ -10,6 +11,8 @@ export type DatasetManageProps = {};
 const DatasetManage: React.FC<DatasetManageProps> = () => {
 	const [loading, setLoading] = useState<boolean>(false);
 	const [datasets, setDatasets] = useState<DatasetMeta[]>([]);
+
+	const navigate = useNavigate();
 
 	const fetchListData = async () => {
 		setLoading(true);
@@ -30,6 +33,14 @@ const DatasetManage: React.FC<DatasetManageProps> = () => {
 		fetchListData();
 	}, []);
 
+	const handleAdd = () => {
+		navigate("/capture/dataset/create");
+	};
+
+	const handleEdit = (datasetId: number) => {
+		navigate(`/capture/dataset/edit/${datasetId}`);
+	};
+
 	const handleDelete = async (datasetId: number) => {
 		try {
 			await deleteDataset(datasetId);
@@ -43,9 +54,16 @@ const DatasetManage: React.FC<DatasetManageProps> = () => {
 
 	return (
 		<div className={styles["container"]}>
-			<div className={styles["header"]}>Header</div>
+			<div className={styles["header"]}>
+				<Button onClick={handleAdd}>新增</Button>
+			</div>
 			<div className={styles["content"]}>
-				<DatasetsList loading={loading} datasets={datasets} onDelete={handleDelete} />
+				<DatasetsList
+					loading={loading}
+					datasets={datasets}
+					onEdit={handleEdit}
+					onDelete={handleDelete}
+				/>
 			</div>
 		</div>
 	);

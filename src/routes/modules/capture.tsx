@@ -36,6 +36,28 @@ const captureRouter: RouteObjectEx[] = [
 					title: "数据集管理",
 					key: "dataset"
 				}
+			},
+			{
+				path: "/capture/dataset/edit/:id",
+				element: lazyLoad(
+					React.lazy(() => import("@/views/capture/DatasetDetail")),
+					{ mode: "edit" }
+				),
+				meta: {
+					title: "编辑数据集",
+					key: "dataset/edit"
+				}
+			},
+			{
+				path: "/capture/dataset/create",
+				element: lazyLoad(
+					React.lazy(() => import("@/views/capture/DatasetDetail")),
+					{ mode: "create" }
+				),
+				meta: {
+					title: "添加数据集",
+					key: "dataset/create"
+				}
 			}
 		]
 	}
