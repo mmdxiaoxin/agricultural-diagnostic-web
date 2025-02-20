@@ -60,61 +60,59 @@ const KnowledgeManage: React.FC<KnowledgeManageProps> = () => {
 	];
 
 	return (
-		<>
+		<Layout className={styles["container"]}>
 			<KnowledgeModal ref={knowledgeRef} />
-			<Layout className={styles["container"]}>
-				<Sider theme="light" className={styles["sider"]} width={300}>
-					<Title level={4}>作物分类</Title>
-					<Tree
-						showLine
-						defaultExpandedKeys={["1", "2", "3"]}
-						onSelect={onSelect}
-						treeData={cropData}
-					/>
-				</Sider>
+			<Sider theme="light" className={styles["sider"]} width={300}>
+				<Title level={4}>作物分类</Title>
+				<Tree
+					showLine
+					defaultExpandedKeys={["1", "2", "3"]}
+					onSelect={onSelect}
+					treeData={cropData}
+				/>
+			</Sider>
 
-				<Layout>
-					<Content style={{ background: "#fff", margin: 0, minHeight: 280 }}>
-						{selectedCrop ? (
-							<>
-								<Title level={4}>{selectedCrop} 的病虫害信息</Title>
-								<Row gutter={24}>
-									<Col span={24}>
-										<Card
-											title="病虫害类型"
-											extra={
-												<Tooltip title="新增病虫害信息">
-													<Button
-														icon={<AppstoreAddOutlined />}
-														type="text"
-														onClick={onAddKnowledge}
-													/>
-												</Tooltip>
-											}
-											style={{ borderRadius: "8px", boxShadow: "0 4px 8px rgba(0,0,0,0.1)" }}
-										>
-											<Table
-												rowKey="id"
-												columns={columns}
-												// dataSource={dataSource}
-												pagination={false}
-												size="middle"
-												style={{ borderRadius: "8px" }}
-											/>
-										</Card>
-									</Col>
-								</Row>
-							</>
-						) : (
-							<Flex align="center" justify="center" style={{ height: "100%" }}>
-								<FileDoneOutlined style={{ fontSize: 48, color: "#ccc" }} />
-								<p>请选择作物分类</p>
-							</Flex>
-						)}
-					</Content>
-				</Layout>
+			<Layout>
+				<Content style={{ background: "#fff", margin: 0, minHeight: 280 }}>
+					{selectedCrop ? (
+						<>
+							<Title level={4}>{selectedCrop} 的病虫害信息</Title>
+							<Row gutter={24}>
+								<Col span={24}>
+									<Card
+										title="病虫害类型"
+										extra={
+											<Tooltip title="新增病虫害信息">
+												<Button
+													icon={<AppstoreAddOutlined />}
+													type="text"
+													onClick={onAddKnowledge}
+												/>
+											</Tooltip>
+										}
+										style={{ borderRadius: "8px", boxShadow: "0 4px 8px rgba(0,0,0,0.1)" }}
+									>
+										<Table
+											rowKey="id"
+											columns={columns}
+											// dataSource={dataSource}
+											pagination={false}
+											size="middle"
+											style={{ borderRadius: "8px" }}
+										/>
+									</Card>
+								</Col>
+							</Row>
+						</>
+					) : (
+						<Flex align="center" justify="center" style={{ height: "100%" }}>
+							<FileDoneOutlined style={{ fontSize: 48, color: "#ccc" }} />
+							<p>请选择作物分类</p>
+						</Flex>
+					)}
+				</Content>
 			</Layout>
-		</>
+		</Layout>
 	);
 };
 
