@@ -35,11 +35,14 @@ const LayoutTabs = () => {
 	// 添加tabs
 	const addTabs = () => {
 		const route = searchRoute(pathname, routerArray);
-		let newTabsList = [...tabsList];
+		const newTabsList = [...tabsList];
 
-		if (tabsList.every((item: any) => item.path !== route.path)) {
+		if (
+			Object.keys(route.params).length === 0 &&
+			tabsList.every((item: any) => item.path !== route.path)
+		) {
 			newTabsList.push({
-				title: route.meta!.title,
+				title: route.meta?.title || "",
 				path: route.path as string
 			});
 		}

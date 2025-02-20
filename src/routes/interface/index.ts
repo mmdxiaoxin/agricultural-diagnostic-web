@@ -15,4 +15,5 @@ export type RouteObjectEx = RouteObject & {
 	path?: string;
 	meta?: MetaProps;
 	isLink?: string;
+	params?: any;
 };
