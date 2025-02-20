@@ -14,82 +14,65 @@ import { useLocation, useNavigate } from "react-router";
 import Logo from "./components/Logo";
 import styles from "./index.module.scss";
 
-const LayoutMenu = () => {
+// MenuItem 类型，明确菜单项结构
+type MenuItem = Required<MenuProps>["items"][number];
+
+// 递归处理菜单数据，转换为 antd menu 所需的格式
+const deepLoopFloat = (menuList: Menu.MenuOptions[], newArr: MenuItem[] = []): MenuItem[] => {
+	menuList.forEach(item => {
+		// 如果没有子菜单，直接添加菜单项
+		if (!item?.children?.length) {
+			newArr.push({
+				key: item.path,
+				icon: <IconComponent name={item.icon as keyof typeof Icons} />,
+				label: item.title
+			});
+		} else {
+			newArr.push({
+				key: item.path,
+				icon: <IconComponent name={item.icon as keyof typeof Icons} />,
+				label: item.title,
+				children: deepLoopFloat(item.children)
+			});
+		}
+	});
+	return newArr;
+};
+
+const LayoutMenu: React.FC = () => {
 	const { pathname } = useLocation();
 	const { isCollapse } = useAppSelector(state => state.menu);
 	const dispatch = useAppDispatch();
 
 	const [selectedKeys, setSelectedKeys] = useState<string[]>([pathname]);
 	const [openKeys, setOpenKeys] = useState<string[]>([]);
+	const [menuList, setMenuListState] = useState<MenuItem[]>([]);
+	const [loading, setLoading] = useState(false);
 
 	// 刷新页面菜单保持高亮
 	useEffect(() => {
 		setSelectedKeys([pathname]);
-		isCollapse ? null : setOpenKeys(getOpenKeys(pathname));
+		if (!isCollapse) {
+			setOpenKeys(getOpenKeys(pathname));
+		}
 	}, [pathname, isCollapse]);
 
-	// 设置当前展开的 subMenu
-	const onOpenChange = (openKeys: string[]) => {
-		if (openKeys.length === 0 || openKeys.length === 1) return setOpenKeys(openKeys);
-		const latestOpenKey = openKeys[openKeys.length - 1];
-		if (latestOpenKey.includes(openKeys[0])) return setOpenKeys(openKeys);
-		setOpenKeys([latestOpenKey]);
-	};
-
-	// 定义 menu 类型
-	type MenuItem = Required<MenuProps>["items"][number];
-	const getItem = (
-		label: React.ReactNode,
-		key?: React.Key | null,
-		icon?: React.ReactNode,
-		children?: MenuItem[],
-		type?: "group"
-	): MenuItem => {
-		return {
-			key,
-			icon,
-			children,
-			label,
-			type
-		} as MenuItem;
-	};
-
-	// 处理后台返回菜单 key 值为 antd 菜单需要的 key 值
-	const deepLoopFloat = (menuList: Menu.MenuOptions[], newArr: MenuItem[] = []) => {
-		menuList.forEach((item: Menu.MenuOptions) => {
-			// 下面判断代码解释 *** !item?.children?.length   ==>   (!item.children || item.children.length === 0)
-			if (!item?.children?.length)
-				return newArr.push(
-					getItem(item.title, item.path, <IconComponent name={item.icon! as keyof typeof Icons} />)
-				);
-			newArr.push(
-				getItem(
-					item.title,
-					item.path,
-					<IconComponent name={item.icon! as keyof typeof Icons} />,
-					deepLoopFloat(item.children)
-				)
-			);
-		});
-		return newArr;
-	};
-
-	// 获取菜单列表并处理成 antd menu 需要的格式
-	const [menuList, setMenuListState] = useState<MenuItem[]>([]); // 使用内部状态存储menuList
-	const [loading, setLoading] = useState(false);
-
-	const getMenuData = async () => {
+	// 获取菜单数据并处理
+	const getMenuData = async (): Promise<void> => {
 		setLoading(true);
 		try {
 			const { data } = await getMenuList();
-			if (!data) return;
-			setMenuListState(deepLoopFloat(data)); // 设置菜单列表
-			// 存储处理过后的所有面包屑导航栏到 redux 中
-			dispatch(setBreadcrumbList(findAllBreadcrumb(data)));
-			// 把路由菜单处理成一维数组，存储到 redux 中，做菜单权限判断
-			const dynamicRouter = handleRouter(data);
-			dispatch(setAuthRouter(dynamicRouter));
-			dispatch(setMenuList(data)); // 更新菜单列表到Redux
+			if (data) {
+				const formattedMenuList = deepLoopFloat(data);
+				setMenuListState(formattedMenuList); // 设置菜单列表
+				// 存储面包屑数据和菜单数据到 Redux
+				dispatch(setBreadcrumbList(findAllBreadcrumb(data)));
+				const dynamicRouter = handleRouter(data);
+				dispatch(setAuthRouter(dynamicRouter));
+				dispatch(setMenuList(data)); // 更新菜单列表到 Redux
+			}
+		} catch (error) {
+			console.error("获取菜单数据失败", error);
 		} finally {
 			setLoading(false);
 		}
@@ -99,17 +82,34 @@ const LayoutMenu = () => {
 		getMenuData();
 	}, []);
 
-	// 点击当前菜单跳转页面
+	// 点击菜单跳转页面
 	const navigate = useNavigate();
 	const clickMenu: MenuProps["onClick"] = ({ key }: { key: string }) => {
 		const route = searchRoute(key, menuList as RouteObjectEx[]);
-		if (route.isLink) window.open(route.isLink, "_blank");
-		navigate(key);
+		if (route.isLink) {
+			window.open(route.isLink, "_blank");
+		} else {
+			navigate(key);
+		}
+	};
+
+	// 设置子菜单展开行为
+	const onOpenChange = (openKeys: string[]) => {
+		if (openKeys.length === 0 || openKeys.length === 1) {
+			setOpenKeys(openKeys);
+		} else {
+			const latestOpenKey = openKeys[openKeys.length - 1];
+			if (latestOpenKey.includes(openKeys[0])) {
+				setOpenKeys(openKeys);
+			} else {
+				setOpenKeys([latestOpenKey]);
+			}
+		}
 	};
 
 	return (
 		<div className={styles.menu}>
-			<Spin spinning={loading} tip="Loading...">
+			<Spin spinning={loading} tip="加载中...">
 				<Logo />
 				<Menu
 					mode="inline"
