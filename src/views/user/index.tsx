@@ -302,7 +302,7 @@ const User = () => {
 			/>
 
 			{/* 表格部分 */}
-			<div style={{ padding: 16 }}>
+			<div>
 				<Table<UserItem>
 					rowKey="id"
 					loading={loading}
