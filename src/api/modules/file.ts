@@ -365,7 +365,8 @@ export const renameFile = (fileId: string | number, newFileName: string) =>
 	http.put(`/file/rename/${fileId}`, { newFileName });
 
 // * 文件删除接口
-export const deleteFile = (fileId: string | number) => http.delete(`/file/delete/${fileId}`);
+export const deleteFile = (fileId: string | number) =>
+	http.delete(`/file/delete/${fileId}`, {}, { cancel: false });
 
 // * 获取数据集列表
 export const getDatasetsList = async () =>
