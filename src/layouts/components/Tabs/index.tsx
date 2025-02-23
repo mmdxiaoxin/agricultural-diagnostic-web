@@ -1,23 +1,50 @@
 import IconComponent from "@/components/IconComponent";
 import { HOME_URL } from "@/config/config";
-import { useAppDispatch } from "@/hooks/useAppDispatch";
-import { useAppSelector } from "@/hooks/useAppSelector";
+import { useAppDispatch, useAppSelector } from "@/hooks";
 import { routerArray } from "@/routes";
 import { setTabsList } from "@/store/modules/tabsSlice";
-import { searchRoute } from "@/utils/index";
+import { searchRoute } from "@/utils";
+import { DndContext, DragEndEvent, PointerSensor, closestCenter, useSensor } from "@dnd-kit/core";
+import {
+	SortableContext,
+	arrayMove,
+	horizontalListSortingStrategy,
+	useSortable
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 import { Tabs, TabsProps } from "antd";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router";
 import MoreButton from "./components/MoreButton";
 import "./index.scss";
 
+const DraggableTabNode: React.FC<Readonly<{ "data-node-key": string }>> = ({
+	className,
+	...props
+}) => {
+	const { attributes, listeners, setNodeRef, transform, transition } = useSortable({
+		id: props["data-node-key"]
+	});
+
+	const style: React.CSSProperties = {
+		...props.style,
+		transform: CSS.Translate.toString(transform),
+		transition,
+		cursor: "move"
+	};
+
+	return React.cloneElement(props.children as React.ReactElement<any>, {
+		ref: setNodeRef,
+		style,
+		...attributes,
+		...listeners
+	});
+};
+
 const LayoutTabs = () => {
 	const { tabsList } = useAppSelector(state => state.tabs);
-
 	const { themeConfig } = useAppSelector(state => state.global);
-
 	const { pathname } = useLocation();
-
 	const navigate = useNavigate();
 	const dispatch = useAppDispatch();
 
@@ -67,6 +94,20 @@ const LayoutTabs = () => {
 		dispatch(setTabsList(tabsList.filter((item: any) => item.path !== tabPath)));
 	};
 
+	// 处理拖拽结束
+	const onDragEnd = ({ active, over }: DragEndEvent) => {
+		if (active.id !== over?.id) {
+			const newTabsList = arrayMove(
+				tabsList,
+				tabsList.findIndex(tab => tab.path === active.id),
+				tabsList.findIndex(tab => tab.path === over?.id)
+			);
+			dispatch(setTabsList(newTabsList));
+		}
+	};
+
+	const sensor = useSensor(PointerSensor, { activationConstraint: { distance: 10 } });
+
 	const tabItems: TabsProps["items"] = tabsList.map((item: any) => ({
 		key: item.path,
 		label: item.title,
@@ -75,25 +116,42 @@ const LayoutTabs = () => {
 	}));
 
 	if (themeConfig.tabs) return null;
-	else
+	else {
 		return (
-			<Tabs
-				style={{ borderBottom: "1px solid #f0f0f0" }}
-				className={"tabs"}
-				animated
-				activeKey={activeValue}
-				onChange={clickTabs}
-				hideAdd
-				type="editable-card"
-				items={tabItems}
-				onEdit={path => {
-					delTabs(path as string);
-				}}
-				tabBarExtraContent={{
-					right: <MoreButton delTabs={delTabs} />
-				}}
-			/>
+			<DndContext sensors={[sensor]} onDragEnd={onDragEnd} collisionDetection={closestCenter}>
+				<SortableContext
+					items={tabsList.map((item: any) => item.path)}
+					strategy={horizontalListSortingStrategy}
+				>
+					<Tabs
+						style={{ borderBottom: "1px solid #f0f0f0" }}
+						className={"tabs"}
+						animated
+						activeKey={activeValue}
+						onChange={clickTabs}
+						hideAdd
+						type="editable-card"
+						items={tabItems}
+						onEdit={path => {
+							delTabs(path as string);
+						}}
+						tabBarExtraContent={{
+							right: <MoreButton delTabs={delTabs} />
+						}}
+						renderTabBar={(tabBarProps, DefaultTabBar) => (
+							<DefaultTabBar {...tabBarProps}>
+								{node => (
+									<DraggableTabNode {...(node as React.ReactElement).props} key={node.key}>
+										{node}
+									</DraggableTabNode>
+								)}
+							</DefaultTabBar>
+						)}
+					/>
+				</SortableContext>
+			</DndContext>
 		);
+	}
 };
 
 export default LayoutTabs;
