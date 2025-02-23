@@ -14,6 +14,7 @@ import { MIMETypeValue } from "@/constants";
 import { concurrencyQueue, formatSize, getFileTypeColor } from "@/utils";
 import { DeleteOutlined, DownloadOutlined, EditOutlined } from "@ant-design/icons";
 import {
+	Badge,
 	Button,
 	Flex,
 	Input,
@@ -63,6 +64,8 @@ const FileManage: React.FC<FileManageProps> = () => {
 	});
 	const [currentFile, setCurrentFile] = useState<FileMeta | null>(null);
 	const [newFileName, setNewFileName] = useState("");
+
+	const pendingFilesCount = Object.values(progress).filter(p => p < 100).length;
 
 	// 查询文件列表
 	const handleSearch = async (
@@ -338,7 +341,11 @@ const FileManage: React.FC<FileManageProps> = () => {
 		},
 		{
 			key: "3",
-			label: "下载列表",
+			label: (
+				<Badge count={pendingFilesCount}>
+					<span>下载列表</span>
+				</Badge>
+			),
 			children: (
 				<DownloadList
 					progress={progress}
