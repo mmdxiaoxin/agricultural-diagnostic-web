@@ -387,17 +387,24 @@ export const getModelMimeType = (extension: string): string => {
 /**
  * @description 计算文件 MD5 值
  * @param {File} file 文件对象
+ * @param {Function} onProgress 进度回调
  * @return Promise
  */
-export const calculateFileMd5 = (file: File) => {
+export const calculateFileMd5 = (file: File, onProgress?: (progress: number) => void) => {
 	return new Promise<string>((resolve, reject) => {
 		const worker = new Worker(new URL("@/workers/md5Worker.ts", import.meta.url), {
 			type: "module"
 		});
 
 		worker.onmessage = event => {
-			resolve(event.data.md5);
-			console.log("MD5 值：", event.data.md5);
+			if (event.data.md5) {
+				resolve(event.data.md5);
+			} else if (event.data.progress) {
+				// 处理进度更新
+				onProgress?.(event.data.progress);
+			} else if (event.data.error) {
+				reject(event.data.error);
+			}
 			worker.terminate();
 		};
 
