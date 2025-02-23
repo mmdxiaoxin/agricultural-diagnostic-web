@@ -66,7 +66,8 @@ export const uploadChunksFile = async (file: File | RcFile, options?: UploadOpti
 				file_md5: fileMd5
 			},
 			{
-				loading: false
+				loading: false,
+				cancel: false
 			}
 		);
 
@@ -127,7 +128,11 @@ export const uploadChunksFile = async (file: File | RcFile, options?: UploadOpti
 		});
 
 		// 3. 合并文件块
-		let completionResp = await http.post("/file/upload/complete", { task_id }, { loading: false });
+		let completionResp = await http.post(
+			"/file/upload/complete",
+			{ task_id },
+			{ loading: false, cancel: false }
+		);
 
 		// 检查上传完成状态
 		if (completionResp.code === 200) {
@@ -152,7 +157,7 @@ export const uploadChunksFile = async (file: File | RcFile, options?: UploadOpti
 			const taskStatusResp = await http.get<ResTaskStatus>(
 				`/file/upload/status/${task_id}`,
 				{},
-				{ loading: false }
+				{ loading: false, cancel: false }
 			);
 
 			if (taskStatusResp.code !== 200 || !taskStatusResp.data) {
@@ -191,7 +196,11 @@ export const uploadChunksFile = async (file: File | RcFile, options?: UploadOpti
 			await concurrencyQueue(retryTasks, { concurrency });
 
 			// 重新合并文件块
-			completionResp = await http.post("/file/upload/complete", { task_id }, { loading: false });
+			completionResp = await http.post(
+				"/file/upload/complete",
+				{ task_id },
+				{ loading: false, cancel: false }
+			);
 
 			retryCount++; // 重试次数加 1
 			if (retryCount === maxRetryCount) {
@@ -316,6 +325,7 @@ export const downloadMultipleFiles = async (
 			{ file_ids: fileIds },
 			{
 				loading: false,
+				cancel: false,
 				onDownloadProgress(progressEvent) {
 					const progress = progressEvent.total
 						? Math.round((progressEvent.loaded / progressEvent.total) * 100)
