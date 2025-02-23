@@ -8,6 +8,7 @@ import {
 } from "@/api/modules/file";
 import DownloadList from "@/components/DownloadList";
 import FileFilter from "@/components/FileFilter";
+import FilePreview from "@/components/FilePreview";
 import FileUpload from "@/components/FileUpload";
 import { MIMETypeValue } from "@/constants";
 import { concurrencyQueue, formatSize, getFileTypeColor } from "@/utils";
@@ -15,7 +16,6 @@ import { DeleteOutlined, DownloadOutlined, EditOutlined } from "@ant-design/icon
 import {
 	Button,
 	Flex,
-	Image,
 	Input,
 	message,
 	Modal,
@@ -241,30 +241,10 @@ const FileManage: React.FC<FileManageProps> = () => {
 			title: "文件名",
 			dataIndex: "original_file_name",
 			render: (text: string, record: FileMeta) => (
-				<Tooltip
-					title={
-						<div>
-							{record.file_type.startsWith("image") && <Image src={record.temp_link} />}
-							{text}
-						</div>
-					}
-				>
-					<Button
-						type="link"
-						style={{
-							padding: 0,
-							margin: 0,
-							height: "auto",
-							maxWidth: "250px",
-							display: "inline-block",
-							whiteSpace: "nowrap",
-							overflow: "hidden",
-							textOverflow: "ellipsis"
-						}}
-					>
-						{text}
-					</Button>
-				</Tooltip>
+				<FilePreview
+					meta={{ file_type: record.file_type, file_url: record.temp_link }}
+					text={text}
+				/>
 			)
 		},
 		{

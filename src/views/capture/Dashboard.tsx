@@ -2,20 +2,10 @@ import { DiskUsageReport, FileMeta } from "@/api/interface";
 import { getDiskUsage, getFileList } from "@/api/modules/file";
 import DiskSpaceUsageChart from "@/components/ECharts/DiskSpaceUsageChart";
 import FileCard from "@/components/FileCard";
+import FilePreview from "@/components/FilePreview";
 import { MIMETypeValue } from "@/constants/mimeType";
 import { formatSize, getFileType, getFileTypeColor } from "@/utils";
-import {
-	Button,
-	Card,
-	Col,
-	Image,
-	message,
-	Row,
-	Table,
-	TableColumnsType,
-	Tag,
-	Tooltip
-} from "antd";
+import { Button, Card, Col, message, Row, Table, TableColumnsType, Tag, Tooltip } from "antd";
 import dayjs from "dayjs";
 import { CSSProperties, useEffect, useMemo, useState } from "react";
 import styles from "./Dashboard.module.scss";
@@ -87,12 +77,6 @@ const Dashboard = () => {
 		boxSizing: "border-box"
 	});
 
-	const handleSelect = (file: FileMeta) => {
-		if (file.file_type.startsWith("image")) {
-			window.open(file.temp_link);
-		}
-	};
-
 	useEffect(() => {
 		fetchFileList(pagination.page, pagination.pageSize, selectedType);
 	}, [selectedType]);
@@ -103,31 +87,10 @@ const Dashboard = () => {
 			dataIndex: "original_file_name",
 			key: "original_file_name",
 			render: (text: string, record: FileMeta) => (
-				<Tooltip
-					title={
-						<div>
-							{record.file_type.startsWith("image") && <Image src={record.temp_link} />}
-							{text}
-						</div>
-					}
-				>
-					<Button
-						type="link"
-						style={{
-							padding: 0,
-							margin: 0,
-							height: "auto",
-							maxWidth: "200px",
-							display: "inline-block",
-							whiteSpace: "nowrap",
-							overflow: "hidden",
-							textOverflow: "ellipsis"
-						}}
-						onClick={() => handleSelect(record)}
-					>
-						{text}
-					</Button>
-				</Tooltip>
+				<FilePreview
+					meta={{ file_type: record.file_type, file_url: record.temp_link }}
+					text={text}
+				/>
 			)
 		},
 		{
