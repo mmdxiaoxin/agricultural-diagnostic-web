@@ -1,6 +1,6 @@
 import http from "@/api";
 import { store } from "@/store";
-import { concurrencyQueue, getModelMimeType } from "@/utils";
+import { calculateFileMd5, concurrencyQueue, getModelMimeType } from "@/utils";
 import { RcFile } from "antd/es/upload";
 import axios, { AxiosProgressEvent } from "axios";
 import {
@@ -52,6 +52,9 @@ export const uploadChunksFile = async (file: File | RcFile, options?: UploadOpti
 	const file_type = file.type ? file.type : getModelMimeType(fileExtension ? fileExtension[1] : "");
 
 	try {
+		// 计算文件的 MD5
+		const fileMd5 = await calculateFileMd5(file);
+
 		// 1. 创建上传任务
 		const taskResp = await http.post<ResCreateTask>(
 			"/file/upload/create",
@@ -59,14 +62,19 @@ export const uploadChunksFile = async (file: File | RcFile, options?: UploadOpti
 				file_name: file.name,
 				file_size: file.size,
 				file_type,
-				total_chunks: totalChunks
+				total_chunks: totalChunks,
+				file_md5: fileMd5
 			},
 			{
 				loading: false
 			}
 		);
 
-		if ((taskResp.code !== 200 && taskResp.code !== 201) || !taskResp.data) {
+		if (taskResp.code === 201) {
+			return taskResp;
+		}
+
+		if (taskResp.code !== 200 || !taskResp.data) {
 			throw new Error(taskResp.message);
 		}
 
