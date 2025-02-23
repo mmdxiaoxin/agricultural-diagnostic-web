@@ -18,10 +18,11 @@ import { useLocation, useNavigate } from "react-router";
 import MoreButton from "./components/MoreButton";
 import "./index.scss";
 
-const DraggableTabNode: React.FC<Readonly<{ "data-node-key": string }>> = ({
-	className,
-	...props
-}) => {
+interface DraggableTabNodeProps extends React.HTMLAttributes<HTMLDivElement> {
+	"data-node-key": string;
+}
+
+const DraggableTabNode: React.FC<DraggableTabNodeProps> = ({ className, ...props }) => {
 	const { attributes, listeners, setNodeRef, transform, transition } = useSortable({
 		id: props["data-node-key"]
 	});
