@@ -10,6 +10,7 @@ export interface FileMeta {
 	file_size: number;
 	file_type: MIMETypeValue;
 	file_md5: string;
+	access?: string;
 	createdAt?: string;
 	updatedAt?: string;
 	created_by?: string;

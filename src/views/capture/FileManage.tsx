@@ -4,9 +4,10 @@ import {
 	downloadMultipleFiles,
 	DownloadProgress,
 	getFileList,
-	renameFile
+	updateFile
 } from "@/api/modules/file";
 import DownloadList from "@/components/DownloadList";
+import FileAccess from "@/components/FileAccess";
 import FileFilter from "@/components/FileFilter";
 import FilePreview from "@/components/FilePreview";
 import FileUpload from "@/components/FileUpload";
@@ -136,6 +137,22 @@ const FileManage: React.FC<FileManageProps> = () => {
 		}
 	};
 
+	const handleFileAccessChange = async (fileId: number, access: string) => {
+		try {
+			if (!fileId) {
+				throw new Error("文件ID不能为空");
+			}
+			if (fileList.find(file => file.id === fileId)?.access === access) {
+				return;
+			}
+			await updateFile(fileId, { access });
+			message.success("文件权限更新成功");
+			handleSearch(pagination);
+		} catch (error) {
+			message.error("文件权限更新失败");
+		}
+	};
+
 	const handleFileRename = async () => {
 		if (!newFileName.trim()) {
 			message.error("文件名不能为空");
@@ -143,7 +160,7 @@ const FileManage: React.FC<FileManageProps> = () => {
 		}
 		if (currentFile) {
 			try {
-				await renameFile(currentFile.id, newFileName);
+				await updateFile(currentFile.id, { original_file_name: newFileName });
 				message.success("文件名更新成功");
 				handleSearch(pagination);
 			} catch (error) {
@@ -268,6 +285,18 @@ const FileManage: React.FC<FileManageProps> = () => {
 						{type}
 					</Tag>
 				</Tooltip>
+			)
+		},
+		{
+			title: "权限",
+			dataIndex: "access",
+			render: (access, record) => (
+				<FileAccess
+					access={access}
+					onChange={newAccess => {
+						handleFileAccessChange(record.id, newAccess);
+					}}
+				/>
 			)
 		},
 		{
@@ -399,6 +428,7 @@ const FileManage: React.FC<FileManageProps> = () => {
 								批量下载
 							</Button>
 						</Popconfirm>
+						<Button type="primary">修改权限</Button>
 						<Popconfirm
 							title="确认删除"
 							icon={<DeleteOutlined style={{ color: "red" }} />}

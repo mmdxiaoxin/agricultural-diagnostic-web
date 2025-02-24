@@ -5,6 +5,7 @@ import { RcFile } from "antd/es/upload";
 import axios, { AxiosProgressEvent } from "axios";
 import {
 	DiskUsageReport,
+	FileMeta,
 	ReqCreateDataset,
 	ReqFileListParams,
 	ReqUpdateDataset,
@@ -356,11 +357,13 @@ export const downloadMultipleFiles = async (
 	}
 };
 
-// * 文件名称修改
-export const renameFile = (fileId: string | number, newFileName: string) =>
-	http.put(`/file/rename/${fileId}`, { newFileName });
+// * 文件修改
+export const updateFile = (
+	fileId: string | number,
+	file_meta?: Partial<Pick<FileMeta, "access" | "original_file_name">>
+) => http.put(`/file/update/${fileId}`, file_meta, { loading: false });
 
-// * 文件删除接口
+// * 文件删除
 export const deleteFile = (fileId: string | number) =>
 	http.delete(`/file/delete/${fileId}`, {}, { cancel: false });
 
