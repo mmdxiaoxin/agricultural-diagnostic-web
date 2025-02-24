@@ -19,8 +19,6 @@ import {
 export interface UploadOptions {
 	// 可选的进度回调函数
 	onProgress?: (fileId: string | number, progress: number) => void;
-	// 预处理进度回调函数
-	onPreprocess?: (fileId: string | number, progress: number) => void;
 	// 并发数
 	concurrency?: number;
 	// 分片大小
@@ -55,9 +53,7 @@ export const uploadChunksFile = async (file: File | RcFile, options?: UploadOpti
 
 	try {
 		// 计算文件的 MD5
-		const fileMd5 = await calculateFileMd5(file, (progress: number) => {
-			options?.onPreprocess?.((file as RcFile).uid, progress);
-		});
+		const fileMd5 = await calculateFileMd5(file);
 
 		// 1. 创建上传任务
 		const taskResp = await http.post<ResCreateTask>(
