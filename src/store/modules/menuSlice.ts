@@ -7,7 +7,7 @@ interface MenuState {
 }
 
 const initialState: MenuState = {
-	menuList: JSON.parse(localStorage.getItem("menuList") || "[]"),
+	menuList: [],
 	isCollapse: false
 };
 
@@ -17,11 +17,9 @@ const menuSlice = createSlice({
 	reducers: {
 		setMenuList(state, action: PayloadAction<Menu.MenuOptions[]>) {
 			state.menuList = action.payload;
-			localStorage.setItem("menuList", JSON.stringify(action.payload));
 		},
 		removeMenuList(state) {
 			state.menuList = [];
-			localStorage.removeItem("menuList");
 		},
 		setCollapse(state, action: PayloadAction<boolean>) {
 			state.isCollapse = action.payload;

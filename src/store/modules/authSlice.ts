@@ -1,3 +1,4 @@
+import { localGet, localRemove, localSet } from "@/utils";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 interface AuthState {
@@ -9,9 +10,9 @@ interface AuthState {
 }
 
 const initialState: AuthState = {
-	token: localStorage.getItem("auth_token") || null,
-	authRouter: JSON.parse(localStorage.getItem("auth_router") || "[]"),
-	authButtons: JSON.parse(localStorage.getItem("auth_buttons") || "{}")
+	token: localGet("auth_token"),
+	authRouter: localGet("auth_router"),
+	authButtons: localGet("auth_buttons")
 };
 
 const authSlice = createSlice({
@@ -20,19 +21,19 @@ const authSlice = createSlice({
 	reducers: {
 		setToken: (state, action: PayloadAction<string>) => {
 			state.token = action.payload;
-			localStorage.setItem("auth_token", action.payload);
+			localSet("auth_token", action.payload);
 		},
 		removeToken(state) {
 			state.token = null;
-			localStorage.removeItem("auth_token");
+			localRemove("auth_token");
 		},
 		setAuthRouter: (state, action: PayloadAction<string[]>) => {
 			state.authRouter = action.payload;
-			localStorage.setItem("auth_router", JSON.stringify(action.payload));
+			localSet("auth_router", action.payload);
 		},
 		removeAuthRouter(state) {
 			state.authRouter = [];
-			localStorage.removeItem("auth_router");
+			localRemove("auth_router");
 		},
 		setAuthButtons: (
 			state,
@@ -41,11 +42,11 @@ const authSlice = createSlice({
 			}>
 		) => {
 			state.authButtons = action.payload;
-			localStorage.setItem("auth_buttons", JSON.stringify(action.payload));
+			localSet("auth_buttons", action.payload);
 		},
 		removeAuthButtons(state) {
 			state.authButtons = {};
-			localStorage.removeItem("auth_buttons");
+			localRemove("auth_buttons");
 		}
 	}
 });

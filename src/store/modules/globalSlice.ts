@@ -1,3 +1,4 @@
+import { localGet, localSet } from "@/utils";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 export interface ThemeConfigProp {
 	primary: string;
@@ -18,7 +19,7 @@ interface GlobalState {
 const initialState: GlobalState = {
 	language: "zhCN",
 	componentSize: "middle",
-	themeConfig: JSON.parse(localStorage.getItem("themeConfig") || "{}") || {
+	themeConfig: localGet("theme_config") || {
 		// 默认 primary 主题颜色
 		primary: "#1890ff",
 		// 深色模式
@@ -49,7 +50,7 @@ const globalSlice = createSlice({
 		// 设置主题配置
 		setThemeConfig(state, action: PayloadAction<ThemeConfigProp>) {
 			state.themeConfig = action.payload;
-			localStorage.setItem("themeConfig", JSON.stringify(action.payload));
+			localSet("theme_config", action.payload);
 		}
 	}
 });
