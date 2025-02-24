@@ -4,7 +4,8 @@ import {
 	downloadMultipleFiles,
 	DownloadProgress,
 	getFileList,
-	updateFile
+	updateFile,
+	updateFilesAccess
 } from "@/api/modules/file";
 import DownloadList from "@/components/DownloadList";
 import FileAccess from "@/components/FileAccess";
@@ -17,8 +18,10 @@ import { DeleteOutlined, DownloadOutlined, EditOutlined } from "@ant-design/icon
 import {
 	Badge,
 	Button,
+	Dropdown,
 	Flex,
 	Input,
+	MenuProps,
 	message,
 	Modal,
 	Popconfirm,
@@ -146,8 +149,8 @@ const FileManage: React.FC<FileManageProps> = () => {
 				return;
 			}
 			await updateFile(fileId, { access });
+			await handleSearch({ ...filterParams, ...pagination });
 			message.success("文件权限更新成功");
-			handleSearch(pagination);
 		} catch (error) {
 			message.error("文件权限更新失败");
 		}
@@ -395,6 +398,30 @@ const FileManage: React.FC<FileManageProps> = () => {
 		onChange: handleFileSelect
 	};
 
+	const accessItems: MenuProps["items"] = [
+		{
+			label: "public",
+			key: "1"
+		},
+		{
+			label: "private",
+			key: "2"
+		}
+	];
+
+	const handleBatchAccessChange: MenuProps["onClick"] = async ({ key }) => {
+		const access = key === "1" ? "public" : "private";
+
+		try {
+			await updateFilesAccess(selectedRowKeys, access);
+			await handleSearch({ ...filterParams, ...pagination });
+
+			message.success("文件权限更新成功");
+		} catch (error: any) {
+			message.error("文件权限更新失败: " + error.message);
+		}
+	};
+
 	return (
 		<div className={styles["container"]}>
 			<Splitter className={styles["content"]}>
@@ -428,7 +455,12 @@ const FileManage: React.FC<FileManageProps> = () => {
 								批量下载
 							</Button>
 						</Popconfirm>
-						<Button type="primary">修改权限</Button>
+						<Dropdown
+							menu={{ items: accessItems, onClick: handleBatchAccessChange }}
+							trigger={["click"]}
+						>
+							<Button type="primary">修改权限</Button>
+						</Dropdown>
 						<Popconfirm
 							title="确认删除"
 							icon={<DeleteOutlined style={{ color: "red" }} />}
