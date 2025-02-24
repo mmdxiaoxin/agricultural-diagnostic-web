@@ -83,7 +83,7 @@ export type ReqUpdateDataset = Partial<ReqCreateDataset>;
 
 export type ResCreateDataset = DatasetMeta;
 
-export type ResDatasetDetail = DatasetMeta;
+export type ResDatasetDetail = DatasetMeta & { file_ids: number[] };
 
 export type ResDatasetList = PageData<DatasetMeta>;
 

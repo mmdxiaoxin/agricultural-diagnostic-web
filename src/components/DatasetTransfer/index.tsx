@@ -1,28 +1,24 @@
+import { FileMeta } from "@/api/interface";
+import { getFileList } from "@/api/modules/file";
 import type { GetProp, TableColumnsType, TableProps, TransferProps } from "antd";
 import { Flex, Table, Tag, Transfer } from "antd";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import FilePreview from "../FilePreview";
 
 type TransferItem = GetProp<TransferProps, "dataSource">[number];
 type TableRowSelection<T extends object> = TableProps<T>["rowSelection"];
 
-interface DataType {
-	key: string;
-	title: string;
-	description: string;
-	tag: string;
-}
-
 interface TableTransferProps extends TransferProps<TransferItem> {
-	dataSource: DataType[];
-	leftColumns: TableColumnsType<DataType>;
-	rightColumns: TableColumnsType<DataType>;
+	dataSource: FileMeta[];
+	leftColumns: TableColumnsType<FileMeta>;
+	rightColumns: TableColumnsType<FileMeta>;
 }
 
 // Customize Table Transfer
 const TableTransfer: React.FC<TableTransferProps> = props => {
 	const { leftColumns, rightColumns, ...restProps } = props;
 	return (
-		<Transfer style={{ width: "100%" }} {...restProps}>
+		<Transfer rowKey={item => item.id} style={{ width: "100%" }} {...restProps}>
 			{({
 				direction,
 				filteredItems,
@@ -63,50 +59,60 @@ const TableTransfer: React.FC<TableTransferProps> = props => {
 	);
 };
 
-const mockTags = ["cat", "dog", "bird"];
-
-const mockData = Array.from({ length: 20 }).map<DataType>((_, i) => ({
-	key: i.toString(),
-	title: `content${i + 1}`,
-	description: `description of content${i + 1}`,
-	tag: mockTags[i % 3]
-}));
-
-const columns: TableColumnsType<DataType> = [
+const columns: TableColumnsType<FileMeta> = [
 	{
-		dataIndex: "title",
-		title: "Name"
-	},
-	{
-		dataIndex: "tag",
-		title: "Tag",
-		render: (tag: string) => (
-			<Tag style={{ marginInlineEnd: 0 }} color="cyan">
-				{tag.toUpperCase()}
-			</Tag>
+		dataIndex: "original_file_name",
+		title: "文件名",
+		render: (value, record) => (
+			<FilePreview
+				meta={{
+					file_type: record.file_type,
+					file_url: record.temp_link
+				}}
+				text={value}
+			/>
 		)
 	},
 	{
-		dataIndex: "description",
-		title: "Description"
+		dataIndex: "file_type",
+		title: "文件类型",
+		render: (tag: string) => (
+			<Tag style={{ marginInlineEnd: 0 }} color="cyan">
+				{tag}
+			</Tag>
+		)
 	}
 ];
 
-const filterOption = (input: string, item: DataType) =>
-	item.title?.includes(input) || item.tag?.includes(input);
+const filterOption = (input: string, item: FileMeta) => item.original_file_name?.includes(input);
 
-const DatasetTransfer: React.FC = () => {
-	const [targetKeys, setTargetKeys] = useState<TransferProps["targetKeys"]>([]);
+export interface DatasetTransferProps {
+	value?: TransferProps["targetKeys"];
+	onChange?: TableTransferProps["onChange"];
+}
 
-	const onChange: TableTransferProps["onChange"] = nextTargetKeys => {
-		setTargetKeys(nextTargetKeys);
+const DatasetTransfer: React.FC<DatasetTransferProps> = ({ value, onChange }) => {
+	const [fileList, setFileList] = useState<FileMeta[]>([]);
+
+	const fetchFileList = async () => {
+		try {
+			const response = await getFileList({ page: 1, pageSize: 1000000 });
+			if (response.code !== 200 || !response.data) throw new Error("Failed to fetch file list");
+			setFileList(response.data.list);
+		} catch (error: any) {
+			console.error(error);
+		}
 	};
+
+	useEffect(() => {
+		fetchFileList();
+	}, []);
 
 	return (
 		<Flex align="start" gap="middle" vertical>
 			<TableTransfer
-				dataSource={mockData}
-				targetKeys={targetKeys}
+				dataSource={fileList}
+				targetKeys={value}
 				showSearch
 				showSelectAll={false}
 				onChange={onChange}
