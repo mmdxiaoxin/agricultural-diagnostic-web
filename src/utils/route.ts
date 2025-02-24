@@ -9,33 +9,39 @@ import { RouteObjectEx } from "@/routes/interface";
 export const searchRoute = (path: string, routes: RouteObjectEx[] = []): RouteObjectEx => {
 	let result: RouteObjectEx = {};
 
-	for (let item of routes) {
-		// 构造正则表达式，替换路由中的动态部分（例如：:id）
-		const routeRegex = new RegExp(`^${item.path?.replace(/:[^\s/]+/g, "([\\w-]+)")}$`);
+	try {
+		for (let item of routes) {
+			if (item.path === "*") continue; // 跳过 404 路由
 
-		// 匹配路径
-		const match = path.match(routeRegex);
-		if (match) {
-			// 提取动态参数并存入 params 对象
-			const paramNames = (item.path?.match(/:([^\s/]+)/g) || []).map(param => param.substring(1));
-			const params: Record<string, string> = {};
-			paramNames.forEach((param, index) => {
-				params[param] = match[index + 1]; // match[0] 是整个路径，之后的元素是参数值
-			});
+			// 构造正则表达式，替换路由中的动态部分（例如：:id）
+			const routeRegex = new RegExp(`^${item.path?.replace(/:[^\s/]+/g, "([\\w-]+)")}$`);
 
-			// 将动态参数与路由数据合并
-			result = { ...item, params };
-			break; // 找到匹配的路由后停止遍历
-		}
+			// 匹配路径
+			const match = path.match(routeRegex);
+			if (match) {
+				// 提取动态参数并存入 params 对象
+				const paramNames = (item.path?.match(/:([^\s/]+)/g) || []).map(param => param.substring(1));
+				const params: Record<string, string> = {};
+				paramNames.forEach((param, index) => {
+					params[param] = match[index + 1]; // match[0] 是整个路径，之后的元素是参数值
+				});
 
-		// 递归查找子路由
-		if (item.children) {
-			const res = searchRoute(path, item.children);
-			if (Object.keys(res).length) {
-				result = res;
-				break;
+				// 将动态参数与路由数据合并
+				result = { ...item, params };
+				break; // 找到匹配的路由后停止遍历
+			}
+
+			// 递归查找子路由
+			if (item.children) {
+				const res = searchRoute(path, item.children);
+				if (Object.keys(res).length) {
+					result = res;
+					break;
+				}
 			}
 		}
+	} catch (error) {
+		console.error("searchRoute error:", error);
 	}
 
 	return result;

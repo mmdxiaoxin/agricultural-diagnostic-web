@@ -20,7 +20,8 @@ export const Icons = {
 	FolderOpenOutlined: React.lazy(() => import("@ant-design/icons/FolderOpenOutlined")),
 	RobotOutlined: React.lazy(() => import("@ant-design/icons/RobotOutlined")),
 	ReadOutlined: React.lazy(() => import("@ant-design/icons/ReadOutlined")),
-	GlobalOutlined: React.lazy(() => import("@ant-design/icons/GlobalOutlined"))
+	GlobalOutlined: React.lazy(() => import("@ant-design/icons/GlobalOutlined")),
+	SettingOutlined: React.lazy(() => import("@ant-design/icons/SettingOutlined"))
 } as const;
 
 export type IconComponentProps = {
