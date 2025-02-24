@@ -16,7 +16,16 @@ const knowledgeRouter: RouteObjectEx[] = [
 				meta: {
 					requiresAuth: true,
 					title: "知识库管理",
-					key: "manage"
+					key: "knowledge-manage"
+				}
+			},
+			{
+				path: "/knowledge/preview",
+				element: lazyLoad(React.lazy(() => import("@/views/knowledge/KnowledgePreview"))),
+				meta: {
+					requiresAuth: true,
+					title: "知识库预览",
+					key: "knowledge-preview"
 				}
 			}
 		]
