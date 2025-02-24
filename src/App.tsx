@@ -2,7 +2,7 @@ import { message } from "antd";
 import { useEffect } from "react";
 import { BrowserRouter } from "react-router";
 import Routes from "./routes";
-import AuthRouter from "./routes/utils/authRouter";
+import AuthRouter from "./routes/helper/authRouter";
 
 const networkStatus = () => {
 	message.error("网络连接已断开");

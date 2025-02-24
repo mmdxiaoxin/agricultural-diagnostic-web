@@ -1,7 +1,7 @@
 import { LayoutIndex } from "@/routes/constant";
 import React from "react";
 import { RouteObjectEx } from "../interface";
-import lazyLoad from "../utils/lazyLoad";
+import lazyLoad from "../helper/lazyLoad";
 
 const userRouter: RouteObjectEx[] = [
 	{
