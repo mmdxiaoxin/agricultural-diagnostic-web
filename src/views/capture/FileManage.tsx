@@ -413,6 +413,10 @@ const FileManage: React.FC<FileManageProps> = () => {
 		const access = key === "1" ? "public" : "private";
 
 		try {
+			if (selectedRowKeys.length === 0) {
+				message.error("请选择至少一个文件进行操作");
+				return;
+			}
 			await updateFilesAccess(selectedRowKeys, access);
 			await handleSearch({ ...filterParams, ...pagination });
 
