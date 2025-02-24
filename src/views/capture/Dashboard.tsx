@@ -12,7 +12,7 @@ import styles from "./Dashboard.module.scss";
 
 const totalSpace = 1_000_000_000; // 1GB
 
-const Dashboard = () => {
+const Dashboard: React.FC = () => {
 	const [loading, setLoading] = useState<boolean>(false);
 	const [totalUsage, setTotalUsage] = useState<number>(0);
 	const [diskReport, setDiskReport] = useState<DiskUsageReport>();
@@ -29,27 +29,36 @@ const Dashboard = () => {
 	const [fileList, setFileList] = useState<FileMeta[]>([]);
 	const [pagination, setPagination] = useState({ page: 1, pageSize: 10, total: 0 });
 
-	const fetchDiskReport = async () => {
+	const initialize = async () => {
 		try {
-			setLoading(true);
-			const res = await getDiskUsage();
-			if (res.code !== 200 || !res.data) {
-				throw new Error(res.message);
+			const [diskResp, listResp] = await Promise.all([
+				getDiskUsage(),
+				getFileList({ page: 1, pageSize: 10 })
+			]);
+
+			if (diskResp.code !== 200 || !diskResp.data) {
+				throw new Error(diskResp.message);
 			}
-			setDiskReport(res.data);
-			setTotalUsage(parseInt(res.data.total.used || "0"));
+
+			if (listResp.code !== 200 || !listResp.data) {
+				throw new Error(listResp.message);
+			}
+
+			setDiskReport(diskResp.data);
+			setTotalUsage(parseInt(diskResp.data.total.used || "0"));
+			setFileList(listResp.data.list);
+			setPagination(listResp.data.pagination);
 		} catch (error: any) {
 			message.error(error.message);
-		} finally {
-			setLoading(false);
 		}
 	};
 
-	useEffect(() => {
-		fetchDiskReport();
-	}, []);
+	const handleSelect = (type?: string) => {
+		setSelectedType(type);
+		handleSearch(1, pagination.pageSize, type);
+	};
 
-	const fetchFileList = async (page: number, pageSize: number, selectedType?: string) => {
+	const handleSearch = async (page: number, pageSize: number, selectedType?: string) => {
 		try {
 			setLoading(true);
 			const file_type = getFileType(selectedType!);
@@ -71,15 +80,15 @@ const Dashboard = () => {
 		}
 	};
 
+	useEffect(() => {
+		initialize();
+	}, []);
+
 	const fileCardStyle = (type: string): CSSProperties => ({
 		border: selectedType === type ? "1px solid #1890ff" : "",
 		borderRadius: "20px",
 		boxSizing: "border-box"
 	});
-
-	useEffect(() => {
-		fetchFileList(pagination.page, pagination.pageSize, selectedType);
-	}, [selectedType]);
 
 	const columns: TableColumnsType<FileMeta> = [
 		{
@@ -154,7 +163,7 @@ const Dashboard = () => {
 							info={diskReport?.application}
 							type="文档"
 							color="#ff4848"
-							onClick={() => setSelectedType("application")}
+							onClick={() => handleSelect("application")}
 							style={fileCardStyle("application")}
 						/>
 					</Col>
@@ -164,7 +173,7 @@ const Dashboard = () => {
 							type="图片"
 							icon="FileImageOutlined"
 							color="#4892ff"
-							onClick={() => setSelectedType("image")}
+							onClick={() => handleSelect("image")}
 							style={fileCardStyle("image")}
 						/>
 					</Col>
@@ -176,7 +185,7 @@ const Dashboard = () => {
 							type="视频"
 							color="#aa48ff"
 							icon="VideoCameraOutlined"
-							onClick={() => setSelectedType("video")}
+							onClick={() => handleSelect("video")}
 							style={fileCardStyle("video")}
 						/>
 					</Col>
@@ -185,7 +194,7 @@ const Dashboard = () => {
 							info={diskReport?.audio}
 							type="音频"
 							icon="FileZipOutlined"
-							onClick={() => setSelectedType("audio")}
+							onClick={() => handleSelect("audio")}
 							style={fileCardStyle("audio")}
 						/>
 					</Col>
@@ -197,7 +206,7 @@ const Dashboard = () => {
 							type="压缩包"
 							color="#ccc200"
 							icon="FileZipOutlined"
-							onClick={() => setSelectedType("app")}
+							onClick={() => handleSelect("app")}
 							style={fileCardStyle("app")}
 						/>
 					</Col>
@@ -207,7 +216,7 @@ const Dashboard = () => {
 							type="其他"
 							color="#ffaa00"
 							icon="FileZipOutlined"
-							onClick={() => setSelectedType("other")}
+							onClick={() => handleSelect("other")}
 							style={fileCardStyle("other")}
 						/>
 					</Col>
@@ -217,7 +226,7 @@ const Dashboard = () => {
 				<Card
 					title="文件列表"
 					className={styles["table-card"]}
-					extra={<Button onClick={() => setSelectedType(undefined)}>重置</Button>}
+					extra={<Button onClick={() => handleSelect(undefined)}>重置</Button>}
 				>
 					<Table<FileMeta>
 						loading={loading}
@@ -234,7 +243,7 @@ const Dashboard = () => {
 							},
 							onChange(page, pageSize) {
 								setPagination({ ...pagination, page, pageSize });
-								fetchFileList(page, pageSize, selectedType);
+								handleSearch(page, pageSize, selectedType);
 							}
 						}}
 						rowKey="id"
