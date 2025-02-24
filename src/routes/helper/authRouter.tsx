@@ -14,7 +14,7 @@ export type AuthRouterProps = PropsWithChildren<{}>;
 /**
  * @description 路由守卫组件
  * */
-const AuthRouter = (props: AuthRouterProps) => {
+const AuthRouter: React.FC<AuthRouterProps> = props => {
 	const { pathname } = useLocation();
 	const route = searchRoute(pathname, rootRouter);
 

@@ -363,7 +363,7 @@ export const updateFile = (
 	file_meta?: Partial<Pick<FileMeta, "access" | "original_file_name">>
 ) => http.put(`/file/update/${fileId}`, file_meta, { loading: false });
 
-// 批量文件权限修改
+// * 批量文件权限修改
 export const updateFilesAccess = (fileIds: (string | number)[], access: string) =>
 	http.put("/file/access", { file_ids: fileIds, access }, { loading: false });
 
