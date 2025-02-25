@@ -29,7 +29,7 @@ const Login = () => {
 		try {
 			setLoading(true);
 			const response = await loginApi({
-				username: form.getFieldValue("username"),
+				login: form.getFieldValue("login"),
 				password: form.getFieldValue("password")
 			});
 			if (response.code === 200 && response.data) {
@@ -83,7 +83,7 @@ const Login = () => {
 							size="large"
 							autoComplete="off"
 						>
-							<Form.Item name="username" rules={[{ required: true, message: "请输入用户名" }]}>
+							<Form.Item name="login" rules={[{ required: true, message: "请输入用户名或者邮箱" }]}>
 								<Input placeholder="用户名：admin / user" prefix={<UserOutlined />} />
 							</Form.Item>
 							<Form.Item name="password" rules={[{ required: true, message: "请输入密码" }]}>

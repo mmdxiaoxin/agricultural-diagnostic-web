@@ -4,11 +4,14 @@ export interface DictItem {
 }
 
 export interface ReqLogin {
-	username: string;
+	login: string;
 	password: string;
 }
 
-export interface ReqRegister extends ReqLogin {}
+export interface ReqRegister {
+	email: string;
+	password: string;
+}
 
 export type ResLogin = {
 	token: string;

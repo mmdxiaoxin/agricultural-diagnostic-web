@@ -51,8 +51,11 @@ const Register: React.FC<RegisterProps> = () => {
 							onFinish={onFinish}
 							size="large"
 						>
-							<Form.Item name="username" rules={[{ required: true, message: "请输入用户名" }]}>
-								<Input prefix={<UserOutlined />} placeholder="请输入用户名" autoComplete="off" />
+							<Form.Item
+								name="email"
+								rules={[{ required: true, message: "邮箱不能为空" }, { type: "email" }]}
+							>
+								<Input prefix={<UserOutlined />} placeholder="请输入邮箱" autoComplete="off" />
 							</Form.Item>
 
 							<Form.Item name="password" rules={[{ required: true, message: "请输入密码" }]}>
