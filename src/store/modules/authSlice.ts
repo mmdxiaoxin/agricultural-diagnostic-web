@@ -11,8 +11,8 @@ interface AuthState {
 
 const initialState: AuthState = {
 	token: localGet("auth_token"),
-	authRouter: localGet("auth_router"),
-	authButtons: localGet("auth_buttons")
+	authRouter: localGet("auth_router") || [],
+	authButtons: localGet("auth_buttons") || []
 };
 
 const authSlice = createSlice({
