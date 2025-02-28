@@ -58,12 +58,7 @@ const DatasetManage: React.FC<DatasetManageProps> = () => {
 				<Button onClick={handleAdd}>新增</Button>
 			</div>
 			<div className={styles["content"]}>
-				<DatasetsList
-					loading={loading}
-					datasets={datasets}
-					onEdit={handleEdit}
-					onDelete={handleDelete}
-				/>
+				<DatasetsList datasets={datasets} onEdit={handleEdit} onDelete={handleDelete} />
 			</div>
 		</div>
 	);

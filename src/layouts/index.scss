@@ -1,8 +1,7 @@
-.container {
-	display: flex;
+.layout-container {
 	min-width: 768px;
-	height: 100vh;
-	width: 100vw;
+	min-height: 564px;
+	@apply w-screen h-screen flex;
 
 	.ant-layout-sider {
 		box-sizing: border-box;

@@ -71,7 +71,7 @@ const LayoutIndex = () => {
 	}, [screenWidth]);
 
 	return (
-		<section className="container">
+		<section className="layout-container">
 			<ConfigProvider
 				componentSize={componentSize}
 				locale={locale}
