@@ -1,103 +1,52 @@
 .login-container {
-	position: relative;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	min-width: 300px;
-	height: 100vh;
-	min-height: 500px;
+	@apply relative 
+	flex
+	h-[100vh]
+	bg-cover 
+	bg-center 
+	bg-no-repeat;
 	background-image: url("@/assets/images/login_bg.svg");
-	background-position: 50%;
-	background-size: 100% 100%;
-	background-size: cover;
 
 	.login-box {
-		box-sizing: border-box;
-		display: flex;
-		align-items: center;
-		justify-content: space-around;
-		width: 96%;
-		height: 94%;
-		padding: 0 4% 0 20px;
-		overflow: hidden;
-		border-radius: 10px;
+		@apply flex
+		flex-1
+		rounded-lg
+		items-center
+		justify-center;
 
 		.login-left {
-			width: 600px;
-
+			@apply flex-1;
 			img {
-				width: 100%;
-				height: 100%;
+				@apply object-cover object-center 
+				w-full h-full;
 			}
 		}
 
 		.login-form {
-			padding: 40px 45px 25px;
-			border-radius: 10px;
-
-			@media screen and (min-width: 1025px) {
-				padding: 40px 45px 25px;
-			}
-
-			@media screen and (min-width: 769px) and (max-width: 1024px) {
-				padding: 30px 30px 20px;
-			}
-
-			@media screen and (max-width: 768px) and (min-width: 426px) {
-				padding: 25px 25px 10px;
-			}
-
-			@media screen and (max-width: 425px) {
-				padding: 20px 20px 5px;
-			}
+			@apply p-6 mx-6
+			md:py-10 md:px-10 md:mr-6
+			lg:py-10 lg:px-10 lg:mr-10
+			xl:py-12 xl:px-12 xl:mr-12
+			2xl:py-12 2xl:px-12 2xl:mr-12
+			rounded-lg 
+			bg-white 
+			shadow-lg;
 
 			.login-logo {
-				display: flex;
-				align-items: center;
-				justify-content: center;
-				margin-bottom: 40px;
+				@apply flex items-center justify-center mb-10;
 
 				.login-icon {
-					width: 70px;
-
-					@media screen and (min-width: 1025px) {
-						width: 70px;
-					}
-
-					@media screen and (min-width: 769px) and (max-width: 1024px) {
-						width: 60px;
-					}
-
-					@media screen and (max-width: 768px) and (min-width: 426px) {
-						width: 50px;
-					}
-
-					@media screen and (max-width: 425px) {
-						width: 40px;
-					}
+					@apply w-16 h-16 
+					md:w-16 md:h-16 
+					lg:w-16 lg:h-16 
+					xl:w-16 xl:h-16 
+					2xl:w-16 2xl:h-16;
 				}
 
 				.logo-text {
-					padding-left: 25px;
-					font-size: 48px;
-					font-weight: bold;
-					white-space: nowrap;
-
-					@media screen and (min-width: 1025px) {
-						font-size: 48px;
-					}
-
-					@media screen and (min-width: 769px) and (max-width: 1024px) {
-						font-size: 44px;
-					}
-
-					@media screen and (max-width: 768px) and (min-width: 426px) {
-						font-size: 36px;
-					}
-
-					@media screen and (max-width: 425px) {
-						font-size: 28px;
-					}
+					@apply font-bold whitespace-nowrap pl-6 text-4xl 
+					xl:text-5xl 
+					2xl:text-5xl;
 				}
 			}
 

@@ -65,7 +65,7 @@ const Login: React.FC = () => {
 
 	return (
 		<div className="login-container">
-			<Row gutter={16} className="login-box">
+			<Row className="login-box">
 				{/* 左侧图片部分 */}
 				<Col xs={0} sm={0} md={12} lg={12} xl={14} className="login-left">
 					<img src={loginLeft} alt="login" />
