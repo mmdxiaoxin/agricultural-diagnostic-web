@@ -16,21 +16,25 @@ import { useState } from "react";
 import { Navigate, useNavigate } from "react-router";
 import "./index.scss";
 
-const Login = () => {
+interface FormData {
+	login: string;
+	password: string;
+}
+
+const Login: React.FC = () => {
 	const navigate = useNavigate();
 	const dispatch = useAppDispatch();
 
 	const [form] = Form.useForm();
-
 	const [loading, setLoading] = useState<boolean>(false);
 
 	// 登录
-	const onFinish = async () => {
+	const onFinish = async ({ login, password }: FormData) => {
 		try {
 			setLoading(true);
 			const response = await loginApi({
-				login: form.getFieldValue("login"),
-				password: form.getFieldValue("password")
+				login,
+				password
 			});
 			if (response.code === 200 && response.data) {
 				dispatch(setToken(response.data.token));
@@ -83,13 +87,32 @@ const Login = () => {
 							size="large"
 							autoComplete="off"
 						>
-							<Form.Item name="login" rules={[{ required: true, message: "请输入用户名或者邮箱" }]}>
-								<Input placeholder="用户名：admin / user" prefix={<UserOutlined />} />
+							<Form.Item
+								name="login"
+								rules={[
+									{ required: true, message: "请输入用户名或邮箱" },
+									{
+										validator(_, value) {
+											if (
+												!value ||
+												/^[\w-]{4,16}$/.test(value) ||
+												/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(
+													value
+												)
+											) {
+												return Promise.resolve();
+											}
+											return Promise.reject(new Error("请输入有效的用户名或邮箱"));
+										}
+									}
+								]}
+							>
+								<Input placeholder="用户名或邮箱" prefix={<UserOutlined />} />
 							</Form.Item>
 							<Form.Item name="password" rules={[{ required: true, message: "请输入密码" }]}>
 								<Input.Password
 									autoComplete="new-password"
-									placeholder="密码：123456"
+									placeholder="请输入密码"
 									prefix={<LockOutlined />}
 								/>
 							</Form.Item>
@@ -110,7 +133,7 @@ const Login = () => {
 										loading={loading}
 										icon={<UserOutlined />}
 									>
-										确认
+										登录
 									</Button>
 								</Flex>
 							</Form.Item>
