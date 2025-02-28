@@ -15,16 +15,6 @@ export default defineConfig((mode: ConfigEnv): UserConfig => {
 				"@": resolve(__dirname, "./src")
 			}
 		},
-		css: {
-			preprocessorOptions: {
-				scss: {
-					// modifyVars: {
-					// 	"primary-color": "#1DA57A",
-					// },
-					additionalData: `@import "@/styles/var.scss";`
-				}
-			}
-		},
 		server: {
 			host: "0.0.0.0",
 			port: viteEnv.VITE_PORT,

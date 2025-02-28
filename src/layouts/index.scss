@@ -1,31 +1,31 @@
 .container {
-    display: flex;
-    min-width: 768px;
-    height: 100vh;
-    width: 100vw;
+	display: flex;
+	min-width: 768px;
+	height: 100vh;
+	width: 100vw;
 
-    .ant-layout-sider {
-        box-sizing: border-box;
-        border-right: 1px solid $light-border-color !important;
-    }
+	.ant-layout-sider {
+		box-sizing: border-box;
+		border-right: 1px solid #e4e7ed !important;
+	}
 
-    .ant-layout {
-        /* 防止 tabs 超出不收缩 */
-        overflow-x: hidden;
+	.ant-layout {
+		/* 防止 tabs 超出不收缩 */
+		overflow-x: hidden;
 
-        .ant-layout-content {
-            box-sizing: border-box;
-            flex: 1;
-            padding: 10px 12px;
-            overflow-x: hidden;
+		.ant-layout-content {
+			box-sizing: border-box;
+			flex: 1;
+			padding: 10px 12px;
+			overflow-x: hidden;
 
-            &::-webkit-scrollbar {
-                background-color: $light-main-bg-color !important;
-            }
+			&::-webkit-scrollbar {
+				background-color: #f0f2f5 !important;
+			}
 
-            &::-webkit-scrollbar-thumb {
-                background-color: $light-scrollbar-bg-color !important;
-            }
-        }
-    }
+			&::-webkit-scrollbar-thumb {
+				background-color: #dddee0 !important;
+			}
+		}
+	}
 }

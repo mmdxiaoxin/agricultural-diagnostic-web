@@ -1,44 +1,44 @@
 .header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    border-bottom: 1px solid #f6f6f6;
-    height: 55px;
-    padding: 0 40px 0 20px;
-    border-color: $light-border-header-color !important;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	border-bottom: 1px solid #f6f6f6;
+	height: 55px;
+	padding: 0 40px 0 20px;
+	border-color: #f6f6f6 !important;
 
-    .header-lf {
-        display: flex;
-        align-items: center;
+	.header-lf {
+		display: flex;
+		align-items: center;
 
-        .collapsed {
-            margin-right: 20px;
-            font-size: 18px;
-            cursor: pointer;
-            transition: color 0.3s;
-        }
-    }
+		.collapsed {
+			margin-right: 20px;
+			font-size: 18px;
+			cursor: pointer;
+			transition: color 0.3s;
+		}
+	}
 
-    .header-ri {
-        display: flex;
-        align-items: center;
+	.header-ri {
+		display: flex;
+		align-items: center;
 
-        .icon-style {
-            margin-right: 22px;
-            font-size: 19px;
-            line-height: 19px;
-            cursor: pointer;
-            color: $light-text-color !important;
-        }
+		.icon-style {
+			margin-right: 22px;
+			font-size: 19px;
+			line-height: 19px;
+			cursor: pointer;
+			color: rgba(0, 0, 0, 0.85) !important;
+		}
 
-        .username {
-            margin: 0 20px 0 0;
-            font-size: 15px;
-            color: $light-text-color !important;
-        }
+		.username {
+			margin: 0 20px 0 0;
+			font-size: 15px;
+			color: rgba(0, 0, 0, 0.85) !important;
+		}
 
-        .avatar {
-            cursor: pointer;
-        }
-    }
+		.avatar {
+			cursor: pointer;
+		}
+	}
 }

@@ -1,79 +1,78 @@
 .container {
-    position: relative;
-    height: 100%;
+	position: relative;
+	height: 100%;
 
-    .dashboard-row {
-        margin-bottom: 10px;
-    }
+	.dashboard-row {
+		margin-bottom: 10px;
+	}
 
-    .dashboard-l {
-        height: inherit;
-        overflow-y: scroll;
-        border-radius: 20px;
+	.dashboard-l {
+		height: inherit;
+		overflow-y: scroll;
+		border-radius: 20px;
 
-        &::-webkit-scrollbar {
-            width: 0;
-        }
+		&::-webkit-scrollbar {
+			width: 0;
+		}
 
-        .disk-card {
-            border: 0;
-            border-radius: 20px;
-            box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
-            transition: all 0.3s;
+		.disk-card {
+			border: 0;
+			border-radius: 20px;
+			box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
+			transition: all 0.3s;
 
-            &:hover {
-                box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.2);
-                transform: scale(1.02);
+			&:hover {
+				box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.2);
+				transform: scale(1.02);
+			}
 
-            }
+			.disk-box {
+				display: flex;
+				flex-direction: row;
+				justify-content: space-between;
 
-            .disk-box {
-                display: flex;
-                flex-direction: row;
-                justify-content: space-between;
+				.disk-info {
+					flex: 1;
+					display: flex;
+					flex-direction: column;
+					justify-content: center;
 
-                .disk-info {
-                    flex: 1;
-                    display: flex;
-                    flex-direction: column;
-                    justify-content: center;
+					.title {
+						font-size: 20px;
+						font-weight: "bold";
+						color: #333;
+					}
 
-                    .title {
-                        font-size: 20px;
-                        font-weight: 'bold';
-                        color: #333;
-                    }
+					.subtitle {
+						font-size: 14px;
+						color: #979595;
+					}
+				}
 
-                    .subtitle {
-                        font-size: 14px;
-                        color: #979595;
-                    }
-                }
+				.disk-chart {
+					width: 180px;
+					height: 180px;
+				}
+			}
+		}
+	}
 
-                .disk-chart {
-                    width: 180px;
-                    height: 180px;
-                }
-            }
-        }
-    }
+	.dashboard-r {
+		height: inherit;
 
-    .dashboard-r {
-        height: inherit;
+		.table-card {
+			border: 0;
+			border-radius: 20px;
+			height: inherit;
+			overflow-y: scroll;
 
-        .table-card {
-            border: 0;
-            border-radius: 20px;
-            height: inherit;
-            overflow-y: scroll;
+			&::-webkit-scrollbar {
+				background-color: #f0f2f5 !important;
+			}
 
-            &::-webkit-scrollbar {
-                background-color: $light-main-bg-color !important;
-            }
-
-            &::-webkit-scrollbar-thumb {
-                background-color: $light-scrollbar-bg-color !important;
-            }
-        }
-    }
+			&::-webkit-scrollbar-thumb {
+				background-color: #dddee0 !important;
+			}
+		}
+	}
 }

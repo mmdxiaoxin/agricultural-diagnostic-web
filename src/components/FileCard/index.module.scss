@@ -1,64 +1,65 @@
 .container {
-    .card {
-        position: relative;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        min-width: 200px;
-        -webkit-clip-path: circle(97.4% at 76% 100%);
-        clip-path: circle(97.4% at 76% 100%);
-        border-radius: 20px;
-        cursor: pointer;
-        transition: all 0.3s;
+	.card {
+		position: relative;
+		box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+		min-width: 200px;
+		-webkit-clip-path: circle(97.4% at 76% 100%);
+		clip-path: circle(97.4% at 76% 100%);
+		border-radius: 20px;
+		cursor: pointer;
+		transition: all 0.3s;
 
-        &:hover {
-            border-width: 2px solid $primary-color;
-            transform: scale(1.02);
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-        }
+		&:hover {
+			@apply border-blue-500;
+			border-width: 2px solid;
+			transform: scale(1.02);
+			box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+		}
 
-        .size {
-            font-size: 16px;
-            font-weight: bold;
-            color: #333;
-            text-align: right;
-        }
+		.size {
+			font-size: 16px;
+			font-weight: bold;
+			color: #333;
+			text-align: right;
+		}
 
-        .type {
-            font-size: 14px;
-            color: #666;
-            text-align: center;
-        }
+		.type {
+			font-size: 14px;
+			color: #666;
+			text-align: center;
+		}
 
-        .divider {
-            margin: 10px 0;
-            width: 180px;
-            height: 1px;
-            background-color: #eaeaea;
-        }
+		.divider {
+			margin: 10px 0;
+			width: 180px;
+			height: 1px;
+			background-color: #eaeaea;
+		}
 
-        .updated {
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-            font-size: 12px;
-            text-align: center;
+		.updated {
+			display: flex;
+			flex-direction: column;
+			gap: 5px;
+			font-size: 12px;
+			text-align: center;
 
-            &>span:last-child {
-                font-size: 14px;
-                color: #ada9a9;
-            }
-        }
-    }
+			& > span:last-child {
+				font-size: 14px;
+				color: #ada9a9;
+			}
+		}
+	}
 
-    .icon {
-        top: 10px;
-        left: 10px;
-        position: absolute;
-        width: 64px;
-        height: 64px;
-        border-radius: 50%;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-    }
+	.icon {
+		top: 10px;
+		left: 10px;
+		position: absolute;
+		width: 64px;
+		height: 64px;
+		border-radius: 50%;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+	}
 }
