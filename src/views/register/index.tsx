@@ -18,7 +18,7 @@ const Register: React.FC<RegisterProps> = () => {
 			const res = await registerApi(values);
 			if (res.code !== 201) throw new Error("注册失败，请重试！");
 
-			message.success("注册成功！");
+			message.success("注册成功，请检查注册邮件进行验证！");
 			navigate("/login");
 		} catch (error) {
 			message.error("注册失败，请重试！");
