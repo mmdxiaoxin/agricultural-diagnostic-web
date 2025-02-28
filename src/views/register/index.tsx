@@ -84,21 +84,10 @@ const Register: React.FC<RegisterProps> = () => {
 							</Form.Item>
 							<Form.Item>
 								<Space direction="vertical" style={{ width: "100%" }}>
-									<Button
-										type="primary"
-										htmlType="submit"
-										block
-										loading={loading}
-										className="register-button"
-									>
+									<Button type="primary" htmlType="submit" block loading={loading}>
 										注册
 									</Button>
-									<Button
-										type="link"
-										block
-										onClick={() => (window.location.href = "/login")}
-										className="login-link"
-									>
+									<Button type="link" block onClick={() => (window.location.href = "/login")}>
 										已有账号？立即登录
 									</Button>
 								</Space>
