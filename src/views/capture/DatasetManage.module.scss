@@ -1,36 +1,24 @@
-// Base Styles
+/* Scrollbar styles */
 %scrollbar {
 	&::-webkit-scrollbar {
-		width: 0;
+		@apply w-0; /* width: 0; */
 	}
 
 	&::-webkit-scrollbar-thumb {
-		width: 0;
+		@apply w-0; /* width: 0; */
 	}
 }
 
 // Container
 .container {
-	height: 100%;
-	padding: 16px;
-	border-radius: 20px;
-	background-color: #ffffff;
-	display: flex;
-	flex-direction: column;
+	@apply h-full p-4 rounded-2xl bg-white flex flex-col;
 
 	.header {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		margin-bottom: 16px;
-		padding: 16px;
-		border-radius: 20px;
-		background-color: #f6f6f6;
+		@apply flex justify-between items-center mb-4 p-4 rounded-2xl bg-[#f6f6f6];
 	}
 
 	.content {
-		flex: 1;
-		overflow-y: auto;
+		@apply flex-1 overflow-y-auto;
 		@extend %scrollbar;
 	}
 }

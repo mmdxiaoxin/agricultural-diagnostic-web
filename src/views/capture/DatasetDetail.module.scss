@@ -1,18 +1,15 @@
-// Base Styles
-%scrollbar {
+/* Scrollbar styles */
+.scrollbar {
 	&::-webkit-scrollbar {
-		width: 0;
+		@apply w-0; /* width: 0; */
 	}
 
 	&::-webkit-scrollbar-thumb {
-		width: 0;
+		@apply w-0; /* width: 0; */
 	}
 }
 
-// Container
+/* Container */
 .container {
-	height: 100%;
-	padding: 16px;
-	border-radius: 20px;
-	background-color: #ffffff;
+	@apply h-full p-4 rounded-2xl bg-white;
 }

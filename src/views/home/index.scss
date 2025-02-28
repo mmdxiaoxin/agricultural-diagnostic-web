@@ -1,10 +1,7 @@
 .home {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 100%;
+	@apply flex items-center justify-center bg-white h-full;
 
-    img {
-        width: 70%;
-    }
+	img {
+		width: 70%;
+	}
 }

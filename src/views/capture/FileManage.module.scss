@@ -1,48 +1,39 @@
-// Base Styles
+/* Scrollbar styles */
 %scrollbar {
 	&::-webkit-scrollbar {
-		width: 0;
+		@apply w-0; /* width: 0; */
 	}
 
 	&::-webkit-scrollbar-thumb {
-		width: 0;
+		@apply w-0; /* width: 0; */
 	}
 }
 
-// Container
+/* Container */
 .container {
-	height: 100%;
+	@apply h-full;
 
 	.content {
-		height: 100%;
+		@apply h-full;
 
 		&__left {
-			border-top-left-radius: 20px;
-			border-bottom-left-radius: 20px;
+			@apply rounded-tl-2xl rounded-bl-2xl; /* border-top-left-radius: 20px; border-bottom-left-radius: 20px; */
 		}
 
 		&__right {
-			border-top-right-radius: 20px;
-			border-bottom-right-radius: 20px;
+			@apply rounded-tr-2xl rounded-br-2xl; /* border-top-right-radius: 20px; border-bottom-right-radius: 20px; */
 		}
 
 		&__left,
 		&__right {
-			height: 100%;
-			background-color: #ffffff;
-			display: flex;
-			flex-direction: column;
+			@apply h-full bg-white flex flex-col;
 
 			.header {
-				padding: 20px;
-				min-height: 64px;
-				background-color: #ffffff;
-				border-bottom: 1px solid #e4e7ed;
+				@apply p-5 min-h-[64px] bg-white border-b border-[#e4e7ed];
 			}
 
 			.main {
-				flex: 1;
-				overflow-y: scroll;
+				@apply flex-1 overflow-y-auto;
 				@extend %scrollbar;
 			}
 		}

@@ -1,77 +1,58 @@
 .container {
-	position: relative;
-	height: 100%;
+	@apply relative h-full;
 
 	.dashboard-row {
-		margin-bottom: 10px;
+		@apply mb-2.5; /* margin-bottom: 10px; */
 	}
 
 	.dashboard-l {
-		height: inherit;
-		overflow-y: scroll;
-		border-radius: 20px;
+		@apply h-full overflow-y-scroll rounded-2xl;
 
 		&::-webkit-scrollbar {
-			width: 0;
+			@apply w-0;
 		}
 
 		.disk-card {
-			border: 0;
-			border-radius: 20px;
-			box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
-			transition: all 0.3s;
+			@apply border-0 rounded-2xl shadow-lg transition-all duration-300;
 
 			&:hover {
-				box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.2);
-				transform: scale(1.02);
+				@apply shadow-xl transform scale-[1.02];
 			}
 
 			.disk-box {
-				display: flex;
-				flex-direction: row;
-				justify-content: space-between;
+				@apply flex flex-row justify-between;
 
 				.disk-info {
-					flex: 1;
-					display: flex;
-					flex-direction: column;
-					justify-content: center;
+					@apply flex-1 flex flex-col justify-center;
 
 					.title {
-						font-size: 20px;
-						font-weight: "bold";
-						color: #333;
+						@apply text-xl font-bold text-gray-800;
 					}
 
 					.subtitle {
-						font-size: 14px;
-						color: #979595;
+						@apply text-sm text-gray-500;
 					}
 				}
 
 				.disk-chart {
-					width: 180px;
-					height: 180px;
+					@apply w-[180px] h-[180px];
 				}
 			}
 		}
 	}
 
 	.dashboard-r {
-		height: inherit;
+		@apply h-full;
 
 		.table-card {
-			border: 0;
-			border-radius: 20px;
-			height: inherit;
-			overflow-y: scroll;
+			@apply border-0 rounded-2xl h-full overflow-y-scroll;
 
 			&::-webkit-scrollbar {
-				background-color: #f0f2f5 !important;
+				@apply bg-[#f0f2f5];
 			}
 
 			&::-webkit-scrollbar-thumb {
-				background-color: #dddee0 !important;
+				@apply bg-[#dddee0];
 			}
 		}
 	}
