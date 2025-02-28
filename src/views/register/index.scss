@@ -1,14 +1,11 @@
 .register {
 	&-container {
-		@apply bg-gray-100;
+		@apply bg-gray-100 bg-cover bg-center;
 		background-image: url("@/assets/images/login_bg.svg");
 	}
 
 	&-form-container {
-		background-color: #fff;
-		padding: 30px;
-		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-		border-radius: 8px;
+		@apply bg-white p-8 shadow-lg rounded-lg;
 
 		.ant-form-item {
 			height: 70px;
@@ -34,9 +31,6 @@
 	}
 
 	&-title {
-		text-align: center;
-		font-size: 24px;
-		font-weight: bold;
-		margin-bottom: 30px;
+		@apply text-center text-2xl font-bold mb-8;
 	}
 }
