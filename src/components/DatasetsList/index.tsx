@@ -1,18 +1,50 @@
 import { DatasetMeta } from "@/api/interface";
 import { formatSize } from "@/utils";
 import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
-import { Button, Popconfirm, Tag } from "antd";
-import React from "react";
+import { Button, Popconfirm, Tag, Spin } from "antd";
+import React, { useState, useEffect, useRef } from "react";
 
 export interface DatasetsListProps {
 	datasets?: DatasetMeta[];
 	onEdit?: (datasetId: number) => void;
 	onDelete?: (datasetId: number) => void;
+	loadMoreData?: () => void;
+	loading?: boolean;
 }
 
-const DatasetsList: React.FC<DatasetsListProps> = ({ datasets, onEdit, onDelete }) => {
+const DatasetsList: React.FC<DatasetsListProps> = ({
+	datasets,
+	onEdit,
+	onDelete,
+	loadMoreData,
+	loading
+}) => {
+	const [isLoading, setIsLoading] = useState(false);
+	const listRef = useRef<HTMLDivElement>(null);
+
+	const handleScroll = () => {
+		if (!listRef.current) return;
+
+		const { scrollTop, scrollHeight, clientHeight } = listRef.current;
+		if (scrollHeight - scrollTop === clientHeight && !isLoading) {
+			setIsLoading(true);
+			loadMoreData?.();
+		}
+	};
+
+	useEffect(() => {
+		if (loading !== undefined) {
+			setIsLoading(loading);
+		}
+	}, [loading]);
+
 	return (
-		<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-4 p-4 ease-in-out">
+		<div
+			ref={listRef}
+			onScroll={handleScroll}
+			className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-4 p-4 ease-in-out overflow-y-auto"
+			style={{ maxHeight: "80vh" }}
+		>
 			{datasets?.map(dataset => (
 				<div
 					key={dataset.id}
@@ -57,6 +89,13 @@ const DatasetsList: React.FC<DatasetsListProps> = ({ datasets, onEdit, onDelete 
 					</div>
 				</div>
 			))}
+
+			{/* Loading spinner at the bottom */}
+			{isLoading && (
+				<div className="col-span-full text-center mt-4">
+					<Spin size="large" />
+				</div>
+			)}
 		</div>
 	);
 };
