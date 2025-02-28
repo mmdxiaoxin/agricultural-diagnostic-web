@@ -13,11 +13,6 @@ const Register: React.FC<RegisterProps> = () => {
 	const navigate = useNavigate();
 
 	const onFinish = async (values: any) => {
-		if (values.password !== values.confirmPassword) {
-			message.error("密码和确认密码不一致！");
-			return;
-		}
-
 		setLoading(true);
 		try {
 			const res = await registerApi(values);
@@ -53,11 +48,13 @@ const Register: React.FC<RegisterProps> = () => {
 						>
 							<Form.Item
 								name="email"
-								rules={[{ required: true, message: "邮箱不能为空" }, { type: "email" }]}
+								rules={[
+									{ required: true, message: "邮箱不能为空" },
+									{ type: "email", message: "请输入有效的邮箱" }
+								]}
 							>
 								<Input prefix={<UserOutlined />} placeholder="请输入邮箱" autoComplete="off" />
 							</Form.Item>
-
 							<Form.Item name="password" rules={[{ required: true, message: "请输入密码" }]}>
 								<Input.Password
 									prefix={<LockOutlined />}
@@ -65,15 +62,26 @@ const Register: React.FC<RegisterProps> = () => {
 									autoComplete="new-password"
 								/>
 							</Form.Item>
-
-							<Form.Item name="confirmPassword" rules={[{ required: true, message: "请确认密码" }]}>
+							<Form.Item
+								name="confirmPassword"
+								rules={[
+									{ required: true, message: "请确认密码" },
+									({ getFieldValue }) => ({
+										validator(_, value) {
+											if (!value || getFieldValue("password") === value) {
+												return Promise.resolve();
+											}
+											return Promise.reject(new Error("密码和确认密码不一致！"));
+										}
+									})
+								]}
+							>
 								<Input.Password
 									prefix={<LockOutlined />}
 									placeholder="请确认密码"
 									autoComplete="new-password"
 								/>
 							</Form.Item>
-
 							<Form.Item>
 								<Space direction="vertical" style={{ width: "100%" }}>
 									<Button
