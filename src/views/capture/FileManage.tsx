@@ -108,7 +108,7 @@ const FileManage: React.FC<FileManageProps> = () => {
 			setFileList(res.data.list);
 			setPagination(prev => ({
 				...prev,
-				total: res.data ? res.data.pagination.total : 0
+				total: res.data ? res.data.total : 0
 			}));
 		} catch (error: any) {
 			message.error(error.message);

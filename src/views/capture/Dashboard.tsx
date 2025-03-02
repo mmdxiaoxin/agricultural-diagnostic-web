@@ -47,7 +47,11 @@ const Dashboard: React.FC = () => {
 			setDiskReport(diskResp.data);
 			setTotalUsage(parseInt(diskResp.data.total.used || "0"));
 			setFileList(listResp.data.list);
-			setPagination(listResp.data.pagination);
+			setPagination({
+				page: listResp.data.page ?? 1,
+				pageSize: listResp.data.pageSize ?? 10,
+				total: listResp.data.total ?? 0
+			});
 		} catch (error: any) {
 			message.error(error.message);
 		}
@@ -67,12 +71,16 @@ const Dashboard: React.FC = () => {
 				pageSize,
 				file_type: file_type.length ? file_type : undefined
 			};
-			const res = await getFileList(params);
-			if (res.code !== 200 || !res.data) {
-				throw new Error(res.message);
+			const response = await getFileList(params);
+			if (response.code !== 200 || !response.data) {
+				throw new Error(response.message);
 			}
-			setFileList(res.data.list);
-			setPagination(res.data.pagination);
+			setFileList(response.data.list);
+			setPagination({
+				page: response.data.page ?? 1,
+				pageSize: response.data.pageSize ?? 10,
+				total: response.data.total ?? 0
+			});
 		} catch (error: any) {
 			message.error(error.message);
 		} finally {
