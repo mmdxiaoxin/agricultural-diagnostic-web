@@ -1,4 +1,4 @@
-import { getAvatar, getUserProfile } from "@/api/modules/user";
+import { getUserProfile } from "@/api/modules/user";
 import defaultAvatar from "@/assets/images/avatar.png";
 import { HOME_URL } from "@/config/config";
 import { useAppDispatch } from "@/hooks/useAppDispatch";
@@ -28,15 +28,8 @@ const AvatarIcon = () => {
 			if (res.code !== 200 || !res.data) {
 				throw new Error(res.message);
 			}
-			setUsername(res.data.username);
-		} catch (error: any) {
-			message.error(error.message);
-		}
-	};
-	const fetchAvatar = async () => {
-		try {
-			const res = await getAvatar();
-			if (res instanceof Blob) setAvatar(URL.createObjectURL(res));
+			setUsername(res.data.username || "");
+			setAvatar(res.data.avatar || defaultAvatar);
 		} catch (error: any) {
 			message.error(error.message);
 		}
@@ -44,7 +37,6 @@ const AvatarIcon = () => {
 
 	useEffect(() => {
 		fetchUser();
-		fetchAvatar();
 	}, []);
 
 	// 退出登录
@@ -76,7 +68,6 @@ const AvatarIcon = () => {
 
 	const handleSave = () => {
 		fetchUser();
-		fetchAvatar();
 	};
 
 	// Dropdown Menu

@@ -1,5 +1,5 @@
 import { ResUserDetail } from "@/api/interface";
-import { getRoleDict } from "@/api/modules/auth";
+import { getRoleDict } from "@/api/modules/role";
 import { createUser, getUserById, updateUserById } from "@/api/modules/user"; // 添加了createUser函数
 import { ROLE_COLOR } from "@/constants";
 import { HomeOutlined, PhoneOutlined } from "@ant-design/icons";
@@ -23,7 +23,6 @@ const InfoDrawer = forwardRef<InfoDrawerRef, InfoDrawerProps>(({ onSave }, ref) 
 	const [userDetail, setUserDetail] = useState<ResUserDetail>({
 		id: 0,
 		username: "",
-		role_id: 0,
 		name: "",
 		phone: "",
 		address: "",
@@ -73,7 +72,6 @@ const InfoDrawer = forwardRef<InfoDrawerRef, InfoDrawerProps>(({ onSave }, ref) 
 			setUserDetail({
 				id: 0,
 				username: "",
-				role_id: null as any,
 				name: "",
 				phone: "",
 				address: "",
@@ -108,8 +106,7 @@ const InfoDrawer = forwardRef<InfoDrawerRef, InfoDrawerProps>(({ onSave }, ref) 
 					username: values.username,
 					address: values.address,
 					name: values.name,
-					phone: values.phone,
-					role_id: values.role_id
+					phone: values.phone
 				});
 				if (res.code !== 200) throw new Error(res.message);
 			} else if (type === "add") {
@@ -118,8 +115,7 @@ const InfoDrawer = forwardRef<InfoDrawerRef, InfoDrawerProps>(({ onSave }, ref) 
 					username: values.username,
 					name: values.name,
 					phone: values.phone,
-					address: values.address,
-					role_id: values.role_id
+					address: values.address
 				});
 				if (res.code !== 201) throw new Error(res.message);
 			}
@@ -172,13 +168,6 @@ const InfoDrawer = forwardRef<InfoDrawerRef, InfoDrawerProps>(({ onSave }, ref) 
 					rules={[{ required: true, message: "请输入用户名" }]}
 				>
 					<Input disabled={type === "view"} />
-				</Form.Item>
-
-				<Form.Item label="角色" name="role_id" rules={[{ required: true, message: "请选择角色" }]}>
-					<Select
-						options={roleOptions}
-						disabled={type === "view" || userDetail.username === "admin"}
-					/>
 				</Form.Item>
 
 				<Form.Item label="姓名" name="name" rules={[{ required: true, message: "请输入姓名" }]}>

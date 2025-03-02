@@ -1,4 +1,4 @@
-import { getMenuList } from "@/api/modules/auth";
+import { getMenuList } from "@/api/modules/menu";
 import IconComponent, { Icons } from "@/components/IconComponent";
 import { useAppDispatch } from "@/hooks/useAppDispatch";
 import { useAppSelector } from "@/hooks/useAppSelector";

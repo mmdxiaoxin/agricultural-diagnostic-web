@@ -37,7 +37,7 @@ const Login: React.FC = () => {
 				password
 			});
 			if (response.code === 200 && response.data) {
-				dispatch(setToken(response.data.token));
+				dispatch(setToken(response.data.access_token));
 				navigate("/home/index");
 			} else {
 				message.error(response.message);

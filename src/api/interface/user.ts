@@ -2,9 +2,9 @@ import { PageData } from ".";
 
 interface User {
 	id: number;
-	username: string;
-	password: string;
-	role_id: number;
+	email?: string;
+	username?: string;
+	avatar?: string;
 	name?: string;
 	phone?: string;
 	address?: string;

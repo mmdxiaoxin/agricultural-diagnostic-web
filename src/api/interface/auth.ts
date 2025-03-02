@@ -14,7 +14,7 @@ export interface ReqRegister {
 }
 
 export type ResLogin = {
-	token: string;
+	access_token: string;
 };
 
 export type ResAuthButtons = {

@@ -1,6 +1,5 @@
 import { ResUserProfile } from "@/api/interface";
-import { getRoleDict } from "@/api/modules/auth";
-import { getAvatar, getUserProfile, updateUserProfile, uploadAvatar } from "@/api/modules/user";
+import { getUserProfile, updateUserProfile, uploadAvatar } from "@/api/modules/user";
 import { ROLE_COLOR } from "@/constants";
 import {
 	HomeOutlined,
@@ -66,23 +65,16 @@ const InfoModal = forwardRef<InfoModalRef, InfoModalProps>(({ onSave }, ref) => 
 		open: handleOpen
 	}));
 
-	const fetchUser = () => {
+	const fetchUser = async () => {
 		try {
-			Promise.all([getUserProfile(), getRoleDict(), getAvatar()]).then(
-				([userRes, roleRes, avatarBlob]) => {
-					if (userRes.code !== 200 || !userRes.data) throw new Error(userRes.message);
-					const user = userRes.data;
-					const role = roleRes.data?.find(item => item.key === user.role_id);
-					if (!role) throw new Error("未找到角色信息");
-
-					form.setFieldsValue({
-						...user,
-						role: role.value
-					});
-					setImageUrl(URL.createObjectURL(avatarBlob));
-					setOpen(true);
-				}
-			);
+			const userRes = await getUserProfile();
+			if (userRes.code !== 200 || !userRes.data) throw new Error(userRes.message);
+			const user = userRes.data;
+			form.setFieldsValue({
+				...user
+			});
+			setImageUrl(userRes.data.avatar || "");
+			setOpen(true);
 		} catch (error) {
 			message.error("获取用户信息失败");
 		}

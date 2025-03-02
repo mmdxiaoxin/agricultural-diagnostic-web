@@ -1,5 +1,5 @@
 import { DictItem, UserItem, UserListParams } from "@/api/interface";
-import { getRoleDict } from "@/api/modules/auth";
+import { getRoleDict } from "@/api/modules/role";
 import { deleteUserById, getUserList, resetUserById } from "@/api/modules/user";
 import { ROLE_COLOR } from "@/constants";
 import {
@@ -14,7 +14,6 @@ import {
 	Col,
 	Collapse,
 	CollapseProps,
-	Flex,
 	Input,
 	message,
 	Popconfirm,
@@ -24,10 +23,10 @@ import {
 	TableProps,
 	Tag
 } from "antd";
+import dayjs from "dayjs";
 import { useEffect, useRef, useState } from "react";
 import styles from "./index.module.scss";
 import InfoDrawer, { InfoDrawerRef } from "./InfoDrawer";
-import dayjs from "dayjs";
 
 const User = () => {
 	const infoDrawerRef = useRef<InfoDrawerRef>(null);
