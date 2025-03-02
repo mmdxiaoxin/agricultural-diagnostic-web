@@ -361,8 +361,8 @@ export const downloadMultipleFiles = async (
 // * 文件修改
 export const updateFile = (
 	fileId: string | number,
-	file_meta?: Partial<Pick<FileMeta, "access" | "originalFileName">>
-) => http.put(`/file/update/${fileId}`, file_meta, { loading: false });
+	fileMeta?: Partial<Pick<FileMeta, "access" | "originalFileName">>
+) => http.put(`/file/update`, { fileId, ...fileMeta }, { loading: false });
 
 // * 批量文件权限修改
 export const updateFilesAccess = (fileIds: (string | number)[], access: string) =>
