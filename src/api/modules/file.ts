@@ -72,11 +72,11 @@ export const uploadChunksFile = async (file: File | RcFile, options?: UploadOpti
 			}
 		);
 
-		if (taskResp.code === 201) {
+		if (taskResp.code === 200) {
 			return taskResp;
 		}
 
-		if (taskResp.code !== 200 || !taskResp.data) {
+		if (taskResp.code !== 201 || !taskResp.data) {
 			throw new Error(taskResp.message);
 		}
 
@@ -96,6 +96,7 @@ export const uploadChunksFile = async (file: File | RcFile, options?: UploadOpti
 			const uploadTask = async () => {
 				const formData = new FormData();
 				formData.append("taskId", taskId);
+				formData.append("fileMd5", fileMd5);
 				formData.append("chunkIndex", (i + 1).toString()); // 从 1 开始的 chunkIndex
 				formData.append("file", chunk);
 
