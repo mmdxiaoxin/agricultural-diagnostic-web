@@ -1,9 +1,19 @@
 import { PageData } from ".";
 
+interface Role {
+	id: number;
+	name: string;
+	alias: string | null;
+	users: User[];
+	createdAt: string;
+	updatedAt: string;
+}
+
 interface User {
 	id: number;
 	email?: string;
 	username?: string;
+	roles?: Role[];
 	avatar?: string;
 	name?: string;
 	phone?: string;

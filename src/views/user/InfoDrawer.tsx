@@ -1,61 +1,55 @@
 import { ResUserDetail } from "@/api/interface";
 import { getRoleDict } from "@/api/modules/role";
 import { createUser, getUserById, updateUserById } from "@/api/modules/user"; // 添加了createUser函数
-import { ROLE_COLOR } from "@/constants";
 import { HomeOutlined, PhoneOutlined } from "@ant-design/icons";
-import { Button, Drawer, Form, Input, message, Select, SelectProps, Space, Tag } from "antd";
-import dayjs from "dayjs";
+import { Button, Drawer, Form, Input, message, Select, SelectProps, Space } from "antd";
 import { forwardRef, useImperativeHandle, useState } from "react";
 
 export interface InfoDrawerProps {
 	onSave?: (values: ResUserDetail) => void;
 }
 export interface InfoDrawerRef {
-	open: (type?: "view" | "edit" | "add", user_id?: number | string) => void; // 增加"add"模式
+	open: (type?: "view" | "edit" | "add", user_id?: number | string) => void;
 }
 
 const InfoDrawer = forwardRef<InfoDrawerRef, InfoDrawerProps>(({ onSave }, ref) => {
-	const [type, setType] = useState<"view" | "edit" | "add">("view"); // 增加"add"模式
+	const [type, setType] = useState<"view" | "edit" | "add">("view");
 	const [open, setOpen] = useState(false);
-	const [drawerLoading, setLoading] = useState(false);
-	const [buttonLoading, setButtonLoading] = useState(false);
+	const [initLoading, setInitLoading] = useState(false);
+	const [saveLoading, setSaveLoading] = useState(false);
 	const [roleOptions, setRoleOptions] = useState<SelectProps["options"]>([]);
-	const [userDetail, setUserDetail] = useState<ResUserDetail>({
-		id: 0,
-		username: "",
-		name: "",
-		phone: "",
-		address: "",
-		createdAt: "",
-		updatedAt: ""
-	});
 
 	const [form] = Form.useForm();
 
-	// 获取用户信息并设置表单
-	const fetchData = async (user_id?: number | string) => {
-		setLoading(true);
+	const fetchRole = async () => {
 		try {
-			const resDict = await getRoleDict();
-			if (resDict.code !== 200 || !resDict.data) throw new Error(resDict.message);
-
+			const response = await getRoleDict();
+			if (response.code !== 200 || !response.data) throw new Error(response.message);
 			setRoleOptions(
-				resDict.data.map(item => ({
-					label: <Tag color={ROLE_COLOR[item.value as keyof typeof ROLE_COLOR]}>{item.value}</Tag>,
+				response.data.map(item => ({
+					label: item.value,
 					value: item.key
 				}))
 			);
+		} catch (error: any) {
+			message.error(error.message);
+		}
+	};
 
+	// 获取用户信息并设置表单
+	const fetchUser = async (user_id?: number | string) => {
+		try {
 			if (user_id) {
-				const resUser = await getUserById(user_id);
-				if (resUser.code !== 200 || !resUser.data) throw new Error(resUser.message);
-				setUserDetail(resUser.data);
-				form.setFieldsValue(resUser.data);
+				const response = await getUserById(user_id);
+				if (response.code !== 200 || !response.data) throw new Error(response.message);
+				const roles = response.data.roles?.map(role => role.id);
+				form.setFieldsValue({
+					...response.data,
+					roles
+				});
 			}
 		} catch (error: any) {
 			message.error(error.message);
-		} finally {
-			setLoading(false);
 		}
 	};
 
@@ -65,29 +59,10 @@ const InfoDrawer = forwardRef<InfoDrawerRef, InfoDrawerProps>(({ onSave }, ref) 
 		setOpen(true);
 
 		if (type === "edit" || type === "view") {
-			fetchData(user_id!); // 获取用户数据
+			setInitLoading(true);
+			Promise.all([fetchRole(), fetchUser(user_id!)]).finally(() => setInitLoading(false));
 		} else {
-			// 新增模式，初始化为空字段
-			fetchData();
-			setUserDetail({
-				id: 0,
-				username: "",
-				name: "",
-				phone: "",
-				address: "",
-				createdAt: "",
-				updatedAt: ""
-			});
-			form.setFieldsValue({
-				id: 0,
-				username: "",
-				role_id: null,
-				name: "",
-				phone: "",
-				address: "",
-				createdAt: "",
-				updatedAt: ""
-			});
+			form.resetFields();
 		}
 	};
 
@@ -97,17 +72,12 @@ const InfoDrawer = forwardRef<InfoDrawerRef, InfoDrawerProps>(({ onSave }, ref) 
 	};
 
 	// 保存用户
-	const handleSave = async (values: ResUserDetail) => {
-		setButtonLoading(true);
+	const handleSave = async (values: any) => {
+		setSaveLoading(true);
 		try {
 			if (type === "edit") {
 				// 编辑模式
-				const res = await updateUserById(userDetail.id, {
-					username: values.username,
-					address: values.address,
-					name: values.name,
-					phone: values.phone
-				});
+				const res = await updateUserById(values.id, values);
 				if (res.code !== 200) throw new Error(res.message);
 			} else if (type === "add") {
 				// 新增模式
@@ -126,7 +96,7 @@ const InfoDrawer = forwardRef<InfoDrawerRef, InfoDrawerProps>(({ onSave }, ref) 
 		} catch (error: any) {
 			message.error(error.message);
 		} finally {
-			setButtonLoading(false);
+			setSaveLoading(false);
 		}
 	};
 
@@ -141,13 +111,13 @@ const InfoDrawer = forwardRef<InfoDrawerRef, InfoDrawerProps>(({ onSave }, ref) 
 			title={<p>{type === "edit" ? "编辑用户" : type === "add" ? "新增用户" : "查看用户"}</p>}
 			placement="right"
 			open={open}
-			loading={drawerLoading}
+			loading={initLoading}
 			onClose={handleClose}
 			extra={
 				(type === "edit" || type === "add") && (
 					<Space>
 						<Button onClick={handleClose}>取消</Button>
-						<Button type="primary" onClick={() => form.submit()} loading={buttonLoading}>
+						<Button type="primary" onClick={() => form.submit()} loading={saveLoading}>
 							{type === "add" ? "新增" : "保存"}
 						</Button>
 					</Space>
@@ -160,38 +130,30 @@ const InfoDrawer = forwardRef<InfoDrawerRef, InfoDrawerProps>(({ onSave }, ref) 
 				wrapperCol={{ span: 18 }}
 				layout="horizontal"
 				onFinish={handleSave}
-				initialValues={userDetail}
 			>
-				<Form.Item
-					label="用户名"
-					name="username"
-					rules={[{ required: true, message: "请输入用户名" }]}
-				>
+				<Form.Item label="邮箱" name="email">
 					<Input disabled={type === "view"} />
 				</Form.Item>
 
-				<Form.Item label="姓名" name="name" rules={[{ required: true, message: "请输入姓名" }]}>
+				<Form.Item label="用户名" name="username">
 					<Input disabled={type === "view"} />
 				</Form.Item>
 
-				<Form.Item
-					label="手机号"
-					name="phone"
-					rules={[{ required: true, message: "请输入手机号" }]}
-				>
+				<Form.Item label="邮箱" name="roles">
+					<Select mode="multiple" allowClear disabled={type === "view"} options={roleOptions} />
+				</Form.Item>
+
+				<Form.Item label="姓名" name={["profile", "name"]}>
+					<Input disabled={type === "view"} />
+				</Form.Item>
+
+				<Form.Item label="手机号" name={["profile", "phone"]}>
 					<Input prefix={<PhoneOutlined />} disabled={type === "view"} />
 				</Form.Item>
 
-				<Form.Item label="住址" name="address" rules={[{ required: true, message: "请输入住址" }]}>
+				<Form.Item label="住址" name={["profile", "address"]}>
 					<Input prefix={<HomeOutlined />} disabled={type === "view"} />
 				</Form.Item>
-
-				{/* 新增模式不显示创建时间 */}
-				{type !== "add" && (
-					<Form.Item label="创建时间" name="createdAt">
-						<span>{dayjs(userDetail?.createdAt).format("YYYY-MM-DD HH:mm:ss")}</span>
-					</Form.Item>
-				)}
 			</Form>
 		</Drawer>
 	);
