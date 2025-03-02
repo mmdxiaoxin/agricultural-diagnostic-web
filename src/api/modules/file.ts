@@ -16,6 +16,7 @@ import {
 	ResTaskStatus,
 	ResUploadFile
 } from "../interface";
+import { testSpeed } from ".";
 
 export interface UploadOptions {
 	// 可选的进度回调函数
@@ -81,13 +82,29 @@ const errorHandler = (error: any) => {
 	}
 };
 
+async function calculateOptimalChunkSize() {
+	const NETWORK_SPEED = await testSpeed();
+	const MAX_CHUNK = 20 * 1024 * 1024; // 20MB
+	const MIN_CHUNK = 1 * 1024 * 1024; // 1MB
+
+	// 根据网络速度计算最佳分片
+	return Math.min(
+		MAX_CHUNK,
+		Math.max(
+			MIN_CHUNK,
+			Math.round(NETWORK_SPEED * 0.5) // 0.5秒传输量
+		)
+	);
+}
+
 // 重新上传分片的最大重试次数
 const MAX_RETRIES = 3;
 
 // * 文件上传接口（分片）
 export const uploadChunksFile = async (file: File | RcFile, options?: UploadOptions) => {
-	const chunkSize = options?.chunkSize || 10 * 1024 * 1024; // 默认每个文件块的大小 10MB
-	const totalChunks = Math.ceil(file.size / chunkSize); // 总的分片数量
+	const dynamicChunkSize = await calculateOptimalChunkSize();
+	const totalChunks = Math.ceil(file.size / dynamicChunkSize);
+
 	const fileExtension = file.name.match(/\.([^\.]+)$/);
 	const fileType = file.type ? file.type : getModelMimeType(fileExtension ? fileExtension[1] : "");
 	try {
@@ -104,14 +121,14 @@ export const uploadChunksFile = async (file: File | RcFile, options?: UploadOpti
 		const taskId = taskResp.data.taskId;
 
 		// 2. 上传文件块
-		await uploadFileChunks(file, taskId, fileMd5, totalChunks, chunkSize, options);
+		await uploadFileChunks(file, taskId, fileMd5, totalChunks, dynamicChunkSize, options);
 
 		// 3. 合并文件块
 		let completionResp = await completeUpload(taskId);
 		if (completionResp.code === 200 || completionResp.code === 201) return completionResp;
 		else if (completionResp.code === 202) {
 			// 4. 断点续传
-			return await retryUpload(file, taskId, fileMd5, chunkSize, options);
+			return await retryUpload(file, taskId, fileMd5, dynamicChunkSize, options);
 		}
 	} catch (error: any) {
 		errorHandler(error);
