@@ -43,7 +43,7 @@ const Login: React.FC = () => {
 				message.error(response.message);
 			}
 		} catch (error) {
-			message.error("登录失败" + error);
+			// message.error("登录失败" + error.);
 		} finally {
 			setLoading(false);
 		}
