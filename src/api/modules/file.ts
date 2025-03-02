@@ -98,7 +98,7 @@ export const uploadChunksFile = async (file: File | RcFile, options?: UploadOpti
 				formData.append("taskId", taskId);
 				formData.append("fileMd5", fileMd5);
 				formData.append("chunkIndex", (i + 1).toString()); // 从 1 开始的 chunkIndex
-				formData.append("file", chunk);
+				formData.append("chunk", chunk);
 
 				const uploadResp = await http.post("/file/upload/chunk", formData, {
 					cancel: false,
