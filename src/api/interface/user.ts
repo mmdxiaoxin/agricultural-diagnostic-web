@@ -9,15 +9,23 @@ interface Role {
 	updatedAt: string;
 }
 
-interface User {
-	id: number;
-	email?: string;
-	username?: string;
-	roles?: Role[];
+interface Profiler {
+	id: 2;
+	gender: 0;
 	avatar?: string;
 	name?: string;
 	phone?: string;
 	address?: string;
+}
+
+interface User {
+	id: number;
+	email?: string;
+	username?: string;
+	password?: string;
+	status?: 0 | 1;
+	roles?: Role[];
+	profile?: Profiler;
 	createdAt?: string;
 	updatedAt?: string;
 }
@@ -28,7 +36,8 @@ export type UserItem = Omit<User, "password">;
 export type UserListParams = {
 	page: number;
 	pageSize: number;
-} & Partial<UserItem>;
+} & Partial<Profiler> &
+	Partial<UserItem>;
 // * 用户列表响应
 export type ResUserList = PageData<UserItem>;
 

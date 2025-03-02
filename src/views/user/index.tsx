@@ -1,5 +1,4 @@
-import { DictItem, UserItem, UserListParams } from "@/api/interface";
-import { getRoleDict } from "@/api/modules/role";
+import { UserItem, UserListParams } from "@/api/interface";
 import { deleteUserById, getUserList, resetUserById } from "@/api/modules/user";
 import { ROLE_COLOR } from "@/constants";
 import {
@@ -33,7 +32,6 @@ const User = () => {
 
 	const [loading, setLoading] = useState(false);
 	const [queryParams, setQueryParams] = useState<UserListParams>({ page: 1, pageSize: 10 });
-	const [roleDict, setRoleDict] = useState<DictItem[]>([]);
 	const [userList, setUserList] = useState<UserItem[]>([]);
 	const [pagination, setPagination] = useState<{
 		page: number;
@@ -42,7 +40,6 @@ const User = () => {
 	}>();
 	const [expandSearch, setExpandSearch] = useState(false);
 
-	// 搜索条件改变时更新查询参数
 	const handleSearchChange = (key: string, value: string) => {
 		setQueryParams(prev => ({
 			...prev,
@@ -89,39 +86,15 @@ const User = () => {
 		},
 		{
 			title: "权限",
-			dataIndex: "role_id",
-			key: "role_id",
-			render: (_, { role_id }) => {
-				const role = roleDict.find(item => item.key === role_id);
-				if (!role) return null;
-				return (
-					<Tag color={ROLE_COLOR[role.value as keyof typeof ROLE_COLOR] || "default"}>
-						{role.value}
+			dataIndex: "roles",
+			key: "roles",
+			render: (_, { roles }) => {
+				return roles?.map(role => (
+					<Tag color={ROLE_COLOR[role.alias as keyof typeof ROLE_COLOR] || "default"} key={role.id}>
+						{role.alias}
 					</Tag>
-				);
+				));
 			},
-			align: "center",
-			filters: roleDict.map(item => ({ text: item.value, value: item.key })),
-			onFilter(value, record) {
-				return record.role_id === value;
-			}
-		},
-		{
-			title: "姓名",
-			dataIndex: "name",
-			key: "name",
-			align: "center"
-		},
-		{
-			title: "手机号",
-			dataIndex: "phone",
-			key: "phone",
-			align: "center"
-		},
-		{
-			title: "地址",
-			dataIndex: "address",
-			key: "address",
 			align: "center"
 		},
 		{
@@ -129,34 +102,14 @@ const User = () => {
 			dataIndex: "createdAt",
 			key: "createdAt",
 			align: "center",
-			sortDirections: ["descend", "ascend"],
-			render: text => <span>{dayjs(text).format("YYYY-MM-DD HH:mm:ss")}</span>,
-			sorter: (a, b) => {
-				if (a.createdAt && b.createdAt) {
-					const aTime = new Date(a.createdAt).getTime();
-					const bTime = new Date(b.createdAt).getTime();
-					return aTime - bTime;
-				} else {
-					return 0;
-				}
-			}
+			render: text => <span>{dayjs(text).format("YYYY-MM-DD HH:mm:ss")}</span>
 		},
 		{
 			title: "修改时间",
 			dataIndex: "updatedAt",
 			key: "updatedAt",
 			align: "center",
-			sortDirections: ["descend", "ascend"],
-			render: text => <span>{dayjs(text).format("YYYY-MM-DD HH:mm:ss")}</span>,
-			sorter: (a, b) => {
-				if (a.createdAt && b.createdAt) {
-					const aTime = new Date(a.createdAt).getTime();
-					const bTime = new Date(b.createdAt).getTime();
-					return aTime - bTime;
-				} else {
-					return 0;
-				}
-			}
+			render: text => <span>{dayjs(text).format("YYYY-MM-DD HH:mm:ss")}</span>
 		},
 		{
 			title: "操作",
@@ -172,7 +125,7 @@ const User = () => {
 					</Button>
 					<Popconfirm
 						placement="top"
-						title={`确定要重置吗？`}
+						title="确定要重置吗？"
 						description={<span>重置后密码将恢复为初始密码 123456</span>}
 						okText="确认"
 						cancelText="取消"
@@ -184,7 +137,7 @@ const User = () => {
 					</Popconfirm>
 					<Popconfirm
 						placement="top"
-						title={`确定要删除吗？`}
+						title="确定要删除吗？"
 						okButtonProps={{ danger: true }}
 						okText="确认"
 						cancelText="取消"
@@ -203,12 +156,8 @@ const User = () => {
 	const fetchData = async (params: UserListParams) => {
 		setLoading(true);
 		try {
-			const dictRes = await getRoleDict();
-			if (dictRes.code !== 200) throw new Error(dictRes.message);
 			const userRes = await getUserList(params);
 			if (userRes.code !== 200) throw new Error(userRes.message);
-
-			setRoleDict(dictRes.data || []);
 			setUserList(userRes.data?.list || []);
 			setPagination(userRes.data?.pagination || { page: 1, pageSize: 10, total: 0 });
 		} catch (error: any) {
@@ -320,6 +269,26 @@ const User = () => {
 							setQueryParams({ ...queryParams, page, pageSize });
 							fetchData({ ...queryParams, page, pageSize });
 						}
+					}}
+					expandable={{
+						expandedRowRender: record => (
+							<div style={{ padding: 10 }}>
+								<h4>用户资料</h4>
+								<p>
+									<strong>姓名：</strong>
+									{record.profile?.name}
+								</p>
+								<p>
+									<strong>电话：</strong>
+									{record.profile?.phone}
+								</p>
+								<p>
+									<strong>地址：</strong>
+									{record.profile?.address}
+								</p>
+							</div>
+						),
+						rowExpandable: record => record.profile != null
 					}}
 				/>
 			</div>
