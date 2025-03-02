@@ -45,178 +45,231 @@ export const uploadSingleFile = async (file: File | RcFile) => {
 	});
 };
 
+class TaskError extends Error {
+	name: string;
+	constructor(message: string) {
+		super(message);
+		this.name = "TaskError";
+	}
+}
+
+class ChunkError extends Error {
+	name: string;
+	constructor(message: string) {
+		super(message);
+		this.name = "ChunkError";
+	}
+}
+
+class CompleteError extends Error {
+	name: string;
+	constructor(message: string) {
+		super(message);
+		this.name = "CompleteError";
+	}
+}
+
+const errorHandler = (error: any) => {
+	if (error instanceof TaskError) {
+		throw new Error("TaskError:" + error.message);
+	} else if (error instanceof ChunkError) {
+		throw new Error("ChunkError:" + error.message);
+	} else if (error instanceof CompleteError) {
+		throw new Error("CompleteError:" + error.message);
+	} else {
+		throw new Error(error.message);
+	}
+};
+
+// 重新上传分片的最大重试次数
+const MAX_RETRIES = 3;
+
 // * 文件上传接口（分片）
 export const uploadChunksFile = async (file: File | RcFile, options?: UploadOptions) => {
 	const chunkSize = options?.chunkSize || 10 * 1024 * 1024; // 默认每个文件块的大小 10MB
 	const totalChunks = Math.ceil(file.size / chunkSize); // 总的分片数量
 	const fileExtension = file.name.match(/\.([^\.]+)$/);
 	const fileType = file.type ? file.type : getModelMimeType(fileExtension ? fileExtension[1] : "");
-
 	try {
-		// 计算文件的 MD5
 		const fileMd5 = await calculateFileMd5(file);
 
 		// 1. 创建上传任务
-		const taskResp = await http.post<ResCreateTask>(
-			"/file/upload/create",
-			{
-				fileName: file.name,
-				fileSize: file.size,
-				fileType,
-				totalChunks,
-				fileMd5
-			},
-			{
-				loading: false,
-				cancel: false
-			}
-		);
-
+		const taskResp = await createUploadTask(file, fileMd5, totalChunks, fileType);
 		if (taskResp.code === 200) {
-			return taskResp;
+			return taskResp; // 文件已上传
 		}
-
-		if (taskResp.code !== 201 || !taskResp.data) {
-			throw new Error(taskResp.message);
+		if (!taskResp.data) {
+			throw new TaskError("创建上传任务失败");
 		}
-
 		const taskId = taskResp.data.taskId;
 
 		// 2. 上传文件块
-		const uploadTasks = [];
-
-		// 遍历每个分片并将其上传
-		for (let i = 0; i < totalChunks; i++) {
-			const chunkStart = i * chunkSize;
-			const chunkEnd = Math.min(chunkStart + chunkSize, file.size);
-			const chunk = file.slice(chunkStart, chunkEnd);
-
-			if (!chunk) continue; // 忽略空的分片
-
-			const uploadTask = async () => {
-				const formData = new FormData();
-				formData.append("taskId", taskId);
-				formData.append("fileMd5", fileMd5);
-				formData.append("chunkIndex", (i + 1).toString()); // 从 1 开始的 chunkIndex
-				formData.append("chunk", chunk);
-
-				const uploadResp = await http.post("/file/upload/chunk", formData, {
-					cancel: false,
-					loading: false
-				});
-
-				if (uploadResp.code !== 200) {
-					throw new Error(`上传第 ${i + 1} 个文件块失败`);
-				}
-
-				return uploadResp;
-			};
-
-			uploadTasks.push(uploadTask);
-		}
-
-		// 使用并发队列执行上传文件块
-		const concurrency = options?.concurrency || 5;
-		await concurrencyQueue(uploadTasks, {
-			concurrency,
-			onProgress: (completed, total) => {
-				// 显示上传进度
-				if ((file as RcFile).uid)
-					options?.onProgress?.((file as RcFile).uid, Math.round((completed / total) * 100));
-			}
-		});
+		await uploadFileChunks(file, taskId, fileMd5, totalChunks, chunkSize, options);
 
 		// 3. 合并文件块
-		let completionResp = await http.post(
-			"/file/upload/complete",
-			{ taskId },
+		let completionResp = await completeUpload(taskId);
+		if (completionResp.code === 200 || completionResp.code === 201) return completionResp;
+		else if (completionResp.code === 202) {
+			// 4. 断点续传
+			return await retryUpload(file, taskId, fileMd5, chunkSize, options);
+		}
+	} catch (error: any) {
+		errorHandler(error);
+	}
+};
+
+// 1. 创建上传任务
+const createUploadTask = async (
+	file: File | RcFile,
+	fileMd5: string,
+	totalChunks: number,
+	fileType: string
+) => {
+	const taskResp = await http.post<ResCreateTask>(
+		"/file/upload/create",
+		{
+			fileName: file.name,
+			fileSize: file.size,
+			fileType,
+			totalChunks,
+			fileMd5
+		},
+		{ loading: false, cancel: false }
+	);
+	if (taskResp.code !== 201 && taskResp.code !== 200 && taskResp.code !== 202) {
+		throw new TaskError(taskResp.message);
+	}
+	return taskResp;
+};
+
+// 上传单个文件块
+const uploadChunk = async (taskId: string, fileMd5: string, chunkIndex: number, chunk: Blob) => {
+	const formData = new FormData();
+	formData.append("taskId", taskId);
+	formData.append("fileMd5", fileMd5);
+	formData.append("chunkIndex", chunkIndex.toString());
+	formData.append("chunk", chunk);
+	return http.post("/file/upload/chunk", formData, {
+		cancel: false,
+		loading: false
+	});
+};
+
+// 错误捕获并重试机制
+const uploadChunkWithRetry = async (
+	taskId: string,
+	fileMd5: string,
+	chunkIndex: number,
+	chunk: Blob,
+	retries: number = 0
+) => {
+	try {
+		return await uploadChunk(taskId, fileMd5, chunkIndex, chunk);
+	} catch (error) {
+		if (retries < MAX_RETRIES) {
+			console.log(`分片 ${chunkIndex} 上传失败，正在重试... 重试次数: ${retries + 1}`);
+			return await uploadChunkWithRetry(taskId, fileMd5, chunkIndex, chunk, retries + 1);
+		} else {
+			throw new ChunkError(`分片 ${chunkIndex} 上传失败，重试次数已达到最大值`);
+		}
+	}
+};
+
+// 2. 上传文件块
+const uploadFileChunks = async (
+	file: File | RcFile,
+	taskId: string,
+	fileMd5: string,
+	totalChunks: number,
+	chunkSize: number,
+	options?: UploadOptions
+) => {
+	const uploadTasks: (() => Promise<any>)[] = [];
+
+	for (let i = 0; i < totalChunks; i++) {
+		const chunkStart = i * chunkSize;
+		const chunkEnd = Math.min(chunkStart + chunkSize, file.size);
+		const chunk = file.slice(chunkStart, chunkEnd);
+
+		if (!chunk) continue; // 忽略空的分片
+
+		// 使用带重试机制的上传函数
+		uploadTasks.push(() => uploadChunkWithRetry(taskId, fileMd5, i + 1, chunk));
+	}
+
+	const concurrency = options?.concurrency || 5;
+	await concurrencyQueue(uploadTasks, {
+		concurrency,
+		onProgress: (completed, total) => {
+			if ((file as RcFile).uid) {
+				options?.onProgress?.((file as RcFile).uid, Math.round((completed / total) * 100));
+			}
+		}
+	});
+};
+
+// 3. 完成上传
+const completeUpload = async (taskId: string) => {
+	const response = await http.post(
+		"/file/upload/complete",
+		{ taskId },
+		{ loading: false, cancel: false }
+	);
+	if (response.code !== 200 && response.code !== 201) {
+		throw new CompleteError(response.message);
+	}
+	return response;
+};
+
+// 4. 断点续传
+const retryUpload = async (
+	file: File | RcFile,
+	taskId: string,
+	fileMd5: string,
+	chunkSize: number,
+	options?: UploadOptions
+) => {
+	let retryCount = 0;
+	const maxRetryCount = 3; // 最大重试次数
+
+	while (retryCount < maxRetryCount) {
+		const taskStatusResp = await http.get<ResTaskStatus>(
+			`/file/upload/status/${taskId}`,
+			{},
 			{ loading: false, cancel: false }
 		);
-
-		// 检查上传完成状态
-		if (completionResp.code === 200) {
-			console.log("文件已上传完成，无需继续处理");
-			return completionResp; // 文件已经上传完成，直接返回
-		} else if (completionResp.code === 201) {
-			console.log("文件分块已合并完成，上传成功");
-			return completionResp; // 分片已经成功合并，上传成功
-		} else if (completionResp.code === 202) {
-			console.log("部分文件块未上传，继续重试上传");
-		} else if (completionResp.code === 400) {
-			console.error("上传任务失败，请检查上传的文件块");
-			throw new Error("上传任务失败");
+		if (taskStatusResp.code !== 200) {
+			throw new Error(taskStatusResp.message);
+		}
+		if (!taskStatusResp.data) {
+			throw new Error("上传失败，无法获取任务状态");
 		}
 
-		// 4. 断点续传
-		let retryCount = 0;
-		const maxRetryCount = 3; // 最大重试次数
-
-		while (completionResp.code === 202 && retryCount < maxRetryCount) {
-			// 获取任务状态
-			const taskStatusResp = await http.get<ResTaskStatus>(
-				`/file/upload/status/${taskId}`,
-				{},
-				{ loading: false, cancel: false }
-			);
-
-			if (taskStatusResp.code !== 200 || !taskStatusResp.data) {
-				throw new Error(taskStatusResp.message);
-			}
-
-			// 重新上传失败的文件块
-			const failedChunks = taskStatusResp.data.chunkStatus;
-			if (!failedChunks) {
-				throw new Error("上传失败，无法获取失败的文件块");
-			}
-
-			const failedChunkIndexes = Object.keys(failedChunks).map(Number);
-			const retryTasks = failedChunkIndexes.map(chunkIndex => {
-				const chunkStart = (chunkIndex - 1) * chunkSize;
-				const chunkEnd = Math.min(chunkStart + chunkSize, file.size);
-				const chunk = file.slice(chunkStart, chunkEnd);
-
-				return async () => {
-					const formData = new FormData();
-					formData.append("taskId", taskId);
-					formData.append("chunkIndex", chunkIndex.toString());
-					formData.append("file", chunk);
-
-					const uploadResp = await http.post("/file/upload/chunk", formData, {
-						cancel: false,
-						loading: false
-					});
-					if (uploadResp.code !== 200) {
-						throw new Error(`上传第 ${chunkIndex} 个文件块失败`);
-					}
-					return uploadResp;
-				};
-			});
-
-			await concurrencyQueue(retryTasks, { concurrency });
-
-			// 重新合并文件块
-			completionResp = await http.post(
-				"/file/upload/complete",
-				{ taskId },
-				{ loading: false, cancel: false }
-			);
-
-			retryCount++; // 重试次数加 1
-			if (retryCount === maxRetryCount) {
-				throw new Error("重试超过最大次数，上传失败");
-			}
-
-			if (completionResp.code === 200 || completionResp.code === 201) {
-				break;
-			}
-
-			if (completionResp.code === 202) continue;
+		const chunkStatus = taskStatusResp.data.chunkStatus;
+		if (!chunkStatus) {
+			throw new Error("上传失败，无法获取失败的文件块");
 		}
 
-		return completionResp;
-	} catch (error) {
-		console.error("文件上传失败", error);
-		throw error;
+		const failedChunkIndexes = Object.keys(chunkStatus)
+			.map(index => parseInt(index, 10))
+			.filter(index => !chunkStatus[index]);
+		const retryTasks = failedChunkIndexes.map(
+			chunkIndex => () =>
+				uploadChunk(
+					taskId,
+					fileMd5,
+					chunkIndex,
+					file.slice((chunkIndex - 1) * chunkSize, chunkIndex * chunkSize)
+				)
+		);
+
+		await concurrencyQueue(retryTasks, { concurrency: options?.concurrency || 5 });
+		const completionResp = await completeUpload(taskId);
+		if (completionResp.code === 200 || completionResp.code === 201) return completionResp;
+		retryCount++;
+		if (retryCount === maxRetryCount) {
+			throw new Error("重试超过最大次数，上传失败");
+		}
 	}
 };
 

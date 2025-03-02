@@ -51,7 +51,9 @@ export interface TaskMeta {
 	totalChunks: number;
 	uploadedChunks: number;
 	status?: string;
-	chunkStatus?: object;
+	chunkStatus?: {
+		[key: number]: boolean;
+	};
 	createdAt?: string;
 	updatedAt?: string;
 	createdBy?: string;
@@ -88,7 +90,6 @@ export type ResDatasetList = PageData<DatasetMeta>;
 
 export type ResCreateTask = Required<Pick<TaskMeta, "taskId">> & { chunkSize: number };
 
-export type ResTaskStatus = Pick<
-	TaskMeta,
-	"taskId" | "status" | "chunkStatus" | "totalChunks" | "uploadedChunks"
+export type ResTaskStatus = Required<
+	Pick<TaskMeta, "taskId" | "status" | "chunkStatus" | "totalChunks" | "uploadedChunks">
 >;
