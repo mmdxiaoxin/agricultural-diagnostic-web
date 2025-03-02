@@ -88,7 +88,7 @@ class RequestHttp {
 					data.code !== ResultEnum.CREATE_SUCCESS &&
 					data.code !== ResultEnum.NO_CONTENT
 				) {
-					message.error(data.msg);
+					message.error(data.message || "请求失败！请您稍后重试");
 					return Promise.reject(data);
 				}
 
@@ -118,7 +118,8 @@ class RequestHttp {
 						window.history.pushState({}, "", "/login");
 						window.location.reload();
 					}
-					checkStatus(response.status);
+					// @ts-ignore
+					checkStatus(response.status, response?.data?.message);
 				}
 
 				// 服务器结果都没有返回(可能服务器错误可能客户端断网) 断网处理:可以跳转到断网页面
