@@ -13,6 +13,7 @@ export interface InfoDrawerRef {
 }
 
 const InfoDrawer = forwardRef<InfoDrawerRef, InfoDrawerProps>(({ onSave }, ref) => {
+	const [userId, setUserId] = useState<number | string>(0);
 	const [type, setType] = useState<"view" | "edit" | "add">("view");
 	const [open, setOpen] = useState(false);
 	const [initLoading, setInitLoading] = useState(false);
@@ -57,6 +58,7 @@ const InfoDrawer = forwardRef<InfoDrawerRef, InfoDrawerProps>(({ onSave }, ref) 
 	const handleOpen = (type: "view" | "edit" | "add" = "view", user_id?: number | string) => {
 		setType(type);
 		setOpen(true);
+		setUserId(user_id as number);
 
 		if (type === "edit" || type === "view") {
 			setInitLoading(true);
@@ -77,19 +79,13 @@ const InfoDrawer = forwardRef<InfoDrawerRef, InfoDrawerProps>(({ onSave }, ref) 
 		try {
 			if (type === "edit") {
 				// 编辑模式
-				const res = await updateUserById(values.id, values);
+				const res = await updateUserById(userId, values);
 				if (res.code !== 200) throw new Error(res.message);
 			} else if (type === "add") {
 				// 新增模式
-				const res = await createUser({
-					username: values.username,
-					name: values.name,
-					phone: values.phone,
-					address: values.address
-				});
+				const res = await createUser(values);
 				if (res.code !== 201) throw new Error(res.message);
 			}
-
 			onSave?.(values);
 			handleClose();
 			message.success(type === "edit" ? "保存成功" : "新增成功");
