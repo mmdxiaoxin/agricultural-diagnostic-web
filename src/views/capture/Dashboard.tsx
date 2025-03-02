@@ -65,11 +65,11 @@ const Dashboard: React.FC = () => {
 	const handleSearch = async (page: number, pageSize: number, selectedType?: string) => {
 		try {
 			setLoading(true);
-			const file_type = getFileType(selectedType!);
+			const fileType = getFileType(selectedType!);
 			const params = {
 				page,
 				pageSize,
-				file_type: file_type.length ? file_type : undefined
+				fileType: fileType.length ? fileType : undefined
 			};
 			const response = await getFileList(params);
 			if (response.code !== 200 || !response.data) {
@@ -101,19 +101,16 @@ const Dashboard: React.FC = () => {
 	const columns: TableColumnsType<FileMeta> = [
 		{
 			title: "文件名",
-			dataIndex: "original_file_name",
-			key: "original_file_name",
+			dataIndex: "originalFileName",
+			key: "originalFileName",
 			render: (text: string, record: FileMeta) => (
-				<FilePreview
-					meta={{ file_type: record.file_type, file_url: record.temp_link }}
-					text={text}
-				/>
+				<FilePreview meta={{ fileType: record.fileType, file_url: record.temp_link }} text={text} />
 			)
 		},
 		{
 			title: "文件类型",
-			dataIndex: "file_type",
-			key: "file_type",
+			dataIndex: "fileType",
+			key: "fileType",
 			render: (type: MIMETypeValue) => (
 				<Tooltip title={type}>
 					<Tag
@@ -133,8 +130,8 @@ const Dashboard: React.FC = () => {
 		},
 		{
 			title: "大小",
-			dataIndex: "file_size",
-			key: "file_size",
+			dataIndex: "fileSize",
+			key: "fileSize",
 			render: (size: number) => formatSize(size)
 		},
 		{

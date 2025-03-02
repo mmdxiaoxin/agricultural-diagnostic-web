@@ -55,9 +55,9 @@ const DatasetsList: React.FC<DatasetsListProps> = ({
 						<p className="text-gray-600 line-clamp-2 min-h-10">{dataset.description}</p>
 						<div className="flex flex-wrap gap-2 mt-2">
 							<Tag color="green" className="whitespace-nowrap">
-								文件总数: {dataset.file_count}
+								文件总数: {dataset.fileCount}
 							</Tag>
-							<span className="text-gray-500">{formatSize(dataset.dataset_size || 0)}</span>
+							<span className="text-gray-500">{formatSize(dataset.datasetSize || 0)}</span>
 						</div>
 					</div>
 

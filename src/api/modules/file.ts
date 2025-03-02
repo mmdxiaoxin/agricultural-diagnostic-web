@@ -50,7 +50,7 @@ export const uploadChunksFile = async (file: File | RcFile, options?: UploadOpti
 	const chunkSize = options?.chunkSize || 10 * 1024 * 1024; // 默认每个文件块的大小 10MB
 	const totalChunks = Math.ceil(file.size / chunkSize); // 总的分片数量
 	const fileExtension = file.name.match(/\.([^\.]+)$/);
-	const file_type = file.type ? file.type : getModelMimeType(fileExtension ? fileExtension[1] : "");
+	const fileType = file.type ? file.type : getModelMimeType(fileExtension ? fileExtension[1] : "");
 
 	try {
 		// 计算文件的 MD5
@@ -60,11 +60,11 @@ export const uploadChunksFile = async (file: File | RcFile, options?: UploadOpti
 		const taskResp = await http.post<ResCreateTask>(
 			"/file/upload/create",
 			{
-				file_name: file.name,
-				file_size: file.size,
-				file_type,
-				total_chunks: totalChunks,
-				file_md5: fileMd5
+				fileName: file.name,
+				fileSize: file.size,
+				fileType,
+				totalChunks,
+				fileMd5
 			},
 			{
 				loading: false,
@@ -80,7 +80,7 @@ export const uploadChunksFile = async (file: File | RcFile, options?: UploadOpti
 			throw new Error(taskResp.message);
 		}
 
-		const task_id = taskResp.data.task_id;
+		const taskId = taskResp.data.taskId;
 
 		// 2. 上传文件块
 		const uploadTasks = [];
@@ -95,7 +95,7 @@ export const uploadChunksFile = async (file: File | RcFile, options?: UploadOpti
 
 			const uploadTask = async () => {
 				const formData = new FormData();
-				formData.append("task_id", task_id);
+				formData.append("taskId", taskId);
 				formData.append("chunkIndex", (i + 1).toString()); // 从 1 开始的 chunkIndex
 				formData.append("file", chunk);
 
@@ -128,7 +128,7 @@ export const uploadChunksFile = async (file: File | RcFile, options?: UploadOpti
 		// 3. 合并文件块
 		let completionResp = await http.post(
 			"/file/upload/complete",
-			{ task_id },
+			{ taskId },
 			{ loading: false, cancel: false }
 		);
 
@@ -153,7 +153,7 @@ export const uploadChunksFile = async (file: File | RcFile, options?: UploadOpti
 		while (completionResp.code === 202 && retryCount < maxRetryCount) {
 			// 获取任务状态
 			const taskStatusResp = await http.get<ResTaskStatus>(
-				`/file/upload/status/${task_id}`,
+				`/file/upload/status/${taskId}`,
 				{},
 				{ loading: false, cancel: false }
 			);
@@ -163,7 +163,7 @@ export const uploadChunksFile = async (file: File | RcFile, options?: UploadOpti
 			}
 
 			// 重新上传失败的文件块
-			const failedChunks = taskStatusResp.data.chunk_status;
+			const failedChunks = taskStatusResp.data.chunkStatus;
 			if (!failedChunks) {
 				throw new Error("上传失败，无法获取失败的文件块");
 			}
@@ -176,7 +176,7 @@ export const uploadChunksFile = async (file: File | RcFile, options?: UploadOpti
 
 				return async () => {
 					const formData = new FormData();
-					formData.append("task_id", task_id);
+					formData.append("taskId", taskId);
 					formData.append("chunkIndex", chunkIndex.toString());
 					formData.append("file", chunk);
 
@@ -196,7 +196,7 @@ export const uploadChunksFile = async (file: File | RcFile, options?: UploadOpti
 			// 重新合并文件块
 			completionResp = await http.post(
 				"/file/upload/complete",
-				{ task_id },
+				{ taskId },
 				{ loading: false, cancel: false }
 			);
 
@@ -360,7 +360,7 @@ export const downloadMultipleFiles = async (
 // * 文件修改
 export const updateFile = (
 	fileId: string | number,
-	file_meta?: Partial<Pick<FileMeta, "access" | "original_file_name">>
+	file_meta?: Partial<Pick<FileMeta, "access" | "originalFileName">>
 ) => http.put(`/file/update/${fileId}`, file_meta, { loading: false });
 
 // * 批量文件权限修改

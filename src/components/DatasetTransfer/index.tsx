@@ -61,12 +61,12 @@ const TableTransfer: React.FC<TableTransferProps> = props => {
 
 const columns: TableColumnsType<FileMeta> = [
 	{
-		dataIndex: "original_file_name",
+		dataIndex: "originalFileName",
 		title: "文件名",
 		render: (value, record) => (
 			<FilePreview
 				meta={{
-					file_type: record.file_type,
+					fileType: record.fileType,
 					file_url: record.temp_link
 				}}
 				text={value}
@@ -74,7 +74,7 @@ const columns: TableColumnsType<FileMeta> = [
 		)
 	},
 	{
-		dataIndex: "file_type",
+		dataIndex: "fileType",
 		title: "文件类型",
 		render: (tag: string) => (
 			<Tag style={{ marginInlineEnd: 0 }} color="cyan">
@@ -84,7 +84,7 @@ const columns: TableColumnsType<FileMeta> = [
 	}
 ];
 
-const filterOption = (input: string, item: FileMeta) => item.original_file_name?.includes(input);
+const filterOption = (input: string, item: FileMeta) => item.originalFileName?.includes(input);
 
 export interface DatasetTransferProps {
 	value?: TransferProps["targetKeys"];

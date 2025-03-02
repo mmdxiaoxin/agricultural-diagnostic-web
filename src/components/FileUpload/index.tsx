@@ -38,10 +38,10 @@ const FileUpload: React.FC<FileUploadProps> = ({ onUpload }) => {
 			return;
 		}
 
-		const file_type = file.type;
-		const file_size = file.size;
-		const chunkSize = file_type.startsWith("video") ? 10 * 1024 * 1024 : 5 * 1024 * 1024;
-		const isSingle = file_size <= chunkSize;
+		const fileType = file.type;
+		const fileSize = file.size;
+		const chunkSize = fileType.startsWith("video") ? 10 * 1024 * 1024 : 5 * 1024 * 1024;
+		const isSingle = fileSize <= chunkSize;
 
 		try {
 			const response = isSingle

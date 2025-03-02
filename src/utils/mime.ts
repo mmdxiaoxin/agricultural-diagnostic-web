@@ -1,4 +1,4 @@
-import { FILE_TYPE_COLOR, MIME_TYPE, MIMETypeValue } from "@/constants";
+import { fileType_COLOR, MIME_TYPE, MIMETypeValue } from "@/constants";
 
 /**
  * @description 获取模型文件 MIME 类型
@@ -29,21 +29,21 @@ export const getModelMimeType = (extension: string): string => {
 export function getFileTypeColor(mimeType: MIMETypeValue): string {
 	// 检查文件类型并返回对应颜色
 	if (Object.values(MIME_TYPE.Video).includes(mimeType as any)) {
-		return FILE_TYPE_COLOR.Video;
+		return fileType_COLOR.Video;
 	} else if (Object.values(MIME_TYPE.Audio).includes(mimeType as any)) {
-		return FILE_TYPE_COLOR.Audio;
+		return fileType_COLOR.Audio;
 	} else if (Object.values(MIME_TYPE.Image).includes(mimeType as any)) {
-		return FILE_TYPE_COLOR.Image;
+		return fileType_COLOR.Image;
 	} else if (Object.values(MIME_TYPE.Application).includes(mimeType as any)) {
-		return FILE_TYPE_COLOR.Application;
+		return fileType_COLOR.Application;
 	} else if (Object.values(MIME_TYPE.App).includes(mimeType as any)) {
-		return FILE_TYPE_COLOR.Application;
+		return fileType_COLOR.Application;
 	} else if (Object.values(MIME_TYPE.Font).includes(mimeType as any)) {
-		return FILE_TYPE_COLOR.Application;
+		return fileType_COLOR.Application;
 	} else if (Object.values(MIME_TYPE.Other).includes(mimeType as any)) {
-		return FILE_TYPE_COLOR.other;
+		return fileType_COLOR.other;
 	} else {
-		return FILE_TYPE_COLOR.other;
+		return fileType_COLOR.other;
 	}
 }
 

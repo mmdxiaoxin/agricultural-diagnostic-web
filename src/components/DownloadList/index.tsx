@@ -38,10 +38,10 @@ const getFileTypeIcon = (fileType: string) => {
 	return fileTypeIcons.default;
 };
 
-const getStatus = (percent: number, file_size?: number) => {
-	if (percent === 100 && file_size !== undefined) return `已完成 ${formatSize(file_size)}`;
+const getStatus = (percent: number, fileSize?: number) => {
+	if (percent === 100 && fileSize !== undefined) return `已完成 ${formatSize(fileSize)}`;
 	if (percent === 0) return "等待中";
-	return `下载中 ${formatSize((file_size || 0) * (percent / 100))} / ${formatSize(file_size || 0)}`;
+	return `下载中 ${formatSize((fileSize || 0) * (percent / 100))} / ${formatSize(fileSize || 0)}`;
 };
 
 const DownloadList: React.FC<DownloadListProps> = ({
@@ -74,14 +74,19 @@ const DownloadList: React.FC<DownloadListProps> = ({
 			}
 			dataSource={downloadList}
 			renderItem={item => {
-				const { id, original_file_name, file_size, file_type } = item;
+				const {
+					id,
+					originalFileName: originalFileName,
+					fileSize: fileSize,
+					fileType: fileType
+				} = item;
 				const percent = progress[id] || 0;
 				return (
 					<List.Item>
 						<List.Item.Meta
-							avatar={<Avatar icon={getFileTypeIcon(file_type)} />}
+							avatar={<Avatar icon={getFileTypeIcon(fileType)} />}
 							title={
-								<Tooltip title={original_file_name}>
+								<Tooltip title={originalFileName}>
 									<span
 										style={{
 											fontWeight: 500,
@@ -90,7 +95,7 @@ const DownloadList: React.FC<DownloadListProps> = ({
 											whiteSpace: "nowrap"
 										}}
 									>
-										{original_file_name}
+										{originalFileName}
 									</span>
 								</Tooltip>
 							}
@@ -100,7 +105,7 @@ const DownloadList: React.FC<DownloadListProps> = ({
 										<Progress percent={percent} size="small" />
 									</div>
 									<div style={{ marginTop: 8, fontSize: 12, color: "#888" }}>
-										{getStatus(percent, file_size)}
+										{getStatus(percent, fileSize)}
 									</div>
 								</>
 							}

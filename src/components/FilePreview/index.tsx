@@ -2,7 +2,7 @@ import { Button, Image, Tooltip } from "antd";
 import React, { PropsWithChildren } from "react";
 
 interface FileMeta {
-	file_type: string;
+	fileType: string;
 	file_url?: string;
 }
 
@@ -13,7 +13,7 @@ interface FilePreviewProps
 	}> {}
 
 const getPreviewImage = (meta: FileMeta) => {
-	switch (meta.file_type) {
+	switch (meta.fileType) {
 		case "image/png":
 		case "image/jpeg":
 		case "image/jpg":

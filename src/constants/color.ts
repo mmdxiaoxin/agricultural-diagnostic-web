@@ -4,7 +4,7 @@ export const ROLE_COLOR = {
 	管理员: "orange"
 } as const;
 
-export const FILE_TYPE_COLOR = {
+export const fileType_COLOR = {
 	Image: "green",
 	Audio: "blue",
 	Video: "orange",

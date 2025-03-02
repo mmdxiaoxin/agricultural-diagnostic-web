@@ -24,7 +24,7 @@ const DatasetDetail: React.FC<DatasetDetailProps> = ({ mode }) => {
 			if (response.code !== 200 || !response.data) throw new Error(response.message);
 
 			form.setFieldsValue(response.data);
-			setFileIds(response.data.file_ids);
+			setFileIds(response.data.fileIds);
 		} catch (error: any) {
 			message.error(error.message);
 		}

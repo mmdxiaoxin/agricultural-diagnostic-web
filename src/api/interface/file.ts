@@ -4,17 +4,17 @@ import { PageData } from ".";
 export interface FileMeta {
 	id: number;
 	creator_id: number;
-	original_file_name: string;
-	storage_file_name: string;
-	file_path: string;
-	file_size: number;
-	file_type: MIMETypeValue;
-	file_md5: string;
+	originalFileName: string;
+	storageFileName: string;
+	filePath: string;
+	fileSize: number;
+	fileType: MIMETypeValue;
+	fileMd5: string;
 	access?: string;
 	createdAt?: string;
 	updatedAt?: string;
-	created_by?: string;
-	updated_by?: string;
+	createdBy?: string;
+	updatedBy?: string;
 	temp_link?: string;
 	version: number;
 }
@@ -23,13 +23,12 @@ export interface DatasetMeta {
 	id: number;
 	name: string;
 	description: string;
-	creator_id: number;
-	created_at: string;
-	updated_at: string;
-	created_by: string;
-	updated_by: string;
-	dataset_size: number;
-	file_count: string;
+	createdAt: string;
+	updatedAt: string;
+	createdBy: string;
+	updatedBy: string;
+	datasetSize: number;
+	fileCount: string;
 }
 
 export type DiskSpaceStatus = { used: string | null; last_updated: string | null };
@@ -45,30 +44,30 @@ export interface DiskUsageReport {
 }
 
 export interface TaskMeta {
-	task_id: string;
-	file_name: string;
-	file_type: string;
-	file_size: number;
-	total_chunks: number;
-	uploaded_chunks: number;
+	taskId: string;
+	fileName: string;
+	fileType: string;
+	fileSize: number;
+	totalChunks: number;
+	uploadedChunks: number;
 	status?: string;
-	chunk_status?: object;
-	created_at?: string;
-	updated_at?: string;
-	created_by?: string;
-	updated_by?: string;
+	chunkStatus?: object;
+	createdAt?: string;
+	updatedAt?: string;
+	createdBy?: string;
+	updatedBy?: string;
 	version?: number;
 }
 
 export type ReqFileListParams = {
 	page: number;
 	pageSize: number;
-	file_type?: MIMETypeValue | "" | MIMETypeValue[];
+	fileType?: MIMETypeValue | "" | MIMETypeValue[];
 	createdStart?: string;
 	createdEnd?: string;
 	updatedStart?: string;
 	updatedEnd?: string;
-} & Partial<Pick<FileMeta, "id" | "original_file_name">>;
+} & Partial<Pick<FileMeta, "id" | "originalFileName">>;
 export type ResFileList = PageData<FileMeta>;
 
 export type ResUploadFile = FileMeta;
@@ -83,13 +82,13 @@ export type ReqUpdateDataset = Partial<ReqCreateDataset>;
 
 export type ResCreateDataset = DatasetMeta;
 
-export type ResDatasetDetail = DatasetMeta & { file_ids: number[] };
+export type ResDatasetDetail = DatasetMeta & { fileIds: number[] };
 
 export type ResDatasetList = PageData<DatasetMeta>;
 
-export type ResCreateTask = Pick<TaskMeta, "task_id"> & { chunk_size: number };
+export type ResCreateTask = Pick<TaskMeta, "taskId"> & { chunkSize: number };
 
 export type ResTaskStatus = Pick<
 	TaskMeta,
-	"task_id" | "status" | "chunk_status" | "total_chunks" | "uploaded_chunks"
+	"taskId" | "status" | "chunkStatus" | "totalChunks" | "uploadedChunks"
 >;

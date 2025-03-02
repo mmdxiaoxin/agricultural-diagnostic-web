@@ -92,14 +92,12 @@ const FileManage: React.FC<FileManageProps> = () => {
 					: undefined,
 				updatedEnd: params.updatedDateRange ? dayjs(params.updatedDateRange[1]).format() : undefined
 			};
-			const file_type = params.fileType
-				? params.fileType.map(types => types[types.length - 1])
-				: [];
+			const fileType = params.fileType ? params.fileType.map(types => types[types.length - 1]) : [];
 			const res = await getFileList({
 				page: params.page,
 				pageSize: params.pageSize,
-				original_file_name: params.fileName,
-				file_type: file_type as MIMETypeValue[],
+				originalFileName: params.fileName,
+				fileType: fileType as MIMETypeValue[],
 				...dateRange
 			});
 			if (res.code !== 200 || !res.data) {
@@ -127,7 +125,7 @@ const FileManage: React.FC<FileManageProps> = () => {
 
 	const handleRename = (file: FileMeta) => {
 		setCurrentFile(file);
-		setNewFileName(file.original_file_name);
+		setNewFileName(file.originalFileName);
 	};
 
 	const handleDelete = async (fileId: number) => {
@@ -163,7 +161,7 @@ const FileManage: React.FC<FileManageProps> = () => {
 		}
 		if (currentFile) {
 			try {
-				await updateFile(currentFile.id, { original_file_name: newFileName });
+				await updateFile(currentFile.id, { originalFileName: newFileName });
 				message.success("文件名更新成功");
 				handleSearch(pagination);
 			} catch (error) {
@@ -191,16 +189,15 @@ const FileManage: React.FC<FileManageProps> = () => {
 					...prev,
 					{
 						id,
-						original_file_name: `压缩文件-${dayjs().format("YYYY-MM-DD")}.zip`,
-						storage_file_name: "压缩文件.zip",
-						file_path: "",
-						file_type: "application/zip",
-						file_size: selectedRowKeys.reduce(
-							(total, fileId) =>
-								total + (fileList.find(file => file.id === fileId)?.file_size || 0),
+						originalFileName: `压缩文件-${dayjs().format("YYYY-MM-DD")}.zip`,
+						storageFileName: "压缩文件.zip",
+						filePath: "",
+						fileType: "application/zip",
+						fileSize: selectedRowKeys.reduce(
+							(total, fileId) => total + (fileList.find(file => file.id === fileId)?.fileSize || 0),
 							0
 						),
-						file_md5: "",
+						fileMd5: "",
 						creator_id: 0,
 						createdAt: dayjs().format(),
 						updatedAt: dayjs().format(),
@@ -262,17 +259,14 @@ const FileManage: React.FC<FileManageProps> = () => {
 	const columns: TableColumnsType<FileMeta> = [
 		{
 			title: "文件名",
-			dataIndex: "original_file_name",
+			dataIndex: "originalFileName",
 			render: (text: string, record: FileMeta) => (
-				<FilePreview
-					meta={{ file_type: record.file_type, file_url: record.temp_link }}
-					text={text}
-				/>
+				<FilePreview meta={{ fileType: record.fileType, file_url: record.temp_link }} text={text} />
 			)
 		},
 		{
 			title: "文件类型",
-			dataIndex: "file_type",
+			dataIndex: "fileType",
 			render: (type: MIMETypeValue) => (
 				<Tooltip title={type}>
 					<Tag
@@ -304,7 +298,7 @@ const FileManage: React.FC<FileManageProps> = () => {
 		},
 		{
 			title: "大小",
-			dataIndex: "file_size",
+			dataIndex: "fileSize",
 			render: (size: number) => formatSize(size)
 		},
 		{
