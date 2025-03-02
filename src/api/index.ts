@@ -18,29 +18,39 @@ import { ApiResponse } from "./interface";
 export interface CustomAxiosRequestConfig extends InternalAxiosRequestConfig {
 	loading?: boolean;
 	cancel?: boolean;
+	toast?: boolean;
 }
+export interface CustomAxiosError extends AxiosError {
+	config: CustomAxiosRequestConfig;
+}
+
 export type GetConfig = Omit<AxiosRequestConfig, "params"> & {
 	loading?: boolean;
 	cancel?: boolean;
+	toast?: boolean;
 };
 export type PostConfig = AxiosRequestConfig & {
 	loading?: boolean;
 	cancel?: boolean;
+	toast?: boolean;
 };
 export type PutConfig = AxiosRequestConfig & {
 	loading?: boolean;
 	cancel?: boolean;
+	toast?: boolean;
 };
 export type DeleteConfig = Omit<AxiosRequestConfig, "params"> & {
 	loading?: boolean;
 	cancel?: boolean;
+	toast?: boolean;
 };
 export type DownloadConfig = Omit<PostConfig, "responseType">;
 
 const config = {
 	baseURL: import.meta.env.VITE_API_URL as string,
 	timeout: 10000,
-	withCredentials: true
+	withCredentials: true,
+	toast: true
 };
 
 const axiosCanceler = new AxiosCanceler();
@@ -88,14 +98,14 @@ class RequestHttp {
 					data.code !== ResultEnum.CREATE_SUCCESS &&
 					data.code !== ResultEnum.NO_CONTENT
 				) {
-					message.error(data.message || "请求失败！请您稍后重试");
+					config.toast && message.error(data.message || "请求失败！请您稍后重试");
 					return Promise.reject(data);
 				}
 
 				// * 成功请求（在页面上除非特殊情况，否则不用处理失败逻辑）
 				return data;
 			},
-			async (error: AxiosError) => {
+			async (error: CustomAxiosError) => {
 				const { response } = error;
 				NProgress.done();
 				tryHideFullScreenLoading();
@@ -113,13 +123,13 @@ class RequestHttp {
 					// 登录失效（status == 401）
 					if (response.status == ResultEnum.UNAUTHORIZED) {
 						store.dispatch(removeToken());
-						message.error("登录失效，请重新登录");
+						error.config.toast && message.error("登录失效，请重新登录");
 						// 跳转到登录页面
 						window.history.pushState({}, "", "/login");
 						window.location.reload();
 					}
 					// @ts-ignore
-					checkStatus(response.status, response?.data?.message);
+					error.config.toast && checkStatus(response.status, response?.data?.message);
 				}
 
 				// 服务器结果都没有返回(可能服务器错误可能客户端断网) 断网处理:可以跳转到断网页面
