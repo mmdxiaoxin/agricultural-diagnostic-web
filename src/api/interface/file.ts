@@ -86,7 +86,7 @@ export type ResDatasetDetail = DatasetMeta & { fileIds: number[] };
 
 export type ResDatasetList = PageData<DatasetMeta>;
 
-export type ResCreateTask = Pick<TaskMeta, "taskId"> & { chunkSize: number };
+export type ResCreateTask = Required<Pick<TaskMeta, "taskId">> & { chunkSize: number };
 
 export type ResTaskStatus = Pick<
 	TaskMeta,
