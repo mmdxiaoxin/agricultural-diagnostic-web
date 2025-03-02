@@ -14,11 +14,9 @@ export interface ListData<T = any> {
 
 export interface PageData<T = any> {
 	list: T[];
-	pagination: {
-		page: number;
-		pageSize: number;
-		total: number;
-	};
+	page: number;
+	pageSize: number;
+	total: number;
 }
 
 export * from "./file";

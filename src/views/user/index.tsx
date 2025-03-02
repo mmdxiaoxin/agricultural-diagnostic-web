@@ -156,10 +156,14 @@ const User = () => {
 	const fetchData = async (params: UserListParams) => {
 		setLoading(true);
 		try {
-			const userRes = await getUserList(params);
-			if (userRes.code !== 200) throw new Error(userRes.message);
-			setUserList(userRes.data?.list || []);
-			setPagination(userRes.data?.pagination || { page: 1, pageSize: 10, total: 0 });
+			const response = await getUserList(params);
+			if (response.code !== 200 || !response.data) throw new Error(response.message);
+			setUserList(response.data?.list || []);
+			setPagination({
+				page: response.data.page ?? 1,
+				pageSize: response.data.pageSize ?? 10,
+				total: response.data.total ?? 0
+			});
 		} catch (error: any) {
 			message.error(error.message);
 		} finally {
