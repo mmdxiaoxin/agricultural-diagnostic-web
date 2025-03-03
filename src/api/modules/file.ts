@@ -3,6 +3,7 @@ import { store } from "@/store";
 import { calculateFileMd5, concurrencyQueue, getModelMimeType } from "@/utils";
 import { RcFile } from "antd/es/upload";
 import axios, { AxiosProgressEvent } from "axios";
+import { testSpeed } from ".";
 import {
 	DiskUsageReport,
 	FileMeta,
@@ -16,7 +17,6 @@ import {
 	ResTaskStatus,
 	ResUploadFile
 } from "../interface";
-import { testSpeed } from ".";
 
 export interface UploadOptions {
 	// 可选的进度回调函数
@@ -391,7 +391,7 @@ export const downloadMultipleFiles = async (
 	if (options.compressMode) {
 		const response = await http.download(
 			"/file/download/",
-			{ file_ids: fileIds },
+			{ fileIds },
 			{
 				loading: false,
 				cancel: false,
@@ -436,11 +436,14 @@ export const updateFile = (
 
 // * 批量文件权限修改
 export const updateFilesAccess = (fileIds: (string | number)[], access: string) =>
-	http.put("/file/access", { file_ids: fileIds, access }, { loading: false });
+	http.put("/file/access", { fileIds, access }, { loading: false });
 
 // * 文件删除
 export const deleteFile = (fileId: string | number) =>
 	http.delete(`/file/delete/${fileId}`, {}, { cancel: false });
+
+// * 批量文件删除
+export const deleteFiles = (fileIds: string) => http.delete(`/file/delete`, { fileIds });
 
 // * 获取数据集列表
 export const getDatasetsList = async () =>

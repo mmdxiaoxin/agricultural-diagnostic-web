@@ -1,6 +1,7 @@
 import { FileMeta } from "@/api/interface";
 import {
 	deleteFile,
+	deleteFiles,
 	downloadMultipleFiles,
 	DownloadProgress,
 	getFileList,
@@ -13,7 +14,7 @@ import FileFilter from "@/components/FileFilter";
 import FilePreview from "@/components/FilePreview";
 import FileUpload from "@/components/FileUpload";
 import { MIMETypeValue } from "@/constants";
-import { concurrencyQueue, formatSize, getFileTypeColor } from "@/utils";
+import { formatSize, getFileTypeColor } from "@/utils";
 import { DeleteOutlined, DownloadOutlined, EditOutlined } from "@ant-design/icons";
 import {
 	Badge,
@@ -244,9 +245,7 @@ const FileManage: React.FC<FileManageProps> = () => {
 			return;
 		}
 		try {
-			const deletePromises = selectedRowKeys.map(fileId => () => deleteFile(fileId));
-			await concurrencyQueue(deletePromises, { concurrency: 3 });
-
+			await deleteFiles(selectedRowKeys.join(","));
 			message.success("文件删除成功");
 		} catch (error) {
 			message.error("删除文件失败");

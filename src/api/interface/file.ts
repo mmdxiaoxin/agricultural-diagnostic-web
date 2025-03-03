@@ -77,7 +77,7 @@ export type ResUploadFile = FileMeta;
 export type ReqCreateDataset = {
 	name: string;
 	description: string;
-	file_ids: number[];
+	fileIds: number[];
 };
 
 export type ReqUpdateDataset = Partial<ReqCreateDataset>;

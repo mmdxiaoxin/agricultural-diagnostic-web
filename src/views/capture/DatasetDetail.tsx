@@ -1,7 +1,7 @@
 import { createDataset, getDatasetDetail, updateDataset } from "@/api/modules/file";
 import DatasetTransfer from "@/components/DatasetTransfer";
 import { Button, Col, Form, Input, message, Row } from "antd";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import styles from "./DatasetDetail.module.scss";
 
@@ -15,7 +15,7 @@ const DatasetDetail: React.FC<DatasetDetailProps> = ({ mode }) => {
 
 	const [form] = Form.useForm();
 
-	const [fileIds, setFileIds] = React.useState<number[]>([]);
+	const [fileIds, setFileIds] = useState<number[]>([]);
 
 	const fetchDataset = async (id: number) => {
 		try {
@@ -39,11 +39,11 @@ const DatasetDetail: React.FC<DatasetDetailProps> = ({ mode }) => {
 	const handleFinish = async (values: any) => {
 		try {
 			if (mode === "create") {
-				await createDataset({ ...values, file_ids: fileIds });
+				await createDataset({ ...values, fileIds });
 				navigate("/capture/dataset");
 				message.success("数据集创建成功");
 			} else {
-				await updateDataset(Number(id), { ...values, file_ids: fileIds });
+				await updateDataset(Number(id), { ...values, fileIds });
 				navigate("/capture/dataset");
 				message.success("数据集更新成功");
 			}
