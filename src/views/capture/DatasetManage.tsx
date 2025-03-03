@@ -1,5 +1,5 @@
 import { DatasetMeta } from "@/api/interface";
-import { deleteDataset, getDatasetsList } from "@/api/modules/file";
+import { deleteDataset, getDatasetsList } from "@/api/modules";
 import DatasetsList from "@/components/DatasetsList";
 import { Button, message } from "antd";
 import React, { useEffect, useState } from "react";
@@ -17,7 +17,7 @@ const DatasetManage: React.FC<DatasetManageProps> = () => {
 	const fetchListData = async () => {
 		setLoading(true);
 		try {
-			const res = await getDatasetsList();
+			const res = await getDatasetsList({ page: 1, pageSize: 10 });
 			if (res.code !== 200 || !res.data) {
 				throw new Error(res.message);
 			}

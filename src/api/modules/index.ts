@@ -4,6 +4,7 @@ export * from "./role";
 export * from "./menu";
 export * from "./file";
 export * from "./diagnosis";
+export * from "./dataset";
 
 import http from "@/api";
 

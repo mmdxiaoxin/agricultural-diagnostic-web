@@ -23,3 +23,4 @@ export * from "./file";
 export * from "./auth";
 export * from "./diagnosis";
 export * from "./user";
+export * from "./dataset";

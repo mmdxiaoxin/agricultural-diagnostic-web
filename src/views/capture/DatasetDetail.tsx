@@ -1,4 +1,4 @@
-import { createDataset, getDatasetDetail, updateDataset } from "@/api/modules/file";
+import { createDataset, getDatasetDetail, updateDataset } from "@/api/modules";
 import DatasetTransfer from "@/components/DatasetTransfer";
 import { Button, Col, Form, Input, message, Row } from "antd";
 import React, { useEffect, useState } from "react";

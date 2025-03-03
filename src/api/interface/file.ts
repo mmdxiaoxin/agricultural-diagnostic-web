@@ -19,18 +19,6 @@ export interface FileMeta {
 	version: number;
 }
 
-export interface DatasetMeta {
-	id: number;
-	name: string;
-	description: string;
-	createdAt: string;
-	updatedAt: string;
-	createdBy: string;
-	updatedBy: string;
-	datasetSize: number;
-	fileCount: string;
-}
-
 export type DiskSpaceStatus = { used: string | null; last_updated: string | null };
 
 export interface DiskUsageReport {
@@ -73,20 +61,6 @@ export type ReqFileListParams = {
 export type ResFileList = PageData<FileMeta>;
 
 export type ResUploadFile = FileMeta;
-
-export type ReqCreateDataset = {
-	name: string;
-	description: string;
-	fileIds: number[];
-};
-
-export type ReqUpdateDataset = Partial<ReqCreateDataset>;
-
-export type ResCreateDataset = DatasetMeta;
-
-export type ResDatasetDetail = DatasetMeta & { fileIds: number[] };
-
-export type ResDatasetList = PageData<DatasetMeta>;
 
 export type ResCreateTask = Required<Pick<TaskMeta, "taskId">> & { chunkSize: number };
 
