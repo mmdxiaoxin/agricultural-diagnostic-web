@@ -177,7 +177,7 @@ const FileUpload: React.FC<FileUploadProps> = ({ onUpload }) => {
 						customRequest={customRequest}
 						showUploadList={{ showRemoveIcon: true }}
 					>
-						<Space>
+						<Space wrap>
 							<Button icon={<UploadOutlined />}>
 								点击上传{getOptionText({ directory: directoryMode, multiple: multipleMode })}
 							</Button>
