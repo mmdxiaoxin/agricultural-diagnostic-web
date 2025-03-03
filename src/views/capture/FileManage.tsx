@@ -259,9 +259,7 @@ const FileManage: React.FC<FileManageProps> = () => {
 		{
 			title: "文件名",
 			dataIndex: "originalFileName",
-			render: (text: string, record: FileMeta) => (
-				<FilePreview meta={{ fileType: record.fileType, file_url: record.temp_link }} text={text} />
-			)
+			render: (text: string, record: FileMeta) => <FilePreview meta={record} text={text} />
 		},
 		{
 			title: "文件类型",
