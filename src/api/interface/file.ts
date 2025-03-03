@@ -64,7 +64,7 @@ export interface TaskMeta {
 export type ReqFileListParams = {
 	page: number;
 	pageSize: number;
-	fileType?: MIMETypeValue | "" | MIMETypeValue[];
+	fileType?: string;
 	createdStart?: string;
 	createdEnd?: string;
 	updatedStart?: string;

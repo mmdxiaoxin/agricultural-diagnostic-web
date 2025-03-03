@@ -447,23 +447,23 @@ export const deleteFiles = (fileIds: string) => http.delete(`/file/delete`, { fi
 
 // * 获取数据集列表
 export const getDatasetsList = async () =>
-	http.get<ResDatasetList>("/file/datasets/list", {}, { loading: false });
+	http.get<ResDatasetList>("/dataset/list", {}, { loading: false });
 
 // * 获取数据集详情
 export const getDatasetDetail = async (datasetId: number) =>
-	http.get<ResDatasetDetail>(`/file/datasets/${datasetId}`, {}, { loading: false });
+	http.get<ResDatasetDetail>(`/dataset/${datasetId}`, {}, { loading: false });
 
 // * 创建数据集
 export const createDataset = (params: ReqCreateDataset) =>
-	http.post<null>("/file/datasets/create", params, { loading: false });
+	http.post<null>("/dataset/create", params, { loading: false });
 
 // * 修改数据集
 export const updateDataset = (datasetId: number, params: ReqUpdateDataset) =>
-	http.put(`/file/datasets/${datasetId}`, params, { loading: false });
+	http.put(`/dataset/${datasetId}`, params, { loading: false });
 
 // * 删除数据集
 export const deleteDataset = (datasetId: number) =>
-	http.delete(`/file/datasets/${datasetId}`, {}, { cancel: false });
+	http.delete(`/dataset/${datasetId}`, {}, { cancel: false });
 
 // * 获取空间使用情况
 export const getDiskUsage = async () =>

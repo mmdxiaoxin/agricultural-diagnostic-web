@@ -98,7 +98,7 @@ const FileManage: React.FC<FileManageProps> = () => {
 				page: params.page,
 				pageSize: params.pageSize,
 				originalFileName: params.fileName,
-				fileType: fileType as MIMETypeValue[],
+				fileType: fileType.length > 0 ? fileType.join(",") : undefined,
 				...dateRange
 			});
 			if (res.code !== 200 || !res.data) {
