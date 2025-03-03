@@ -1,6 +1,6 @@
 import { ResUploadFile } from "@/api/interface";
 import { uploadChunksFile, uploadSingleFile } from "@/api/modules/file";
-import { BarsOutlined, FolderOutlined, UploadOutlined } from "@ant-design/icons";
+import { BarsOutlined, DeleteFilled, FolderOutlined, UploadOutlined } from "@ant-design/icons";
 import {
 	Button,
 	Empty,
@@ -58,11 +58,11 @@ const FileUpload: React.FC<FileUploadProps> = ({ onUpload }) => {
 						}
 					});
 
-			if (response.code === 200 || response.code === 201) {
+			if (response?.code === 200 || response?.code === 201) {
 				onSuccess?.(null, file);
 				onUpload?.();
 			} else {
-				throw new Error(response.message);
+				throw new Error(response?.message);
 			}
 		} catch (error: any) {
 			onError?.(error);
@@ -177,9 +177,21 @@ const FileUpload: React.FC<FileUploadProps> = ({ onUpload }) => {
 						customRequest={customRequest}
 						showUploadList={{ showRemoveIcon: true }}
 					>
-						<Button icon={<UploadOutlined />}>
-							点击上传{getOptionText({ directory: directoryMode, multiple: multipleMode })}
-						</Button>
+						<Space>
+							<Button icon={<UploadOutlined />}>
+								点击上传{getOptionText({ directory: directoryMode, multiple: multipleMode })}
+							</Button>
+							<Button
+								icon={<DeleteFilled />}
+								onClick={event => {
+									event.stopPropagation();
+									setFileList([]);
+								}}
+								danger
+							>
+								清空上传记录
+							</Button>
+						</Space>
 					</Upload>
 
 					{fileList.length === 0 && (
