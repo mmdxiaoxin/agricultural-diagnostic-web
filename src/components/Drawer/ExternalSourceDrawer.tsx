@@ -1,5 +1,5 @@
 import { LinkOutlined } from "@ant-design/icons";
-import { Button, Drawer, List, Typography } from "antd";
+import { Button, Drawer, List, message, Typography } from "antd";
 import { forwardRef, useImperativeHandle, useState } from "react";
 
 const { Paragraph } = Typography;
@@ -73,7 +73,22 @@ const ExternalSourceDrawer = forwardRef<ExternalSourceDrawerRef, ExternalSourceD
 									</a>
 								}
 								description={
-									<Paragraph ellipsis={{ rows: 1, expandable: true }}>{item.url}</Paragraph>
+									<Paragraph
+										onClick={() => {
+											navigator.clipboard
+												.writeText(item.url)
+												.then(() => {
+													message.success("URL已复制到剪贴板");
+												})
+												.catch(() => {
+													message.error("复制失败");
+												});
+										}}
+										ellipsis={{ rows: 1, expandable: true }}
+										className="text-blue-400 cursor-pointer hover:text-blue-500"
+									>
+										{item.url}
+									</Paragraph>
 								}
 							/>
 						</List.Item>
