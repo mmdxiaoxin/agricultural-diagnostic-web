@@ -24,7 +24,8 @@ export const Icons = {
 	SettingOutlined: React.lazy(() => import("@ant-design/icons/SettingOutlined")),
 	ContainerOutlined: React.lazy(() => import("@ant-design/icons/ContainerOutlined")),
 	AntCloudOutlined: React.lazy(() => import("@ant-design/icons/AntCloudOutlined")),
-	UnorderedListOutlined: React.lazy(() => import("@ant-design/icons/UnorderedListOutlined"))
+	UnorderedListOutlined: React.lazy(() => import("@ant-design/icons/UnorderedListOutlined")),
+	ClusterOutlined: React.lazy(() => import("@ant-design/icons/ClusterOutlined"))
 } as const;
 
 export type IconComponentProps = {

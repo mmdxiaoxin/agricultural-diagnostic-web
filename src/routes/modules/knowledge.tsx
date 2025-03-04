@@ -20,6 +20,15 @@ const knowledgeRoutes: RouteObjectEx[] = [
 			title: "知识库预览",
 			key: "knowledge-preview"
 		}
+	},
+	{
+		path: "/knowledge/external",
+		element: lazyLoad(React.lazy(() => import("@/views/knowledge/ExternalSource"))),
+		meta: {
+			requiresAuth: true,
+			title: "第三方知识库",
+			key: "knowledge-external"
+		}
 	}
 ];
 export default knowledgeRoutes;
