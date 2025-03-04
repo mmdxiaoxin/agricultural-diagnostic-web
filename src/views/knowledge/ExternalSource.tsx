@@ -1,7 +1,7 @@
 import ExternalSourceDrawer, {
 	ExternalSourceDrawerRef
 } from "@/components/Drawer/ExternalSourceDrawer";
-import { FloatButton } from "antd";
+import { FloatButton, Spin } from "antd";
 import React, { useEffect, useRef, useState } from "react";
 
 const ExternalSource: React.FC = () => {
@@ -10,6 +10,7 @@ const ExternalSource: React.FC = () => {
 
 	const [iframeHeight, setIframeHeight] = useState("100%");
 	const [iframeSrc, setIframeSrc] = useState("https://cloud.sinoverse.cn/index_bch.html");
+	const [loading, setLoading] = useState(true); // State to manage loading status
 
 	// 监听父容器尺寸变化，调整 iframe 高度
 	useEffect(() => {
@@ -29,13 +30,26 @@ const ExternalSource: React.FC = () => {
 		};
 	}, []);
 
+	// Handle iframe load event
+	const handleIframeLoad = () => {
+		setLoading(false); // Hide loading spinner when iframe content is loaded
+	};
+
+	// Change iframe source and show loading spinner again
 	const changeIframeSource = (newSource: string) => {
+		setLoading(true); // Show loading spinner when source is changed
 		setIframeSrc(newSource);
-		console.log("changeIframeSource", newSource);
 	};
 
 	return (
 		<div className="h-full w-full relative">
+			{/* Loading Spinner */}
+			{loading && (
+				<div className="absolute top-0 left-0 w-full h-full flex justify-center items-center bg-white bg-opacity-50 z-10">
+					<Spin size="large" />
+				</div>
+			)}
+
 			<iframe
 				ref={iframeRef}
 				src={iframeSrc}
@@ -46,8 +60,11 @@ const ExternalSource: React.FC = () => {
 					border: "none"
 				}}
 				loading="lazy"
+				onLoad={handleIframeLoad} // Trigger when iframe finishes loading
 			/>
-			<FloatButton onClick={() => drawerRef.current?.open()} />;
+
+			<FloatButton onClick={() => drawerRef.current?.open()} />
+
 			<ExternalSourceDrawer ref={drawerRef} onClick={url => changeIframeSource(url)} />
 		</div>
 	);
