@@ -1,6 +1,6 @@
 import { AxiosCanceler } from "@/api/helper/axiosCancel";
 import { HOME_URL } from "@/config/config";
-import { rootRoute } from "@/routes/index";
+import { rootRoutes } from "@/routes/index";
 import { store } from "@/store";
 import { searchRoute } from "@/utils";
 import { message } from "antd";
@@ -16,7 +16,7 @@ export type AuthRouterProps = PropsWithChildren<{}>;
  * */
 const AuthRouter: React.FC<AuthRouterProps> = props => {
 	const { pathname } = useLocation();
-	const route = searchRoute(pathname, rootRoute);
+	const route = searchRoute(pathname, rootRoutes);
 
 	// * 在跳转路由之前，清除所有的请求
 	axiosCanceler.removeAllPending();

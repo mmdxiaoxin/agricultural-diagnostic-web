@@ -5,7 +5,7 @@ import { Navigate, useRoutes } from "react-router";
 import { RouteObjectEx } from "./interface";
 import captureRouter from "./modules/capture";
 import diagnosisRouter from "./modules/diagnosis";
-import errorRoute from "./modules/error";
+import errorRoutes from "./modules/error";
 import homeRouter from "./modules/home";
 import knowledgeRouter from "./modules/knowledge";
 import userRouter from "./modules/user";
@@ -15,7 +15,7 @@ export const layoutRoute: RouteObjectEx = {
 	children: [...homeRouter, ...diagnosisRouter, ...userRouter, ...captureRouter, ...knowledgeRouter]
 };
 
-export const rootRoute: RouteObjectEx[] = [
+export const rootRoutes: RouteObjectEx[] = [
 	{
 		path: "/",
 		element: <Navigate to="/login" />
@@ -38,7 +38,7 @@ export const rootRoute: RouteObjectEx[] = [
 			key: "register"
 		}
 	},
-	...errorRoute,
+	...errorRoutes,
 	layoutRoute,
 	{
 		path: "*",
@@ -47,8 +47,7 @@ export const rootRoute: RouteObjectEx[] = [
 ];
 
 const Routes = () => {
-	const routes = useRoutes(rootRoute);
-	return routes;
+	return useRoutes(rootRoutes);
 };
 
 export default Routes;
