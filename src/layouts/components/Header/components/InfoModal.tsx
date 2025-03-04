@@ -1,21 +1,18 @@
-import { ResUserProfile } from "@/api/interface";
+import { UserAccount } from "@/api/interface";
 import { getUserProfile, updateUserProfile, uploadAvatar } from "@/api/modules/user";
 import { ROLE_COLOR } from "@/constants";
+import { HomeOutlined, LoadingOutlined, PhoneOutlined, PlusOutlined } from "@ant-design/icons";
 import {
-	HomeOutlined,
-	LoadingOutlined,
-	PhoneOutlined,
-	PlusOutlined,
-	UserOutlined
-} from "@ant-design/icons";
-import {
+	Avatar,
 	Button,
+	Col,
 	Form,
 	GetProp,
 	Input,
 	message,
 	Modal,
-	Space,
+	Row,
+	Select,
 	Tag,
 	Upload,
 	UploadProps
@@ -25,13 +22,12 @@ import dayjs from "dayjs";
 import { forwardRef, useImperativeHandle, useState } from "react";
 
 export interface InfoModalProps {
-	onSave?: (values?: UserForm) => void;
+	onSave?: (values?: any) => void;
 }
+
 export interface InfoModalRef {
 	open: () => void;
 }
-
-type UserForm = ResUserProfile & { role: string };
 
 type FileType = Parameters<GetProp<UploadProps, "beforeUpload">>[0];
 
@@ -56,56 +52,52 @@ const beforeUpload = (file: FileType) => {
 const InfoModal = forwardRef<InfoModalRef, InfoModalProps>(({ onSave }, ref) => {
 	const [form] = Form.useForm();
 
-	const [open, setOpen] = useState(false);
-	const [loading, setLoading] = useState(false);
+	const [isModalVisible, setIsModalVisible] = useState(false);
+	const [uploadLoading, setUploadLoading] = useState(false);
+	const [initLoading, setInitLoading] = useState(false);
 	const [imageUrl, setImageUrl] = useState<string | null>(null);
 	const [isEditing, setIsEditing] = useState(false);
+	const [userAccount, setUserData] = useState<UserAccount>();
 
 	useImperativeHandle(ref, () => ({
 		open: handleOpen
 	}));
 
 	const fetchUser = async () => {
+		setInitLoading(true);
 		try {
 			const userRes = await getUserProfile();
 			if (userRes.code !== 200 || !userRes.data) throw new Error(userRes.message);
-			const user = userRes.data;
+			const { profile, ...user } = userRes.data;
 			form.setFieldsValue({
-				...user
+				...profile
 			});
-			setImageUrl(userRes.data.avatar || "");
-			setOpen(true);
+			setUserData(user);
+			setImageUrl(userRes.data.profile?.avatar || "");
 		} catch (error) {
 			message.error("获取用户信息失败");
+		} finally {
+			setInitLoading(false);
 		}
 	};
 
 	const handleOpen = () => {
 		fetchUser();
-	};
-
-	const handleOk = () => {
-		form.submit();
-		setOpen(false);
+		setIsModalVisible(true);
 	};
 
 	const handleCancel = () => {
 		form.resetFields();
-		setOpen(false);
+		setIsModalVisible(false);
 	};
 
 	const handleEdit = () => {
 		setIsEditing(true);
 	};
 
-	const handleSave = async (values: UserForm) => {
+	const handleSave = async (values: any) => {
 		try {
-			const newInfo = {
-				name: values.name,
-				phone: values.phone,
-				address: values.address
-			};
-			const res = await updateUserProfile(newInfo);
+			const res = await updateUserProfile(values);
 			if (res.code !== 200) throw new Error(res.message);
 
 			onSave?.(values);
@@ -118,12 +110,12 @@ const InfoModal = forwardRef<InfoModalRef, InfoModalProps>(({ onSave }, ref) => 
 
 	const handleChange: UploadProps["onChange"] = info => {
 		if (info.file.status === "uploading") {
-			setLoading(true);
+			setUploadLoading(true);
 			return;
 		}
 		if (info.file.status === "done") {
 			getBase64(info.file.originFileObj as FileType, url => {
-				setLoading(false);
+				setUploadLoading(false);
 				setImageUrl(url);
 			});
 		}
@@ -144,35 +136,35 @@ const InfoModal = forwardRef<InfoModalRef, InfoModalProps>(({ onSave }, ref) => 
 			if (res.code !== 200) throw new Error(res.message);
 
 			onSuccess?.(null, file);
-			onSave?.(form.getFieldsValue() as UserForm);
-			message.success("上传头像成功 🎉🎉🎉");
+			onSave?.(form.getFieldsValue());
+			message.success("头像上传成功 🎉🎉🎉");
 		} catch (error: any) {
 			onError?.(error);
-			message.error("上传头像失败: " + error.message);
+			message.error("头像上传失败: " + error.message);
 		}
 	};
 
-	const uploadButton = (
+	const UploadButton: React.FC = () => (
 		<button style={{ border: 0, background: "none" }} type="button">
-			{loading ? <LoadingOutlined /> : <PlusOutlined />}
-			<div style={{ marginTop: 8 }}>Upload</div>
+			{uploadLoading ? <LoadingOutlined /> : <PlusOutlined />}
+			<div style={{ marginTop: 8 }}>上传</div>
 		</button>
 	);
 
 	return (
 		<Modal
 			title="个人信息"
-			open={open}
-			onOk={handleOk}
+			open={isModalVisible}
+			loading={initLoading}
 			onCancel={handleCancel}
 			destroyOnClose={true}
 			footer={
 				isEditing ? (
 					<>
-						<Button onClick={() => setIsEditing(false)}>取消编辑</Button>
-						<Button type="primary" onClick={handleOk}>
+						<Button type="primary" onClick={() => form.submit()}>
 							保存信息
 						</Button>
+						<Button onClick={() => setIsEditing(false)}>取消编辑</Button>
 					</>
 				) : (
 					<Button type="primary" onClick={handleEdit}>
@@ -181,68 +173,83 @@ const InfoModal = forwardRef<InfoModalRef, InfoModalProps>(({ onSave }, ref) => 
 				)
 			}
 		>
-			<Form
-				form={form}
-				labelCol={{ span: 6 }}
-				wrapperCol={{ span: 18 }}
-				layout="horizontal"
-				onFinish={handleSave}
-			>
-				<Form.Item label="头像">
-					<Upload
-						name="avatar"
-						listType="picture-circle"
-						className="avatar-uploader"
-						showUploadList={false}
-						customRequest={customRequest}
-						beforeUpload={beforeUpload}
-						onChange={handleChange}
-					>
-						{imageUrl ? (
-							<img src={imageUrl} alt="avatar" style={{ width: "100%" }} />
-						) : (
-							uploadButton
-						)}
-					</Upload>
-				</Form.Item>
-
-				<Form.Item label="用户名" name="username">
-					<Space>
-						<UserOutlined />
-						{form.getFieldValue("username")}
-					</Space>
-				</Form.Item>
-
-				<Form.Item label="角色" name="role">
-					<Tag color={ROLE_COLOR[form.getFieldValue("role") as keyof typeof ROLE_COLOR]}>
-						{form.getFieldValue("role")}
-					</Tag>
-				</Form.Item>
-
-				<Form.Item label="姓名" name="name">
-					<Input disabled={!isEditing} />
-				</Form.Item>
-
-				<Form.Item label="手机号" name="phone">
-					<Input prefix={<PhoneOutlined />} disabled={!isEditing} />
-				</Form.Item>
-
-				<Form.Item label="住址" name="address">
-					<Input prefix={<HomeOutlined />} disabled={!isEditing} />
-				</Form.Item>
-
-				<Form.Item label="创建时间" name="createdAt">
-					<span>{dayjs(form.getFieldValue("createdAt")).format("YYYY-MM-DD HH:mm:ss")}</span>
-				</Form.Item>
-
-				{isEditing && (
-					<Form.Item wrapperCol={{ offset: 6 }}>
-						<Button type="primary" htmlType="submit">
-							保存
-						</Button>
+			<Row justify={"center"} className="mb-4">
+				<Upload
+					name="avatar"
+					listType="picture-circle"
+					className="avatar-uploader"
+					showUploadList={false}
+					customRequest={customRequest}
+					beforeUpload={beforeUpload}
+					onChange={handleChange}
+				>
+					{imageUrl ? (
+						<Avatar
+							src={imageUrl}
+							alt="avatar"
+							style={{
+								width: "100px",
+								height: "100px"
+							}}
+						/>
+					) : (
+						<UploadButton />
+					)}
+				</Upload>
+			</Row>
+			<Row>
+				<Col span={12}>
+					<Form.Item label="用户名">{userAccount?.username}</Form.Item>
+					<Form.Item label="邮箱">{userAccount?.email}</Form.Item>
+					<Form.Item label="角色">
+						{userAccount?.roles?.map(role => (
+							<Tag
+								color={
+									role.alias && ROLE_COLOR[role.alias as keyof typeof ROLE_COLOR]
+										? ROLE_COLOR[role.alias as keyof typeof ROLE_COLOR]
+										: "default"
+								}
+								key={role.id}
+							>
+								{role.alias}
+							</Tag>
+						))}
 					</Form.Item>
-				)}
-			</Form>
+					<Form.Item label="创建时间">
+						{dayjs(userAccount?.createdAt).format("YYYY-MM-DD HH:mm:ss")}
+					</Form.Item>
+				</Col>
+				<Col span={12}>
+					<Form
+						form={form}
+						disabled={!initLoading && !isEditing}
+						labelCol={{ span: 6 }}
+						wrapperCol={{ span: 18 }}
+						layout="horizontal"
+						onFinish={handleSave}
+					>
+						<Form.Item label="性别" name="gender">
+							<Select>
+								<Select.Option value={0}>隐藏</Select.Option>
+								<Select.Option value={1}>男</Select.Option>
+								<Select.Option value={2}>女</Select.Option>
+							</Select>
+						</Form.Item>
+
+						<Form.Item label="姓名" name="name">
+							<Input />
+						</Form.Item>
+
+						<Form.Item label="手机号" name="phone">
+							<Input prefix={<PhoneOutlined />} />
+						</Form.Item>
+
+						<Form.Item label="住址" name="address">
+							<Input prefix={<HomeOutlined />} />
+						</Form.Item>
+					</Form>
+				</Col>
+			</Row>
 		</Modal>
 	);
 });

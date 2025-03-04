@@ -1,6 +1,6 @@
 import { PageData } from ".";
 
-interface Role {
+export interface Role {
 	id: number;
 	name: string;
 	alias: string | null;
@@ -9,7 +9,7 @@ interface Role {
 	updatedAt: string;
 }
 
-interface Profiler {
+export interface Profile {
 	id: 2;
 	gender: 0;
 	avatar?: string;
@@ -18,17 +18,19 @@ interface Profiler {
 	address?: string;
 }
 
-interface User {
+export interface User {
 	id: number;
 	email?: string;
 	username?: string;
 	password?: string;
 	status?: 0 | 1;
 	roles?: Role[];
-	profile?: Profiler;
+	profile?: Profile;
 	createdAt?: string;
 	updatedAt?: string;
 }
+
+export type UserAccount = Omit<User, "profile">;
 
 export type UserItem = Omit<User, "password">;
 
@@ -36,7 +38,7 @@ export type UserItem = Omit<User, "password">;
 export type UserListParams = {
 	page: number;
 	pageSize: number;
-} & Partial<Profiler> &
+} & Partial<Profile> &
 	Partial<UserItem>;
 // * 用户列表响应
 export type ResUserList = PageData<UserItem>;
@@ -45,10 +47,10 @@ export type ResUserList = PageData<UserItem>;
 export type UserCreateParams = Omit<User, "createdAt" | "updatedAt" | "id" | "password">;
 
 // * 用户详情参数
-export type UserProfileParams = Omit<ResUserProfile, "role_id" | "createdAt" | "username">;
+export type UserProfileParams = Omit<ResUserProfile, "roles" | "createdAt" | "username">;
 
 // * 用户详情响应
-export type ResUserProfile = Omit<User, "password" | "updatedAt" | "id">;
+export type ResUserProfile = User & { roles: string[] };
 
 // * 用户修改参数
 export type UserUpdateParams = Omit<ResUserProfile, "createdAt">;

@@ -29,7 +29,7 @@ const AvatarIcon = () => {
 				throw new Error(res.message);
 			}
 			setUsername(res.data.username || "");
-			setAvatar(res.data.avatar || defaultAvatar);
+			setAvatar(res.data.profile?.avatar || defaultAvatar);
 		} catch (error: any) {
 			message.error(error.message);
 		}
