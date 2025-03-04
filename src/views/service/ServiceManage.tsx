@@ -1,6 +1,7 @@
 import { AiService } from "@/api/interface/service";
 import { deleteService, getServices } from "@/api/modules";
 import ServiceModal, { ServiceModalRef } from "@/components/Modal/ServiceModal";
+import QuickCopy from "@/components/Table/QuickCopy";
 import { CodepenOutlined } from "@ant-design/icons/lib/icons";
 import { Button, message, Popconfirm, Space, Table } from "antd";
 import { ColumnsType } from "antd/es/table";
@@ -61,6 +62,12 @@ const ServiceManage: React.FC = () => {
 			title: "服务状态",
 			dataIndex: "status",
 			key: "status"
+		},
+		{
+			title: "服务URL",
+			dataIndex: "endpointUrl",
+			key: "endpointUrl",
+			render: text => <QuickCopy text={text} />
 		},
 		{
 			title: "操作",
