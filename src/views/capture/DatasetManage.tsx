@@ -11,8 +11,8 @@ export type DatasetManageProps = {};
 const DatasetManage: React.FC<DatasetManageProps> = () => {
 	const [loading, setLoading] = useState<boolean>(false); // 控制加载状态
 	const [datasets, setDatasets] = useState<DatasetMeta[]>([]); // 存储数据集
-	const [page, setPage] = useState<number>(1); // 当前页码
 	const [hasMore, setHasMore] = useState<boolean>(true); // 是否还有更多数据
+	const pageRef = useRef<number>(1); // 使用 useRef 来保存最新的页码，避免异步问题
 	const loadMoreRef = useRef<HTMLDivElement | null>(null); // 用来绑定底部目标元素
 	const navigate = useNavigate();
 
@@ -39,8 +39,8 @@ const DatasetManage: React.FC<DatasetManageProps> = () => {
 
 	// 初始化加载第一页数据
 	useEffect(() => {
-		fetchListData(page);
-	}, [page]);
+		fetchListData(pageRef.current);
+	}, []);
 
 	// 设置 IntersectionObserver 来监视加载更多元素
 	useEffect(() => {
@@ -48,7 +48,8 @@ const DatasetManage: React.FC<DatasetManageProps> = () => {
 			entries => {
 				// 如果目标元素进入视口并且还有更多数据
 				if (entries[0].isIntersecting && hasMore) {
-					setPage(prevPage => prevPage + 1); // 加载下一页
+					pageRef.current += 1; // 更新最新的页码
+					fetchListData(pageRef.current); // 加载下一页
 				}
 			},
 			{
@@ -83,7 +84,7 @@ const DatasetManage: React.FC<DatasetManageProps> = () => {
 		try {
 			await deleteDataset(datasetId);
 			// 删除后重新加载列表
-			await fetchListData(page);
+			fetchListData(pageRef.current);
 			message.success("文件删除成功");
 		} catch (error) {
 			message.error("删除文件失败");
@@ -91,7 +92,15 @@ const DatasetManage: React.FC<DatasetManageProps> = () => {
 	};
 
 	return (
-		<div className={clsx("min-h-full w-full", "p-4", "rounded-lg", "flex flex-col", "bg-white")}>
+		<div
+			className={clsx(
+				"h-full w-full",
+				"p-4",
+				"rounded-lg",
+				"flex flex-col",
+				"bg-white overflow-y-auto"
+			)}
+		>
 			<div
 				className={clsx(
 					"flex justify-between items-center",
@@ -102,14 +111,8 @@ const DatasetManage: React.FC<DatasetManageProps> = () => {
 				<Button onClick={handleAdd}>新增</Button>
 			</div>
 			<div>
-				<DatasetsList
-					loading={loading}
-					datasets={datasets}
-					onEdit={handleEdit}
-					onDelete={handleDelete}
-				/>
+				<DatasetsList datasets={datasets} onEdit={handleEdit} onDelete={handleDelete} />
 			</div>
-
 			{/* 触发懒加载的目标元素 */}
 			{hasMore && (
 				<div ref={loadMoreRef} className="h-24 flex justify-center items-center">

@@ -1,26 +1,16 @@
 import { DatasetMeta } from "@/api/interface";
 import { formatSize } from "@/utils";
 import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
-import { Button, Popconfirm, Spin, Tag } from "antd";
-import React, { useEffect, useState } from "react";
+import { Button, Popconfirm, Tag } from "antd";
+import React from "react";
 
 export interface DatasetsListProps {
 	datasets?: DatasetMeta[];
 	onEdit?: (datasetId: number) => void;
 	onDelete?: (datasetId: number) => void;
-	loadMoreData?: () => void;
-	loading?: boolean;
 }
 
-const DatasetsList: React.FC<DatasetsListProps> = ({ datasets, onEdit, onDelete, loading }) => {
-	const [isLoading, setIsLoading] = useState(false);
-
-	useEffect(() => {
-		if (loading !== undefined) {
-			setIsLoading(loading);
-		}
-	}, [loading]);
-
+const DatasetsList: React.FC<DatasetsListProps> = ({ datasets, onEdit, onDelete }) => {
 	return (
 		<div
 			className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-4 p-4 ease-in-out"
@@ -70,13 +60,6 @@ const DatasetsList: React.FC<DatasetsListProps> = ({ datasets, onEdit, onDelete,
 					</div>
 				</div>
 			))}
-
-			{/* Loading spinner at the bottom */}
-			{isLoading && (
-				<div className="col-span-full text-center mt-4">
-					<Spin size="large" />
-				</div>
-			)}
 		</div>
 	);
 };
