@@ -16,7 +16,7 @@ const diagnosisRouter: RouteObjectEx[] = [
 				meta: {
 					requiresAuth: true,
 					title: "病害图片分析",
-					key: "image"
+					key: "diagnosis-image"
 				}
 			},
 			{
@@ -25,7 +25,7 @@ const diagnosisRouter: RouteObjectEx[] = [
 				meta: {
 					requiresAuth: true,
 					title: "模型管理",
-					key: "models"
+					key: "diagnosis-models"
 				}
 			}
 		]

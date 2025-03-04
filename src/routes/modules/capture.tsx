@@ -16,7 +16,7 @@ const captureRouter: RouteObjectEx[] = [
 				meta: {
 					requiresAuth: true,
 					title: "数据一览",
-					key: "capture"
+					key: "capture-dashboard"
 				}
 			},
 			{
@@ -25,7 +25,7 @@ const captureRouter: RouteObjectEx[] = [
 				meta: {
 					requiresAuth: true,
 					title: "数据管理",
-					key: "manage"
+					key: "capture-manage"
 				}
 			},
 			{
@@ -34,7 +34,7 @@ const captureRouter: RouteObjectEx[] = [
 				meta: {
 					requiresAuth: true,
 					title: "数据集管理",
-					key: "dataset"
+					key: "capture-dataset"
 				}
 			},
 			{
@@ -45,7 +45,7 @@ const captureRouter: RouteObjectEx[] = [
 				),
 				meta: {
 					title: "编辑数据集",
-					key: "dataset/edit"
+					key: "capture-dataset-edit"
 				}
 			},
 			{
@@ -56,7 +56,7 @@ const captureRouter: RouteObjectEx[] = [
 				),
 				meta: {
 					title: "添加数据集",
-					key: "dataset/create"
+					key: "capture-dataset-create"
 				}
 			}
 		]
