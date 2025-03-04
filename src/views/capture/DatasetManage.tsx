@@ -110,9 +110,7 @@ const DatasetManage: React.FC<DatasetManageProps> = () => {
 			>
 				<Button onClick={handleAdd}>新增</Button>
 			</div>
-			<div>
-				<DatasetsList datasets={datasets} onEdit={handleEdit} onDelete={handleDelete} />
-			</div>
+			<DatasetsList datasets={datasets} onEdit={handleEdit} onDelete={handleDelete} />
 			{/* 触发懒加载的目标元素 */}
 			{hasMore && (
 				<div ref={loadMoreRef} className="h-24 flex justify-center items-center">

@@ -12,10 +12,7 @@ export interface DatasetsListProps {
 
 const DatasetsList: React.FC<DatasetsListProps> = ({ datasets, onEdit, onDelete }) => {
 	return (
-		<div
-			className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-4 p-4 ease-in-out"
-			style={{ maxHeight: "80vh" }}
-		>
+		<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-4 p-4 ease-in-out">
 			{datasets?.map(dataset => (
 				<div
 					key={dataset.id}
