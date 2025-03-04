@@ -2,7 +2,7 @@ import Home from "@/views/home/index";
 import { RouteObjectEx } from "../interface";
 
 // 首页模块
-const homeRouter: RouteObjectEx[] = [
+const homeRoutes: RouteObjectEx[] = [
 	{
 		path: "/home/index",
 		element: <Home />,
@@ -13,4 +13,4 @@ const homeRouter: RouteObjectEx[] = [
 		}
 	}
 ];
-export default homeRouter;
+export default homeRoutes;

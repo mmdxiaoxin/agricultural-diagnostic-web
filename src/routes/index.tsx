@@ -3,16 +3,26 @@ import Login from "@/views/login/index";
 import Register from "@/views/register";
 import { Navigate, useRoutes } from "react-router";
 import { RouteObjectEx } from "./interface";
-import captureRouter from "./modules/capture";
-import diagnosisRouter from "./modules/diagnosis";
+import captureRoutes from "./modules/capture";
+import diagnosisRoutes from "./modules/diagnosis";
 import errorRoutes from "./modules/error";
-import homeRouter from "./modules/home";
-import knowledgeRouter from "./modules/knowledge";
-import userRouter from "./modules/user";
+import homeRoutes from "./modules/home";
+import knowledgeRoutes from "./modules/knowledge";
+import serviceRoutes from "./modules/service";
+import settingRoutes from "./modules/setting";
+import userRoutes from "./modules/user";
 
 export const layoutRoute: RouteObjectEx = {
 	element: <LayoutIndex />,
-	children: [...homeRouter, ...diagnosisRouter, ...userRouter, ...captureRouter, ...knowledgeRouter]
+	children: [
+		...homeRoutes,
+		...diagnosisRoutes,
+		...userRoutes,
+		...captureRoutes,
+		...knowledgeRoutes,
+		...settingRoutes,
+		...serviceRoutes
+	]
 };
 
 export const rootRoutes: RouteObjectEx[] = [

@@ -2,7 +2,7 @@ import lazyLoad from "@/routes/helper/lazyLoad";
 import React from "react";
 import { RouteObjectEx } from "../interface";
 
-const captureRouter: RouteObjectEx[] = [
+const captureRoutes: RouteObjectEx[] = [
 	{
 		path: "/capture/dashboard",
 		element: lazyLoad(React.lazy(() => import("@/views/capture/Dashboard"))),
@@ -54,4 +54,4 @@ const captureRouter: RouteObjectEx[] = [
 	}
 ];
 
-export default captureRouter;
+export default captureRoutes;

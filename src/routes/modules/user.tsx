@@ -2,7 +2,7 @@ import React from "react";
 import lazyLoad from "../helper/lazyLoad";
 import { RouteObjectEx } from "../interface";
 
-const userRouter: RouteObjectEx[] = [
+const userRoutes: RouteObjectEx[] = [
 	{
 		path: "/user/index",
 		element: lazyLoad(React.lazy(() => import("@/views/user/index"))),
@@ -14,4 +14,4 @@ const userRouter: RouteObjectEx[] = [
 	}
 ];
 
-export default userRouter;
+export default userRoutes;

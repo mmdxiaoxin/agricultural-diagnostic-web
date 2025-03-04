@@ -3,7 +3,7 @@ import React from "react";
 import { RouteObjectEx } from "../interface";
 
 // 错误页面模块
-const errorRouter: RouteObjectEx[] = [
+const errorRoutes: RouteObjectEx[] = [
 	{
 		path: "/403",
 		element: lazyLoad(React.lazy(() => import("@/components/ErrorMessage/403"))),
@@ -33,4 +33,4 @@ const errorRouter: RouteObjectEx[] = [
 	}
 ];
 
-export default errorRouter;
+export default errorRoutes;

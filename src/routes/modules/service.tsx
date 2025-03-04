@@ -2,10 +2,10 @@ import lazyLoad from "@/routes/helper/lazyLoad";
 import React from "react";
 import { RouteObjectEx } from "../interface";
 
-const serviceRouter: RouteObjectEx[] = [
+const serviceRoutes: RouteObjectEx[] = [
 	{
 		path: "/service/manage",
-		element: lazyLoad(React.lazy(() => import("@/views/knowledge/KnowledgeManage"))),
+		element: lazyLoad(React.lazy(() => import("@/views/service/ServiceManage"))),
 		meta: {
 			requiresAuth: true,
 			title: "知识库管理",
@@ -14,4 +14,4 @@ const serviceRouter: RouteObjectEx[] = [
 	}
 ];
 
-export default serviceRouter;
+export default serviceRoutes;

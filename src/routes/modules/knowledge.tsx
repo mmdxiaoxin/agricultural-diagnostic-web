@@ -2,7 +2,7 @@ import lazyLoad from "@/routes/helper/lazyLoad";
 import React from "react";
 import { RouteObjectEx } from "../interface";
 
-const knowledgeRouter: RouteObjectEx[] = [
+const knowledgeRoutes: RouteObjectEx[] = [
 	{
 		path: "/knowledge/manage",
 		element: lazyLoad(React.lazy(() => import("@/views/knowledge/KnowledgeManage"))),
@@ -22,4 +22,4 @@ const knowledgeRouter: RouteObjectEx[] = [
 		}
 	}
 ];
-export default knowledgeRouter;
+export default knowledgeRoutes;

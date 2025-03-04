@@ -2,10 +2,10 @@ import lazyLoad from "@/routes/helper/lazyLoad";
 import React from "react";
 import { RouteObjectEx } from "../interface";
 
-const systemRouter: RouteObjectEx[] = [
+const systemRoutes: RouteObjectEx[] = [
 	{
-		path: "/system/index",
-		element: lazyLoad(React.lazy(() => import("@/views/knowledge/KnowledgeManage"))),
+		path: "/setting/index",
+		element: lazyLoad(React.lazy(() => import("@/views/system/index"))),
 		meta: {
 			requiresAuth: true,
 			title: "系统配置",
@@ -14,4 +14,4 @@ const systemRouter: RouteObjectEx[] = [
 	}
 ];
 
-export default systemRouter;
+export default systemRoutes;

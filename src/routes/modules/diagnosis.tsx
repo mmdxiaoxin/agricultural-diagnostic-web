@@ -2,7 +2,7 @@ import lazyLoad from "@/routes/helper/lazyLoad";
 import React from "react";
 import { RouteObjectEx } from "../interface";
 
-const diagnosisRouter: RouteObjectEx[] = [
+const diagnosisRoutes: RouteObjectEx[] = [
 	{
 		path: "/diagnosis/image",
 		element: lazyLoad(React.lazy(() => import("@/views/diagnosis/ImageDiagnosis"))),
@@ -23,4 +23,4 @@ const diagnosisRouter: RouteObjectEx[] = [
 	}
 ];
 
-export default diagnosisRouter;
+export default diagnosisRoutes;
