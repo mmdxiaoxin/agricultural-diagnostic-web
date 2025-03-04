@@ -22,7 +22,9 @@ export const Icons = {
 	ReadOutlined: React.lazy(() => import("@ant-design/icons/ReadOutlined")),
 	GlobalOutlined: React.lazy(() => import("@ant-design/icons/GlobalOutlined")),
 	SettingOutlined: React.lazy(() => import("@ant-design/icons/SettingOutlined")),
-	ContainerOutlined: React.lazy(() => import("@ant-design/icons/ContainerOutlined"))
+	ContainerOutlined: React.lazy(() => import("@ant-design/icons/ContainerOutlined")),
+	AntCloudOutlined: React.lazy(() => import("@ant-design/icons/AntCloudOutlined")),
+	UnorderedListOutlined: React.lazy(() => import("@ant-design/icons/UnorderedListOutlined"))
 } as const;
 
 export type IconComponentProps = {
