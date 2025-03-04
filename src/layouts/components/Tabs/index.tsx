@@ -1,7 +1,7 @@
 import IconComponent from "@/components/IconComponent";
 import { HOME_URL } from "@/config/config";
 import { useAppDispatch, useAppSelector } from "@/hooks";
-import { routerArray } from "@/routes";
+import { layoutRoute } from "@/routes";
 import { setTabsList } from "@/store/modules/tabsSlice";
 import { searchRoute } from "@/utils";
 import { DndContext, DragEndEvent, PointerSensor, closestCenter, useSensor } from "@dnd-kit/core";
@@ -62,7 +62,7 @@ const LayoutTabs = () => {
 
 	// 添加tabs
 	const addTabs = () => {
-		const route = searchRoute(pathname, routerArray);
+		const route = searchRoute(pathname, [layoutRoute]);
 		const newTabsList = [...tabsList];
 
 		if (

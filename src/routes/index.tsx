@@ -1,24 +1,21 @@
+import LayoutIndex from "@/layouts";
 import Login from "@/views/login/index";
 import Register from "@/views/register";
 import { Navigate, useRoutes } from "react-router";
 import { RouteObjectEx } from "./interface";
 import captureRouter from "./modules/capture";
 import diagnosisRouter from "./modules/diagnosis";
-import errorRouter from "./modules/error";
+import errorRoute from "./modules/error";
 import homeRouter from "./modules/home";
 import knowledgeRouter from "./modules/knowledge";
 import userRouter from "./modules/user";
 
-export const routerArray: RouteObjectEx[] = [
-	...errorRouter,
-	...homeRouter,
-	...diagnosisRouter,
-	...userRouter,
-	...captureRouter,
-	...knowledgeRouter
-];
+export const layoutRoute: RouteObjectEx = {
+	element: <LayoutIndex />,
+	children: [...homeRouter, ...diagnosisRouter, ...userRouter, ...captureRouter, ...knowledgeRouter]
+};
 
-export const rootRouter: RouteObjectEx[] = [
+export const rootRoute: RouteObjectEx[] = [
 	{
 		path: "/",
 		element: <Navigate to="/login" />
@@ -41,7 +38,8 @@ export const rootRouter: RouteObjectEx[] = [
 			key: "register"
 		}
 	},
-	...routerArray,
+	...errorRoute,
+	layoutRoute,
 	{
 		path: "*",
 		element: <Navigate to="/404" />
@@ -49,7 +47,7 @@ export const rootRouter: RouteObjectEx[] = [
 ];
 
 const Routes = () => {
-	const routes = useRoutes(rootRouter);
+	const routes = useRoutes(rootRoute);
 	return routes;
 };
 
