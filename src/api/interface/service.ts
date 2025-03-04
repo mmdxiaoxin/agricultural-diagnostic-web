@@ -51,3 +51,5 @@ export type ReqUpdateAiService = Partial<
 export type ReqAiServiceList = ReqPage & {};
 
 export type ResAiServiceList = PageData<AiService>;
+
+export type ResAiService = AiService;

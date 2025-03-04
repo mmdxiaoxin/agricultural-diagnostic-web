@@ -1,6 +1,28 @@
 import http from "@/api";
-import { ReqAiServiceList, ResAiServiceList } from "@/api/interface/service";
+import {
+	ReqAiServiceList,
+	ReqCreateAiService,
+	ReqUpdateAiService,
+	ResAiService,
+	ResAiServiceList
+} from "@/api/interface/service";
 
 export const getServices = (params: ReqAiServiceList) => {
 	return http.get<ResAiServiceList>("/ai-service/list", params);
+};
+
+export const getService = (serviceId: number) => {
+	return http.get<ResAiService>(`/ai-service/${serviceId}`);
+};
+
+export const createService = (data: ReqCreateAiService) => {
+	return http.post<null>("/ai-service", data, { loading: false });
+};
+
+export const updateService = (serviceId: number, data: ReqUpdateAiService) => {
+	return http.put<null>(`/ai-service/${serviceId}`, data, { loading: false });
+};
+
+export const deleteService = (serviceId: number) => {
+	return http.delete(`/ai-service/${serviceId}`);
 };
