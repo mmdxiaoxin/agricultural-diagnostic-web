@@ -5,6 +5,7 @@ export * from "./menu";
 export * from "./file";
 export * from "./diagnosis";
 export * from "./dataset";
+export * from "./service";
 
 import http from "@/api";
 

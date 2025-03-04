@@ -19,8 +19,14 @@ export interface PageData<T = any> {
 	total: number;
 }
 
+export type ReqPage = {
+	page: number;
+	pageSize: number;
+};
+
 export * from "./file";
 export * from "./auth";
 export * from "./diagnosis";
 export * from "./user";
 export * from "./dataset";
+export * from "./service";
