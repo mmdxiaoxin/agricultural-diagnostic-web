@@ -10,7 +10,7 @@ const ExternalSource: React.FC = () => {
 
 	const [iframeHeight, setIframeHeight] = useState("100%");
 	const [iframeSrc, setIframeSrc] = useState("https://cloud.sinoverse.cn/index_bch.html");
-	const [loading, setLoading] = useState(true); // State to manage loading status
+	const [loading, setLoading] = useState(true);
 
 	// 监听父容器尺寸变化，调整 iframe 高度
 	useEffect(() => {
@@ -30,14 +30,12 @@ const ExternalSource: React.FC = () => {
 		};
 	}, []);
 
-	// Handle iframe load event
 	const handleIframeLoad = () => {
-		setLoading(false); // Hide loading spinner when iframe content is loaded
+		setLoading(false);
 	};
 
-	// Change iframe source and show loading spinner again
 	const changeIframeSource = (newSource: string) => {
-		setLoading(true); // Show loading spinner when source is changed
+		setLoading(true);
 		setIframeSrc(newSource);
 	};
 
@@ -56,15 +54,13 @@ const ExternalSource: React.FC = () => {
 				title="农业病虫害数据中心"
 				style={{
 					width: "100%",
-					height: iframeHeight, // 根据动态计算的高度设置
+					height: iframeHeight,
 					border: "none"
 				}}
 				loading="lazy"
-				onLoad={handleIframeLoad} // Trigger when iframe finishes loading
+				onLoad={handleIframeLoad}
 			/>
-
 			<FloatButton onClick={() => drawerRef.current?.open()} />
-
 			<ExternalSourceDrawer ref={drawerRef} onClick={url => changeIframeSource(url)} />
 		</div>
 	);
