@@ -27,7 +27,7 @@ export const uploadAvatar = (data: FormData) =>
 
 export const updateUserProfile = (data: UserProfileParams) => http.put<null>("/user/profile", data);
 
-export const resetUserPassword = (data: { currentPassword: string; newPassword: string }) =>
+export const resetUserPassword = (data: { confirmPassword: string }) =>
 	http.put<null>("/user/reset/password", data, { loading: false });
 
 export const createUser = (data: UserCreateParams) => http.post<null>("/user/create", data);

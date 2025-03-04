@@ -11,18 +11,14 @@ export interface PasswordModalRef {
 }
 
 interface PasswordForm {
-	currentPassword: string;
 	newPassword: string;
+	confirmPassword: string;
 }
 
 const PasswordModal = forwardRef<PasswordModalRef, PasswordModalProps>(({ onReset }, ref) => {
 	const [form] = Form.useForm();
 
 	const [isModalVisible, setIsModalVisible] = useState(false);
-	const [formData, setFormData] = useState<PasswordForm>({
-		currentPassword: "",
-		newPassword: ""
-	});
 
 	useImperativeHandle(ref, () => ({
 		open: handleOpen
@@ -49,10 +45,9 @@ const PasswordModal = forwardRef<PasswordModalRef, PasswordModalProps>(({ onRese
 
 	const handleSave = async (values: PasswordForm) => {
 		try {
-			const res = await resetUserPassword(values);
+			const res = await resetUserPassword({ confirmPassword: values.confirmPassword });
 			if (res.code !== 200) throw new Error(res.message);
 
-			setFormData(values);
 			handleClose();
 			message.success("密码修改成功 🎉");
 			onReset?.();
@@ -69,21 +64,31 @@ const PasswordModal = forwardRef<PasswordModalRef, PasswordModalProps>(({ onRese
 				wrapperCol={{ span: 18 }}
 				layout="horizontal"
 				onFinish={handleSave}
-				initialValues={formData}
 			>
 				<Form.Item
-					label="当前密码"
-					name="currentPassword"
-					rules={[{ required: true, message: "请输入当前密码" }]}
+					label="新密码"
+					name="newPassword"
+					rules={[{ required: true, message: "请输入新密码" }]}
 					style={{ height: 40 }}
 				>
 					<Input.Password prefix={<LockOutlined />} />
 				</Form.Item>
 
 				<Form.Item
-					label="新密码"
-					name="newPassword"
-					rules={[{ required: true, message: "请输入新密码" }]}
+					label="确认新密码"
+					name="confirmPassword"
+					dependencies={["newPassword"]}
+					rules={[
+						{ required: true, message: "请确认新密码" },
+						({ getFieldValue }) => ({
+							validator(_, value) {
+								if (!value || getFieldValue("newPassword") === value) {
+									return Promise.resolve();
+								}
+								return Promise.reject(new Error("两次输入的密码不匹配"));
+							}
+						})
+					]}
 					style={{ height: 40 }}
 				>
 					<Input.Password prefix={<LockOutlined />} />
