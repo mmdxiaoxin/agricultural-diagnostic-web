@@ -24,7 +24,7 @@ export default defineConfig((mode: ConfigEnv): UserConfig => {
 			// 代理跨域（mock 不需要配置，这里只是个事列）
 			proxy: {
 				"/api": {
-					target: "http://localhost:5000/api",
+					target: "http://agri-diagnosis.com:5000/api",
 					changeOrigin: true,
 					rewrite: path => path.replace(/^\/api/, "")
 				}
