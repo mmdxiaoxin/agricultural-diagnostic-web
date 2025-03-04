@@ -1,8 +1,8 @@
 import { DatasetMeta } from "@/api/interface";
 import { formatSize } from "@/utils";
 import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
-import { Button, Popconfirm, Tag, Spin } from "antd";
-import React, { useState, useEffect, useRef } from "react";
+import { Button, Popconfirm, Spin, Tag } from "antd";
+import React, { useEffect, useState } from "react";
 
 export interface DatasetsListProps {
 	datasets?: DatasetMeta[];
@@ -12,25 +12,8 @@ export interface DatasetsListProps {
 	loading?: boolean;
 }
 
-const DatasetsList: React.FC<DatasetsListProps> = ({
-	datasets,
-	onEdit,
-	onDelete,
-	loadMoreData,
-	loading
-}) => {
+const DatasetsList: React.FC<DatasetsListProps> = ({ datasets, onEdit, onDelete, loading }) => {
 	const [isLoading, setIsLoading] = useState(false);
-	const listRef = useRef<HTMLDivElement>(null);
-
-	const handleScroll = () => {
-		if (!listRef.current) return;
-
-		const { scrollTop, scrollHeight, clientHeight } = listRef.current;
-		if (scrollHeight - scrollTop === clientHeight && !isLoading) {
-			setIsLoading(true);
-			loadMoreData?.();
-		}
-	};
 
 	useEffect(() => {
 		if (loading !== undefined) {
@@ -40,9 +23,7 @@ const DatasetsList: React.FC<DatasetsListProps> = ({
 
 	return (
 		<div
-			ref={listRef}
-			onScroll={handleScroll}
-			className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-4 p-4 ease-in-out overflow-y-auto"
+			className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-4 p-4 ease-in-out"
 			style={{ maxHeight: "80vh" }}
 		>
 			{datasets?.map(dataset => (

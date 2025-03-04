@@ -2,9 +2,9 @@ import { DatasetMeta } from "@/api/interface";
 import { deleteDataset, getDatasetsList } from "@/api/modules";
 import DatasetsList from "@/components/DatasetsList";
 import { Button, message } from "antd";
+import clsx from "clsx";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
-import styles from "./DatasetManage.module.scss";
 
 export type DatasetManageProps = {};
 
@@ -53,11 +53,25 @@ const DatasetManage: React.FC<DatasetManageProps> = () => {
 	};
 
 	return (
-		<div className={styles["container"]}>
-			<div className={styles["header"]}>
+		<div
+			className={clsx(
+				"h-full w-full",
+				"p-4",
+				"rounded-lg",
+				"flex flex-col",
+				"bg-white overflow-y-auto"
+			)}
+		>
+			<div
+				className={clsx(
+					"flex justify-between items-center",
+					"mb-4 p-4",
+					"rounded-2xl bg-[#f6f6f6]"
+				)}
+			>
 				<Button onClick={handleAdd}>新增</Button>
 			</div>
-			<div className={styles["content"]}>
+			<div>
 				<DatasetsList
 					loading={loading}
 					datasets={datasets}

@@ -21,6 +21,7 @@
 		"@reduxjs/toolkit": "^2.5.1",
 		"antd": "^5.23.4",
 		"axios": "^1.7.9",
+		"clsx": "^2.1.1",
 		"dayjs": "^1.11.13",
 		"echarts": "^5.6.0",
 		"lodash-es": "^4.17.21",
