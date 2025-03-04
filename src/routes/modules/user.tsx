@@ -4,12 +4,12 @@ import { RouteObjectEx } from "../interface";
 
 const userRoutes: RouteObjectEx[] = [
 	{
-		path: "/user/index",
-		element: lazyLoad(React.lazy(() => import("@/views/user/index"))),
+		path: "/user/manage",
+		element: lazyLoad(React.lazy(() => import("@/views/user/UserManage"))),
 		meta: {
 			requiresAuth: true,
 			title: "用户管理",
-			key: "user"
+			key: "user-manage"
 		}
 	}
 ];
