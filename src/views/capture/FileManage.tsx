@@ -11,7 +11,7 @@ import {
 import DownloadList from "@/components/DownloadList";
 import FileAccess from "@/components/FileAccess";
 import FileFilter from "@/components/FileFilter";
-import FilePreview from "@/components/FilePreview";
+import FilePreview from "@/components/Table/FilePreview";
 import FileUpload from "@/components/FileUpload";
 import { MIMETypeValue } from "@/constants";
 import { formatSize, getFileTypeColor } from "@/utils";

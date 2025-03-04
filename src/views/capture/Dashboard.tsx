@@ -2,7 +2,7 @@ import { DiskUsageReport, FileMeta } from "@/api/interface";
 import { getDiskUsage, getFileList } from "@/api/modules/file";
 import DiskSpaceUsageChart from "@/components/ECharts/DiskSpaceUsageChart";
 import FileCard from "@/components/FileCard";
-import FilePreview from "@/components/FilePreview";
+import FilePreview from "@/components/Table/FilePreview";
 import { MIMETypeValue } from "@/constants/mimeType";
 import { formatSize, getFileType, getFileTypeColor } from "@/utils";
 import { Button, Card, Col, message, Row, Table, TableColumnsType, Tag, Tooltip } from "antd";

@@ -3,7 +3,7 @@ import { getFileList } from "@/api/modules/file";
 import type { GetProp, TableColumnsType, TableProps, TransferProps } from "antd";
 import { Flex, Table, Tag, Transfer } from "antd";
 import React, { useEffect, useState } from "react";
-import FilePreview from "../FilePreview";
+import FilePreview from "../Table/FilePreview";
 
 type TransferItem = GetProp<TransferProps, "dataSource">[number];
 type TableRowSelection<T extends object> = TableProps<T>["rowSelection"];
