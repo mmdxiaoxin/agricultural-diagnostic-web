@@ -1,9 +1,9 @@
 import { DatasetMeta } from "@/api/interface";
 import { deleteDataset, getDatasetsList } from "@/api/modules";
 import DatasetsList from "@/components/DatasetsList";
-import { Button, message } from "antd";
+import { Button, message, Spin } from "antd";
 import clsx from "clsx";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router";
 
 export type DatasetManageProps = {};
@@ -13,6 +13,7 @@ const DatasetManage: React.FC<DatasetManageProps> = () => {
 	const [datasets, setDatasets] = useState<DatasetMeta[]>([]); // 存储数据集
 	const [page, setPage] = useState<number>(1); // 当前页码
 	const [hasMore, setHasMore] = useState<boolean>(true); // 是否还有更多数据
+	const loadMoreRef = useRef<HTMLDivElement | null>(null); // 用来绑定底部目标元素
 	const navigate = useNavigate();
 
 	// 请求数据集列表
@@ -24,7 +25,8 @@ const DatasetManage: React.FC<DatasetManageProps> = () => {
 			if (res.code !== 200 || !res.data) {
 				throw new Error(res.message);
 			}
-			setDatasets(prevDatasets => [...prevDatasets, ...res.data.list]); // 将新数据追加到旧数据后面
+			const newList = res.data.list;
+			setDatasets(prevDatasets => [...prevDatasets, ...newList]); // 将新数据追加到旧数据后面
 
 			// 如果返回的数据少于请求的页数，说明没有更多数据了
 			setHasMore(res.data.list.length === 10); // 假设每页最多 10 条数据
@@ -40,17 +42,31 @@ const DatasetManage: React.FC<DatasetManageProps> = () => {
 		fetchListData(page);
 	}, [page]);
 
-	// 监听滚动事件，触发懒加载
-	const handleScroll = useCallback(
-		(event: React.UIEvent<HTMLDivElement>) => {
-			const bottom =
-				event.target.scrollHeight === event.target.scrollTop + event.target.clientHeight;
-			if (bottom && hasMore) {
-				setPage(prevPage => prevPage + 1); // 如果接近底部，加载下一页
+	// 设置 IntersectionObserver 来监视加载更多元素
+	useEffect(() => {
+		const observer = new IntersectionObserver(
+			entries => {
+				// 如果目标元素进入视口并且还有更多数据
+				if (entries[0].isIntersecting && hasMore) {
+					setPage(prevPage => prevPage + 1); // 加载下一页
+				}
+			},
+			{
+				rootMargin: "0px 0px 100px 0px" // 设置在接近底部时就开始加载
 			}
-		},
-		[hasMore]
-	);
+		);
+
+		if (loadMoreRef.current) {
+			observer.observe(loadMoreRef.current);
+		}
+
+		// 清理 observer
+		return () => {
+			if (loadMoreRef.current) {
+				observer.unobserve(loadMoreRef.current);
+			}
+		};
+	}, [hasMore]);
 
 	// 新增数据集
 	const handleAdd = () => {
@@ -75,16 +91,7 @@ const DatasetManage: React.FC<DatasetManageProps> = () => {
 	};
 
 	return (
-		<div
-			className={clsx(
-				"h-full w-full",
-				"p-4",
-				"rounded-lg",
-				"flex flex-col",
-				"bg-white overflow-y-auto"
-			)}
-			onScroll={handleScroll} // 添加滚动事件监听
-		>
+		<div className={clsx("min-h-full w-full", "p-4", "rounded-lg", "flex flex-col", "bg-white")}>
 			<div
 				className={clsx(
 					"flex justify-between items-center",
@@ -94,7 +101,7 @@ const DatasetManage: React.FC<DatasetManageProps> = () => {
 			>
 				<Button onClick={handleAdd}>新增</Button>
 			</div>
-			<div className="mb-24">
+			<div>
 				<DatasetsList
 					loading={loading}
 					datasets={datasets}
@@ -102,6 +109,13 @@ const DatasetManage: React.FC<DatasetManageProps> = () => {
 					onDelete={handleDelete}
 				/>
 			</div>
+
+			{/* 触发懒加载的目标元素 */}
+			{hasMore && (
+				<div ref={loadMoreRef} className="h-24 flex justify-center items-center">
+					<Spin spinning={loading} size="large" />
+				</div>
+			)}
 		</div>
 	);
 };
