@@ -1,9 +1,8 @@
 import { createDataset, getDatasetDetail, updateDataset } from "@/api/modules";
 import DatasetTransfer from "@/components/DatasetTransfer";
-import { Button, Col, Form, Input, message, Row } from "antd";
+import { Button, Form, Input, message } from "antd";
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
-import styles from "./DatasetDetail.module.scss";
 
 export type DatasetDetailProps = {
 	mode?: "create" | "edit";
@@ -55,40 +54,39 @@ const DatasetDetail: React.FC<DatasetDetailProps> = ({ mode }) => {
 	};
 
 	return (
-		<Row gutter={16} className={styles["container"]}>
-			<Col span={6}>
-				<Form
-					form={form}
-					layout="vertical"
-					initialValues={{ id, name: "", description: "" }}
-					onFinish={handleFinish}
+		<div className="w-full h-full relative bg-white rounded-lg p-6 overflow-y-scroll">
+			<Form
+				form={form}
+				layout="inline"
+				initialValues={{ id, name: "", description: "" }}
+				className=" sm:h-24 md:h-24 lg:h-12"
+				onFinish={handleFinish}
+			>
+				<Form.Item
+					label="数据集名称"
+					name="name"
+					rules={[{ required: true, message: "请输入数据集名称" }]}
 				>
-					<Form.Item
-						label="数据集名称"
-						name="name"
-						rules={[{ required: true, message: "请输入数据集名称" }]}
-					>
-						<Input />
-					</Form.Item>
-					<Form.Item label="数据集描述" name="description">
-						<Input.TextArea />
-					</Form.Item>
-					<Form.Item>
-						<Button type="primary" htmlType="submit">
-							提交
-						</Button>
-					</Form.Item>
-				</Form>
-			</Col>
-			<Col span={18}>
+					<Input showCount maxLength={25} />
+				</Form.Item>
+				<Form.Item label="数据集描述" name="description">
+					<Input showCount maxLength={100} />
+				</Form.Item>
+				<Form.Item>
+					<Button type="primary" htmlType="submit">
+						提交
+					</Button>
+				</Form.Item>
+			</Form>
+			<div>
 				<DatasetTransfer
 					value={fileIds}
 					onChange={newValue => {
 						setFileIds(newValue as number[]);
 					}}
 				/>
-			</Col>
-		</Row>
+			</div>
+		</div>
 	);
 };
 

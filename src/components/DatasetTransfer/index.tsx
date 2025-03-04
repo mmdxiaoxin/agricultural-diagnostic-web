@@ -42,6 +42,7 @@ const TableTransfer: React.FC<TableTransferProps> = props => {
 						rowSelection={rowSelection}
 						columns={columns}
 						dataSource={filteredItems}
+						pagination={{ pageSize: 9 }}
 						size="small"
 						style={{ pointerEvents: listDisabled ? "none" : undefined }}
 						onRow={({ key, disabled: itemDisabled }) => ({
