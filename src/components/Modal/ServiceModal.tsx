@@ -1,4 +1,5 @@
-import { Button, Form, Input, Modal, Select } from "antd";
+import { createService, updateService } from "@/api/modules";
+import { Button, Form, Input, message, Modal, Select } from "antd";
 import { forwardRef, useImperativeHandle, useState } from "react";
 
 export type ServiceModalProps = {
@@ -16,18 +17,41 @@ const ServiceModal = forwardRef<ServiceModalRef, ServiceModalProps>(({ onCancel,
 
 	const [isModalVisible, setIsModalVisible] = useState(false);
 	const [modalMode, setModalMode] = useState<"create" | "edit">("create");
+	const [saveLoading, setSaveLoading] = useState(false);
 
 	useImperativeHandle(
 		ref,
 		() => ({
 			open: handleOpen,
-			close: handleCancel
+			close: handleClose
 		}),
 		[]
 	);
 
-	const handleSave = (values: any) => {
-		onSave?.(values);
+	const handleSave = (values: {
+		serviceId: number;
+		serviceName: string;
+		serviceType: string;
+		description: string;
+		status: "active" | "inactive" | "under_maintenance";
+		endpointUrl: string;
+	}) => {
+		const { serviceId, ...rest } = values;
+		setSaveLoading(true);
+		const submitValues =
+			modalMode === "edit" ? updateService(serviceId, rest) : createService(rest);
+		submitValues
+			.then(() => {
+				handleClose();
+				message.success("保存成功");
+				onSave?.(rest);
+			})
+			.catch(() => {
+				message.error("保存失败");
+			})
+			.finally(() => {
+				setSaveLoading(false);
+			});
 	};
 
 	const handleOpen = (mode: "create" | "edit", values?: any) => {
@@ -36,7 +60,7 @@ const ServiceModal = forwardRef<ServiceModalRef, ServiceModalProps>(({ onCancel,
 		form.setFieldsValue(values);
 	};
 
-	const handleCancel = () => {
+	const handleClose = () => {
 		setIsModalVisible(false);
 		form.resetFields();
 		onCancel?.();
@@ -46,11 +70,12 @@ const ServiceModal = forwardRef<ServiceModalRef, ServiceModalProps>(({ onCancel,
 		<Modal
 			title={modalMode === "edit" ? "编辑服务" : "创建服务"}
 			open={isModalVisible}
-			onCancel={handleCancel}
+			onCancel={handleClose}
 			footer={null}
 			width={600}
 		>
 			<Form form={form} onFinish={handleSave} layout="vertical">
+				<Form.Item name="serviceId" hidden />
 				<Form.Item
 					label="服务名称"
 					name="serviceName"
@@ -84,7 +109,7 @@ const ServiceModal = forwardRef<ServiceModalRef, ServiceModalProps>(({ onCancel,
 				</Form.Item>
 
 				<Form.Item>
-					<Button type="primary" htmlType="submit">
+					<Button type="primary" htmlType="submit" loading={saveLoading}>
 						保存
 					</Button>
 				</Form.Item>

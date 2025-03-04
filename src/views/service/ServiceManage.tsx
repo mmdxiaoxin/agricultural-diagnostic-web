@@ -1,27 +1,22 @@
 import { AiService } from "@/api/interface/service";
-import { getServices } from "@/api/modules";
+import { deleteService, getServices } from "@/api/modules";
 import ServiceModal, { ServiceModalRef } from "@/components/Modal/ServiceModal";
 import { CodepenOutlined } from "@ant-design/icons/lib/icons";
-import { Button, Table } from "antd";
+import { Button, message, Popconfirm, Space, Table } from "antd";
 import { ColumnsType } from "antd/es/table";
 import { useEffect, useRef, useState } from "react";
 
 const ServiceManage: React.FC = () => {
 	const [services, setServices] = useState<AiService[]>([]);
 	const serviceModalRef = useRef<ServiceModalRef>(null);
-	const [pagination, setPagination] = useState({ page: 1, pageSize: 10, total: 0 });
+	const [pagination, setPagination] = useState({ page: 1, pageSize: 10 });
+	const [total, setTotal] = useState(0);
 
-	const fetchServices = async () => {
-		const response = await getServices({
-			page: pagination.page,
-			pageSize: pagination.pageSize
-		});
+	const fetchServices = async (page: number = 1, pageSize: number = 10) => {
+		const response = await getServices({ page, pageSize });
 		if (response.code === 200 && response.data) {
-			setServices(response.data?.list || []);
-			setPagination({
-				...pagination,
-				total: response.data?.total || 0
-			});
+			setServices(response.data.list || []);
+			setTotal(response.data.total || 0);
 		}
 	};
 
@@ -35,6 +30,20 @@ const ServiceManage: React.FC = () => {
 
 	const handleCreateService = () => {
 		serviceModalRef.current?.open("create");
+	};
+
+	const handleDeleteService = async (serviceId: number) => {
+		try {
+			await deleteService(serviceId);
+			setPagination({
+				...pagination,
+				page: 1
+			});
+			fetchServices(1, pagination.pageSize);
+			message.success("删除服务成功");
+		} catch (error) {
+			message.error("删除服务失败");
+		}
 	};
 
 	const columns: ColumnsType<AiService> = [
@@ -56,21 +65,73 @@ const ServiceManage: React.FC = () => {
 		{
 			title: "操作",
 			key: "actions",
+			align: "center",
 			render: (_, record) => (
-				<Button onClick={() => handleEditService(record)} type="primary" icon={<CodepenOutlined />}>
-					编辑
-				</Button>
+				<Space>
+					<Button
+						onClick={() => {
+							const {
+								aiServiceAccessLogs,
+								aiServiceConfigs,
+								aiServiceLogs,
+								createdAt,
+								updatedAt,
+								...serviceData
+							} = record;
+							handleEditService(serviceData);
+						}}
+						type="primary"
+						icon={<CodepenOutlined />}
+					>
+						编辑
+					</Button>
+					<Popconfirm
+						title="确定删除该服务吗？"
+						onConfirm={() => handleDeleteService(record.serviceId)}
+						okText="确定"
+						cancelText="取消"
+					>
+						<Button type="primary" icon={<CodepenOutlined />} danger>
+							删除
+						</Button>
+					</Popconfirm>
+				</Space>
 			)
 		}
 	];
 
 	return (
-		<div className="w-full h-full p-4 bg-white rounded-lg">
+		<div className="w-full h-full p-4 bg-white rounded-lg overflow-y-scroll">
 			<Button onClick={handleCreateService} type="primary" style={{ marginBottom: 20 }}>
 				创建服务
 			</Button>
-			<Table<AiService> columns={columns} dataSource={services} rowKey="serviceId" />
-			<ServiceModal ref={serviceModalRef} />
+			<Table<AiService>
+				columns={columns}
+				dataSource={services}
+				rowKey="serviceId"
+				pagination={{
+					current: pagination.page,
+					pageSize: pagination.pageSize,
+					total: total,
+					showSizeChanger: true,
+					showQuickJumper: true,
+					showTotal: total => `共 ${total} 项`,
+					onChange: (page, pageSize) => {
+						setPagination({
+							...pagination,
+							page,
+							pageSize
+						});
+						fetchServices(page, pageSize);
+					}
+				}}
+			/>
+			<ServiceModal
+				ref={serviceModalRef}
+				onSave={() => {
+					fetchServices(pagination.page, pagination.pageSize);
+				}}
+			/>
 		</div>
 	);
 };

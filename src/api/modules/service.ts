@@ -8,11 +8,11 @@ import {
 } from "@/api/interface/service";
 
 export const getServices = (params: ReqAiServiceList) => {
-	return http.get<ResAiServiceList>("/ai-service/list", params);
+	return http.get<ResAiServiceList>("/ai-service/list", params, { loading: false });
 };
 
 export const getService = (serviceId: number) => {
-	return http.get<ResAiService>(`/ai-service/${serviceId}`);
+	return http.get<ResAiService>(`/ai-service/${serviceId}`, { loading: false });
 };
 
 export const createService = (data: ReqCreateAiService) => {
