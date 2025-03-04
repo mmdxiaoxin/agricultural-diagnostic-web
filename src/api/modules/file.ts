@@ -7,12 +7,8 @@ import { testSpeed } from ".";
 import {
 	DiskUsageReport,
 	FileMeta,
-	ReqCreateDataset,
 	ReqFileListParams,
-	ReqUpdateDataset,
 	ResCreateTask,
-	ResDatasetDetail,
-	ResDatasetList,
 	ResFileList,
 	ResTaskStatus,
 	ResUploadFile

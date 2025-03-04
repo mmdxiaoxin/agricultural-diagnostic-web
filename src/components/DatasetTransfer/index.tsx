@@ -63,15 +63,7 @@ const columns: TableColumnsType<FileMeta> = [
 	{
 		dataIndex: "originalFileName",
 		title: "文件名",
-		render: (value, record) => (
-			<FilePreview
-				meta={{
-					fileType: record.fileType,
-					file_url: record.temp_link
-				}}
-				text={value}
-			/>
-		)
+		render: (value, record) => <FilePreview meta={record} text={value} />
 	},
 	{
 		dataIndex: "fileType",

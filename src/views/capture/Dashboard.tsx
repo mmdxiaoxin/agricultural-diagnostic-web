@@ -69,7 +69,7 @@ const Dashboard: React.FC = () => {
 			const params = {
 				page,
 				pageSize,
-				fileType: fileType.length ? fileType : undefined
+				fileType: fileType.length > 0 ? fileType.join(",") : undefined
 			};
 			const response = await getFileList(params);
 			if (response.code !== 200 || !response.data) {
@@ -103,9 +103,7 @@ const Dashboard: React.FC = () => {
 			title: "文件名",
 			dataIndex: "originalFileName",
 			key: "originalFileName",
-			render: (text: string, record: FileMeta) => (
-				<FilePreview meta={{ fileType: record.fileType, file_url: record.temp_link }} text={text} />
-			)
+			render: (text: string, record: FileMeta) => <FilePreview meta={record} text={text} />
 		},
 		{
 			title: "文件类型",
