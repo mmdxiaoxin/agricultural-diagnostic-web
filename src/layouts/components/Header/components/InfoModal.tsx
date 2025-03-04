@@ -198,28 +198,30 @@ const InfoModal = forwardRef<InfoModalRef, InfoModalProps>(({ onSave }, ref) => 
 				</Upload>
 			</Row>
 			<Row>
-				<Col span={12}>
-					<Form.Item label="用户名">{userAccount?.username}</Form.Item>
-					<Form.Item label="邮箱">{userAccount?.email}</Form.Item>
-					<Form.Item label="角色">
-						{userAccount?.roles?.map(role => (
-							<Tag
-								color={
-									role.alias && ROLE_COLOR[role.alias as keyof typeof ROLE_COLOR]
-										? ROLE_COLOR[role.alias as keyof typeof ROLE_COLOR]
-										: "default"
-								}
-								key={role.id}
-							>
-								{role.alias}
-							</Tag>
-						))}
-					</Form.Item>
-					<Form.Item label="创建时间">
-						{dayjs(userAccount?.createdAt).format("YYYY-MM-DD HH:mm:ss")}
-					</Form.Item>
+				<Col xs={24} sm={24} md={12} lg={12} xl={12} xxl={12}>
+					<Form labelCol={{ span: 6 }} wrapperCol={{ span: 18 }}>
+						<Form.Item label="用户名">{userAccount?.username}</Form.Item>
+						<Form.Item label="邮箱">{userAccount?.email}</Form.Item>
+						<Form.Item label="角色">
+							{userAccount?.roles?.map(role => (
+								<Tag
+									color={
+										role.alias && ROLE_COLOR[role.alias as keyof typeof ROLE_COLOR]
+											? ROLE_COLOR[role.alias as keyof typeof ROLE_COLOR]
+											: "default"
+									}
+									key={role.id}
+								>
+									{role.alias}
+								</Tag>
+							))}
+						</Form.Item>
+						<Form.Item label="创建时间">
+							{dayjs(userAccount?.createdAt).format("YYYY-MM-DD HH:mm:ss")}
+						</Form.Item>
+					</Form>
 				</Col>
-				<Col span={12}>
+				<Col xs={24} sm={24} md={12} lg={12} xl={12} xxl={12}>
 					<Form
 						form={form}
 						disabled={!initLoading && !isEditing}
