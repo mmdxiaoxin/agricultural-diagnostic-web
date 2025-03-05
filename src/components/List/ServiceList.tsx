@@ -1,7 +1,7 @@
 import { AiService } from "@/api/interface";
 import { getServiceList } from "@/api/modules";
 import { Button, Flex, List, Skeleton, Tooltip, Typography } from "antd";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 
 export type ServiceListProps = {
 	onSelect?: (service: AiService) => void;
@@ -19,8 +19,9 @@ const ServiceList: React.FC<ServiceListProps> = () => {
 	const [serviceList, setServiceList] = useState<ServiceListState>([]);
 	const [initLoading, setInitLoading] = useState(true);
 	const [loading, setLoading] = useState(false);
-	const [hasMore, setHasMore] = useState(true);
 	const [currentPage, setCurrentPage] = useState(1);
+	const [total, setTotal] = useState(0);
+	const hasMore = useMemo(() => currentPage < Math.ceil(total / pageSize), [currentPage, total]);
 
 	const onLoadMore = () => {
 		setLoading(true);
@@ -35,11 +36,6 @@ const ServiceList: React.FC<ServiceListProps> = () => {
 					setServiceList(newServiceList);
 					window.dispatchEvent(new Event("resize"));
 					setCurrentPage(nextPage); // 更新 currentPage
-
-					// 判断是否有更多数据
-					if (newServiceList.length < pageSize) {
-						setHasMore(false);
-					}
 				}
 			})
 			.catch(error => {
@@ -50,19 +46,22 @@ const ServiceList: React.FC<ServiceListProps> = () => {
 			});
 	};
 
-	const loadMore =
-		!initLoading && !loading && hasMore ? (
-			<div
-				style={{
-					textAlign: "center",
-					marginTop: 12,
-					height: 32,
-					lineHeight: "32px"
-				}}
-			>
-				<Button onClick={onLoadMore}>加载更多</Button>
-			</div>
-		) : null;
+	const loadMore = useMemo(
+		() =>
+			!initLoading && !loading && hasMore ? (
+				<div
+					style={{
+						textAlign: "center",
+						marginTop: 12,
+						height: 32,
+						lineHeight: "32px"
+					}}
+				>
+					<Button onClick={onLoadMore}>加载更多</Button>
+				</div>
+			) : null,
+		[initLoading, loading, hasMore]
+	);
 
 	const fetchServiceList = async () => {
 		setInitLoading(true);
@@ -72,12 +71,8 @@ const ServiceList: React.FC<ServiceListProps> = () => {
 				setServiceList(
 					response.data.list.map((service: AiService) => ({ ...service, loading: false })) || []
 				);
-				setCurrentPage(2); // 初始化时设置为2
-
-				// 判断是否有更多数据
-				if (response.data.list.length < pageSize) {
-					setHasMore(false); // 没有更多数据了
-				}
+				setTotal(response.data.total);
+				setCurrentPage(2);
 			}
 		} catch (error) {
 			console.error("初始化加载失败", error);
@@ -88,7 +83,6 @@ const ServiceList: React.FC<ServiceListProps> = () => {
 
 	useEffect(() => {
 		fetchServiceList();
-		setHasMore(true);
 	}, []);
 
 	return (
