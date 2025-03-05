@@ -2,8 +2,9 @@ import { AiService } from "@/api/interface/service";
 import { deleteService, getServiceList } from "@/api/modules";
 import ServiceModal, { ServiceModalRef } from "@/components/Modal/ServiceModal";
 import QuickCopy from "@/components/Table/QuickCopy";
+import { StatusMapper } from "@/constants";
 import { CodepenOutlined, DeleteOutlined } from "@ant-design/icons/lib/icons";
-import { Button, message, Popconfirm, Space, Table } from "antd";
+import { Button, message, Popconfirm, Space, Table, Tag } from "antd";
 import { ColumnsType } from "antd/es/table";
 import { useEffect, useRef, useState } from "react";
 
@@ -61,7 +62,12 @@ const ServiceManage: React.FC = () => {
 		{
 			title: "服务状态",
 			dataIndex: "status",
-			key: "status"
+			key: "status",
+			render: text => (
+				<Tag color={text === "active" ? "success" : text === "inactive" ? "error" : "warning"}>
+					{StatusMapper[text as AiService["status"]]}
+				</Tag>
+			)
 		},
 		{
 			title: "服务URL",
