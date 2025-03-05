@@ -8,8 +8,17 @@ const serviceRoutes: RouteObjectEx[] = [
 		element: lazyLoad(React.lazy(() => import("@/views/service/ServiceManage"))),
 		meta: {
 			requiresAuth: true,
-			title: "知识库管理",
-			key: "knowledge-manage"
+			title: "服务管理",
+			key: "service-manage"
+		}
+	},
+	{
+		path: "/service/config",
+		element: lazyLoad(React.lazy(() => import("@/views/service/ServiceConfig"))),
+		meta: {
+			requiresAuth: true,
+			title: "服务配置",
+			key: "service-config"
 		}
 	}
 ];
