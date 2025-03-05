@@ -13,6 +13,8 @@ export type ServiceListItem = AiService & {
 
 export type ServiceListState = ServiceListItem[];
 
+const pageSize = 5;
+
 const ServiceList: React.FC<ServiceListProps> = () => {
 	const [serviceList, setServiceList] = useState<ServiceListState>([]);
 	const [initLoading, setInitLoading] = useState(true);
@@ -22,20 +24,20 @@ const ServiceList: React.FC<ServiceListProps> = () => {
 
 	const onLoadMore = () => {
 		setLoading(true);
+		setServiceList(prevList => prevList.concat(Array(pageSize).fill({ loading: true })));
 		const nextPage = currentPage + 1;
-
-		getServiceList({ page: nextPage, pageSize: 5 })
+		getServiceList({ page: nextPage, pageSize })
 			.then(response => {
 				if (response.code === 200 && response.data) {
-					const newServiceList = response.data.list || [];
-					setServiceList(prevList =>
-						prevList.concat(newServiceList.map(service => ({ ...service, loading: false })))
+					const newServiceList = serviceList.concat(
+						response.data?.list.map(service => ({ ...service, loading: false })) || []
 					);
+					setServiceList(newServiceList);
 					window.dispatchEvent(new Event("resize"));
 					setCurrentPage(nextPage); // 更新 currentPage
 
 					// 判断是否有更多数据
-					if (newServiceList.length < 5) {
+					if (newServiceList.length < pageSize) {
 						setHasMore(false);
 					}
 				}
@@ -65,7 +67,7 @@ const ServiceList: React.FC<ServiceListProps> = () => {
 	const fetchServiceList = async () => {
 		setInitLoading(true);
 		try {
-			const response = await getServiceList({ page: currentPage, pageSize: 5 });
+			const response = await getServiceList({ page: currentPage, pageSize });
 			if (response.code === 200 && response.data) {
 				setServiceList(
 					response.data.list.map((service: AiService) => ({ ...service, loading: false })) || []
@@ -73,7 +75,7 @@ const ServiceList: React.FC<ServiceListProps> = () => {
 				setCurrentPage(2); // 初始化时设置为2
 
 				// 判断是否有更多数据
-				if (response.data.list.length < 5) {
+				if (response.data.list.length < pageSize) {
 					setHasMore(false); // 没有更多数据了
 				}
 			}
