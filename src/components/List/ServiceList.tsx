@@ -2,7 +2,7 @@ import { AiService } from "@/api/interface";
 import { getServiceList } from "@/api/modules";
 import { Button, Flex, List, Skeleton, Tag, Tooltip, Typography } from "antd";
 import clsx from "clsx";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { act, useEffect, useMemo, useState } from "react";
 import ServiceFilter from "../ServiceFilter";
 
 export type ServiceListProps = {
@@ -17,6 +17,12 @@ export type ServiceListItem = AiService & {
 export type ServiceListState = ServiceListItem[];
 
 const pageSize = 5;
+
+const StatusMapper = {
+	active: "运行中",
+	inactive: "已停止",
+	under: "维护中"
+};
 
 const ServiceList: React.FC<ServiceListProps> = ({ onSelect, selected }) => {
 	const [serviceList, setServiceList] = useState<ServiceListState>([]);
@@ -67,16 +73,16 @@ const ServiceList: React.FC<ServiceListProps> = ({ onSelect, selected }) => {
 		[initLoading, loading, hasMore]
 	);
 
-	const fetchServiceList = async () => {
+	const initServiceList = async () => {
 		setInitLoading(true);
 		try {
-			const response = await getServiceList({ page: currentPage, pageSize });
+			setServiceList(Array(pageSize).fill({ loading: true }));
+			const response = await getServiceList({ page: 1, pageSize });
 			if (response.code === 200 && response.data) {
 				setServiceList(
 					response.data.list.map((service: AiService) => ({ ...service, loading: false })) || []
 				);
 				setTotal(response.data.total);
-				setCurrentPage(2);
 			}
 		} catch (error) {
 			console.error("初始化加载失败", error);
@@ -86,7 +92,7 @@ const ServiceList: React.FC<ServiceListProps> = ({ onSelect, selected }) => {
 	};
 
 	useEffect(() => {
-		fetchServiceList();
+		initServiceList();
 	}, []);
 
 	return (
