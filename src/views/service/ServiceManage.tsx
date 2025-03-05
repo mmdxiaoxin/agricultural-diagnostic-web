@@ -1,5 +1,5 @@
 import { AiService } from "@/api/interface/service";
-import { deleteService, getServices } from "@/api/modules";
+import { deleteService, getServiceList } from "@/api/modules";
 import ServiceModal, { ServiceModalRef } from "@/components/Modal/ServiceModal";
 import QuickCopy from "@/components/Table/QuickCopy";
 import { CodepenOutlined, DeleteOutlined } from "@ant-design/icons/lib/icons";
@@ -14,7 +14,7 @@ const ServiceManage: React.FC = () => {
 	const [total, setTotal] = useState(0);
 
 	const fetchServices = async (page: number = 1, pageSize: number = 10) => {
-		const response = await getServices({ page, pageSize });
+		const response = await getServiceList({ page, pageSize });
 		if (response.code === 200 && response.data) {
 			setServices(response.data.list || []);
 			setTotal(response.data.total || 0);

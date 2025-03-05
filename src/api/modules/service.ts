@@ -7,7 +7,7 @@ import {
 	ResAiServiceList
 } from "@/api/interface/service";
 
-export const getServices = (params: ReqAiServiceList) => {
+export const getServiceList = (params: ReqAiServiceList) => {
 	return http.get<ResAiServiceList>("/ai-service/list", params, { loading: false });
 };
 
