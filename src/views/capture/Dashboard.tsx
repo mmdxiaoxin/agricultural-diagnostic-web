@@ -3,13 +3,13 @@ import { getDiskUsage, getFileList } from "@/api/modules/file";
 import DiskSpaceUsageChart from "@/components/ECharts/DiskSpaceUsageChart";
 import FileCard from "@/components/FileCard";
 import FilePreview from "@/components/Table/FilePreview";
+import FileTypeTag from "@/components/Table/FileTypeTag";
 import { MIMETypeValue } from "@/constants/mimeType";
-import { formatSize, getFileType, getFileTypeColor } from "@/utils";
-import { Button, Card, Col, message, Row, Table, TableColumnsType, Tag, Tooltip } from "antd";
+import { formatSize, getFileType } from "@/utils";
+import { Button, Card, Col, message, Row, Table, TableColumnsType } from "antd";
 import dayjs from "dayjs";
 import { CSSProperties, useEffect, useMemo, useState } from "react";
 import styles from "./Dashboard.module.scss";
-import FileTypeTag from "@/components/Table/FileTypeTag";
 
 const totalSpace = 1_000_000_000; // 1GB
 

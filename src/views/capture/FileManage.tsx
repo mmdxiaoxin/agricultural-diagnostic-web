@@ -11,10 +11,11 @@ import {
 import DownloadList from "@/components/DownloadList";
 import FileAccess from "@/components/FileAccess";
 import FileFilter from "@/components/FileFilter";
-import FilePreview from "@/components/Table/FilePreview";
 import FileUpload from "@/components/FileUpload";
+import FilePreview from "@/components/Table/FilePreview";
+import FileTypeTag from "@/components/Table/FileTypeTag";
 import { MIMETypeValue } from "@/constants";
-import { formatSize, getFileTypeColor } from "@/utils";
+import { formatSize } from "@/utils";
 import { DeleteOutlined, DownloadOutlined, EditOutlined } from "@ant-design/icons";
 import {
 	Badge,
@@ -30,15 +31,12 @@ import {
 	Table,
 	TableColumnsType,
 	Tabs,
-	TabsProps,
-	Tag,
-	Tooltip
+	TabsProps
 } from "antd";
 import { TableRowSelection } from "antd/es/table/interface";
 import dayjs from "dayjs";
 import React, { useEffect, useState } from "react";
 import styles from "./FileManage.module.scss";
-import FileTypeTag from "@/components/Table/FileTypeTag";
 
 export type FileManageProps = {};
 export type FilterParams = {

@@ -1,7 +1,7 @@
 import { FileMeta } from "@/api/interface";
 import { getAllFiles } from "@/api/modules/file";
 import type { GetProp, TableColumnsType, TableProps, TransferProps } from "antd";
-import { Flex, Table, Tag, Transfer } from "antd";
+import { Flex, Table, Transfer } from "antd";
 import React, { useEffect, useState } from "react";
 import FilePreview from "../Table/FilePreview";
 import FileTypeTag from "../Table/FileTypeTag";
