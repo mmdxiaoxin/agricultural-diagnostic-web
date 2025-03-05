@@ -126,7 +126,7 @@ const ServiceList: React.FC<ServiceListProps> = ({ onSelect, selected }) => {
 					<Skeleton avatar title={false} loading={item.loading} active>
 						<List.Item.Meta
 							avatar={
-								<Avatar className={clsx("bg-white", "border", AvatarColorMapper[item.status])}>
+								<Avatar className={clsx("border", AvatarColorMapper[item.status])}>
 									{StatusMapper[item.status]}
 								</Avatar>
 							}
