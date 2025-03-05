@@ -11,6 +11,7 @@ export type ExternalSourceDrawerProps = {
 export type ExternalSourceDrawerRef = {
 	open: () => void;
 	close: () => void;
+	toggle: () => void;
 };
 
 const ExternalSourceDrawer = forwardRef<ExternalSourceDrawerRef, ExternalSourceDrawerProps>(
@@ -19,7 +20,8 @@ const ExternalSourceDrawer = forwardRef<ExternalSourceDrawerRef, ExternalSourceD
 
 		useImperativeHandle(ref, () => ({
 			open: handleOpen,
-			close: handleClose
+			close: handleClose,
+			toggle: () => setOpen(prev => !prev)
 		}));
 
 		const handleOpen = () => {

@@ -1,7 +1,7 @@
 import ExternalSourceDrawer, {
 	ExternalSourceDrawerRef
 } from "@/components/Drawer/ExternalSourceDrawer";
-import { FloatButton, Spin } from "antd";
+import { FloatButton, Spin, Tooltip } from "antd";
 import React, { useEffect, useRef, useState } from "react";
 
 const ExternalSource: React.FC = () => {
@@ -60,7 +60,9 @@ const ExternalSource: React.FC = () => {
 				loading="lazy"
 				onLoad={handleIframeLoad}
 			/>
-			<FloatButton onClick={() => drawerRef.current?.open()} />
+			<Tooltip title="切换数据源" placement="left">
+				<FloatButton onClick={() => drawerRef.current?.toggle()} />
+			</Tooltip>
 			<ExternalSourceDrawer ref={drawerRef} onClick={url => changeIframeSource(url)} />
 		</div>
 	);
