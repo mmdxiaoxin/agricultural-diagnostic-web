@@ -10,6 +10,7 @@ import {
 	ReqFileListParams,
 	ResCreateTask,
 	ResFileList,
+	ResFiles,
 	ResTaskStatus,
 	ResUploadFile
 } from "../interface";
@@ -23,9 +24,14 @@ export interface UploadOptions {
 	chunkSize?: number;
 }
 
-// * 文件列表接口
+// * 文件列表接口(分页)
 export const getFileList = async (params: ReqFileListParams) => {
 	return http.get<ResFileList>("/file/list", params, { loading: false });
+};
+
+// * 文件列表接口
+export const getAllFiles = async () => {
+	return http.get<ResFiles>("/file", {}, { loading: false });
 };
 
 // * 文件上传接口

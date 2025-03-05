@@ -1,5 +1,5 @@
 import { FileMeta } from "@/api/interface";
-import { getFileList } from "@/api/modules/file";
+import { getAllFiles } from "@/api/modules/file";
 import type { GetProp, TableColumnsType, TableProps, TransferProps } from "antd";
 import { Flex, Table, Tag, Transfer } from "antd";
 import React, { useEffect, useState } from "react";
@@ -14,7 +14,6 @@ interface TableTransferProps extends TransferProps<TransferItem> {
 	rightColumns: TableColumnsType<FileMeta>;
 }
 
-// Customize Table Transfer
 const TableTransfer: React.FC<TableTransferProps> = props => {
 	const { leftColumns, rightColumns, ...restProps } = props;
 	return (
@@ -89,9 +88,9 @@ const DatasetTransfer: React.FC<DatasetTransferProps> = ({ value, onChange }) =>
 
 	const fetchFileList = async () => {
 		try {
-			const response = await getFileList({ page: 1, pageSize: 1000000 });
+			const response = await getAllFiles();
 			if (response.code !== 200 || !response.data) throw new Error("Failed to fetch file list");
-			setFileList(response.data.list);
+			setFileList(response.data);
 		} catch (error: any) {
 			console.error(error);
 		}

@@ -58,7 +58,10 @@ export type ReqFileListParams = {
 	updatedStart?: string;
 	updatedEnd?: string;
 } & Partial<Pick<FileMeta, "originalFileName">>;
+
 export type ResFileList = PageData<FileMeta>;
+
+export type ResFiles = FileMeta[];
 
 export type ResUploadFile = FileMeta;
 
