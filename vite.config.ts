@@ -43,6 +43,9 @@ export default defineConfig((mode: ConfigEnv): UserConfig => {
 		esbuild: {
 			pure: viteEnv.VITE_DROP_CONSOLE ? ["console.log", "debugger"] : []
 		},
+		optimizeDeps: {
+			include: ["spark-md5"]
+		},
 		build: {
 			outDir: "dist",
 			// esbuild 打包更快，但是不能去除 console.log，去除 console 使用 terser 模式
