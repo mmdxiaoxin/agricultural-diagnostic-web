@@ -4,6 +4,7 @@ import { Avatar, Button, Flex, List, Skeleton, Tooltip, Typography } from "antd"
 import clsx from "clsx";
 import React, { useEffect, useMemo, useState } from "react";
 import ServiceFilter from "../ServiceFilter";
+import { AvatarColorMapper, StatusMapper } from "@/constants";
 
 export type ServiceListProps = {
 	selected?: AiService | null;
@@ -17,18 +18,6 @@ export type ServiceListItem = AiService & {
 export type ServiceListState = ServiceListItem[];
 
 const pageSize = 5;
-
-const StatusMapper = {
-	active: "运行中",
-	inactive: "已停止",
-	under_maintenance: "维护中"
-};
-
-const AvatarColorMapper = {
-	active: "bg-green-500",
-	inactive: "bg-red-500",
-	under_maintenance: "bg-orange-500"
-};
 
 const ServiceList: React.FC<ServiceListProps> = ({ onSelect, selected }) => {
 	const [serviceList, setServiceList] = useState<ServiceListState>([]);
