@@ -2,6 +2,7 @@ import { AiService } from "@/api/interface";
 import { getServiceList } from "@/api/modules";
 import { Button, Flex, List, Skeleton, Tooltip, Typography } from "antd";
 import React, { useEffect, useMemo, useState } from "react";
+import ServiceFilter from "../ServiceFilter";
 
 export type ServiceListProps = {
 	onSelect?: (service: AiService) => void;
@@ -21,6 +22,7 @@ const ServiceList: React.FC<ServiceListProps> = () => {
 	const [loading, setLoading] = useState(false);
 	const [currentPage, setCurrentPage] = useState(1);
 	const [total, setTotal] = useState(0);
+
 	const hasMore = useMemo(() => currentPage < Math.ceil(total / pageSize), [currentPage, total]);
 
 	const onLoadMore = () => {
@@ -91,6 +93,7 @@ const ServiceList: React.FC<ServiceListProps> = () => {
 			header={
 				<Flex align="center" justify="space-between">
 					<Typography.Title level={4}>AI 服务列表</Typography.Title>
+					<ServiceFilter />
 				</Flex>
 			}
 			loading={initLoading}
