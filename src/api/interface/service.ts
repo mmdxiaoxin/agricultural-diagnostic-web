@@ -48,6 +48,10 @@ export type ReqUpdateAiService = Partial<
 	Pick<AiService, "serviceName" | "serviceType" | "description" | "endpointUrl" | "status">
 >;
 
+export type ReqAddConfigs = {
+	configs: Array<Pick<AiServiceConfig, "configKey" | "configValue">>;
+};
+
 export type ReqAiServiceList = ReqPage & {};
 
 export type ResAiServiceList = PageData<AiService>;

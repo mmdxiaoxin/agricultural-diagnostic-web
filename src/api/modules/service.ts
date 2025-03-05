@@ -1,5 +1,6 @@
 import http from "@/api";
 import {
+	ReqAddConfigs,
 	ReqAiServiceList,
 	ReqCreateAiService,
 	ReqUpdateAiService,
@@ -25,4 +26,8 @@ export const updateService = (serviceId: number, data: ReqUpdateAiService) => {
 
 export const deleteService = (serviceId: number) => {
 	return http.delete(`/ai-service/${serviceId}`);
+};
+
+export const addConfigs = (serviceId: number, data: ReqAddConfigs) => {
+	return http.post(`/ai-service/${serviceId}/configs`, data);
 };
