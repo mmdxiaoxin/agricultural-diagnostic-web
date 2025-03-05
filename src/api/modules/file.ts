@@ -311,78 +311,49 @@ export interface DownloadOptions {
 	compressMode?: boolean;
 }
 
-// * 文件下载接口 - 支持断点续传
+// * 文件下载接口
 export const downloadFile = async (
 	fileId: string | number,
 	options: DownloadOptions = {},
 	url: string = `/api/file/download/${fileId}`
 ): Promise<Blob> => {
 	const token = localStorage.getItem("token") || store.getState().auth.token;
-	let startByte = 0;
-	let fileBlob: Blob | null = null;
-	let totalDownloaded = 0; // 累计已下载的字节数
 
-	// 请求文件的大小
-	const headResponse = await axios.head(url, { headers: { Authorization: `Bearer ${token}` } });
-	const totalSize = parseInt(headResponse.headers["content-length"] || "0", 10);
-
-	if (totalSize === 0) {
-		throw new Error("文件下载失败，文件大小为 0");
-	}
-
-	// 分片下载
-	const CHUNK_SIZE = 10 * 1024 * 1024; // 每片 10MB
-	const fileChunks: Blob[] = [];
-
-	while (startByte < totalSize) {
-		const endByte = Math.min(startByte + CHUNK_SIZE - 1, totalSize - 1);
-		const range = `bytes=${startByte}-${endByte}`;
-
+	try {
 		const response = await axios.get(url, {
-			headers: { Range: range, Authorization: `Bearer ${token}` },
+			headers: { Authorization: `Bearer ${token}` },
 			responseType: "blob",
 			onDownloadProgress: (progressEvent: AxiosProgressEvent) => {
-				totalDownloaded += progressEvent.loaded;
-
-				// 确保进度不会超过100%
-				const progress = Math.min(Math.round((totalDownloaded / totalSize) * 100), 100);
-
-				// 调用传入的进度回调函数
+				const progress = progressEvent.total
+					? Math.round((progressEvent.loaded / progressEvent.total) * 100)
+					: 0;
 				if (options.onProgress) {
 					options.onProgress(fileId, progress);
 				}
 			}
 		});
 
-		if (response.status !== 206) {
-			throw new Error("文件下载失败，服务器不支持断点续传");
+		const fileBlob = response.data;
+
+		// 获取文件名
+		const contentDisposition = response.headers["content-disposition"];
+		const fileName = contentDisposition
+			? decodeURIComponent(contentDisposition.split("filename=")[1].replace(/"/g, ""))
+			: `file_${fileId}`;
+
+		// 创建下载链接
+		if (options.createLink) {
+			const downloadLink = document.createElement("a");
+			downloadLink.href = URL.createObjectURL(fileBlob);
+			downloadLink.download = options.fileNameMapping?.[fileId] || fileName;
+			downloadLink.click();
 		}
 
-		// 将每次下载的文件块加入到数组
-		fileChunks.push(response.data);
-
-		// 更新下载的起始位置
-		startByte = endByte + 1;
+		return fileBlob;
+	} catch (error) {
+		console.error("文件下载失败", error);
+		throw new Error("文件下载失败");
 	}
-
-	// 合并所有下载的文件块
-	fileBlob = new Blob(fileChunks);
-
-	// 获取文件名和扩展名
-	const contentDisposition = headResponse.headers["content-disposition"];
-	const fileName = contentDisposition
-		? decodeURIComponent(contentDisposition.split("filename=")[1].replace(/"/g, ""))
-		: `file_${fileId}`;
-
-	// 创建下载链接
-	if (options.createLink) {
-		const downloadLink = document.createElement("a");
-		downloadLink.href = URL.createObjectURL(fileBlob);
-		downloadLink.download = options.fileNameMapping?.[fileId] || fileName;
-		downloadLink.click();
-	}
-
-	return fileBlob;
 };
 
 // * 批量下载文件
@@ -417,16 +388,23 @@ export const downloadMultipleFiles = async (
 		}
 	} else {
 		// 通过并发队列来控制文件下载的并发数
-		const downloadPromises = fileIds.map(fileId => () => downloadFile(fileId, options));
-		return concurrencyQueue(downloadPromises, {
-			concurrency: options.concurrency || 3, // 控制并发数
-			onProgress: (completed, total) => {
-				// 批量下载进度的回调
-				const overallProgress = Math.round((completed / total) * 100);
-				options.onOverallProgress?.(completed, total);
-				console.log(`总体下载进度：${overallProgress}%`);
-			}
+		const downloadPromises = fileIds.map(fileId => () => {
+			return downloadFile(fileId, options);
 		});
+
+		try {
+			return await concurrencyQueue(downloadPromises, {
+				concurrency: options.concurrency || 3, // 控制并发数
+				onProgress: (completed, total) => {
+					const overallProgress = Math.round((completed / total) * 100);
+					options.onOverallProgress?.(completed, total);
+					console.log(`总体下载进度：${overallProgress}%`);
+				}
+			});
+		} catch (error) {
+			console.error("批量下载失败", error);
+			throw new Error("批量下载失败");
+		}
 	}
 };
 
