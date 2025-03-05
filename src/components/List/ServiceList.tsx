@@ -1,8 +1,8 @@
 import { AiService } from "@/api/interface";
 import { getServiceList } from "@/api/modules";
-import { Avatar, Button, Flex, List, Skeleton, Tag, Tooltip, Typography } from "antd";
+import { Avatar, Button, Flex, List, Skeleton, Tooltip, Typography } from "antd";
 import clsx from "clsx";
-import React, { act, useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import ServiceFilter from "../ServiceFilter";
 
 export type ServiceListProps = {
@@ -135,7 +135,9 @@ const ServiceList: React.FC<ServiceListProps> = ({ onSelect, selected }) => {
 									<Typography.Text ellipsis>{item.serviceName}</Typography.Text>
 								</Tooltip>
 							}
-							description={<Typography.Text type="secondary">{item.serviceType}</Typography.Text>}
+							description={
+								<Typography.Text type="secondary">服务类型: {item.serviceType}</Typography.Text>
+							}
 						/>
 					</Skeleton>
 				</List.Item>
