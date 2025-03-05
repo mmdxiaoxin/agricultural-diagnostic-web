@@ -38,6 +38,7 @@ import { TableRowSelection } from "antd/es/table/interface";
 import dayjs from "dayjs";
 import React, { useEffect, useState } from "react";
 import styles from "./FileManage.module.scss";
+import FileTypeTag from "@/components/Table/FileTypeTag";
 
 export type FileManageProps = {};
 export type FilterParams = {
@@ -264,22 +265,7 @@ const FileManage: React.FC<FileManageProps> = () => {
 		{
 			title: "文件类型",
 			dataIndex: "fileType",
-			render: (type: MIMETypeValue) => (
-				<Tooltip title={type}>
-					<Tag
-						color={getFileTypeColor(type)}
-						style={{
-							maxWidth: "200px",
-							display: "inline-block",
-							whiteSpace: "nowrap",
-							overflow: "hidden",
-							textOverflow: "ellipsis"
-						}}
-					>
-						{type}
-					</Tag>
-				</Tooltip>
-			)
+			render: (type: MIMETypeValue) => <FileTypeTag type={type} />
 		},
 		{
 			title: "权限",

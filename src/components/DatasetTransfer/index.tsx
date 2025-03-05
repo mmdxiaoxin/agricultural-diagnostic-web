@@ -4,6 +4,7 @@ import type { GetProp, TableColumnsType, TableProps, TransferProps } from "antd"
 import { Flex, Table, Tag, Transfer } from "antd";
 import React, { useEffect, useState } from "react";
 import FilePreview from "../Table/FilePreview";
+import FileTypeTag from "../Table/FileTypeTag";
 
 type TransferItem = GetProp<TransferProps, "dataSource">[number];
 type TableRowSelection<T extends object> = TableProps<T>["rowSelection"];
@@ -68,11 +69,7 @@ const columns: TableColumnsType<FileMeta> = [
 	{
 		dataIndex: "fileType",
 		title: "文件类型",
-		render: (tag: string) => (
-			<Tag style={{ marginInlineEnd: 0 }} color="cyan">
-				{tag}
-			</Tag>
-		)
+		render: (type: string) => <FileTypeTag type={type} />
 	}
 ];
 

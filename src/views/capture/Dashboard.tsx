@@ -9,6 +9,7 @@ import { Button, Card, Col, message, Row, Table, TableColumnsType, Tag, Tooltip 
 import dayjs from "dayjs";
 import { CSSProperties, useEffect, useMemo, useState } from "react";
 import styles from "./Dashboard.module.scss";
+import FileTypeTag from "@/components/Table/FileTypeTag";
 
 const totalSpace = 1_000_000_000; // 1GB
 
@@ -109,22 +110,7 @@ const Dashboard: React.FC = () => {
 			title: "文件类型",
 			dataIndex: "fileType",
 			key: "fileType",
-			render: (type: MIMETypeValue) => (
-				<Tooltip title={type}>
-					<Tag
-						color={getFileTypeColor(type)}
-						style={{
-							maxWidth: "200px",
-							display: "inline-block",
-							whiteSpace: "nowrap",
-							overflow: "hidden",
-							textOverflow: "ellipsis"
-						}}
-					>
-						{type}
-					</Tag>
-				</Tooltip>
-			)
+			render: (type: MIMETypeValue) => <FileTypeTag type={type} />
 		},
 		{
 			title: "大小",

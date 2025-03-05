@@ -26,7 +26,7 @@ export const getModelMimeType = (extension: string): string => {
  * @param {String} mimeType 文件类型
  * @return string
  */
-export function getFileTypeColor(mimeType: MIMETypeValue): string {
+export function getFileTypeColor(mimeType: string): string {
 	// 检查文件类型并返回对应颜色
 	if (Object.values(MIME_TYPE.Video).includes(mimeType as any)) {
 		return fileType_COLOR.Video;
