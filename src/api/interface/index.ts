@@ -30,3 +30,4 @@ export * from "./diagnosis";
 export * from "./user";
 export * from "./dataset";
 export * from "./service";
+export * from "./menu";

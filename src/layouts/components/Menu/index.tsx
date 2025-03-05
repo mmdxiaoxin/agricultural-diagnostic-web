@@ -1,4 +1,4 @@
-import { getMenuList } from "@/api/modules/menu";
+import { getAuthRoutes } from "@/api/modules/menu";
 import IconComponent, { Icons } from "@/components/IconComponent";
 import { useAppDispatch } from "@/hooks/useAppDispatch";
 import { useAppSelector } from "@/hooks/useAppSelector";
@@ -61,7 +61,7 @@ const LayoutMenu: React.FC = () => {
 	const getMenuData = async (): Promise<void> => {
 		setLoading(true);
 		try {
-			const { data } = await getMenuList();
+			const { data } = await getAuthRoutes();
 			if (data) {
 				const formattedMenuList = deepLoopFloat(data);
 				setMenuListState(formattedMenuList); // 设置菜单列表
