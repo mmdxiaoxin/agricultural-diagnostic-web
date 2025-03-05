@@ -1,6 +1,6 @@
 import { AiService } from "@/api/interface";
 import { getServiceList } from "@/api/modules";
-import { Button, Flex, List, Skeleton, Tag, Tooltip, Typography } from "antd";
+import { Avatar, Button, Flex, List, Skeleton, Tag, Tooltip, Typography } from "antd";
 import clsx from "clsx";
 import React, { act, useEffect, useMemo, useState } from "react";
 import ServiceFilter from "../ServiceFilter";
@@ -21,7 +21,13 @@ const pageSize = 5;
 const StatusMapper = {
 	active: "运行中",
 	inactive: "已停止",
-	under: "维护中"
+	under_maintenance: "维护中"
+};
+
+const AvatarColorMapper = {
+	active: "bg-green-500",
+	inactive: "bg-red-500",
+	under_maintenance: "bg-orange-500"
 };
 
 const ServiceList: React.FC<ServiceListProps> = ({ onSelect, selected }) => {
@@ -119,7 +125,11 @@ const ServiceList: React.FC<ServiceListProps> = ({ onSelect, selected }) => {
 				>
 					<Skeleton avatar title={false} loading={item.loading} active>
 						<List.Item.Meta
-							avatar={<Tag color="blue">{item.status}</Tag>}
+							avatar={
+								<Avatar className={clsx("bg-white", "border", AvatarColorMapper[item.status])}>
+									{StatusMapper[item.status]}
+								</Avatar>
+							}
 							title={
 								<Tooltip title={item.serviceName}>
 									<Typography.Text ellipsis>{item.serviceName}</Typography.Text>
