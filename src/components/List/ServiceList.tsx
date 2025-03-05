@@ -1,6 +1,7 @@
 import { AiService } from "@/api/interface";
 import { getServiceList } from "@/api/modules";
-import { Button, Flex, List, Skeleton, Tooltip, Typography } from "antd";
+import { Button, Flex, List, Skeleton, Tag, Tooltip, Typography } from "antd";
+import clsx from "clsx";
 import React, { useEffect, useMemo, useState } from "react";
 import ServiceFilter from "../ServiceFilter";
 
@@ -17,6 +18,7 @@ export type ServiceListState = ServiceListItem[];
 const pageSize = 5;
 
 const ServiceList: React.FC<ServiceListProps> = () => {
+	const [selected, setSelected] = useState<AiService | null>(null);
 	const [serviceList, setServiceList] = useState<ServiceListState>([]);
 	const [initLoading, setInitLoading] = useState(true);
 	const [loading, setLoading] = useState(false);
@@ -37,7 +39,7 @@ const ServiceList: React.FC<ServiceListProps> = () => {
 					);
 					setServiceList(newServiceList);
 					window.dispatchEvent(new Event("resize"));
-					setCurrentPage(nextPage); // 更新 currentPage
+					setCurrentPage(nextPage);
 				}
 			})
 			.catch(error => {
@@ -101,20 +103,23 @@ const ServiceList: React.FC<ServiceListProps> = () => {
 			dataSource={serviceList}
 			loadMore={loadMore}
 			renderItem={item => (
-				<List.Item>
+				<List.Item
+					className={clsx(
+						"hover:bg-gray-100 rounded-lg",
+						"cursor-pointer",
+						selected?.serviceId === item.serviceId && "bg-gray-100"
+					)}
+					onClick={() => setSelected(item)}
+				>
 					<Skeleton avatar title={false} loading={item.loading} active>
 						<List.Item.Meta
+							avatar={<Tag color="blue">{item.status}</Tag>}
 							title={
 								<Tooltip title={item.serviceName}>
 									<Typography.Text ellipsis>{item.serviceName}</Typography.Text>
 								</Tooltip>
 							}
-							description={
-								<Flex>
-									<Typography.Text type="secondary">{item.serviceType}</Typography.Text>
-									<Typography.Text type="secondary">{item.status}</Typography.Text>
-								</Flex>
-							}
+							description={<Typography.Text type="secondary">{item.serviceType}</Typography.Text>}
 						/>
 					</Skeleton>
 				</List.Item>
