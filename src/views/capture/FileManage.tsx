@@ -9,7 +9,7 @@ import {
 	updateFilesAccess
 } from "@/api/modules/file";
 import DownloadList from "@/components/List/DownloadList";
-import FileAccess from "@/components/FileAccess";
+import FileAccess from "@/components/Table/FileAccess";
 import FileFilter from "@/components/FileFilter";
 import FileUpload from "@/components/FileUpload";
 import FilePreview from "@/components/Table/FilePreview";
