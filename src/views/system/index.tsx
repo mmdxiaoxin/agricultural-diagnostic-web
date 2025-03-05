@@ -1,31 +1,49 @@
-import { MenuItem } from "@/api/interface";
-import { getMenuList } from "@/api/modules";
+import { getAuthRoutes } from "@/api/modules";
 import IconComponent, { Icons } from "@/components/IconComponent";
 import { useAppDispatch, useAppSelector } from "@/hooks";
 import { setThemeConfig } from "@/store/modules/globalSlice";
 import { setCollapse } from "@/store/modules/menuSlice";
 import { MenuOutlined, SettingOutlined } from "@ant-design/icons";
-import { Divider, Space, Switch, Table, TableColumnsType, TableProps } from "antd";
-import { useState, useEffect } from "react";
-
-type TableRowSelection<T extends object = object> = TableProps<T>["rowSelection"];
+import { Divider, Space, Switch, Table, TableColumnsType } from "antd";
+import { useEffect, useState } from "react";
 
 const SystemConfig: React.FC = () => {
-	const [menuList, setMenuList] = useState<MenuItem[]>([]);
+	const [menuList, setMenuList] = useState<Menu.MenuOptions[]>([]);
 
+	const { isCollapse } = useAppSelector(state => state.menu);
 	const { themeConfig } = useAppSelector(state => state.global);
 	const { breadcrumb, tabs, footer } = themeConfig;
-	const { isCollapse } = useAppSelector(state => state.menu);
 
 	const dispatch = useAppDispatch();
 
+	// 递归函数，用于遍历菜单并设置children为undefined
+	const processMenu = (menuList: Menu.MenuOptions[]): Menu.MenuOptions[] => {
+		return menuList.map(menu => {
+			// 如果子项有children且为空数组，则将children设置为undefined
+			if (menu.children && menu.children.length === 0) {
+				menu.children = undefined;
+			}
+
+			// 如果子项有children且非空，递归处理
+			if (menu.children && menu.children.length > 0) {
+				menu.children = processMenu(menu.children);
+			}
+
+			return menu;
+		});
+	};
+
 	const fetchMenuList = async () => {
 		try {
-			const response = await getMenuList();
+			const response = await getAuthRoutes();
 			if (response.code === 200 && response.data) {
-				setMenuList(response.data);
+				// 递归处理菜单数据
+				const updatedMenuList = processMenu(response.data);
+				setMenuList(updatedMenuList);
 			}
-		} catch (error) {}
+		} catch (error) {
+			// Handle error (optional)
+		}
 	};
 
 	useEffect(() => {
@@ -43,7 +61,7 @@ const SystemConfig: React.FC = () => {
 	};
 
 	// 表格列配置
-	const columns: TableColumnsType<MenuItem> = [
+	const columns: TableColumnsType<Menu.MenuOptions> = [
 		{
 			title: "icon",
 			dataIndex: "icon",
@@ -58,22 +76,9 @@ const SystemConfig: React.FC = () => {
 		{
 			title: "path",
 			dataIndex: "path",
-
 			key: "path"
 		}
 	];
-
-	const rowSelection: TableRowSelection<MenuItem> = {
-		onChange: (selectedRowKeys, selectedRows) => {
-			console.log(`selectedRowKeys: ${selectedRowKeys}`, "selectedRows: ", selectedRows);
-		},
-		onSelect: (record, selected, selectedRows) => {
-			console.log(record, selected, selectedRows);
-		},
-		onSelectAll: (selected, selectedRows, changeRows) => {
-			console.log(selected, selectedRows, changeRows);
-		}
-	};
 
 	return (
 		<div className="w-full h-full bg-white p-4 rounded-lg overflow-y-auto">
@@ -85,12 +90,11 @@ const SystemConfig: React.FC = () => {
 			</Divider>
 
 			{/* 树形表格展示菜单 */}
-			<Table<MenuItem>
+			<Table<Menu.MenuOptions>
 				columns={columns}
-				rowSelection={{ ...rowSelection }}
 				dataSource={menuList}
 				pagination={false}
-				rowKey="id"
+				rowKey="path"
 			/>
 
 			<Divider>
