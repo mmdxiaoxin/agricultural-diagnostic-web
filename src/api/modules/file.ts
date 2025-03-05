@@ -392,7 +392,7 @@ export const downloadMultipleFiles = async (
 ) => {
 	if (options.compressMode) {
 		const response = await http.download(
-			"/file/download/",
+			"/file/download",
 			{ fileIds },
 			{
 				loading: false,
