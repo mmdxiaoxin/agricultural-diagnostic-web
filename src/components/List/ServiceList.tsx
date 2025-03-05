@@ -6,6 +6,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import ServiceFilter from "../ServiceFilter";
 
 export type ServiceListProps = {
+	selected?: AiService | null;
 	onSelect?: (service: AiService) => void;
 };
 
@@ -17,8 +18,7 @@ export type ServiceListState = ServiceListItem[];
 
 const pageSize = 5;
 
-const ServiceList: React.FC<ServiceListProps> = () => {
-	const [selected, setSelected] = useState<AiService | null>(null);
+const ServiceList: React.FC<ServiceListProps> = ({ onSelect, selected }) => {
 	const [serviceList, setServiceList] = useState<ServiceListState>([]);
 	const [initLoading, setInitLoading] = useState(true);
 	const [loading, setLoading] = useState(false);
@@ -109,7 +109,7 @@ const ServiceList: React.FC<ServiceListProps> = () => {
 						"cursor-pointer",
 						selected?.serviceId === item.serviceId && "bg-gray-100"
 					)}
-					onClick={() => setSelected(item)}
+					onClick={() => onSelect?.(item)}
 				>
 					<Skeleton avatar title={false} loading={item.loading} active>
 						<List.Item.Meta

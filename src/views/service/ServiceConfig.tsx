@@ -1,26 +1,22 @@
+import { AiService } from "@/api/interface";
 import ServiceList from "@/components/List/ServiceList";
-import { Flex, Splitter, Typography } from "antd";
+import ServiceDetail from "@/components/ServiceDetail";
+import { Splitter } from "antd";
 import clsx from "clsx";
-import React from "react";
-
-const Desc: React.FC<Readonly<{ text?: string | number }>> = props => (
-	<Flex justify="center" align="center" style={{ height: "100%" }}>
-		<Typography.Title type="secondary" level={5} style={{ whiteSpace: "nowrap" }}>
-			{props.text}
-		</Typography.Title>
-	</Flex>
-);
+import React, { useState } from "react";
 
 const ServiceConfig: React.FC = () => {
+	const [service, setService] = useState<AiService>();
+
 	return (
 		<Splitter className={clsx("w-full h-full", "bg-white", "rounded-lg")}>
 			<Splitter.Panel defaultSize="40%" min="20%" max="50%%" collapsible>
 				<div className={clsx("w-full h-full", "p-4")}>
-					<ServiceList />
+					<ServiceList selected={service} onSelect={service => setService(service)} />
 				</div>
 			</Splitter.Panel>
 			<Splitter.Panel>
-				<Desc text="Second" />
+				<ServiceDetail service={service} />
 			</Splitter.Panel>
 		</Splitter>
 	);
