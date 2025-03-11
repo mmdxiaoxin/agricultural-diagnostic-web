@@ -12,7 +12,7 @@ export interface InfoDrawerRef {
 	open: (type?: "view" | "edit" | "add", user_id?: number | string) => void;
 }
 
-const InfoDrawer = forwardRef<InfoDrawerRef, InfoDrawerProps>(({ onSave }, ref) => {
+const UserInfoDrawer = forwardRef<InfoDrawerRef, InfoDrawerProps>(({ onSave }, ref) => {
 	const [userId, setUserId] = useState<number | string>(0);
 	const [type, setType] = useState<"view" | "edit" | "add">("view");
 	const [open, setOpen] = useState(false);
@@ -155,4 +155,4 @@ const InfoDrawer = forwardRef<InfoDrawerRef, InfoDrawerProps>(({ onSave }, ref) 
 	);
 });
 
-export default InfoDrawer;
+export default UserInfoDrawer;

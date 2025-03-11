@@ -22,10 +22,10 @@ import {
 	TableProps,
 	Tag
 } from "antd";
+import clsx from "clsx";
 import dayjs from "dayjs";
 import { useEffect, useRef, useState } from "react";
-import styles from "./index.module.scss";
-import InfoDrawer, { InfoDrawerRef } from "./InfoDrawer";
+import UserInfoDrawer, { InfoDrawerRef } from "../../components/Drawer/UserInfoDrawer";
 
 const User = () => {
 	const infoDrawerRef = useRef<InfoDrawerRef>(null);
@@ -243,7 +243,7 @@ const User = () => {
 	];
 
 	return (
-		<div className={styles.container}>
+		<div className={clsx("bg-white", " p-4", " rounded-lg")}>
 			{/* 搜索部分 */}
 			<Collapse
 				defaultActiveKey={expandSearch ? ["1"] : []}
@@ -297,7 +297,7 @@ const User = () => {
 				/>
 			</div>
 
-			<InfoDrawer ref={infoDrawerRef} onSave={() => fetchData(queryParams)} />
+			<UserInfoDrawer ref={infoDrawerRef} onSave={() => fetchData(queryParams)} />
 		</div>
 	);
 };
