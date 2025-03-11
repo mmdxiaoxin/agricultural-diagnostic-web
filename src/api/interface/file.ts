@@ -3,7 +3,6 @@ import { PageData } from ".";
 
 export interface FileMeta {
 	id: number;
-	creator_id: number;
 	originalFileName: string;
 	storageFileName: string;
 	filePath: string;

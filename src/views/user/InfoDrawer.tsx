@@ -135,7 +135,7 @@ const InfoDrawer = forwardRef<InfoDrawerRef, InfoDrawerProps>(({ onSave }, ref) 
 					<Input disabled={type === "view"} />
 				</Form.Item>
 
-				<Form.Item label="邮箱" name="roles">
+				<Form.Item label="角色" name="roles">
 					<Select mode="multiple" allowClear disabled={type === "view"} options={roleOptions} />
 				</Form.Item>
 

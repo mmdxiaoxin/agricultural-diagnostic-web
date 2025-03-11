@@ -15,15 +15,14 @@ import { AxiosCanceler } from "./helper/axiosCancel";
 import { checkStatus } from "./helper/checkStatus";
 import { ApiResponse } from "./interface";
 
-export interface CustomAxiosRequestConfig extends InternalAxiosRequestConfig {
+export interface CustomInternalAxiosRequestConfig extends InternalAxiosRequestConfig {
 	loading?: boolean;
 	cancel?: boolean;
 	toast?: boolean;
 }
 export interface CustomAxiosError extends AxiosError {
-	config: CustomAxiosRequestConfig;
+	config: CustomInternalAxiosRequestConfig;
 }
-
 export type GetConfig = Omit<AxiosRequestConfig, "params"> & {
 	loading?: boolean;
 	cancel?: boolean;
@@ -62,7 +61,7 @@ class RequestHttp {
 		this.service = axios.create(config);
 
 		this.service.interceptors.request.use(
-			(config: CustomAxiosRequestConfig) => {
+			(config: CustomInternalAxiosRequestConfig) => {
 				NProgress.start();
 				// 重复请求不需要取消，在 api 服务中通过指定的第三个参数: { cancel: false } 来控制
 				config.cancel ??= true;
@@ -84,7 +83,7 @@ class RequestHttp {
 		);
 
 		this.service.interceptors.response.use(
-			(response: AxiosResponse & { config: CustomAxiosRequestConfig }) => {
+			(response: AxiosResponse & { config: CustomInternalAxiosRequestConfig }) => {
 				const { data, config } = response;
 				NProgress.done();
 				// * 在请求结束后，移除本次请求(关闭loading)
