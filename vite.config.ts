@@ -20,8 +20,6 @@ export default defineConfig((mode: ConfigEnv): UserConfig => {
 			port: viteEnv.VITE_PORT,
 			open: viteEnv.VITE_OPEN,
 			cors: true,
-			// https: false,
-			// 代理跨域（mock 不需要配置，这里只是个事列）
 			proxy: {
 				"/api": {
 					target: "http://localhost:5000/api",
