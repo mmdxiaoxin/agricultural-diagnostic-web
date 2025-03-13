@@ -1,5 +1,5 @@
-import { UserAccount } from "@/api/interface";
-import { getUserProfile, updateUserProfile, uploadAvatar } from "@/api/modules/user";
+import { User, UserAccount } from "@/api/interface";
+import { updateUserProfile, uploadAvatar } from "@/api/modules/user";
 import { ROLE_COLOR } from "@/constants";
 import { HomeOutlined, LoadingOutlined, PhoneOutlined, PlusOutlined } from "@ant-design/icons";
 import {
@@ -22,11 +22,11 @@ import dayjs from "dayjs";
 import { forwardRef, useImperativeHandle, useState } from "react";
 
 export interface InfoModalProps {
-	onSave?: (values?: any) => void;
+	onSave?: (userData?: User, avatar?: string | null) => void;
 }
 
 export interface InfoModalRef {
-	open: () => void;
+	open: (userData?: User, avatar?: string) => void;
 }
 
 type FileType = Parameters<GetProp<UploadProps, "beforeUpload">>[0];
@@ -54,7 +54,6 @@ const InfoModal = forwardRef<InfoModalRef, InfoModalProps>(({ onSave }, ref) => 
 
 	const [isModalVisible, setIsModalVisible] = useState(false);
 	const [uploadLoading, setUploadLoading] = useState(false);
-	const [initLoading, setInitLoading] = useState(false);
 	const [imageUrl, setImageUrl] = useState<string | null>(null);
 	const [isEditing, setIsEditing] = useState(false);
 	const [userAccount, setUserData] = useState<UserAccount>();
@@ -63,26 +62,10 @@ const InfoModal = forwardRef<InfoModalRef, InfoModalProps>(({ onSave }, ref) => 
 		open: handleOpen
 	}));
 
-	const fetchUser = async () => {
-		setInitLoading(true);
-		try {
-			const userRes = await getUserProfile();
-			if (userRes.code !== 200 || !userRes.data) throw new Error(userRes.message);
-			const { profile, ...user } = userRes.data;
-			form.setFieldsValue({
-				...profile
-			});
-			setUserData(user);
-			setImageUrl(userRes.data.profile?.avatar || "");
-		} catch (error) {
-			message.error("获取用户信息失败");
-		} finally {
-			setInitLoading(false);
-		}
-	};
-
-	const handleOpen = () => {
-		fetchUser();
+	const handleOpen = (userData?: User, avatar?: string) => {
+		form.setFieldsValue(userData?.profile);
+		setUserData(userData);
+		setImageUrl(avatar || null);
 		setIsModalVisible(true);
 	};
 
@@ -100,7 +83,7 @@ const InfoModal = forwardRef<InfoModalRef, InfoModalProps>(({ onSave }, ref) => 
 			const res = await updateUserProfile(values);
 			if (res.code !== 200) throw new Error(res.message);
 
-			onSave?.(values);
+			onSave?.(values, imageUrl);
 			setIsEditing(false);
 			message.success("修改用户信息成功 🎉🎉🎉");
 		} catch (error: any) {
@@ -117,6 +100,7 @@ const InfoModal = forwardRef<InfoModalRef, InfoModalProps>(({ onSave }, ref) => 
 			getBase64(info.file.originFileObj as FileType, url => {
 				setUploadLoading(false);
 				setImageUrl(url);
+				onSave?.(form.getFieldsValue(), url);
 			});
 		}
 	};
@@ -136,7 +120,6 @@ const InfoModal = forwardRef<InfoModalRef, InfoModalProps>(({ onSave }, ref) => 
 			if (res.code !== 200) throw new Error(res.message);
 
 			onSuccess?.(null, file);
-			onSave?.(form.getFieldsValue());
 			message.success("头像上传成功 🎉🎉🎉");
 		} catch (error: any) {
 			onError?.(error);
@@ -155,7 +138,6 @@ const InfoModal = forwardRef<InfoModalRef, InfoModalProps>(({ onSave }, ref) => 
 		<Modal
 			title="个人信息"
 			open={isModalVisible}
-			loading={initLoading}
 			onCancel={handleCancel}
 			destroyOnClose={true}
 			footer={
@@ -224,7 +206,7 @@ const InfoModal = forwardRef<InfoModalRef, InfoModalProps>(({ onSave }, ref) => 
 				<Col xs={24} sm={24} md={12} lg={12} xl={12} xxl={12}>
 					<Form
 						form={form}
-						disabled={!initLoading && !isEditing}
+						disabled={!isEditing}
 						labelCol={{ span: 6 }}
 						wrapperCol={{ span: 18 }}
 						layout="horizontal"
