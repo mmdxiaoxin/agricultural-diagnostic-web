@@ -1,23 +1,9 @@
-import { ResUploadFile } from "@/api/interface";
+import React, { useState, useEffect } from "react";
+import { Upload, message, notification, Button, Empty, Space, Switch } from "antd";
+import { UploadOutlined, DeleteFilled, FolderOutlined, BarsOutlined } from "@ant-design/icons";
+import { RcFile, UploadChangeParam, UploadFile } from "antd/lib/upload";
 import { uploadChunksFile, uploadSingleFile } from "@/api/modules/file";
-import { BarsOutlined, DeleteFilled, FolderOutlined, UploadOutlined } from "@ant-design/icons";
-import {
-	Button,
-	Empty,
-	Flex,
-	message,
-	notification,
-	Space,
-	Switch,
-	Tooltip,
-	Upload,
-	UploadFile
-} from "antd";
-import { RcFile, UploadChangeParam } from "antd/lib/upload";
-import React, { useState } from "react";
-import styles from "./index.module.scss"; // 引入样式
-
-const { Dragger } = Upload;
+import styles from "./index.module.scss";
 
 export type FileUploadProps = {
 	onUpload?: () => void;
@@ -29,7 +15,7 @@ const FileUpload: React.FC<FileUploadProps> = ({ onUpload }) => {
 	const [multipleMode, setMultipleMode] = useState<boolean>(false);
 	const [api, contextHolder] = notification.useNotification();
 
-	// 自定义文件上传处理
+	// 自定义文件上传处理（单文件或分片上传）
 	const customRequest = async (options: any) => {
 		const { onSuccess, onError, file: RcFile } = options;
 		const file = RcFile as RcFile | null;
@@ -51,16 +37,18 @@ const FileUpload: React.FC<FileUploadProps> = ({ onUpload }) => {
 						onProgress(fileId, progress) {
 							setFileList(prev => {
 								const index = prev.findIndex(item => item.uid === fileId);
-								const newFileList = [...prev];
-								newFileList[index].percent = progress;
-								return newFileList;
+								if (index !== -1) {
+									const newFileList = [...prev];
+									newFileList[index].percent = progress;
+									return newFileList;
+								}
+								return prev;
 							});
 						}
 					});
 
 			if (response?.code === 200 || response?.code === 201) {
 				onSuccess?.(null, file);
-				onUpload?.();
 			} else {
 				throw new Error(response?.message);
 			}
@@ -70,9 +58,12 @@ const FileUpload: React.FC<FileUploadProps> = ({ onUpload }) => {
 		}
 	};
 
-	// 处理文件变化
-	const handleChange = ({ fileList }: UploadChangeParam<UploadFile<ResUploadFile>>) => {
+	// 文件变化处理：更新 fileList
+	const handleChange = ({ fileList }: UploadChangeParam<UploadFile>) => {
 		setFileList(fileList);
+		if (fileList.length > 0 && fileList.every(file => file.status === "done")) {
+			onUpload?.();
+		}
 	};
 
 	// 控制文件和目录模式互斥
@@ -116,7 +107,7 @@ const FileUpload: React.FC<FileUploadProps> = ({ onUpload }) => {
 			<div className={styles.container}>
 				{/* 拖拽上传区域 */}
 				<div className={styles.draggerWrapper}>
-					<Dragger
+					<Upload.Dragger
 						name="file"
 						multiple={multipleMode}
 						directory={directoryMode}
@@ -138,35 +129,31 @@ const FileUpload: React.FC<FileUploadProps> = ({ onUpload }) => {
 							点击或拖拽{getOptionText({ directory: directoryMode, multiple: multipleMode })}
 							到此区域上传
 						</p>
-					</Dragger>
+					</Upload.Dragger>
 					{/* 控制开关 */}
-					<Flex align="center" justify="space-between" wrap>
-						<Space style={{ marginTop: 16 }}>
-							<Tooltip title="开启后可以上传目录">
-								<span>目录模式：</span>
-							</Tooltip>
+					<div style={{ marginTop: 16, display: "flex", justifyContent: "space-between" }}>
+						<div>
+							<span>目录模式：</span>
 							<Switch
 								checkedChildren="开启"
 								unCheckedChildren="关闭"
 								checked={directoryMode}
 								onChange={handleDirectoryModeChange}
 							/>
-						</Space>
-						<Space style={{ marginTop: 16 }}>
-							<Tooltip title="开启后可以上传多个文件">
-								<span>多文件模式：</span>
-							</Tooltip>
+						</div>
+						<div>
+							<span>多文件模式：</span>
 							<Switch
 								checkedChildren="开启"
 								unCheckedChildren="关闭"
 								checked={multipleMode}
 								onChange={handleMultipleModeChange}
 							/>
-						</Space>
-					</Flex>
+						</div>
+					</div>
 				</div>
 
-				{/* 显示文件上传列表，包含图片预览 */}
+				{/* 显示上传列表 */}
 				<div className={styles.fileListWrapper}>
 					<Upload
 						directory={directoryMode}
