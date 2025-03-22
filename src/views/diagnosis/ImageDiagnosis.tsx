@@ -1,8 +1,6 @@
 import DiseaseDiagnose from "@/components/DiseaseDiagnose";
 
-type Props = {};
-
-const ImageDiagnosis = (props: Props) => {
+const ImageDiagnosis = () => {
 	return <DiseaseDiagnose />;
 };
 

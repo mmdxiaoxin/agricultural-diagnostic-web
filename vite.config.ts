@@ -39,7 +39,7 @@ export default defineConfig((mode: ConfigEnv): UserConfig => {
 			})
 		],
 		esbuild: {
-			pure: viteEnv.VITE_DROP_CONSOLE ? ["console.log", "debugger"] : []
+			drop: viteEnv.VITE_DROP_CONSOLE ? ["debugger", "console"] : []
 		},
 		optimizeDeps: {
 			include: ["spark-md5"]

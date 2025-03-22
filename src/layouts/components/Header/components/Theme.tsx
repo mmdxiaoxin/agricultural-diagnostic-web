@@ -3,7 +3,7 @@ import { useAppDispatch } from "@/hooks/useAppDispatch";
 import { useAppSelector } from "@/hooks/useAppSelector";
 import { setThemeConfig } from "@/store/modules/globalSlice";
 import { setCollapse } from "@/store/modules/menuSlice";
-import { AppstoreOutlined, FireOutlined, SettingOutlined } from "@ant-design/icons";
+import { AppstoreOutlined, SettingOutlined } from "@ant-design/icons";
 import { Button, Divider, Drawer, Switch } from "antd";
 import React, { useState } from "react";
 import styles from "../index.module.scss";
@@ -13,15 +13,15 @@ const Theme: React.FC = () => {
 	const [visible, setVisible] = useState<boolean>(false);
 
 	const { themeConfig } = useAppSelector(state => state.global);
-	const { weakOrGray, breadcrumb, tabs, footer } = themeConfig;
+	const { breadcrumb, tabs, footer } = themeConfig;
 	const { isCollapse } = useAppSelector(state => state.menu);
 
 	const dispatch = useAppDispatch();
 
-	// 设置灰色模式或色弱模式
-	const setWeakOrGray = (checked: boolean, theme: string) => {
-		dispatch(setThemeConfig({ ...themeConfig, weakOrGray: checked ? theme : "" }));
-	};
+	// // 设置灰色模式或色弱模式
+	// const setWeakOrGray = (checked: boolean, theme: string) => {
+	// 	dispatch(setThemeConfig({ ...themeConfig, weakOrGray: checked ? theme : "" }));
+	// };
 
 	// 切换配置项
 	const onChange = (checked: boolean, keyName: string) => {

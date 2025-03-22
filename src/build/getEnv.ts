@@ -1,6 +1,17 @@
+import dotenv from "dotenv";
 import fs from "fs";
 import path from "path";
-import dotenv from "dotenv";
+
+interface ViteEnv {
+	VITE_API_URL: string;
+	VITE_PORT: number;
+	VITE_OPEN: boolean;
+	VITE_GLOB_APP_TITLE: string;
+	VITE_DROP_CONSOLE: boolean;
+	VITE_PROXY_URL: string;
+	VITE_BUILD_GZIP: boolean;
+	VITE_REPORT: boolean;
+}
 
 export function isDevFn(mode: string): boolean {
 	return mode === "development";
@@ -18,7 +29,7 @@ export function isReportMode(): boolean {
 }
 
 // Read all environment variable configuration files to process.env
-export function wrapperEnv(envConf: Recordable): ViteEnv {
+export function wrapperEnv(envConf: Record<string, any>): ViteEnv {
 	const ret: any = {};
 
 	for (const envName of Object.keys(envConf)) {

@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from "react";
-import { Upload, message, notification, Button, Empty, Space, Switch } from "antd";
-import { UploadOutlined, DeleteFilled, FolderOutlined, BarsOutlined } from "@ant-design/icons";
-import { RcFile, UploadChangeParam, UploadFile } from "antd/lib/upload";
 import { uploadChunksFile, uploadSingleFile } from "@/api/modules/file";
+import { BarsOutlined, DeleteFilled, FolderOutlined, UploadOutlined } from "@ant-design/icons";
+import { Button, Empty, Space, Switch, Upload, message, notification } from "antd";
+import { RcFile, UploadChangeParam, UploadFile } from "antd/lib/upload";
+import React, { useState } from "react";
 import styles from "./index.module.scss";
 
 export type FileUploadProps = {

@@ -1,8 +1,4 @@
-import React from "react";
-
-type Props = {};
-
-const ModelsManage = (props: Props) => {
+const ModelsManage = () => {
 	return <div>ModelsManage</div>;
 };
 

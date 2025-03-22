@@ -1,8 +1,4 @@
-import React from "react";
-
-type Props = {};
-
-const KnowledgePreview = (props: Props) => {
+const KnowledgePreview = () => {
 	return <div>KnowledgePreview</div>;
 };
 
