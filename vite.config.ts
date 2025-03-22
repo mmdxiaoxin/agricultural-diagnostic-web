@@ -3,6 +3,7 @@ import { resolve } from "path";
 import { ConfigEnv, defineConfig, loadEnv, UserConfig } from "vite";
 import { createHtmlPlugin } from "vite-plugin-html";
 import viteCompression from "vite-plugin-compression";
+import viteImagemin from "vite-plugin-imagemin";
 import { wrapperEnv } from "./src/build/getEnv";
 
 // https://vite.dev/config/
@@ -44,6 +45,33 @@ export default defineConfig((mode: ConfigEnv): UserConfig => {
 				threshold: 10240,
 				algorithm: "gzip",
 				ext: ".gz"
+			}),
+			viteImagemin({
+				gifsicle: {
+					optimizationLevel: 7,
+					interlaced: false
+				},
+				optipng: {
+					optimizationLevel: 7
+				},
+				mozjpeg: {
+					quality: 20
+				},
+				pngquant: {
+					quality: [0.8, 0.9],
+					speed: 4
+				},
+				svgo: {
+					plugins: [
+						{
+							name: "removeViewBox"
+						},
+						{
+							name: "removeEmptyAttrs",
+							active: false
+						}
+					]
+				}
 			})
 		],
 		esbuild: {
