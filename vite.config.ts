@@ -2,6 +2,7 @@ import react from "@vitejs/plugin-react-swc";
 import { resolve } from "path";
 import { ConfigEnv, defineConfig, loadEnv, UserConfig } from "vite";
 import { createHtmlPlugin } from "vite-plugin-html";
+import viteCompression from "vite-plugin-compression";
 import { wrapperEnv } from "./src/build/getEnv";
 
 // https://vite.dev/config/
@@ -36,6 +37,13 @@ export default defineConfig((mode: ConfigEnv): UserConfig => {
 						title: viteEnv.VITE_GLOB_APP_TITLE
 					}
 				}
+			}),
+			viteCompression({
+				verbose: true,
+				disable: false,
+				threshold: 10240,
+				algorithm: "gzip",
+				ext: ".gz"
 			})
 		],
 		esbuild: {
