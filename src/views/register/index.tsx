@@ -6,16 +6,21 @@ import React, { useState } from "react";
 import { Navigate, useNavigate } from "react-router";
 import "./index.scss";
 
-type RegisterProps = {};
+type FormData = {
+	email: string;
+	password: string;
+	confirmPassword: string;
+};
 
-const Register: React.FC<RegisterProps> = () => {
+const Register: React.FC = () => {
 	const [loading, setLoading] = useState(false);
 	const navigate = useNavigate();
 
-	const onFinish = async (values: any) => {
+	const onFinish = async (values: FormData) => {
 		setLoading(true);
 		try {
-			const res = await registerApi(values);
+			const { confirmPassword, ...params } = values;
+			const res = await registerApi(params);
 			if (res.code !== 201) throw new Error("注册失败，请重试！");
 
 			message.success("注册成功，请检查注册邮件进行验证！");
