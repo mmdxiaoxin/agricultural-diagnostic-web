@@ -21,6 +21,7 @@ const ImageDiagnosis = () => {
 				xl={12}
 				xxl={12}
 				className={clsx(
+					"lg:h-full",
 					"overflow-y-auto",
 					"[&::-webkit-scrollbar]:hidden", // 隐藏 Webkit 浏览器的滚动条
 					"[-ms-overflow-style:none]", // 隐藏 IE 的滚动条
