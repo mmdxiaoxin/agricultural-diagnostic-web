@@ -1,4 +1,4 @@
-import { ReqPage } from ".";
+import { PageData, ReqPage } from ".";
 
 // 基础预测类型
 export type BasePrediction = {
@@ -53,3 +53,4 @@ export type ResStartDiagnoseDisease = {
 	predictions: Prediction[];
 };
 export type ResUploadDiagnosisImage = DiagnosisHistory;
+export type ResDiagnosisHistoryList = PageData<DiagnosisHistory>;

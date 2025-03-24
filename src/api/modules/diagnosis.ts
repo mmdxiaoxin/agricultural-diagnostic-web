@@ -2,6 +2,7 @@ import http from "@/api";
 import {
 	ReqDiagnosisHistoryList,
 	ReqStartDiagnoseDisease,
+	ResDiagnosisHistoryList,
 	ResStartDiagnoseDisease,
 	ResUploadDiagnosisImage
 } from "../interface/diagnosis";
@@ -42,5 +43,5 @@ export const getDiagnosisSupport = async () => {
 
 // * 获取诊断历史列表
 export const getDiagnosisHistoryList = async (params: ReqDiagnosisHistoryList) => {
-	return http.get<any>("/diagnosis/history/list", params, { loading: false });
+	return http.get<ResDiagnosisHistoryList>("/diagnosis/history/list", params, { loading: false });
 };
