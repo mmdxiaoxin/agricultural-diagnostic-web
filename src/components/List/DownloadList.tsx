@@ -3,12 +3,15 @@ import { DownloadProgress } from "@/api/modules/file";
 import { formatSize } from "@/utils";
 import {
 	AudioOutlined,
+	DeleteOutlined,
 	FileImageOutlined,
 	FileOutlined,
-	FileTextOutlined
+	FileTextOutlined,
+	FolderOutlined
 } from "@ant-design/icons";
 import { Avatar, Button, Flex, List, Progress, Space, Switch, Tooltip } from "antd";
 import React from "react";
+import clsx from "clsx";
 
 type DownloadListProps = {
 	downloadList: FileMeta[];
@@ -23,14 +26,15 @@ type DownloadListProps = {
 
 // 文件类型图标映射
 const fileTypeIcons = {
-	image: <FileImageOutlined />,
-	video: <AudioOutlined />,
-	audio: <AudioOutlined />,
-	document: <FileTextOutlined />,
-	default: <FileOutlined />
+	image: <FileImageOutlined className="text-xl" />,
+	video: <AudioOutlined className="text-xl" />,
+	audio: <AudioOutlined className="text-xl" />,
+	document: <FileTextOutlined className="text-xl" />,
+	default: <FileOutlined className="text-xl" />
 };
 
-const getFileTypeIcon = (fileType: string) => {
+const getFileTypeIcon = (fileType: string | undefined) => {
+	if (!fileType) return fileTypeIcons.default;
 	if (fileType.startsWith("image")) return fileTypeIcons.image;
 	if (fileType.startsWith("video")) return fileTypeIcons.video;
 	if (fileType.startsWith("audio")) return fileTypeIcons.audio;
@@ -52,68 +56,104 @@ const DownloadList: React.FC<DownloadListProps> = ({
 	onCheck
 }) => {
 	return (
-		<List
-			rowKey={"id"}
-			header={
-				<Flex align="center" justify="space-between">
-					<Space>
-						<Tooltip title="下载列表">
-							<span>压缩模式：</span>
-						</Tooltip>
-						<Switch
-							checkedChildren="开启"
-							unCheckedChildren="关闭"
-							checked={compressMode}
-							onChange={onCheck}
-						/>
-					</Space>
-					<Button type="primary" onClick={() => onClear?.()}>
-						清空记录
-					</Button>
-				</Flex>
-			}
-			dataSource={downloadList}
-			renderItem={item => {
-				const {
-					id,
-					originalFileName: originalFileName,
-					fileSize: fileSize,
-					fileType: fileType
-				} = item;
-				const percent = progress[id] || 0;
-				return (
-					<List.Item>
-						<List.Item.Meta
-							avatar={<Avatar icon={getFileTypeIcon(fileType)} />}
-							title={
-								<Tooltip title={originalFileName}>
-									<span
-										style={{
-											fontWeight: 500,
-											overflow: "hidden",
-											textOverflow: "ellipsis",
-											whiteSpace: "nowrap"
-										}}
-									>
-										{originalFileName}
-									</span>
-								</Tooltip>
-							}
-							description={
-								<>
-									<div style={{ marginTop: 8 }}>
-										<Progress percent={percent} size="small" />
+		<div
+			className={clsx(
+				"flex flex-col gap-6",
+				"p-6",
+				"rounded-2xl",
+				"bg-white",
+				"shadow-sm",
+				"border border-gray-100",
+				"transition-all duration-300",
+				"hover:shadow-md"
+			)}
+		>
+			<Flex align="center" justify="space-between">
+				<Space>
+					<Tooltip title="下载列表">
+						<span className="text-gray-600">压缩模式：</span>
+					</Tooltip>
+					<Switch
+						checkedChildren="开启"
+						unCheckedChildren="关闭"
+						checked={compressMode}
+						onChange={onCheck}
+						className="bg-gray-200"
+					/>
+				</Space>
+				<Button
+					type="primary"
+					onClick={() => onClear?.()}
+					icon={<DeleteOutlined />}
+					className={clsx(
+						"px-6 h-10",
+						"rounded-lg",
+						"bg-red-500 hover:bg-red-600",
+						"border-none",
+						"shadow-sm hover:shadow-md",
+						"transition-all duration-300",
+						"flex items-center gap-2"
+					)}
+				>
+					清空记录
+				</Button>
+			</Flex>
+
+			<List
+				rowKey="id"
+				dataSource={downloadList}
+				className="download-list"
+				renderItem={item => {
+					const { id, originalFileName, fileSize, fileType } = item;
+					const percent = progress[id] || 0;
+					return (
+						<List.Item
+							className={clsx(
+								"p-4",
+								"rounded-lg",
+								"bg-gray-50",
+								"border border-gray-200",
+								"transition-all duration-300",
+								"hover:shadow-md"
+							)}
+						>
+							<List.Item.Meta
+								avatar={
+									<Avatar
+										icon={getFileTypeIcon(fileType)}
+										className={clsx(
+											"w-10 h-10",
+											"rounded-lg",
+											"bg-white",
+											"flex items-center justify-center",
+											"text-gray-500"
+										)}
+									/>
+								}
+								title={
+									<Tooltip title={originalFileName}>
+										<span className={clsx("text-sm font-medium text-gray-800", "truncate block")}>
+											{originalFileName}
+										</span>
+									</Tooltip>
+								}
+								description={
+									<div className="mt-2 space-y-2">
+										<div className="h-1 bg-gray-200 rounded-full overflow-hidden">
+											<div
+												className={clsx("h-full", "bg-blue-500", "transition-all duration-300")}
+												style={{ width: `${percent}%` }}
+											/>
+										</div>
+										<p className="text-xs text-gray-500">{getStatus(percent, fileSize)}</p>
 									</div>
-									<div style={{ marginTop: 8, fontSize: 12, color: "#888" }}>
-										{getStatus(percent, fileSize)}
-									</div>
-								</>
-							}
-						/>
-					</List.Item>
-				);
-			}}
-		/>
+								}
+							/>
+						</List.Item>
+					);
+				}}
+			/>
+		</div>
 	);
 };
 

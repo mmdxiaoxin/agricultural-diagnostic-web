@@ -16,7 +16,14 @@ import FilePreview from "@/components/Table/FilePreview";
 import FileTypeTag from "@/components/Table/FileTypeTag";
 import { MIMETypeValue } from "@/constants";
 import { formatSize } from "@/utils";
-import { DeleteOutlined, DownloadOutlined, EditOutlined } from "@ant-design/icons";
+import {
+	DeleteOutlined,
+	DownloadOutlined,
+	EditOutlined,
+	FileOutlined,
+	FolderOutlined,
+	SearchOutlined
+} from "@ant-design/icons";
 import {
 	Badge,
 	Button,
@@ -36,14 +43,14 @@ import {
 import { TableRowSelection } from "antd/es/table/interface";
 import dayjs from "dayjs";
 import React, { useEffect, useState } from "react";
-import styles from "./FileManage.module.scss";
+import clsx from "clsx";
 
 export type FileManageProps = {};
 export type FilterParams = {
 	fileType?: string[][];
 	fileName?: string;
 	createdDateRange?: [dayjs.Dayjs | null, dayjs.Dayjs | null] | null;
-	updatedDateRange?: [dayjs.Dayjs | null, dayjs.Dayjs | null | null] | null;
+	updatedDateRange?: [dayjs.Dayjs | null, dayjs.Dayjs | null] | null;
 };
 
 const FileManage: React.FC<FileManageProps> = () => {
@@ -402,26 +409,77 @@ const FileManage: React.FC<FileManageProps> = () => {
 	};
 
 	return (
-		<div className={styles["container"]}>
-			<Splitter className={styles["content"]}>
-				<Splitter.Panel
-					collapsible
-					defaultSize="30%"
-					min="25%"
-					max="40%"
-					className={styles["content__left"]}
-				>
-					<Tabs
-						centered
-						style={{ padding: 16 }}
-						defaultActiveKey="1"
-						activeKey={activeKey}
-						onChange={setActiveKey}
-						items={items}
-					/>
-				</Splitter.Panel>
-				<Splitter.Panel className={styles["content__right"]}>
-					<Flex className={styles["header"]} align="center" gap={16}>
+		<div
+			className={clsx(
+				"h-full w-full",
+				"p-6",
+				"rounded-2xl",
+				"flex flex-col",
+				"bg-gradient-to-br from-white to-gray-50",
+				"overflow-y-auto"
+			)}
+		>
+			<div
+				className={clsx(
+					"flex flex-col gap-6",
+					"mb-6 p-6",
+					"rounded-2xl",
+					"bg-white",
+					"shadow-sm",
+					"border border-gray-100",
+					"transition-all duration-300",
+					"hover:shadow-md"
+				)}
+			>
+				<div className="flex justify-between items-center">
+					<div className="flex flex-col">
+						<h2 className="text-2xl font-semibold text-gray-800 mb-2">文件管理</h2>
+						<p className="text-gray-500">共 {fileList.length} 个文件</p>
+					</div>
+					<div className="flex items-center gap-4">
+						<Input
+							placeholder="搜索文件..."
+							prefix={<SearchOutlined className="text-gray-400" />}
+							value={filterParams.fileName}
+							onChange={e => setFilterParams(prev => ({ ...prev, fileName: e.target.value }))}
+							className={clsx(
+								"w-64",
+								"rounded-lg",
+								"border-gray-200",
+								"focus:border-blue-500",
+								"focus:ring-1 focus:ring-blue-500",
+								"transition-all duration-300"
+							)}
+						/>
+					</div>
+				</div>
+
+				<Tabs
+					activeKey={activeKey}
+					onChange={setActiveKey}
+					items={items}
+					className="mt-4"
+					tabBarStyle={{
+						marginBottom: 16,
+						borderBottom: "1px solid #f0f0f0"
+					}}
+				/>
+			</div>
+
+			<div
+				className={clsx(
+					"flex-1",
+					"p-6",
+					"rounded-2xl",
+					"bg-white",
+					"shadow-sm",
+					"border border-gray-100",
+					"transition-all duration-300",
+					"hover:shadow-md"
+				)}
+			>
+				<div className="flex justify-between items-center mb-6">
+					<Flex gap={4}>
 						<Popconfirm
 							title="确认下载"
 							icon={<DownloadOutlined style={{ color: "green" }} />}
@@ -430,7 +488,20 @@ const FileManage: React.FC<FileManageProps> = () => {
 							okText="确认"
 							cancelText="取消"
 						>
-							<Button type="primary" loading={downloadLoading}>
+							<Button
+								type="primary"
+								loading={downloadLoading}
+								icon={<DownloadOutlined />}
+								className={clsx(
+									"px-6 h-10",
+									"rounded-lg",
+									"bg-blue-500 hover:bg-blue-600",
+									"border-none",
+									"shadow-sm hover:shadow-md",
+									"transition-all duration-300",
+									"flex items-center gap-2"
+								)}
+							>
 								批量下载
 							</Button>
 						</Popconfirm>
@@ -438,7 +509,20 @@ const FileManage: React.FC<FileManageProps> = () => {
 							menu={{ items: accessItems, onClick: handleBatchAccessChange }}
 							trigger={["click"]}
 						>
-							<Button type="primary">修改权限</Button>
+							<Button
+								type="primary"
+								className={clsx(
+									"px-6 h-10",
+									"rounded-lg",
+									"bg-green-500 hover:bg-green-600",
+									"border-none",
+									"shadow-sm hover:shadow-md",
+									"transition-all duration-300",
+									"flex items-center gap-2"
+								)}
+							>
+								修改权限
+							</Button>
 						</Dropdown>
 						<Popconfirm
 							title="确认删除"
@@ -448,41 +532,91 @@ const FileManage: React.FC<FileManageProps> = () => {
 							okText="确认"
 							cancelText="取消"
 						>
-							<Button type="primary" danger>
+							<Button
+								type="primary"
+								danger
+								className={clsx(
+									"px-6 h-10",
+									"rounded-lg",
+									"border-none",
+									"shadow-sm hover:shadow-md",
+									"transition-all duration-300",
+									"flex items-center gap-2"
+								)}
+							>
 								批量删除
 							</Button>
 						</Popconfirm>
 					</Flex>
-					<div className={styles["main"]}>
-						<Table
-							rowSelection={rowSelection}
-							columns={columns}
-							dataSource={fileList}
-							rowKey="id"
-							loading={loading}
-							pagination={{
-								current: pagination.page,
-								pageSize: pagination.pageSize,
-								total: pagination.total,
-								onChange: (page, pageSize) => {
-									setPagination({ ...pagination, page, pageSize });
-									handleSearch({ ...filterParams, ...pagination, page, pageSize });
-								}
-							}}
-						/>
+					<div className="flex items-center gap-2">
+						<Button
+							icon={<FolderOutlined />}
+							className={clsx(
+								"px-4 h-10",
+								"rounded-lg",
+								"bg-gray-100 hover:bg-gray-200",
+								"border-none",
+								"shadow-sm hover:shadow-md",
+								"transition-all duration-300",
+								"flex items-center gap-2"
+							)}
+						>
+							新建文件夹
+						</Button>
+						<Button
+							icon={<FileOutlined />}
+							className={clsx(
+								"px-4 h-10",
+								"rounded-lg",
+								"bg-gray-100 hover:bg-gray-200",
+								"border-none",
+								"shadow-sm hover:shadow-md",
+								"transition-all duration-300",
+								"flex items-center gap-2"
+							)}
+						>
+							新建文件
+						</Button>
 					</div>
-				</Splitter.Panel>
-			</Splitter>
+				</div>
+
+				<Table
+					rowSelection={rowSelection}
+					columns={columns}
+					dataSource={fileList}
+					rowKey="id"
+					loading={loading}
+					pagination={{
+						current: pagination.page,
+						pageSize: pagination.pageSize,
+						total: pagination.total,
+						onChange: (page, pageSize) => {
+							setPagination({ ...pagination, page, pageSize });
+							handleSearch({ ...filterParams, ...pagination, page, pageSize });
+						}
+					}}
+					className={clsx("rounded-lg", "overflow-hidden", "border border-gray-100")}
+				/>
+			</div>
+
 			<Modal
 				title="重命名文件"
 				open={!!currentFile}
 				onOk={handleFileRename}
 				onCancel={() => setCurrentFile(null)}
+				className="rounded-lg"
 			>
 				<Input
 					value={newFileName}
 					onChange={e => setNewFileName(e.target.value)}
 					placeholder="输入新的文件名"
+					className={clsx(
+						"rounded-lg",
+						"border-gray-200",
+						"focus:border-blue-500",
+						"focus:ring-1 focus:ring-blue-500",
+						"transition-all duration-300"
+					)}
 				/>
 			</Modal>
 		</div>

@@ -1,12 +1,39 @@
 import { uploadChunksFile, uploadSingleFile } from "@/api/modules/file";
-import { BarsOutlined, DeleteFilled, FolderOutlined, UploadOutlined } from "@ant-design/icons";
+import {
+	AudioOutlined,
+	DeleteFilled,
+	FileImageOutlined,
+	FileOutlined,
+	FileTextOutlined,
+	FolderOutlined,
+	UploadOutlined
+} from "@ant-design/icons";
 import { Button, Empty, Space, Switch, Upload, message, notification } from "antd";
 import { RcFile, UploadChangeParam, UploadFile } from "antd/lib/upload";
 import React, { useState } from "react";
-import styles from "./index.module.scss";
+import clsx from "clsx";
+import { formatSize } from "@/utils";
 
 export type FileUploadProps = {
 	onUpload?: () => void;
+};
+
+// 文件类型图标映射
+const fileTypeIcons = {
+	image: <FileImageOutlined className="text-xl" />,
+	video: <AudioOutlined className="text-xl" />,
+	audio: <AudioOutlined className="text-xl" />,
+	document: <FileTextOutlined className="text-xl" />,
+	default: <FileOutlined className="text-xl" />
+};
+
+const getFileTypeIcon = (fileType: string | undefined) => {
+	if (!fileType) return fileTypeIcons.default;
+	if (fileType.startsWith("image")) return fileTypeIcons.image;
+	if (fileType.startsWith("video")) return fileTypeIcons.video;
+	if (fileType.startsWith("audio")) return fileTypeIcons.audio;
+	if (fileType.startsWith("application")) return fileTypeIcons.document;
+	return fileTypeIcons.default;
 };
 
 const FileUpload: React.FC<FileUploadProps> = ({ onUpload }) => {
@@ -96,17 +123,27 @@ const FileUpload: React.FC<FileUploadProps> = ({ onUpload }) => {
 	};
 
 	const getOptionIcon = ({ directory, multiple }: { directory: boolean; multiple: boolean }) => {
-		if (directory) return <FolderOutlined />;
-		if (multiple) return <BarsOutlined />;
-		return <UploadOutlined />;
+		if (directory) return <FolderOutlined className="text-2xl" />;
+		if (multiple) return <FileOutlined className="text-2xl" />;
+		return <UploadOutlined className="text-2xl" />;
 	};
 
 	return (
 		<>
 			{contextHolder}
-			<div className={styles.container}>
+			<div className="flex flex-col gap-6">
 				{/* 拖拽上传区域 */}
-				<div className={styles.draggerWrapper}>
+				<div
+					className={clsx(
+						"relative",
+						"rounded-2xl",
+						"bg-gradient-to-br from-blue-50 to-indigo-50",
+						"border-2 border-dashed border-blue-200",
+						"transition-all duration-300",
+						"hover:border-blue-400",
+						"hover:shadow-lg"
+					)}
+				>
 					<Upload.Dragger
 						name="file"
 						multiple={multipleMode}
@@ -115,76 +152,180 @@ const FileUpload: React.FC<FileUploadProps> = ({ onUpload }) => {
 						onChange={handleChange}
 						fileList={fileList}
 						showUploadList={false}
-						style={{
-							maxHeight: "200px",
-							width: "100%",
-							borderRadius: "10px",
-							boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)"
-						}}
+						className={clsx("p-8", "bg-transparent", "border-none", "hover:bg-transparent")}
 					>
-						<p className="ant-upload-drag-icon">
-							{getOptionIcon({ directory: directoryMode, multiple: multipleMode })}
-						</p>
-						<p className="ant-upload-text">
-							点击或拖拽{getOptionText({ directory: directoryMode, multiple: multipleMode })}
-							到此区域上传
-						</p>
+						<div className="flex flex-col items-center gap-4">
+							<div
+								className={clsx(
+									"w-16 h-16",
+									"rounded-full",
+									"bg-blue-100",
+									"flex items-center justify-center",
+									"text-blue-500",
+									"transition-all duration-300",
+									"group-hover:bg-blue-200"
+								)}
+							>
+								{getOptionIcon({ directory: directoryMode, multiple: multipleMode })}
+							</div>
+							<div className="text-center">
+								<p className="text-lg font-medium text-gray-800 mb-2">
+									点击或拖拽{getOptionText({ directory: directoryMode, multiple: multipleMode })}
+									到此区域上传
+								</p>
+								<p className="text-sm text-gray-500">支持单个文件、多个文件或整个文件夹上传</p>
+							</div>
+						</div>
 					</Upload.Dragger>
-					{/* 控制开关 */}
-					<div style={{ marginTop: 16, display: "flex", justifyContent: "space-between" }}>
-						<div>
-							<span>目录模式：</span>
+				</div>
+
+				{/* 控制开关 */}
+				<div
+					className={clsx(
+						"flex justify-between items-center",
+						"p-4",
+						"rounded-xl",
+						"bg-white",
+						"shadow-sm",
+						"border border-gray-100"
+					)}
+				>
+					<div className="flex items-center gap-4">
+						<div className="flex items-center gap-2">
+							<span className="text-gray-600">目录模式：</span>
 							<Switch
 								checkedChildren="开启"
 								unCheckedChildren="关闭"
 								checked={directoryMode}
 								onChange={handleDirectoryModeChange}
+								className="bg-gray-200"
 							/>
 						</div>
-						<div>
-							<span>多文件模式：</span>
+						<div className="flex items-center gap-2">
+							<span className="text-gray-600">多文件模式：</span>
 							<Switch
 								checkedChildren="开启"
 								unCheckedChildren="关闭"
 								checked={multipleMode}
 								onChange={handleMultipleModeChange}
+								className="bg-gray-200"
 							/>
 						</div>
 					</div>
+					<Space>
+						<Button
+							icon={<UploadOutlined />}
+							className={clsx(
+								"px-6 h-10",
+								"rounded-lg",
+								"bg-blue-500 hover:bg-blue-600",
+								"border-none",
+								"shadow-sm hover:shadow-md",
+								"transition-all duration-300",
+								"flex items-center gap-2"
+							)}
+						>
+							点击上传
+						</Button>
+						<Button
+							icon={<DeleteFilled />}
+							onClick={event => {
+								event.stopPropagation();
+								setFileList([]);
+							}}
+							danger
+							className={clsx(
+								"px-6 h-10",
+								"rounded-lg",
+								"border-none",
+								"shadow-sm hover:shadow-md",
+								"transition-all duration-300",
+								"flex items-center gap-2"
+							)}
+						>
+							清空记录
+						</Button>
+					</Space>
 				</div>
 
 				{/* 显示上传列表 */}
-				<div className={styles.fileListWrapper}>
-					<Upload
-						directory={directoryMode}
-						multiple={multipleMode}
-						listType="picture"
-						fileList={fileList}
-						onChange={handleChange}
-						customRequest={customRequest}
-						showUploadList={{ showRemoveIcon: true }}
-					>
-						<Space wrap>
-							<Button icon={<UploadOutlined />}>
-								点击上传{getOptionText({ directory: directoryMode, multiple: multipleMode })}
-							</Button>
-							<Button
-								icon={<DeleteFilled />}
-								onClick={event => {
-									event.stopPropagation();
-									setFileList([]);
-								}}
-								danger
-							>
-								清空上传记录
-							</Button>
-						</Space>
-					</Upload>
-
-					{fileList.length === 0 && (
-						<div className={styles.emptyWrapper}>
-							<Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
+				<div
+					className={clsx(
+						"flex-1",
+						"p-6",
+						"rounded-2xl",
+						"bg-white",
+						"shadow-sm",
+						"border border-gray-100",
+						"transition-all duration-300",
+						"hover:shadow-md"
+					)}
+				>
+					{fileList.length === 0 ? (
+						<div className="flex flex-col items-center justify-center h-64">
+							<Empty
+								image={Empty.PRESENTED_IMAGE_SIMPLE}
+								description="暂无上传记录"
+								className="text-gray-400"
+							/>
 						</div>
+					) : (
+						<Upload
+							directory={directoryMode}
+							multiple={multipleMode}
+							listType="picture"
+							fileList={fileList}
+							onChange={handleChange}
+							customRequest={customRequest}
+							showUploadList={{ showRemoveIcon: true }}
+							className="upload-list"
+						>
+							<div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+								{fileList.map(file => (
+									<div
+										key={file.uid}
+										className={clsx(
+											"relative",
+											"p-4",
+											"rounded-lg",
+											"bg-gray-50",
+											"border border-gray-200",
+											"transition-all duration-300",
+											"hover:shadow-md"
+										)}
+									>
+										<div className="flex items-center gap-3">
+											<div
+												className={clsx(
+													"w-10 h-10",
+													"rounded-lg",
+													"bg-white",
+													"flex items-center justify-center",
+													"text-gray-500"
+												)}
+											>
+												{getFileTypeIcon(file.type)}
+											</div>
+											<div className="flex-1 min-w-0">
+												<p className="text-sm font-medium text-gray-800 truncate">{file.name}</p>
+												<p className="text-xs text-gray-500">{formatSize(file.size || 0)}</p>
+											</div>
+										</div>
+										{file.percent !== undefined && file.percent < 100 && (
+											<div className="mt-2">
+												<div className="h-1 bg-gray-200 rounded-full overflow-hidden">
+													<div
+														className="h-full bg-blue-500 transition-all duration-300"
+														style={{ width: `${file.percent}%` }}
+													/>
+												</div>
+												<p className="text-xs text-gray-500 mt-1">{Math.round(file.percent)}%</p>
+											</div>
+										)}
+									</div>
+								))}
+							</div>
+						</Upload>
 					)}
 				</div>
 			</div>
