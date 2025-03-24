@@ -6,11 +6,23 @@ import FilePreview from "@/components/Table/FilePreview";
 import FileTypeTag from "@/components/Table/FileTypeTag";
 import { MIMETypeValue } from "@/constants/mimeType";
 import { formatSize, getFileType } from "@/utils";
-import { Button, Card, Col, message, Row, Table, TableColumnsType } from "antd";
+import { ReloadOutlined } from "@ant-design/icons";
+import {
+	Button,
+	Card,
+	Col,
+	message,
+	Row,
+	Table,
+	TableColumnsType,
+	Tooltip,
+	Typography
+} from "antd";
+import clsx from "clsx";
 import dayjs from "dayjs";
 import { CSSProperties, useEffect, useMemo, useState } from "react";
-import styles from "./Dashboard.module.scss";
 
+const { Title, Text } = Typography;
 const totalSpace = 1_000_000_000; // 1GB
 
 const Dashboard: React.FC = () => {
@@ -94,9 +106,12 @@ const Dashboard: React.FC = () => {
 	}, []);
 
 	const fileCardStyle = (type: string): CSSProperties => ({
-		border: selectedType === type ? "1px solid #1890ff" : "",
-		borderRadius: "20px",
-		boxSizing: "border-box"
+		border: selectedType === type ? "2px solid #1890ff" : "1px solid #f0f0f0",
+		borderRadius: "16px",
+		boxSizing: "border-box",
+		transition: "all 0.3s ease",
+		transform: selectedType === type ? "translateY(-2px)" : "none",
+		boxShadow: selectedType === type ? "0 4px 12px rgba(24, 144, 255, 0.1)" : "none"
 	});
 
 	const columns: TableColumnsType<FileMeta> = [
@@ -127,96 +142,169 @@ const Dashboard: React.FC = () => {
 	];
 
 	return (
-		<Row className={styles["container"]} gutter={10}>
-			<Col span={12} className={styles["dashboard-l"]}>
-				<Row className={styles["dashboard-row"]}>
-					<Col span={24}>
-						<Card className={styles["disk-card"]}>
-							<div className={styles["disk-box"]}>
-								<div className={styles["disk-info"]}>
-									<div className={styles["title"]}>空间使用情况</div>
-									<div className={styles["subtitle"]}>
-										{`已用 ${formattedUsedSpace} / 总空间 ${formattedTotalSpace}`}
-									</div>
+		<div
+			className={clsx(
+				"h-full w-full",
+				"p-6",
+				"rounded-2xl",
+				"flex flex-col",
+				"bg-gradient-to-br from-white to-gray-50",
+				"overflow-y-auto"
+			)}
+		>
+			<Row gutter={[24, 24]}>
+				<Col span={12}>
+					<Card
+						className={clsx(
+							"h-full",
+							"rounded-2xl",
+							"bg-white",
+							"shadow-sm",
+							"border border-gray-100",
+							"transition-all duration-300",
+							"hover:shadow-md"
+						)}
+					>
+						<div className="flex flex-col gap-6">
+							<div className="flex justify-between items-center">
+								<div>
+									<Title level={3} className="!mb-2">
+										存储空间概览
+									</Title>
+									<Text type="secondary">
+										已用 {formattedUsedSpace} / 总空间 {formattedTotalSpace}
+									</Text>
 								</div>
-								<div className={styles["disk-chart"]}>
-									<DiskSpaceUsageChart usedSpace={totalUsage} />
-								</div>
+								<Tooltip title="刷新数据">
+									<Button
+										type="text"
+										icon={<ReloadOutlined />}
+										onClick={initialize}
+										className="text-gray-400 hover:text-blue-500"
+									/>
+								</Tooltip>
 							</div>
-						</Card>
-					</Col>
-				</Row>
-				<Row className={styles["dashboard-row"]} gutter={16}>
-					<Col span={12}>
-						<FileCard
-							info={diskReport?.application}
-							type="文档"
-							color="#ff4848"
-							onClick={() => handleSelect("application")}
-							style={fileCardStyle("application")}
-						/>
-					</Col>
-					<Col span={12}>
-						<FileCard
-							info={diskReport?.image}
-							type="图片"
-							icon="FileImageOutlined"
-							color="#4892ff"
-							onClick={() => handleSelect("image")}
-							style={fileCardStyle("image")}
-						/>
-					</Col>
-				</Row>
-				<Row className={styles["dashboard-row"]} gutter={16}>
-					<Col span={12}>
-						<FileCard
-							info={diskReport?.video}
-							type="视频"
-							color="#aa48ff"
-							icon="VideoCameraOutlined"
-							onClick={() => handleSelect("video")}
-							style={fileCardStyle("video")}
-						/>
-					</Col>
-					<Col span={12}>
-						<FileCard
-							info={diskReport?.audio}
-							type="音频"
-							icon="FileZipOutlined"
-							onClick={() => handleSelect("audio")}
-							style={fileCardStyle("audio")}
-						/>
-					</Col>
-				</Row>
-				<Row gutter={16}>
-					<Col span={12}>
-						<FileCard
-							info={diskReport?.app}
-							type="压缩包"
-							color="#ccc200"
-							icon="FileZipOutlined"
-							onClick={() => handleSelect("app")}
-							style={fileCardStyle("app")}
-						/>
-					</Col>
-					<Col span={12}>
-						<FileCard
-							info={diskReport?.other}
-							type="其他"
-							color="#ffaa00"
-							icon="FileZipOutlined"
-							onClick={() => handleSelect("other")}
-							style={fileCardStyle("other")}
-						/>
-					</Col>
-				</Row>
-			</Col>
-			<Col span={12} className={styles["dashboard-r"]}>
-				<Card
-					title="文件列表"
-					className={styles["table-card"]}
-					extra={<Button onClick={() => handleSelect(undefined)}>重置</Button>}
-				>
+							<div className="h-[300px]">
+								<DiskSpaceUsageChart usedSpace={totalUsage} />
+							</div>
+						</div>
+					</Card>
+				</Col>
+				<Col span={12}>
+					<Card
+						className={clsx(
+							"h-full",
+							"rounded-2xl",
+							"bg-white",
+							"shadow-sm",
+							"border border-gray-100",
+							"transition-all duration-300",
+							"hover:shadow-md"
+						)}
+					>
+						<div className="flex flex-col gap-6">
+							<div className="flex justify-between items-center">
+								<Title level={3} className="!mb-0">
+									文件类型统计
+								</Title>
+								<Button
+									type="link"
+									onClick={() => handleSelect(undefined)}
+									className="text-blue-500 hover:text-blue-600"
+								>
+									重置
+								</Button>
+							</div>
+							<Row gutter={[16, 16]}>
+								<Col span={12}>
+									<FileCard
+										info={diskReport?.application}
+										type="文档"
+										icon={"FileOutlined"}
+										color="#ff4848"
+										onClick={() => handleSelect("application")}
+										style={fileCardStyle("application")}
+									/>
+								</Col>
+								<Col span={12}>
+									<FileCard
+										info={diskReport?.image}
+										type="图片"
+										icon={"FileImageOutlined"}
+										color="#4892ff"
+										onClick={() => handleSelect("image")}
+										style={fileCardStyle("image")}
+									/>
+								</Col>
+								<Col span={12}>
+									<FileCard
+										info={diskReport?.video}
+										type="视频"
+										icon={"VideoCameraOutlined"}
+										color="#aa48ff"
+										onClick={() => handleSelect("video")}
+										style={fileCardStyle("video")}
+									/>
+								</Col>
+								<Col span={12}>
+									<FileCard
+										info={diskReport?.audio}
+										type="音频"
+										icon={"AudioOutlined"}
+										onClick={() => handleSelect("audio")}
+										style={fileCardStyle("audio")}
+									/>
+								</Col>
+								<Col span={12}>
+									<FileCard
+										info={diskReport?.app}
+										type="压缩包"
+										icon={"FileZipOutlined"}
+										color="#ccc200"
+										onClick={() => handleSelect("app")}
+										style={fileCardStyle("app")}
+									/>
+								</Col>
+								<Col span={12}>
+									<FileCard
+										info={diskReport?.other}
+										type="其他"
+										icon={"AppstoreOutlined"}
+										color="#ffaa00"
+										onClick={() => handleSelect("other")}
+										style={fileCardStyle("other")}
+									/>
+								</Col>
+							</Row>
+						</div>
+					</Card>
+				</Col>
+			</Row>
+
+			<Card
+				className={clsx(
+					"mt-6",
+					"rounded-2xl",
+					"bg-white",
+					"shadow-sm",
+					"border border-gray-100",
+					"transition-all duration-300",
+					"hover:shadow-md"
+				)}
+			>
+				<div className="flex flex-col gap-6">
+					<div className="flex justify-between items-center">
+						<Title level={3} className="!mb-0">
+							文件列表
+						</Title>
+						<Button
+							type="link"
+							onClick={() => handleSelect(undefined)}
+							className="text-blue-500 hover:text-blue-600"
+						>
+							重置筛选
+						</Button>
+					</div>
 					<Table<FileMeta>
 						loading={loading}
 						columns={columns}
@@ -236,10 +324,11 @@ const Dashboard: React.FC = () => {
 							}
 						}}
 						rowKey="id"
+						className={clsx("rounded-lg", "overflow-hidden", "border border-gray-100")}
 					/>
-				</Card>
-			</Col>
-		</Row>
+				</div>
+			</Card>
+		</div>
 	);
 };
 
