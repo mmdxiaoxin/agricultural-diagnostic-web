@@ -11,6 +11,7 @@ import {
 import FileFilter from "@/components/FileFilter";
 import FileUpload from "@/components/FileUpload";
 import DownloadList from "@/components/List/DownloadList";
+import RenameFileModal, { RenameFileModalRef } from "@/components/Modal/RenameFileModal";
 import FileAccess from "@/components/Table/FileAccess";
 import FilePreview from "@/components/Table/FilePreview";
 import FileTypeTag from "@/components/Table/FileTypeTag";
@@ -31,7 +32,6 @@ import {
 	Input,
 	MenuProps,
 	message,
-	Modal,
 	Popconfirm,
 	Space,
 	Table,
@@ -42,7 +42,7 @@ import {
 import { TableRowSelection } from "antd/es/table/interface";
 import clsx from "clsx";
 import dayjs from "dayjs";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router";
 
 export type FileManageProps = {};
@@ -74,7 +74,7 @@ const FileManage: React.FC<FileManageProps> = () => {
 		total: 0
 	});
 	const [currentFile, setCurrentFile] = useState<FileMeta | null>(null);
-	const [newFileName, setNewFileName] = useState("");
+	const renameModalRef = useRef<RenameFileModalRef>(null);
 
 	const navigate = useNavigate();
 
@@ -134,7 +134,7 @@ const FileManage: React.FC<FileManageProps> = () => {
 
 	const handleRename = (file: FileMeta) => {
 		setCurrentFile(file);
-		setNewFileName(file.originalFileName);
+		renameModalRef.current?.open(file.originalFileName);
 	};
 
 	const handleDelete = async (fileId: number) => {
@@ -163,7 +163,7 @@ const FileManage: React.FC<FileManageProps> = () => {
 		}
 	};
 
-	const handleFileRename = async () => {
+	const handleFileRename = async (newFileName: string) => {
 		if (!newFileName.trim()) {
 			message.error("文件名不能为空");
 			return;
@@ -177,7 +177,6 @@ const FileManage: React.FC<FileManageProps> = () => {
 				message.error("重命名失败");
 			} finally {
 				setCurrentFile(null);
-				setNewFileName("");
 			}
 		}
 	};
@@ -637,26 +636,7 @@ const FileManage: React.FC<FileManageProps> = () => {
 				/>
 			</div>
 
-			<Modal
-				title="重命名文件"
-				open={!!currentFile}
-				onOk={handleFileRename}
-				onCancel={() => setCurrentFile(null)}
-				className="rounded-lg"
-			>
-				<Input
-					value={newFileName}
-					onChange={e => setNewFileName(e.target.value)}
-					placeholder="输入新的文件名"
-					className={clsx(
-						"rounded-lg",
-						"border-gray-200",
-						"focus:border-blue-500",
-						"focus:ring-1 focus:ring-blue-500",
-						"transition-all duration-300"
-					)}
-				/>
-			</Modal>
+			<RenameFileModal ref={renameModalRef} onOk={handleFileRename} />
 		</div>
 	);
 };
