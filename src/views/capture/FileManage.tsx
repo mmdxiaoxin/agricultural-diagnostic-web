@@ -22,11 +22,13 @@ import {
 	DownloadOutlined,
 	EditOutlined,
 	FolderOutlined,
-	SearchOutlined
+	SearchOutlined,
+	SettingOutlined
 } from "@ant-design/icons";
 import {
 	Badge,
 	Button,
+	Collapse,
 	Dropdown,
 	Flex,
 	Input,
@@ -75,6 +77,7 @@ const FileManage: React.FC<FileManageProps> = () => {
 	});
 	const [currentFile, setCurrentFile] = useState<FileMeta | null>(null);
 	const renameModalRef = useRef<RenameFileModalRef>(null);
+	const [activeCollapse, setActiveCollapse] = useState<string[]>(["1"]);
 
 	const navigate = useNavigate();
 
@@ -469,10 +472,11 @@ const FileManage: React.FC<FileManageProps> = () => {
 				"overflow-y-auto"
 			)}
 		>
-			<div
+			<Collapse
+				activeKey={activeCollapse}
+				onChange={setActiveCollapse}
 				className={clsx(
-					"flex flex-col gap-6",
-					"mb-6 p-6",
+					"mb-6",
 					"rounded-2xl",
 					"bg-white",
 					"shadow-sm",
@@ -481,40 +485,53 @@ const FileManage: React.FC<FileManageProps> = () => {
 					"hover:shadow-md"
 				)}
 			>
-				<div className="flex justify-between items-center">
-					<div className="flex flex-col">
-						<h2 className="text-2xl font-semibold text-gray-800 mb-2">文件管理</h2>
-						<p className="text-gray-500">共 {fileList.length} 个文件</p>
-					</div>
-					<div className="flex items-center gap-4">
-						<Input
-							placeholder="搜索文件..."
-							prefix={<SearchOutlined className="text-gray-400" />}
-							value={filterParams.fileName}
-							onChange={e => setFilterParams(prev => ({ ...prev, fileName: e.target.value }))}
-							className={clsx(
-								"w-64",
-								"rounded-lg",
-								"border-gray-200",
-								"focus:border-blue-500",
-								"focus:ring-1 focus:ring-blue-500",
-								"transition-all duration-300"
-							)}
+				<Collapse.Panel
+					key="1"
+					header={
+						<div className="flex items-center gap-2">
+							<SettingOutlined className="text-lg text-gray-500" />
+							<span className="text-base font-medium">文件管理功能区</span>
+						</div>
+					}
+					className="border-none"
+				>
+					<div className="flex flex-col gap-6">
+						<div className="flex justify-between items-center">
+							<div className="flex flex-col">
+								<h2 className="text-2xl font-semibold text-gray-800 mb-2">文件管理</h2>
+								<p className="text-gray-500">共 {fileList.length} 个文件</p>
+							</div>
+							<div className="flex items-center gap-4">
+								<Input
+									placeholder="搜索文件..."
+									prefix={<SearchOutlined className="text-gray-400" />}
+									value={filterParams.fileName}
+									onChange={e => setFilterParams(prev => ({ ...prev, fileName: e.target.value }))}
+									className={clsx(
+										"w-64",
+										"rounded-lg",
+										"border-gray-200",
+										"focus:border-blue-500",
+										"focus:ring-1 focus:ring-blue-500",
+										"transition-all duration-300"
+									)}
+								/>
+							</div>
+						</div>
+
+						<Tabs
+							activeKey={activeKey}
+							onChange={setActiveKey}
+							items={items}
+							className="mt-4"
+							tabBarStyle={{
+								marginBottom: 16,
+								borderBottom: "1px solid #f0f0f0"
+							}}
 						/>
 					</div>
-				</div>
-
-				<Tabs
-					activeKey={activeKey}
-					onChange={setActiveKey}
-					items={items}
-					className="mt-4"
-					tabBarStyle={{
-						marginBottom: 16,
-						borderBottom: "1px solid #f0f0f0"
-					}}
-				/>
-			</div>
+				</Collapse.Panel>
+			</Collapse>
 
 			<div
 				className={clsx(
