@@ -3,7 +3,7 @@ import { deleteDiagnosisHistory, getDiagnosisHistoryList } from "@/api/modules";
 import DiagnosisDetailModal, {
 	DiagnosisDetailModalRef
 } from "@/components/Modal/DiagnosisDetailModal";
-import { DeleteOutlined } from "@ant-design/icons";
+import { DeleteOutlined, SelectOutlined } from "@ant-design/icons";
 import { Button, Popconfirm, Space, Table, Tag, Typography, message } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import clsx from "clsx";
@@ -20,6 +20,8 @@ const DiagnosisHistoryPage: React.FC = () => {
 		pageSize: 10,
 		total: 0
 	});
+	const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
+	const [isSelectMode, setIsSelectMode] = useState(false);
 	const modalRef = useRef<DiagnosisDetailModalRef>(null);
 
 	// 获取诊断历史列表
@@ -52,6 +54,20 @@ const DiagnosisHistoryPage: React.FC = () => {
 		} catch (error) {
 			console.error("删除失败", error);
 			message.error("删除失败");
+		}
+	};
+
+	// 批量删除
+	const handleBatchDelete = async () => {
+		try {
+			await Promise.all(selectedRowKeys.map(id => deleteDiagnosisHistory(id as number)));
+			message.success("批量删除成功");
+			setSelectedRowKeys([]);
+			setIsSelectMode(false);
+			fetchDiagnosisHistory(pagination.current, pagination.pageSize);
+		} catch (error) {
+			console.error("批量删除失败", error);
+			message.error("批量删除失败");
 		}
 	};
 
@@ -126,13 +142,71 @@ const DiagnosisHistoryPage: React.FC = () => {
 		fetchDiagnosisHistory(newPagination.current, newPagination.pageSize);
 	};
 
+	// 选择模式切换
+	const toggleSelectMode = () => {
+		setIsSelectMode(!isSelectMode);
+		setSelectedRowKeys([]);
+	};
+
 	useEffect(() => {
 		fetchDiagnosisHistory();
 	}, []);
 
 	return (
-		<div title="诊断历史" className={clsx("h-full", "bg-white rounded-lg overflow-y-auto")}>
+		<div title="诊断历史" className={clsx("h-full", "bg-white rounded-lg overflow-y-auto px-4")}>
+			<div className="p-4 border-b border-gray-100">
+				<div className="flex items-center justify-between">
+					<div className="flex items-center gap-2">
+						<Button
+							type={isSelectMode ? "primary" : "default"}
+							icon={<SelectOutlined />}
+							onClick={toggleSelectMode}
+							className={clsx(
+								"transition-all duration-200",
+								isSelectMode && "bg-blue-500 hover:bg-blue-600"
+							)}
+						>
+							{isSelectMode ? "退出选择" : "批量选择"}
+						</Button>
+						{isSelectMode && (
+							<Popconfirm
+								title="确定要删除选中的记录吗？"
+								description={`已选择 ${selectedRowKeys.length} 条记录，删除后将无法恢复`}
+								onConfirm={handleBatchDelete}
+								okText="确定"
+								cancelText="取消"
+							>
+								<Button
+									danger
+									icon={<DeleteOutlined />}
+									disabled={selectedRowKeys.length === 0}
+									className="transition-all duration-200"
+								>
+									批量删除
+								</Button>
+							</Popconfirm>
+						)}
+					</div>
+					{isSelectMode && (
+						<div className="flex items-center gap-2">
+							<Tag color="blue" className="px-3 py-1 rounded-full">
+								已选择 {selectedRowKeys.length} 条记录
+							</Tag>
+						</div>
+					)}
+				</div>
+			</div>
 			<Table
+				rowSelection={
+					isSelectMode
+						? {
+								selectedRowKeys,
+								onChange: newSelectedRowKeys => {
+									setSelectedRowKeys(newSelectedRowKeys);
+								}
+							}
+						: undefined
+				}
 				columns={columns}
 				dataSource={data}
 				rowKey="id"
@@ -140,6 +214,7 @@ const DiagnosisHistoryPage: React.FC = () => {
 				loading={loading}
 				onChange={handleTableChange}
 				scroll={{ x: 1000 }}
+				className={clsx("transition-all duration-200", isSelectMode && "bg-gray-50")}
 			/>
 			<DiagnosisDetailModal ref={modalRef} />
 		</div>
