@@ -1,6 +1,17 @@
 import { DiagnosisHistory } from "@/api/interface/diagnosis";
-import { downloadFile, getDiagnosisHistoryList } from "@/api/modules";
-import { Button, Flex, List, Skeleton, Space, Tooltip, Typography } from "antd";
+import { deleteDiagnosisHistory, downloadFile, getDiagnosisHistoryList } from "@/api/modules";
+import {
+	Button,
+	Flex,
+	List,
+	Popconfirm,
+	Skeleton,
+	Space,
+	Tooltip,
+	Typography,
+	message
+} from "antd";
+import { DeleteOutlined } from "@ant-design/icons";
 import React, { useEffect, useMemo, useState } from "react";
 
 const pageSize = 5;
@@ -27,6 +38,19 @@ const DiagnosisList: React.FC = () => {
 		}
 	};
 
+	// 删除诊断历史
+	const handleDelete = async (id: number) => {
+		try {
+			await deleteDiagnosisHistory(id);
+			message.success("删除成功");
+			// 重新加载列表
+			initDiagnosisList();
+		} catch (error) {
+			console.error("删除失败", error);
+			message.error("删除失败");
+		}
+	};
+
 	const onLoadMore = () => {
 		setLoading(true);
 		setDiagnosisList(prevList => prevList.concat(Array(pageSize).fill({ loading: true })));
@@ -36,7 +60,7 @@ const DiagnosisList: React.FC = () => {
 				if (response.code === 200 && response.data) {
 					const newDiagnosisList = await Promise.all(
 						response.data.list.map(async (diagnosis: DiagnosisHistory) => {
-							const imageUrl = await loadImage(diagnosis.id);
+							const imageUrl = await loadImage(diagnosis.fileId);
 							return { ...diagnosis, loading: false, imageUrl };
 						})
 					);
@@ -70,7 +94,7 @@ const DiagnosisList: React.FC = () => {
 			if (response.code === 200 && response.data) {
 				const list = await Promise.all(
 					response.data.list.map(async (diagnosis: DiagnosisHistory) => {
-						const imageUrl = await loadImage(diagnosis.id);
+						const imageUrl = await loadImage(diagnosis.fileId);
 						return { ...diagnosis, loading: false, imageUrl };
 					})
 				);
@@ -129,7 +153,26 @@ const DiagnosisList: React.FC = () => {
 			renderItem={item => {
 				const { className, confidence } = getDiagnosisInfo(item);
 				return (
-					<List.Item className="hover:bg-gray-100 rounded-lg cursor-pointer">
+					<List.Item
+						className="hover:bg-gray-100 rounded-lg cursor-pointer group"
+						actions={[
+							<Popconfirm
+								key="delete"
+								title="确定要删除这条诊断记录吗？"
+								description="删除后将无法恢复"
+								onConfirm={() => handleDelete(item.id)}
+								okText="确定"
+								cancelText="取消"
+							>
+								<Button
+									type="text"
+									danger
+									icon={<DeleteOutlined />}
+									className="opacity-0 group-hover:opacity-100 transition-opacity"
+								/>
+							</Popconfirm>
+						]}
+					>
 						<Skeleton avatar title={false} loading={item.loading} active>
 							<List.Item.Meta
 								avatar={

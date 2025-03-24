@@ -31,14 +31,19 @@ export const getDiagnosisStatus = async (id: number) => {
 	return http.get<any>(`/diagnosis/${id}/status`);
 };
 
+// * 获取诊断支持信息
+export const getDiagnosisSupport = async () => {
+	return http.get<any>("/diagnosis/support");
+};
+
 // * 获取诊断历史
 export const getDiagnosisHistory = async () => {
 	return http.get<any>("/diagnosis/history");
 };
 
-// * 获取诊断支持信息
-export const getDiagnosisSupport = async () => {
-	return http.get<any>("/diagnosis/support");
+// * 删除诊断历史
+export const deleteDiagnosisHistory = async (id: number) => {
+	return http.delete<null>(`/diagnosis/history/${id}`);
 };
 
 // * 获取诊断历史列表
