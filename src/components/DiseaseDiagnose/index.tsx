@@ -117,7 +117,7 @@ const DiseaseDiagnose: React.FC = () => {
 	};
 
 	return (
-		<Card title="植物病害诊断" className="mx-auto max-w-3xl my-5">
+		<Card title="植物病害诊断" className="max-w-3xl">
 			<Space direction="vertical" className="w-full" size="large">
 				{/* 图片选择与预览 */}
 				<Card size="small" className="bg-gray-50">
