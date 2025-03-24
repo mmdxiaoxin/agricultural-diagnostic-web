@@ -1,8 +1,8 @@
 import { DatasetMeta } from "@/api/interface";
 import { deleteDataset, getDatasetsList } from "@/api/modules";
 import DatasetsList from "@/components/List/DatasetsList";
-import { FolderAddOutlined, PlusOutlined } from "@ant-design/icons";
-import { Button, FloatButton, message, Spin } from "antd";
+import { FolderAddOutlined, PlusOutlined, SearchOutlined } from "@ant-design/icons";
+import { Button, FloatButton, Input, message, Spin, Tabs } from "antd";
 import clsx from "clsx";
 import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router";
@@ -10,16 +10,18 @@ import { useNavigate } from "react-router";
 export type DatasetManageProps = {};
 
 const DatasetManage: React.FC<DatasetManageProps> = () => {
-	const [loading, setLoading] = useState<boolean>(false); // 控制加载状态
-	const [datasets, setDatasets] = useState<DatasetMeta[]>([]); // 存储数据集
-	const [hasMore, setHasMore] = useState<boolean>(true); // 是否还有更多数据
-	const pageRef = useRef<number>(1); // 使用 useRef 来保存最新的页码，避免异步问题
-	const loadMoreRef = useRef<HTMLDivElement | null>(null); // 用来绑定底部目标元素
+	const [loading, setLoading] = useState<boolean>(false);
+	const [datasets, setDatasets] = useState<DatasetMeta[]>([]);
+	const [hasMore, setHasMore] = useState<boolean>(true);
+	const [searchText, setSearchText] = useState("");
+	const [activeTab, setActiveTab] = useState("1");
+	const pageRef = useRef<number>(1);
+	const loadMoreRef = useRef<HTMLDivElement | null>(null);
 	const navigate = useNavigate();
 
 	// 请求数据集列表
 	const fetchListData = async (currentPage: number) => {
-		if (loading || !hasMore) return; // 防止重复请求
+		if (loading || !hasMore) return;
 		setLoading(true);
 		try {
 			const res = await getDatasetsList({ page: currentPage, pageSize: 10 });
@@ -27,10 +29,8 @@ const DatasetManage: React.FC<DatasetManageProps> = () => {
 				throw new Error(res.message);
 			}
 			const newList = res.data.list;
-			setDatasets(prevDatasets => [...prevDatasets, ...newList]); // 将新数据追加到旧数据后面
-
-			// 如果返回的数据少于请求的页数，说明没有更多数据了
-			setHasMore(res.data.list.length === 10); // 假设每页最多 10 条数据
+			setDatasets(prevDatasets => [...prevDatasets, ...newList]);
+			setHasMore(res.data.list.length === 10);
 		} catch (error) {
 			message.error("加载文件列表失败");
 		} finally {
@@ -38,23 +38,20 @@ const DatasetManage: React.FC<DatasetManageProps> = () => {
 		}
 	};
 
-	// 初始化加载第一页数据
 	useEffect(() => {
 		fetchListData(pageRef.current);
 	}, []);
 
-	// 设置 IntersectionObserver 来监视加载更多元素
 	useEffect(() => {
 		const observer = new IntersectionObserver(
 			entries => {
-				// 如果目标元素进入视口并且还有更多数据
 				if (entries[0].isIntersecting && hasMore) {
-					pageRef.current += 1; // 更新最新的页码
-					fetchListData(pageRef.current); // 加载下一页
+					pageRef.current += 1;
+					fetchListData(pageRef.current);
 				}
 			},
 			{
-				rootMargin: "0px 0px 100px 0px" // 设置在接近底部时就开始加载
+				rootMargin: "0px 0px 100px 0px"
 			}
 		);
 
@@ -62,7 +59,6 @@ const DatasetManage: React.FC<DatasetManageProps> = () => {
 			observer.observe(loadMoreRef.current);
 		}
 
-		// 清理 observer
 		return () => {
 			if (loadMoreRef.current) {
 				observer.unobserve(loadMoreRef.current);
@@ -70,27 +66,48 @@ const DatasetManage: React.FC<DatasetManageProps> = () => {
 		};
 	}, [hasMore]);
 
-	// 新增数据集
 	const handleAdd = () => {
 		navigate("/capture/dataset/create");
 	};
 
-	// 编辑数据集
 	const handleEdit = (datasetId: number) => {
 		navigate(`/capture/dataset/edit/${datasetId}`);
 	};
 
-	// 删除数据集
 	const handleDelete = async (datasetId: number) => {
 		try {
 			await deleteDataset(datasetId);
-			// 删除后重新加载列表
 			setDatasets(datasets.filter(dataset => dataset.id !== datasetId));
 			message.success("文件删除成功");
 		} catch (error) {
 			message.error("删除文件失败");
 		}
 	};
+
+	const filteredDatasets = datasets.filter(dataset =>
+		dataset.name.toLowerCase().includes(searchText.toLowerCase())
+	);
+
+	const items = [
+		{
+			key: "1",
+			label: "全部数据集",
+			children: (
+				<div className="flex-1">
+					<DatasetsList datasets={filteredDatasets} onEdit={handleEdit} onDelete={handleDelete} />
+				</div>
+			)
+		},
+		{
+			key: "2",
+			label: "我的数据集",
+			children: (
+				<div className="flex-1">
+					<DatasetsList datasets={filteredDatasets} onEdit={handleEdit} onDelete={handleDelete} />
+				</div>
+			)
+		}
+	];
 
 	return (
 		<div
@@ -103,16 +120,9 @@ const DatasetManage: React.FC<DatasetManageProps> = () => {
 				"overflow-y-auto"
 			)}
 		>
-			<FloatButton
-				icon={<FolderAddOutlined />}
-				type="primary"
-				style={{ insetInlineEnd: 44 }}
-				onClick={handleAdd}
-			/>
-
 			<div
 				className={clsx(
-					"flex justify-between items-center",
+					"flex flex-col gap-6",
 					"mb-6 p-6",
 					"rounded-2xl",
 					"bg-white",
@@ -122,30 +132,55 @@ const DatasetManage: React.FC<DatasetManageProps> = () => {
 					"hover:shadow-md"
 				)}
 			>
-				<div className="flex flex-col">
-					<h2 className="text-2xl font-semibold text-gray-800 mb-2">数据集管理</h2>
-					<p className="text-gray-500">共 {datasets.length} 个数据集</p>
+				<div className="flex justify-between items-center">
+					<div className="flex flex-col">
+						<h2 className="text-2xl font-semibold text-gray-800 mb-2">数据集管理</h2>
+						<p className="text-gray-500">共 {datasets.length} 个数据集</p>
+					</div>
+					<div className="flex items-center gap-4">
+						<Input
+							placeholder="搜索数据集..."
+							prefix={<SearchOutlined className="text-gray-400" />}
+							value={searchText}
+							onChange={e => setSearchText(e.target.value)}
+							className={clsx(
+								"w-64",
+								"rounded-lg",
+								"border-gray-200",
+								"focus:border-blue-500",
+								"focus:ring-1 focus:ring-blue-500",
+								"transition-all duration-300"
+							)}
+						/>
+						<Button
+							type="primary"
+							icon={<PlusOutlined />}
+							onClick={handleAdd}
+							className={clsx(
+								"px-6 h-10",
+								"rounded-lg",
+								"bg-blue-500 hover:bg-blue-600",
+								"border-none",
+								"shadow-sm hover:shadow-md",
+								"transition-all duration-300",
+								"flex items-center gap-2"
+							)}
+						>
+							新增数据集
+						</Button>
+					</div>
 				</div>
-				<Button
-					type="primary"
-					icon={<PlusOutlined />}
-					onClick={handleAdd}
-					className={clsx(
-						"px-6 h-10",
-						"rounded-lg",
-						"bg-blue-500 hover:bg-blue-600",
-						"border-none",
-						"shadow-sm hover:shadow-md",
-						"transition-all duration-300",
-						"flex items-center gap-2"
-					)}
-				>
-					新增数据集
-				</Button>
-			</div>
 
-			<div className="flex-1">
-				<DatasetsList datasets={datasets} onEdit={handleEdit} onDelete={handleDelete} />
+				<Tabs
+					activeKey={activeTab}
+					onChange={setActiveTab}
+					items={items}
+					className="mt-4"
+					tabBarStyle={{
+						marginBottom: 16,
+						borderBottom: "1px solid #f0f0f0"
+					}}
+				/>
 			</div>
 
 			{hasMore && (
@@ -153,6 +188,33 @@ const DatasetManage: React.FC<DatasetManageProps> = () => {
 					<Spin spinning={loading} size="large" className="text-blue-500" />
 				</div>
 			)}
+
+			<FloatButton
+				icon={<FolderAddOutlined className="text-lg" />}
+				description="快速创建"
+				style={{
+					insetInlineEnd: 32,
+					insetBlockEnd: 32,
+					width: 56,
+					height: 56,
+					boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+					background: "linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)",
+					border: "none",
+					transition: "all 0.3s ease",
+					display: "flex",
+					flexDirection: "column",
+					alignItems: "center",
+					justifyContent: "center",
+					gap: "4px"
+				}}
+				onClick={handleAdd}
+				className={clsx("z-10", "hover:scale-110", "hover:shadow-lg", "active:scale-95", "group")}
+				shape="circle"
+			>
+				<div className="text-white text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+					快速创建
+				</div>
+			</FloatButton>
 		</div>
 	);
 };
