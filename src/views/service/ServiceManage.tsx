@@ -57,7 +57,8 @@ const ServiceManage: React.FC = () => {
 		{
 			title: "服务类型",
 			dataIndex: "serviceType",
-			key: "serviceType"
+			key: "serviceType",
+			render: text => <Tag>{text}</Tag>
 		},
 		{
 			title: "服务状态",

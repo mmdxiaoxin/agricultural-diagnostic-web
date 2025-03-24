@@ -1,7 +1,7 @@
 import { AiService } from "@/api/interface";
 import ServiceList from "@/components/List/ServiceList";
 import ServiceDetail from "@/components/ServiceDetail";
-import { Splitter } from "antd";
+import { Empty, Splitter } from "antd";
 import clsx from "clsx";
 import React, { useState } from "react";
 
@@ -16,7 +16,13 @@ const ServiceConfig: React.FC = () => {
 				</div>
 			</Splitter.Panel>
 			<Splitter.Panel>
-				<ServiceDetail service={service} />
+				{service ? (
+					<ServiceDetail service={service} />
+				) : (
+					<div className={clsx("w-full h-full", "flex items-center justify-center")}>
+						<Empty description="请选择一个服务" />
+					</div>
+				)}
 			</Splitter.Panel>
 		</Splitter>
 	);
