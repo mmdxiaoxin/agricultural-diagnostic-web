@@ -53,8 +53,10 @@ const DiagnosisList: React.FC = () => {
 
 	const onLoadMore = () => {
 		setLoading(true);
-		setDiagnosisList(prevList => prevList.concat(Array(pageSize).fill({ loading: true })));
 		const nextPage = currentPage + 1;
+		// 添加骨架屏
+		setDiagnosisList(prevList => prevList.concat(Array(pageSize).fill({ loading: true })));
+
 		getDiagnosisHistoryList({ page: nextPage, pageSize })
 			.then(async response => {
 				if (response.code === 200 && response.data) {
@@ -64,12 +66,18 @@ const DiagnosisList: React.FC = () => {
 							return { ...diagnosis, loading: false, imageUrl };
 						})
 					);
-					setDiagnosisList(prev => [...prev, ...newDiagnosisList]);
+					// 移除骨架屏并添加新数据
+					setDiagnosisList(prev => {
+						const filteredList = prev.filter(item => !item.loading);
+						return [...filteredList, ...newDiagnosisList];
+					});
 					setCurrentPage(nextPage);
 				}
 			})
 			.catch(error => {
 				console.error("加载更多失败", error);
+				// 发生错误时也要移除骨架屏
+				setDiagnosisList(prev => prev.filter(item => !item.loading));
 			})
 			.finally(() => {
 				setLoading(false);

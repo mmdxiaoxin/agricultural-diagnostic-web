@@ -17,7 +17,7 @@ import {
 } from "antd";
 import React, { useState } from "react";
 
-const { Title, Text } = Typography;
+const { Text } = Typography;
 
 const DiseaseDiagnose: React.FC = () => {
 	const [selectedImage, setSelectedImage] = useState<File | null>(null);
