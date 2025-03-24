@@ -191,7 +191,6 @@ const DatasetManage: React.FC<DatasetManageProps> = () => {
 
 			<FloatButton
 				icon={<FolderAddOutlined className="text-lg" />}
-				description="快速创建"
 				style={{
 					insetInlineEnd: 32,
 					insetBlockEnd: 32,
