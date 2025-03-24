@@ -6,7 +6,6 @@ import {
 	Alert,
 	Button,
 	Card,
-	Image,
 	message,
 	Space,
 	Tag,
@@ -16,6 +15,7 @@ import {
 	UploadProps
 } from "antd";
 import React, { useState } from "react";
+import DetectImage from "../DetectImage";
 
 const { Text } = Typography;
 
@@ -45,7 +45,7 @@ const DiseaseDiagnose: React.FC = () => {
 			const diagnosisId = uploadRes.data.id;
 
 			// * 开始诊断
-			const diagnoseRes = await startDiagnosis({ diagnosisId, serviceId: 2 });
+			const diagnoseRes = await startDiagnosis({ diagnosisId, serviceId: 3 });
 			if (diagnoseRes.code !== 200 && diagnoseRes.code !== 201)
 				throw new Error("检测失败，请重试！");
 			setDetectionResults(diagnoseRes.data);
@@ -108,7 +108,7 @@ const DiseaseDiagnose: React.FC = () => {
 					<Space>
 						<Text type="secondary">位置：</Text>
 						<Text>
-							X: {prediction.bbox[0].x.toFixed(2)}, Y: {prediction.bbox[0].y.toFixed(2)}
+							X: {prediction.bbox.x.toFixed(2)}, Y: {prediction.bbox.y.toFixed(2)}
 						</Text>
 					</Space>
 				</Space>
@@ -140,7 +140,15 @@ const DiseaseDiagnose: React.FC = () => {
 					</Upload>
 					{previewUrl && (
 						<div className="mt-4 text-center">
-							<Image src={previewUrl} alt="预览图" className="max-h-[300px]" />
+							{detectionResults ? (
+								<DetectImage
+									imageUrl={previewUrl}
+									predictions={detectionResults.predictions}
+									className="max-h-[300px]"
+								/>
+							) : (
+								<img src={previewUrl} alt="预览图" className="max-h-[300px]" />
+							)}
 						</div>
 					)}
 				</Card>

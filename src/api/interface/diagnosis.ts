@@ -23,7 +23,7 @@ export type ClassifyPrediction = BasePrediction & {
 // 检测预测
 export type DetectPrediction = BasePrediction & {
 	type: "detect";
-	bbox: BBox[];
+	bbox: BBox;
 };
 
 // 预测结果联合类型
