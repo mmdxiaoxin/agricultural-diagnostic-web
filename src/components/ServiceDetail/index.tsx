@@ -1,5 +1,5 @@
 import { AiService, AiServiceConfig } from "@/api/interface";
-import { deleteConfig, getService, updateConfigs } from "@/api/modules";
+import { getService, updateConfigs } from "@/api/modules";
 import {
 	Button,
 	Form,
@@ -117,7 +117,6 @@ const ServiceDetail: React.FC<ServiceDetailProps> = ({ service, onSave }) => {
 			});
 			setConfigs(newConfigs);
 			setEditingKey(null);
-			message.success("保存成功");
 		} catch (errInfo) {
 			console.log("Validate Failed:", errInfo);
 		}
@@ -149,9 +148,7 @@ const ServiceDetail: React.FC<ServiceDetailProps> = ({ service, onSave }) => {
 	const handleDeleteRow = async (key: number) => {
 		try {
 			const newConfigs = configs.filter(config => config.configId !== key);
-			await deleteConfig(service?.serviceId || 0, key);
 			setConfigs(newConfigs);
-			message.success("删除成功");
 		} catch (error) {
 			message.error("删除失败");
 		}
@@ -165,7 +162,7 @@ const ServiceDetail: React.FC<ServiceDetailProps> = ({ service, onSave }) => {
 				await updateConfigs(service.serviceId, { configs: filteredConfigs });
 				message.success("提交成功");
 				onSave?.(service);
-				fetchServiceDetail(); // 刷新数据
+				fetchServiceDetail();
 			}
 		} catch (error) {
 			message.error("提交失败");
@@ -242,12 +239,7 @@ const ServiceDetail: React.FC<ServiceDetailProps> = ({ service, onSave }) => {
 				<Button type="primary" onClick={handleAddRow} disabled={editingKey !== null}>
 					新增配置
 				</Button>
-				<Button
-					type="primary"
-					onClick={handleSubmit}
-					disabled={configs.length === 0 || loading}
-					loading={loading}
-				>
+				<Button type="primary" onClick={handleSubmit} disabled={loading} loading={loading}>
 					{hasUnsavedChanges() ? "保存提交*" : "保存提交"}
 				</Button>
 			</Space>
