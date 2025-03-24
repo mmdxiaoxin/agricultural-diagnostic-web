@@ -44,7 +44,9 @@ const getFileTypeIcon = (fileType: string | undefined) => {
 const getStatus = (percent: number, fileSize?: number) => {
 	if (percent === 100 && fileSize !== undefined) return `已完成 ${formatSize(fileSize)}`;
 	if (percent === 0) return "等待中";
-	return `下载中 ${formatSize((fileSize || 0) * (percent / 100))} / ${formatSize(fileSize || 0)}`;
+	if (!fileSize) return `下载中 ${percent}%`;
+	const downloadedSize = Math.round((fileSize * percent) / 100);
+	return `下载中 ${formatSize(downloadedSize)} / ${formatSize(fileSize)}`;
 };
 
 const DownloadList: React.FC<DownloadListProps> = ({

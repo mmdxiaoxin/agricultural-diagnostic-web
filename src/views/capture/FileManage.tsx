@@ -194,6 +194,10 @@ const FileManage: React.FC<FileManageProps> = () => {
 			setDownloadLoading(true);
 			if (compressMode) {
 				const id = new Date().getTime();
+				const totalSize = selectedRowKeys.reduce(
+					(total, fileId) => total + (fileList.find(file => file.id === fileId)?.fileSize || 0),
+					0
+				);
 				setDownloadList(prev => [
 					...prev,
 					{
@@ -202,10 +206,7 @@ const FileManage: React.FC<FileManageProps> = () => {
 						storageFileName: "压缩文件.zip",
 						filePath: "",
 						fileType: "application/zip",
-						fileSize: selectedRowKeys.reduce(
-							(total, fileId) => total + (fileList.find(file => file.id === fileId)?.fileSize || 0),
-							0
-						),
+						fileSize: totalSize,
 						fileMd5: "",
 						creator_id: 0,
 						createdAt: dayjs().format(),
