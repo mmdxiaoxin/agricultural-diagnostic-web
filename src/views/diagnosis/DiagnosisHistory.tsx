@@ -1,5 +1,9 @@
 import { DiagnosisHistory } from "@/api/interface/diagnosis";
-import { deleteDiagnosisHistory, getDiagnosisHistoryList } from "@/api/modules";
+import {
+	deleteDiagnosisHistories,
+	deleteDiagnosisHistory,
+	getDiagnosisHistoryList
+} from "@/api/modules";
 import DiagnosisDetailModal, {
 	DiagnosisDetailModalRef
 } from "@/components/Modal/DiagnosisDetailModal";
@@ -60,7 +64,7 @@ const DiagnosisHistoryPage: React.FC = () => {
 	// 批量删除
 	const handleBatchDelete = async () => {
 		try {
-			await Promise.all(selectedRowKeys.map(id => deleteDiagnosisHistory(id as number)));
+			await deleteDiagnosisHistories({ diagnosisIds: selectedRowKeys.join(",") });
 			message.success("批量删除成功");
 			setSelectedRowKeys([]);
 			setIsSelectMode(false);

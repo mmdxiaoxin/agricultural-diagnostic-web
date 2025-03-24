@@ -47,6 +47,11 @@ export const deleteDiagnosisHistory = async (id: number) => {
 	return http.delete<null>(`/diagnosis/history/${id}`);
 };
 
+// * 批量删除诊断历史
+export const deleteDiagnosisHistories = async (params: { diagnosisIds: string }) => {
+	return http.delete<null>(`/diagnosis/history`, params);
+};
+
 // * 获取诊断历史列表
 export const getDiagnosisHistoryList = async (params: ReqDiagnosisHistoryList) => {
 	return http.get<ResDiagnosisHistoryList>("/diagnosis/history/list", params, { loading: false });
