@@ -13,7 +13,7 @@ export const getServiceList = (params: ReqAiServiceList) => {
 	return http.get<ResAiServiceList>("/ai-service/list", params, { loading: false });
 };
 
-export const getService = (serviceId: number) => {
+export const getService = (serviceId: number | string) => {
 	return http.get<ResAiService>(`/ai-service/${serviceId}`, {}, { loading: false });
 };
 
