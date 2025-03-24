@@ -63,14 +63,23 @@ export type ServiceDetailProps = {
 	onSave?: (service: AiService) => void;
 };
 
-const ServiceDetail: React.FC<ServiceDetailProps> = ({ service }) => {
+const ServiceDetail: React.FC<ServiceDetailProps> = ({ service, onSave }) => {
 	const [configs, setConfigs] = useState<AiServiceConfig[]>([]);
 	const [form] = Form.useForm();
+	const [editingKey, setEditingKey] = useState<number | null>(null);
+	const [loading, setLoading] = useState(false);
 
 	const fetchServiceDetail = async () => {
 		if (service?.serviceId) {
-			const response = await getService(service.serviceId);
-			setConfigs(response.data?.aiServiceConfigs || []);
+			try {
+				setLoading(true);
+				const response = await getService(service.serviceId);
+				setConfigs(response.data?.aiServiceConfigs || []);
+			} catch (error) {
+				message.error("获取服务详情失败");
+			} finally {
+				setLoading(false);
+			}
 		}
 	};
 
@@ -78,56 +87,78 @@ const ServiceDetail: React.FC<ServiceDetailProps> = ({ service }) => {
 		fetchServiceDetail();
 	}, [service]);
 
-	const [editingKey, setEditingKey] = useState(0);
 	const isEditing = (record: AiServiceConfig) => record.configId === editingKey;
 
-	const edit = (record: Partial<AiServiceConfig>) => {
-		form.setFieldsValue({ configKey: "", configValue: "", ...record });
-		setEditingKey(record.configId as number);
+	const handleEdit = (record: AiServiceConfig) => {
+		form.setFieldsValue({ ...record });
+		setEditingKey(record.configId);
 	};
 
-	const save = async (key: number) => {
+	const handleSave = async (key: number) => {
 		try {
-			const row = (await form.validateFields()) as AiServiceConfig;
-
-			const newConfigs = [...configs];
-			const index = newConfigs.findIndex(item => key === item.configId);
-			if (index > -1) {
-				const item = newConfigs[index];
-				newConfigs.splice(index, 1, {
-					...item,
-					...row
-				});
-				setConfigs(newConfigs);
-				setEditingKey(0);
-			} else {
-				newConfigs.push(row);
-				setConfigs(newConfigs);
-				setEditingKey(0);
-			}
+			const row = await form.validateFields();
+			const newConfigs = configs.map(item => {
+				if (item.configId === key) {
+					return { ...item, ...row };
+				}
+				return item;
+			});
+			setConfigs(newConfigs);
+			setEditingKey(null);
+			message.success("保存成功");
 		} catch (errInfo) {
 			console.log("Validate Failed:", errInfo);
 		}
 	};
 
-	const cancel = () => {
-		setEditingKey(0);
+	const handleCancel = () => {
+		// 如果是新增的配置项（configId 大于当前时间戳减去一天），则从列表中移除
+		const oneDayAgo = Date.now() - 24 * 60 * 60 * 1000;
+		if (editingKey && editingKey > oneDayAgo) {
+			setConfigs(configs.filter(config => config.configId !== editingKey));
+		}
+		setEditingKey(null);
+		form.resetFields();
 	};
 
-	// 新增功能
-	const addConfig = () => {
+	const handleAdd = () => {
 		const newConfig: AiServiceConfig = {
 			configId: Date.now(),
 			configKey: "",
-			configValue: ""
-		} as AiServiceConfig;
+			configValue: "",
+			service: service || ({} as AiService),
+			createdAt: new Date().toISOString(),
+			updatedAt: new Date().toISOString()
+		};
 		setConfigs([...configs, newConfig]);
 		setEditingKey(newConfig.configId);
 	};
 
-	// 删除功能
-	const deleteConfig = (key: number) => {
-		setConfigs(configs.filter(config => config.configId !== key));
+	const handleDelete = async (key: number) => {
+		try {
+			const newConfigs = configs.filter(config => config.configId !== key);
+			setConfigs(newConfigs);
+			message.success("删除成功");
+		} catch (error) {
+			message.error("删除失败");
+		}
+	};
+
+	const handleSubmit = async () => {
+		try {
+			setLoading(true);
+			if (service?.serviceId) {
+				const filteredConfigs = configs.map(({ configId, ...rest }) => rest);
+				await addConfigs(service.serviceId, { configs: filteredConfigs });
+				message.success("提交成功");
+				onSave?.(service);
+				fetchServiceDetail(); // 刷新数据
+			}
+		} catch (error) {
+			message.error("提交失败");
+		} finally {
+			setLoading(false);
+		}
 	};
 
 	const columns = [
@@ -148,19 +179,23 @@ const ServiceDetail: React.FC<ServiceDetailProps> = ({ service }) => {
 				const editable = isEditing(record);
 				return editable ? (
 					<Space>
-						<Button type="primary" onClick={() => save(record.configId)}>
+						<Button type="primary" onClick={() => handleSave(record.configId)}>
 							保存
 						</Button>
-						<Popconfirm title="确认取消编辑？" onConfirm={cancel}>
+						<Popconfirm title="确认取消编辑？" onConfirm={handleCancel}>
 							<Button>取消</Button>
 						</Popconfirm>
 					</Space>
 				) : (
 					<Space>
-						<Button type="primary" disabled={editingKey !== 0} onClick={() => edit(record)}>
+						<Button
+							type="primary"
+							disabled={editingKey !== null}
+							onClick={() => handleEdit(record)}
+						>
 							编辑
 						</Button>
-						<Popconfirm title="确认删除此项？" onConfirm={() => deleteConfig(record.configId)}>
+						<Popconfirm title="确认删除此项？" onConfirm={() => handleDelete(record.configId)}>
 							<Button type="primary" danger>
 								删除
 							</Button>
@@ -170,20 +205,6 @@ const ServiceDetail: React.FC<ServiceDetailProps> = ({ service }) => {
 			}
 		}
 	];
-
-	const handleFinish = async () => {
-		try {
-			// 处理掉configId
-			const filteredConfigs = configs.map(config => {
-				const { configId, ...rest } = config;
-				return rest;
-			});
-			if (service?.serviceId) {
-				await addConfigs(service.serviceId as number, { configs: filteredConfigs });
-				message.success("保存成功！");
-			}
-		} catch (error) {}
-	};
 
 	const mergedColumns: TableProps<AiServiceConfig>["columns"] = columns.map(col => {
 		if (!col.editable) {
@@ -205,10 +226,15 @@ const ServiceDetail: React.FC<ServiceDetailProps> = ({ service }) => {
 		<div className={clsx("w-full h-full", "p-4")}>
 			<Typography.Title level={4}>{service?.serviceName}</Typography.Title>
 			<Space className="mb-4">
-				<Button type="primary" onClick={addConfig} disabled={editingKey !== 0}>
+				<Button type="primary" onClick={handleAdd} disabled={editingKey !== null}>
 					新增配置
 				</Button>
-				<Button type="primary" onClick={handleFinish} disabled={configs.length === 0}>
+				<Button
+					type="primary"
+					onClick={handleSubmit}
+					disabled={configs.length === 0 || loading}
+					loading={loading}
+				>
 					保存提交
 				</Button>
 			</Space>
@@ -222,6 +248,7 @@ const ServiceDetail: React.FC<ServiceDetailProps> = ({ service }) => {
 					columns={mergedColumns}
 					rowClassName="editable-row"
 					pagination={false}
+					loading={loading}
 				/>
 			</Form>
 		</div>
