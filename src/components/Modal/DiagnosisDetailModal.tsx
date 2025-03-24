@@ -1,10 +1,11 @@
 import { DiagnosisHistory } from "@/api/interface/diagnosis";
 import { downloadFile } from "@/api/modules/file";
-import { Image, Modal, Space, Tag, Typography } from "antd";
+import { CheckCircleOutlined, ClockCircleOutlined } from "@ant-design/icons";
+import { Card, Image, Modal, Space, Tag, Typography } from "antd";
 import dayjs from "dayjs";
 import { forwardRef, useImperativeHandle, useState } from "react";
 
-const { Text } = Typography;
+const { Text, Title } = Typography;
 
 export interface DiagnosisDetailModalRef {
 	open: (record: DiagnosisHistory) => void;
@@ -20,7 +21,6 @@ const DiagnosisDetailModal = forwardRef<DiagnosisDetailModalRef>((_, ref) => {
 		open: (record: DiagnosisHistory) => {
 			setRecord(record);
 			setOpen(true);
-			// 如果有 fileId，加载图片
 			if (record.fileId) {
 				loadImage(record.fileId);
 			}
@@ -32,7 +32,6 @@ const DiagnosisDetailModal = forwardRef<DiagnosisDetailModalRef>((_, ref) => {
 		}
 	}));
 
-	// 加载图片
 	const loadImage = async (fileId: string | number) => {
 		try {
 			const blob = await downloadFile(fileId);
@@ -50,7 +49,19 @@ const DiagnosisDetailModal = forwardRef<DiagnosisDetailModalRef>((_, ref) => {
 
 	return (
 		<Modal
-			title="诊断详情"
+			title={
+				<div className="flex items-center gap-2">
+					<Title level={4} className="!mb-0">
+						诊断详情
+					</Title>
+					<Tag
+						color={record.status === "completed" ? "success" : "processing"}
+						icon={record.status === "completed" ? <CheckCircleOutlined /> : <ClockCircleOutlined />}
+					>
+						{record.status === "completed" ? "已完成" : "处理中"}
+					</Tag>
+				</div>
+			}
 			open={open}
 			onCancel={() => {
 				setOpen(false);
@@ -58,48 +69,65 @@ const DiagnosisDetailModal = forwardRef<DiagnosisDetailModalRef>((_, ref) => {
 				setImageUrl("");
 			}}
 			footer={null}
-			width={800}
+			width={900}
+			className="diagnosis-detail-modal"
 		>
-			<Space direction="vertical" size="large" className="w-full">
-				<div>
-					<Text strong>诊断时间：</Text>
-					<Text>{dayjs(record.createdAt).format("YYYY-MM-DD HH:mm:ss")}</Text>
-				</div>
-				<div>
-					<Text strong>状态：</Text>
-					<Tag color={record.status === "completed" ? "success" : "processing"}>
-						{record.status}
-					</Tag>
-				</div>
-				<div>
-					<Text strong>诊断结果：</Text>
-					{record.diagnosisResult ? (
-						<Space direction="vertical" size={0}>
-							{record.diagnosisResult.predictions.map((prediction, index) => (
-								<Text key={index}>
-									{prediction.type === "classify" ? "分类" : "检测"}: {prediction.class_name} (
-									{(prediction.confidence * 100).toFixed(2)}%)
-								</Text>
-							))}
-						</Space>
-					) : (
-						<Text type="secondary">无结果</Text>
-					)}
-				</div>
+			<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+				{/* 左侧信息 */}
+				<Card className="h-full">
+					<Space direction="vertical" size="large" className="w-full">
+						<div className="bg-gray-50 p-4 rounded-lg">
+							<Text type="secondary" className="block mb-2">
+								诊断时间
+							</Text>
+							<Text className="text-lg">
+								{dayjs(record.createdAt).format("YYYY-MM-DD HH:mm:ss")}
+							</Text>
+						</div>
+						<div className="bg-gray-50 p-4 rounded-lg">
+							<Text type="secondary" className="block mb-2">
+								诊断结果
+							</Text>
+							{record.diagnosisResult ? (
+								<Space direction="vertical" size={2}>
+									{record.diagnosisResult.predictions.map((prediction, index) => (
+										<div
+											key={index}
+											className="bg-white p-3 rounded-md border border-gray-100 shadow-sm"
+										>
+											<div className="flex items-center justify-between">
+												<Text strong>{prediction.type === "classify" ? "分类" : "检测"}</Text>
+												<Tag color="blue">{(prediction.confidence * 100).toFixed(2)}%</Tag>
+											</div>
+											<Text className="block mt-1 text-gray-700">{prediction.class_name}</Text>
+										</div>
+									))}
+								</Space>
+							) : (
+								<Text type="secondary">无结果</Text>
+							)}
+						</div>
+					</Space>
+				</Card>
+
+				{/* 右侧图片 */}
 				{record.fileId && (
-					<div>
-						<Text strong>诊断图片：</Text>
-						<div className="mt-2">
+					<Card className="h-full">
+						<Text type="secondary" className="block mb-4">
+							诊断图片
+						</Text>
+						<div className="relative aspect-[4/3] w-full overflow-hidden rounded-lg bg-gray-50">
 							<Image
 								src={imageUrl}
 								alt="诊断图片"
-								className="max-w-full h-auto rounded-lg"
-								preview={false}
+								className="object-contain w-full h-full"
+								preview={true}
+								fallback="/images/image-placeholder.png"
 							/>
 						</div>
-					</div>
+					</Card>
 				)}
-			</Space>
+			</div>
 		</Modal>
 	);
 });
