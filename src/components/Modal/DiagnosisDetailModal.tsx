@@ -5,6 +5,7 @@ import { Card, Image, Modal, Space, Tag, Typography } from "antd";
 import dayjs from "dayjs";
 import { forwardRef, useImperativeHandle, useState } from "react";
 import DetectImage from "../DetectImage";
+import clsx from "clsx";
 
 const { Text, Title } = Typography;
 
@@ -90,26 +91,26 @@ const DiagnosisDetailModal = forwardRef<DiagnosisDetailModalRef>((_, ref) => {
 								诊断结果
 							</Text>
 							{record.diagnosisResult ? (
-								<Space direction="vertical" size={2}>
+								<div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
 									{record.diagnosisResult.predictions.map((prediction, index) => (
 										<div
 											key={index}
-											className="bg-white p-3 rounded-md border border-gray-100 shadow-sm"
+											className="bg-white p-2 rounded-md border border-gray-100 shadow-sm hover:shadow-md transition-shadow"
 										>
-											<div className="flex items-center justify-between gap-2">
-												<Text strong>{prediction.type === "classify" ? "分类" : "检测"}</Text>
-												<Tag color="blue">{(prediction.confidence * 100).toFixed(2)}%</Tag>
+											<div className="flex items-center justify-between gap-1">
+												<Text strong className="text-sm">
+													{prediction.type === "classify" ? "分类" : "检测"}
+												</Text>
+												<Tag color="blue" className="text-xs">
+													{(prediction.confidence * 100).toFixed(2)}%
+												</Tag>
 											</div>
-											<Text className="block mt-1 text-gray-700">{prediction.class_name}</Text>
+											<Text className="block mt-0.5 text-gray-700 text-sm truncate">
+												{prediction.class_name}
+											</Text>
 										</div>
 									))}
-									{record.diagnosisResult?.predictions?.[0].type === "detect" && (
-										<DetectImage
-											imageUrl={imageUrl}
-											predictions={record.diagnosisResult?.predictions || []}
-										/>
-									)}
-								</Space>
+								</div>
 							) : (
 								<Text type="secondary">无结果</Text>
 							)}
@@ -123,7 +124,13 @@ const DiagnosisDetailModal = forwardRef<DiagnosisDetailModalRef>((_, ref) => {
 						<Text type="secondary" className="block mb-4">
 							诊断图片
 						</Text>
-						<div className="relative aspect-[4/3] w-full overflow-hidden rounded-lg bg-gray-50">
+						<div
+							className={clsx(
+								"rounded-lg bg-gray-50",
+								"w-full",
+								"relative aspect-[4/3] overflow-y-auto"
+							)}
+						>
 							<Image
 								src={imageUrl}
 								alt="诊断图片"
@@ -131,6 +138,12 @@ const DiagnosisDetailModal = forwardRef<DiagnosisDetailModalRef>((_, ref) => {
 								preview={true}
 								fallback="/images/image-placeholder.png"
 							/>
+							{record.diagnosisResult?.predictions?.[0].type === "detect" && (
+								<DetectImage
+									imageUrl={imageUrl}
+									predictions={record.diagnosisResult?.predictions || []}
+								/>
+							)}
 						</div>
 					</Card>
 				)}
