@@ -12,6 +12,7 @@ import {
 	Typography,
 	message
 } from "antd";
+import dayjs from "dayjs";
 import { forwardRef, useEffect, useImperativeHandle, useMemo, useState } from "react";
 
 const pageSize = 5;
@@ -218,7 +219,7 @@ const DiagnosisList = forwardRef<DiagnosisListRef, DiagnosisListProps>((_, ref) 
 								description={
 									<Space direction="vertical" size={0}>
 										<Typography.Text type="secondary">
-											诊断时间: {new Date(item.created_at).toLocaleString()}
+											诊断时间: {dayjs(item.createdAt).format("YYYY-MM-DD HH:mm:ss")}
 										</Typography.Text>
 										<Typography.Text type="secondary">
 											置信度: {(confidence * 100).toFixed(2)}%
