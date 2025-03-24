@@ -4,6 +4,7 @@ import { CheckCircleOutlined, ClockCircleOutlined } from "@ant-design/icons";
 import { Card, Image, Modal, Space, Tag, Typography } from "antd";
 import dayjs from "dayjs";
 import { forwardRef, useImperativeHandle, useState } from "react";
+import DetectImage from "../DetectImage";
 
 const { Text, Title } = Typography;
 
@@ -95,13 +96,19 @@ const DiagnosisDetailModal = forwardRef<DiagnosisDetailModalRef>((_, ref) => {
 											key={index}
 											className="bg-white p-3 rounded-md border border-gray-100 shadow-sm"
 										>
-											<div className="flex items-center justify-between">
+											<div className="flex items-center justify-between gap-2">
 												<Text strong>{prediction.type === "classify" ? "分类" : "检测"}</Text>
 												<Tag color="blue">{(prediction.confidence * 100).toFixed(2)}%</Tag>
 											</div>
 											<Text className="block mt-1 text-gray-700">{prediction.class_name}</Text>
 										</div>
 									))}
+									{record.diagnosisResult?.predictions?.[0].type === "detect" && (
+										<DetectImage
+											imageUrl={imageUrl}
+											predictions={record.diagnosisResult?.predictions || []}
+										/>
+									)}
 								</Space>
 							) : (
 								<Text type="secondary">无结果</Text>
