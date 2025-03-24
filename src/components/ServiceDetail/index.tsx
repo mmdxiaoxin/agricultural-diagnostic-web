@@ -65,6 +65,7 @@ export type ServiceDetailProps = {
 
 const ServiceDetail: React.FC<ServiceDetailProps> = ({ service, onSave }) => {
 	const [configs, setConfigs] = useState<AiServiceConfig[]>([]);
+	const [originalConfigs, setOriginalConfigs] = useState<AiServiceConfig[]>([]);
 	const [form] = Form.useForm();
 	const [editingKey, setEditingKey] = useState<number | null>(null);
 	const [loading, setLoading] = useState(false);
@@ -74,7 +75,9 @@ const ServiceDetail: React.FC<ServiceDetailProps> = ({ service, onSave }) => {
 			try {
 				setLoading(true);
 				const response = await getService(service.serviceId);
-				setConfigs(response.data?.aiServiceConfigs || []);
+				const newConfigs = response.data?.aiServiceConfigs || [];
+				setConfigs(newConfigs);
+				setOriginalConfigs(newConfigs);
 			} catch (error) {
 				message.error("获取服务详情失败");
 			} finally {
@@ -92,6 +95,15 @@ const ServiceDetail: React.FC<ServiceDetailProps> = ({ service, onSave }) => {
 	const handleEdit = (record: AiServiceConfig) => {
 		form.setFieldsValue({ ...record });
 		setEditingKey(record.configId);
+	};
+
+	// 检查是否有未保存的更改
+	const hasUnsavedChanges = () => {
+		if (configs.length !== originalConfigs.length) return true;
+		return configs.some((config, index) => {
+			const original = originalConfigs[index];
+			return config.configKey !== original.configKey || config.configValue !== original.configValue;
+		});
 	};
 
 	const handleSaveRow = async (key: number) => {
@@ -236,9 +248,14 @@ const ServiceDetail: React.FC<ServiceDetailProps> = ({ service, onSave }) => {
 					disabled={configs.length === 0 || loading}
 					loading={loading}
 				>
-					保存提交
+					{hasUnsavedChanges() ? "保存提交*" : "保存提交"}
 				</Button>
 			</Space>
+			{hasUnsavedChanges() && (
+				<Typography.Text type="warning" className="block mb-4">
+					您有未保存的更改，请点击"保存提交"按钮保存更改
+				</Typography.Text>
+			)}
 			<Form form={form} component={false}>
 				<Table<AiServiceConfig>
 					components={{
