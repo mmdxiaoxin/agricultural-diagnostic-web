@@ -5,19 +5,7 @@ import clsx from "clsx";
 
 const ImageDiagnosis = () => {
 	return (
-		<Row className="w-full h-full">
-			<Col
-				span={12}
-				className={clsx(
-					"h-full",
-					"overflow-y-auto",
-					"[&::-webkit-scrollbar]:hidden", // 隐藏 Webkit 浏览器的滚动条
-					"[-ms-overflow-style:none]", // 隐藏 IE 的滚动条
-					"[scrollbar-width:none]" // 隐藏 Firefox 的滚动条
-				)}
-			>
-				<DiseaseDiagnose />
-			</Col>
+		<Row gutter={12} className="w-full h-full bg-white rounded-lg">
 			<Col
 				span={12}
 				className={clsx(
@@ -29,6 +17,18 @@ const ImageDiagnosis = () => {
 				)}
 			>
 				<DiagnosisList />
+			</Col>
+			<Col
+				span={12}
+				className={clsx(
+					"h-full",
+					"overflow-y-auto",
+					"[&::-webkit-scrollbar]:hidden", // 隐藏 Webkit 浏览器的滚动条
+					"[-ms-overflow-style:none]", // 隐藏 IE 的滚动条
+					"[scrollbar-width:none]" // 隐藏 Firefox 的滚动条
+				)}
+			>
+				<DiseaseDiagnose />
 			</Col>
 		</Row>
 	);
