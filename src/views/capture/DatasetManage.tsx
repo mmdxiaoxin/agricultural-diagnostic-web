@@ -2,6 +2,7 @@ import { DatasetMeta } from "@/api/interface";
 import { deleteDataset, getDatasetsList } from "@/api/modules";
 import DatasetsList from "@/components/List/DatasetsList";
 import { Button, message, Spin } from "antd";
+import { PlusOutlined } from "@ant-design/icons";
 import clsx from "clsx";
 import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router";
@@ -95,26 +96,54 @@ const DatasetManage: React.FC<DatasetManageProps> = () => {
 		<div
 			className={clsx(
 				"h-full w-full",
-				"p-4",
-				"rounded-lg",
+				"p-6",
+				"rounded-2xl",
 				"flex flex-col",
-				"bg-white overflow-y-auto"
+				"bg-gradient-to-br from-white to-gray-50",
+				"overflow-y-auto"
 			)}
 		>
 			<div
 				className={clsx(
 					"flex justify-between items-center",
-					"mb-4 p-4",
-					"rounded-2xl bg-[#f6f6f6]"
+					"mb-6 p-6",
+					"rounded-2xl",
+					"bg-white",
+					"shadow-sm",
+					"border border-gray-100",
+					"transition-all duration-300",
+					"hover:shadow-md"
 				)}
 			>
-				<Button onClick={handleAdd}>新增</Button>
+				<div className="flex flex-col">
+					<h2 className="text-2xl font-semibold text-gray-800 mb-2">数据集管理</h2>
+					<p className="text-gray-500">共 {datasets.length} 个数据集</p>
+				</div>
+				<Button
+					type="primary"
+					icon={<PlusOutlined />}
+					onClick={handleAdd}
+					className={clsx(
+						"px-6 h-10",
+						"rounded-lg",
+						"bg-blue-500 hover:bg-blue-600",
+						"border-none",
+						"shadow-sm hover:shadow-md",
+						"transition-all duration-300",
+						"flex items-center gap-2"
+					)}
+				>
+					新增数据集
+				</Button>
 			</div>
-			<DatasetsList datasets={datasets} onEdit={handleEdit} onDelete={handleDelete} />
-			{/* 触发懒加载的目标元素 */}
+
+			<div className="flex-1">
+				<DatasetsList datasets={datasets} onEdit={handleEdit} onDelete={handleDelete} />
+			</div>
+
 			{hasMore && (
-				<div ref={loadMoreRef} className="h-24 flex justify-center items-center">
-					<Spin spinning={loading} size="large" />
+				<div ref={loadMoreRef} className={clsx("h-24", "flex justify-center items-center", "mt-4")}>
+					<Spin spinning={loading} size="large" className="text-blue-500" />
 				</div>
 			)}
 		</div>
