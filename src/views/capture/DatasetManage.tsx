@@ -85,7 +85,7 @@ const DatasetManage: React.FC<DatasetManageProps> = () => {
 		try {
 			await deleteDataset(datasetId);
 			// 删除后重新加载列表
-			fetchListData(pageRef.current);
+			setDatasets(datasets.filter(dataset => dataset.id !== datasetId));
 			message.success("文件删除成功");
 		} catch (error) {
 			message.error("删除文件失败");
