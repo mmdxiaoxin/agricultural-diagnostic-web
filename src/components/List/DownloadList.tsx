@@ -6,12 +6,11 @@ import {
 	DeleteOutlined,
 	FileImageOutlined,
 	FileOutlined,
-	FileTextOutlined,
-	FolderOutlined
+	FileTextOutlined
 } from "@ant-design/icons";
-import { Avatar, Button, Flex, List, Progress, Space, Switch, Tooltip } from "antd";
-import React from "react";
+import { Avatar, Button, Flex, List, Space, Switch, Tooltip } from "antd";
 import clsx from "clsx";
+import React from "react";
 
 type DownloadListProps = {
 	downloadList: FileMeta[];
@@ -138,7 +137,7 @@ const DownloadList: React.FC<DownloadListProps> = ({
 									</Tooltip>
 								}
 								description={
-									<div className="mt-2 space-y-2">
+									<div className="mt-2 space-y-2 pr-4">
 										<div className="h-1 bg-gray-200 rounded-full overflow-hidden">
 											<div
 												className={clsx("h-full", "bg-blue-500", "transition-all duration-300")}

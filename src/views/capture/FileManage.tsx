@@ -33,6 +33,7 @@ import {
 	message,
 	Modal,
 	Popconfirm,
+	Space,
 	Table,
 	TableColumnsType,
 	Tabs,
@@ -262,6 +263,28 @@ const FileManage: React.FC<FileManageProps> = () => {
 		}
 	};
 
+	const handleSingleDownload = async (file: FileMeta) => {
+		try {
+			setActiveKey("3");
+			setDownloadLoading(true);
+			setDownloadList(prev => [...prev, file]);
+			await downloadMultipleFiles([file.id], {
+				onProgress: (fileId, progressValue) => {
+					setProgress(prevProgress => ({
+						...prevProgress,
+						[fileId]: progressValue
+					}));
+				},
+				createLink: true
+			});
+			message.success("文件下载成功！");
+		} catch (error: any) {
+			message.error("文件下载失败！");
+		} finally {
+			setDownloadLoading(false);
+		}
+	};
+
 	const columns: TableColumnsType<FileMeta> = [
 		{
 			title: "文件名",
@@ -303,8 +326,29 @@ const FileManage: React.FC<FileManageProps> = () => {
 		{
 			title: "操作",
 			render: (_: any, record: FileMeta) => (
-				<>
-					<Button type="link" icon={<EditOutlined />} onClick={() => handleRename(record)}>
+				<Space>
+					<Popconfirm
+						title="确认下载"
+						icon={<DownloadOutlined style={{ color: "green" }} />}
+						description="点击确认后将自动开启下载。"
+						onConfirm={() => handleSingleDownload(record)}
+						okText="确认"
+						cancelText="取消"
+					>
+						<Button
+							type="link"
+							icon={<DownloadOutlined />}
+							className="text-blue-500 hover:text-blue-600"
+						>
+							下载
+						</Button>
+					</Popconfirm>
+					<Button
+						type="link"
+						icon={<EditOutlined />}
+						onClick={() => handleRename(record)}
+						className="text-blue-500 hover:text-blue-600"
+					>
 						重命名
 					</Button>
 					<Popconfirm
@@ -314,11 +358,16 @@ const FileManage: React.FC<FileManageProps> = () => {
 						okText="确认"
 						cancelText="取消"
 					>
-						<Button type="link" danger icon={<DeleteOutlined />}>
+						<Button
+							type="link"
+							danger
+							icon={<DeleteOutlined />}
+							className="text-red-500 hover:text-red-600"
+						>
 							删除
 						</Button>
 					</Popconfirm>
-				</>
+				</Space>
 			)
 		}
 	];
