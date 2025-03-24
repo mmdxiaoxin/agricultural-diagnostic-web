@@ -1,5 +1,5 @@
 import { Prediction } from "@/api/interface/diagnosis";
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 interface DetectImageProps {
 	imageUrl: string;
@@ -9,33 +9,61 @@ interface DetectImageProps {
 
 const DetectImage: React.FC<DetectImageProps> = ({ imageUrl, predictions, className }) => {
 	const canvasRef = useRef<HTMLCanvasElement>(null);
+	const [imageSize, setImageSize] = useState({ width: 0, height: 0 });
+	const containerRef = useRef<HTMLDivElement>(null);
+
+	// 计算缩放比例
+	const calculateScale = (containerWidth: number, imageWidth: number, imageHeight: number) => {
+		const scale = containerWidth / imageWidth;
+		return {
+			scale,
+			width: imageWidth * scale,
+			height: imageHeight * scale
+		};
+	};
+
+	useEffect(() => {
+		const img = new Image();
+		img.src = imageUrl;
+		img.onload = () => {
+			setImageSize({ width: img.width, height: img.height });
+		};
+	}, [imageUrl]);
 
 	useEffect(() => {
 		const canvas = canvasRef.current;
-		if (!canvas) return;
+		const container = containerRef.current;
+		if (!canvas || !container) return;
 
 		const ctx = canvas.getContext("2d");
 		if (!ctx) return;
 
+		const { scale, width, height } = calculateScale(
+			container.clientWidth,
+			imageSize.width,
+			imageSize.height
+		);
+
+		// 设置画布尺寸为缩放后的尺寸
+		canvas.width = width;
+		canvas.height = height;
+
+		// 绘制图片
 		const img = new Image();
 		img.src = imageUrl;
 		img.onload = () => {
-			// 设置画布尺寸为图片尺寸
-			canvas.width = img.width;
-			canvas.height = img.height;
-
 			// 绘制图片
-			ctx.drawImage(img, 0, 0);
+			ctx.drawImage(img, 0, 0, width, height);
 
 			// 绘制检测框
 			predictions.forEach(prediction => {
 				if (prediction.type !== "detect") return;
 
 				const bbox = prediction.bbox;
-				const x = bbox.x;
-				const y = bbox.y;
-				const width = bbox.width;
-				const height = bbox.height;
+				const x = bbox.x * scale;
+				const y = bbox.y * scale;
+				const width = bbox.width * scale;
+				const height = bbox.height * scale;
 
 				// 设置边框样式
 				ctx.strokeStyle = "#00ff00";
@@ -59,11 +87,20 @@ const DetectImage: React.FC<DetectImageProps> = ({ imageUrl, predictions, classN
 				ctx.fillText(label, x + 5, y - 5);
 			});
 		};
-	}, [imageUrl, predictions]);
+	}, [imageUrl, predictions, imageSize]);
 
 	return (
-		<div className="relative">
-			<img src={imageUrl} alt="检测图片" className={className} />
+		<div ref={containerRef} className="relative w-full">
+			<img
+				src={imageUrl}
+				alt="检测图片"
+				className={className}
+				style={{
+					width: "100%",
+					height: "auto",
+					display: "block"
+				}}
+			/>
 			<canvas
 				ref={canvasRef}
 				className="absolute top-0 left-0 w-full h-full"
