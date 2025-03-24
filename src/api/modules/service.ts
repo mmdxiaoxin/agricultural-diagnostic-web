@@ -40,3 +40,7 @@ export const updateConfigs = (serviceId: number, data: ReqUpdateConfigs) => {
 export const deleteConfig = (serviceId: number, configId: number) => {
 	return http.delete(`/ai-service/${serviceId}/config/${configId}`, {}, { loading: false });
 };
+
+export const copyService = (serviceId: number) => {
+	return http.post<ResAiService>(`/ai-service/${serviceId}/copy`, {}, { loading: false });
+};

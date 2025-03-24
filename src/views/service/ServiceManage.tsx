@@ -1,9 +1,9 @@
 import { AiService } from "@/api/interface/service";
-import { deleteService, getServiceList } from "@/api/modules";
+import { copyService, deleteService, getServiceList } from "@/api/modules";
 import ServiceModal, { ServiceModalRef } from "@/components/Modal/ServiceModal";
 import QuickCopy from "@/components/Table/QuickCopy";
 import { StatusMapper } from "@/constants";
-import { CodepenOutlined, DeleteOutlined } from "@ant-design/icons/lib/icons";
+import { CodepenOutlined, CopyOutlined, DeleteOutlined } from "@ant-design/icons/lib/icons";
 import { Button, message, Popconfirm, Space, Table, Tag } from "antd";
 import { ColumnsType } from "antd/es/table";
 import { useEffect, useRef, useState } from "react";
@@ -45,6 +45,16 @@ const ServiceManage: React.FC = () => {
 			message.success("删除服务成功");
 		} catch (error) {
 			message.error("删除服务失败");
+		}
+	};
+
+	const handleCopyService = async (serviceId: number) => {
+		try {
+			await copyService(serviceId);
+			fetchServices(pagination.page, pagination.pageSize);
+			message.success("复制服务成功");
+		} catch (error) {
+			message.error("复制服务失败");
 		}
 	};
 
@@ -98,6 +108,13 @@ const ServiceManage: React.FC = () => {
 						icon={<CodepenOutlined />}
 					>
 						编辑
+					</Button>
+					<Button
+						onClick={() => handleCopyService(record.serviceId)}
+						type="primary"
+						icon={<CopyOutlined />}
+					>
+						复制
 					</Button>
 					<Popconfirm
 						title="确定删除该服务吗？"
