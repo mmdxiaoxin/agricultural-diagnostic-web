@@ -1,6 +1,6 @@
 import { AiService, ResStartDiagnoseDisease } from "@/api/interface";
 import type { Prediction } from "@/api/interface/diagnosis";
-import { getService, startDiagnosis, uploadDiagnosisImage } from "@/api/modules";
+import { getDiagnosisSupport, startDiagnosis, uploadDiagnosisImage } from "@/api/modules";
 import { LoadingOutlined, UploadOutlined } from "@ant-design/icons";
 import {
 	Alert,
@@ -35,7 +35,7 @@ const DiseaseDiagnose: React.FC<DiseaseDiagnoseProps> = ({ onPredict }) => {
 	const [serviceList, setServiceList] = useState<AiService[]>([]);
 
 	const fetchServiceList = async () => {
-		const res = await getService();
+		const res = await getDiagnosisSupport();
 		if (res.code !== 200 && res.code !== 201) throw new Error("获取服务列表失败，请重试！");
 		if (!res.data) throw new Error("获取服务列表失败，请重试！");
 		setServiceList(res.data);

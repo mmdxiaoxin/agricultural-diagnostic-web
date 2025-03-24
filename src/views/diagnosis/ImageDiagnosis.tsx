@@ -41,8 +41,7 @@ const ImageDiagnosis = () => {
 					"lg:overflow-y-auto",
 					"[&::-webkit-scrollbar]:hidden", // 隐藏 Webkit 浏览器的滚动条
 					"[-ms-overflow-style:none]", // 隐藏 IE 的滚动条
-					"[scrollbar-width:none]", // 隐藏 Firefox 的滚动条
-					"lg:border-r lg:border-gray-200" // 在大屏幕时添加右侧边框
+					"[scrollbar-width:none]" // 隐藏 Firefox 的滚动条
 				)}
 			>
 				<DiagnosisList ref={diagnosisListRef} />

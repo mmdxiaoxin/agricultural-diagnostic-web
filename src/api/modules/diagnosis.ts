@@ -3,6 +3,7 @@ import {
 	ReqDiagnosisHistoryList,
 	ReqStartDiagnoseDisease,
 	ResDiagnosisHistoryList,
+	ResDiagnosisSupport,
 	ResStartDiagnoseDisease,
 	ResUploadDiagnosisImage
 } from "../interface/diagnosis";
@@ -33,7 +34,7 @@ export const getDiagnosisStatus = async (id: number) => {
 
 // * 获取诊断支持信息
 export const getDiagnosisSupport = async () => {
-	return http.get<any>("/diagnosis/support");
+	return http.get<ResDiagnosisSupport>("/diagnosis/support");
 };
 
 // * 获取诊断历史
