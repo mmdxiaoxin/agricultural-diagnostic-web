@@ -19,7 +19,11 @@ import DetectImage from "../DetectImage";
 
 const { Text } = Typography;
 
-const DiseaseDiagnose: React.FC = () => {
+export interface DiseaseDiagnoseProps {
+	onPredict?: (image: File) => void;
+}
+
+const DiseaseDiagnose: React.FC<DiseaseDiagnoseProps> = ({ onPredict }) => {
 	const [selectedImage, setSelectedImage] = useState<File | null>(null);
 	const [fileList, setFileList] = useState<UploadFile[]>([]);
 	const [detectionResults, setDetectionResults] = useState<ResStartDiagnoseDisease>();
@@ -49,6 +53,7 @@ const DiseaseDiagnose: React.FC = () => {
 			if (diagnoseRes.code !== 200 && diagnoseRes.code !== 201)
 				throw new Error("检测失败，请重试！");
 			setDetectionResults(diagnoseRes.data);
+			onPredict?.(selectedImage);
 			message.success("上传成功，检测完成！");
 		} catch (error) {
 			setError("上传失败，请重试！");

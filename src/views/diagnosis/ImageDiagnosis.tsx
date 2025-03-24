@@ -1,9 +1,16 @@
 import DiseaseDiagnose from "@/components/DiseaseDiagnose";
-import DiagnosisList from "@/components/List/DiagnosisList";
+import DiagnosisList, { DiagnosisListRef } from "@/components/List/DiagnosisList";
 import { Col, Row } from "antd";
 import clsx from "clsx";
+import { useRef } from "react";
 
 const ImageDiagnosis = () => {
+	const diagnosisListRef = useRef<DiagnosisListRef>(null);
+
+	const handlePredict = (_: File) => {
+		diagnosisListRef.current?.init();
+	};
+
 	return (
 		<Row gutter={12} className="w-full h-full bg-white rounded-lg">
 			<Col
@@ -16,7 +23,7 @@ const ImageDiagnosis = () => {
 					"[scrollbar-width:none]" // 隐藏 Firefox 的滚动条
 				)}
 			>
-				<DiagnosisList />
+				<DiagnosisList ref={diagnosisListRef} />
 			</Col>
 			<Col
 				span={12}
@@ -28,7 +35,7 @@ const ImageDiagnosis = () => {
 					"[scrollbar-width:none]" // 隐藏 Firefox 的滚动条
 				)}
 			>
-				<DiseaseDiagnose />
+				<DiseaseDiagnose onPredict={handlePredict} />
 			</Col>
 		</Row>
 	);

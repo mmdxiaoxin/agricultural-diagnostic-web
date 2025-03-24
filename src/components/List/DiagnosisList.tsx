@@ -1,5 +1,6 @@
 import { DiagnosisHistory } from "@/api/interface/diagnosis";
 import { deleteDiagnosisHistory, downloadFile, getDiagnosisHistoryList } from "@/api/modules";
+import { DeleteOutlined } from "@ant-design/icons";
 import {
 	Button,
 	Flex,
@@ -11,12 +12,16 @@ import {
 	Typography,
 	message
 } from "antd";
-import { DeleteOutlined } from "@ant-design/icons";
-import React, { useEffect, useMemo, useState } from "react";
+import { forwardRef, useEffect, useImperativeHandle, useMemo, useState } from "react";
 
 const pageSize = 5;
 
-const DiagnosisList: React.FC = () => {
+export interface DiagnosisListProps {}
+export interface DiagnosisListRef {
+	init: () => void;
+}
+
+const DiagnosisList = forwardRef<DiagnosisListRef, DiagnosisListProps>((_, ref) => {
 	const [diagnosisList, setDiagnosisList] = useState<
 		(DiagnosisHistory & { loading: boolean; imageUrl?: string })[]
 	>([]);
@@ -26,6 +31,12 @@ const DiagnosisList: React.FC = () => {
 	const [total, setTotal] = useState(0);
 
 	const hasMore = useMemo(() => currentPage < Math.ceil(total / pageSize), [currentPage, total]);
+
+	useImperativeHandle(ref, () => ({
+		init: () => {
+			initDiagnosisList();
+		}
+	}));
 
 	// 加载图片
 	const loadImage = async (fileId: number) => {
@@ -220,6 +231,6 @@ const DiagnosisList: React.FC = () => {
 			}}
 		/>
 	);
-};
+});
 
 export default DiagnosisList;
