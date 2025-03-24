@@ -41,6 +41,7 @@ const FileUpload: React.FC<FileUploadProps> = ({ onUpload }) => {
 	const [directoryMode, setDirectoryMode] = useState<boolean>(false);
 	const [multipleMode, setMultipleMode] = useState<boolean>(false);
 	const [api, contextHolder] = notification.useNotification();
+	const fileInputRef = React.useRef<HTMLInputElement>(null);
 
 	// 自定义文件上传处理（单文件或分片上传）
 	const customRequest = async (options: any) => {
@@ -128,9 +129,65 @@ const FileUpload: React.FC<FileUploadProps> = ({ onUpload }) => {
 		return <UploadOutlined className="text-2xl" />;
 	};
 
+	const handleUploadClick = () => {
+		fileInputRef.current?.click();
+	};
+
+	const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+		const files = event.target.files;
+		if (files) {
+			const newFiles = Array.from(files).map(file => ({
+				uid: `-${Date.now()}-${Math.random().toString(36).slice(2)}`,
+				name: file.name,
+				status: "uploading" as const,
+				percent: 0,
+				originFileObj: file as unknown as RcFile,
+				size: file.size,
+				type: file.type,
+				lastModifiedDate: new Date(file.lastModified)
+			}));
+			setFileList(prev => [...prev, ...newFiles]);
+			newFiles.forEach(file => {
+				customRequest({
+					file: file.originFileObj,
+					onSuccess: () => {
+						setFileList(prev => {
+							const index = prev.findIndex(item => item.uid === file.uid);
+							if (index !== -1) {
+								const newFileList = [...prev];
+								newFileList[index] = { ...newFileList[index], status: "done", percent: 100 };
+								return newFileList;
+							}
+							return prev;
+						});
+					},
+					onError: () => {
+						setFileList(prev => {
+							const index = prev.findIndex(item => item.uid === file.uid);
+							if (index !== -1) {
+								const newFileList = [...prev];
+								newFileList[index] = { ...newFileList[index], status: "error" };
+								return newFileList;
+							}
+							return prev;
+						});
+					}
+				});
+			});
+		}
+		event.target.value = ""; // 清空input，允许重复选择同一文件
+	};
+
 	return (
 		<>
 			{contextHolder}
+			<input
+				type="file"
+				ref={fileInputRef}
+				style={{ display: "none" }}
+				multiple={multipleMode}
+				onChange={handleFileSelect}
+			/>
 			<div className="flex flex-col gap-6">
 				{/* 拖拽上传区域 */}
 				<div
@@ -215,11 +272,10 @@ const FileUpload: React.FC<FileUploadProps> = ({ onUpload }) => {
 					<Space>
 						<Button
 							icon={<UploadOutlined />}
+							onClick={handleUploadClick}
 							className={clsx(
 								"px-6 h-10",
 								"rounded-lg",
-								"bg-blue-500 hover:bg-blue-600",
-								"border-none",
 								"shadow-sm hover:shadow-md",
 								"transition-all duration-300",
 								"flex items-center gap-2"
@@ -237,7 +293,6 @@ const FileUpload: React.FC<FileUploadProps> = ({ onUpload }) => {
 							className={clsx(
 								"px-6 h-10",
 								"rounded-lg",
-								"border-none",
 								"shadow-sm hover:shadow-md",
 								"transition-all duration-300",
 								"flex items-center gap-2"
