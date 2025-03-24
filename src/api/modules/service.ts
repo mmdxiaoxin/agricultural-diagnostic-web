@@ -6,6 +6,7 @@ import {
 	ReqUpdateAiService,
 	ReqUpdateConfigs,
 	ResAiService,
+	ResAiServiceDetail,
 	ResAiServiceList
 } from "@/api/interface/service";
 
@@ -13,8 +14,12 @@ export const getServiceList = (params: ReqAiServiceList) => {
 	return http.get<ResAiServiceList>("/ai-service/list", params, { loading: false });
 };
 
-export const getService = (serviceId: number | string) => {
-	return http.get<ResAiService>(`/ai-service/${serviceId}`, {}, { loading: false });
+export const getService = () => {
+	return http.get<ResAiService>("/ai-service", {}, { loading: false });
+};
+
+export const getServiceDetail = (serviceId: number | string) => {
+	return http.get<ResAiServiceDetail>(`/ai-service/${serviceId}`, {}, { loading: false });
 };
 
 export const createService = (data: ReqCreateAiService) => {
@@ -42,5 +47,5 @@ export const deleteConfig = (serviceId: number, configId: number) => {
 };
 
 export const copyService = (serviceId: number) => {
-	return http.post<ResAiService>(`/ai-service/${serviceId}/copy`, {}, { loading: false });
+	return http.post<ResAiServiceDetail>(`/ai-service/${serviceId}/copy`, {}, { loading: false });
 };

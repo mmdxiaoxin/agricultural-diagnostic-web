@@ -56,6 +56,8 @@ export type ReqUpdateConfigs = ReqAddConfigs;
 
 export type ReqAiServiceList = ReqPage & {};
 
+export type ResAiService = AiService[];
+
 export type ResAiServiceList = PageData<AiService>;
 
-export type ResAiService = AiService;
+export type ResAiServiceDetail = AiService;

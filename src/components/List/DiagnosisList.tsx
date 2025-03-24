@@ -160,6 +160,7 @@ const DiagnosisList = forwardRef<DiagnosisListRef, DiagnosisListProps>((_, ref) 
 	return (
 		<List
 			rowKey="id"
+			className="px-4"
 			header={
 				<Flex align="center" justify="space-between">
 					<Typography.Title level={4}>诊断历史</Typography.Title>

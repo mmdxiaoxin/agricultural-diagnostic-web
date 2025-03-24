@@ -1,12 +1,13 @@
-import { ResStartDiagnoseDisease } from "@/api/interface";
+import { AiService, ResStartDiagnoseDisease } from "@/api/interface";
 import type { Prediction } from "@/api/interface/diagnosis";
-import { startDiagnosis, uploadDiagnosisImage } from "@/api/modules";
+import { getService, startDiagnosis, uploadDiagnosisImage } from "@/api/modules";
 import { LoadingOutlined, UploadOutlined } from "@ant-design/icons";
 import {
 	Alert,
 	Button,
 	Card,
 	message,
+	Select,
 	Space,
 	Tag,
 	Typography,
@@ -14,7 +15,7 @@ import {
 	UploadFile,
 	UploadProps
 } from "antd";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import DetectImage from "../DetectImage";
 
 const { Text } = Typography;
@@ -30,6 +31,19 @@ const DiseaseDiagnose: React.FC<DiseaseDiagnoseProps> = ({ onPredict }) => {
 	const [loading, setLoading] = useState<boolean>(false);
 	const [error, setError] = useState<string | null>(null);
 	const [previewUrl, setPreviewUrl] = useState<string>("");
+	const [serviceId, setServiceId] = useState<number>(3);
+	const [serviceList, setServiceList] = useState<AiService[]>([]);
+
+	const fetchServiceList = async () => {
+		const res = await getService();
+		if (res.code !== 200 && res.code !== 201) throw new Error("获取服务列表失败，请重试！");
+		if (!res.data) throw new Error("获取服务列表失败，请重试！");
+		setServiceList(res.data);
+	};
+
+	useEffect(() => {
+		fetchServiceList();
+	}, []);
 
 	// 上传并预测
 	const handleUploadAndPredict = async () => {
@@ -49,7 +63,7 @@ const DiseaseDiagnose: React.FC<DiseaseDiagnoseProps> = ({ onPredict }) => {
 			const diagnosisId = uploadRes.data.id;
 
 			// * 开始诊断
-			const diagnoseRes = await startDiagnosis({ diagnosisId, serviceId: 3 });
+			const diagnoseRes = await startDiagnosis({ diagnosisId, serviceId });
 			if (diagnoseRes.code !== 200 && diagnoseRes.code !== 201)
 				throw new Error("检测失败，请重试！");
 			setDetectionResults(diagnoseRes.data);
@@ -124,6 +138,16 @@ const DiseaseDiagnose: React.FC<DiseaseDiagnoseProps> = ({ onPredict }) => {
 	return (
 		<Card title="植物病害诊断" className="max-w-3xl">
 			<Space direction="vertical" className="w-full" size="large">
+				<Select
+					placeholder="请选择诊断服务"
+					options={serviceList.map(service => ({
+						label: service.serviceName,
+						value: service.serviceId
+					}))}
+					className="w-full"
+					onChange={setServiceId}
+					value={serviceId}
+				/>
 				{/* 图片选择与预览 */}
 				<Card size="small" className="bg-gray-50">
 					<Upload

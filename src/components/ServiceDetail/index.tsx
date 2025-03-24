@@ -1,5 +1,5 @@
 import { AiService, AiServiceConfig } from "@/api/interface";
-import { getService, updateConfigs } from "@/api/modules";
+import { getServiceDetail, updateConfigs } from "@/api/modules";
 import {
 	Button,
 	Form,
@@ -75,7 +75,7 @@ const ServiceDetail: React.FC<ServiceDetailProps> = ({ service, onSave }) => {
 		if (service?.serviceId) {
 			try {
 				setInitLoading(true);
-				const response = await getService(service.serviceId);
+				const response = await getServiceDetail(service.serviceId);
 				const newConfigs = response.data?.aiServiceConfigs || [];
 				setConfigs(newConfigs);
 				setOriginalConfigs(newConfigs);
