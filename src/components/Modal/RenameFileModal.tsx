@@ -1,6 +1,6 @@
 import { Input, Modal } from "antd";
 import clsx from "clsx";
-import React, { forwardRef, useImperativeHandle, useState } from "react";
+import { forwardRef, useImperativeHandle, useState } from "react";
 
 export interface RenameFileModalRef {
 	open: (fileName: string) => void;
