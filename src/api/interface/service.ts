@@ -52,6 +52,8 @@ export type ReqAddConfigs = {
 	configs: Array<Pick<AiServiceConfig, "configKey" | "configValue">>;
 };
 
+export type ReqUpdateConfigs = ReqAddConfigs;
+
 export type ReqAiServiceList = ReqPage & {};
 
 export type ResAiServiceList = PageData<AiService>;

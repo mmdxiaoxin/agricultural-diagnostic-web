@@ -1,5 +1,5 @@
 import { AiService, AiServiceConfig } from "@/api/interface";
-import { addConfigs, getService } from "@/api/modules";
+import { getService, updateConfigs } from "@/api/modules";
 import {
 	Button,
 	Form,
@@ -94,7 +94,7 @@ const ServiceDetail: React.FC<ServiceDetailProps> = ({ service, onSave }) => {
 		setEditingKey(record.configId);
 	};
 
-	const handleSave = async (key: number) => {
+	const handleSaveRow = async (key: number) => {
 		try {
 			const row = await form.validateFields();
 			const newConfigs = configs.map(item => {
@@ -111,7 +111,7 @@ const ServiceDetail: React.FC<ServiceDetailProps> = ({ service, onSave }) => {
 		}
 	};
 
-	const handleCancel = () => {
+	const handleCancelRow = () => {
 		// 如果是新增的配置项（configId 大于当前时间戳减去一天），则从列表中移除
 		const oneDayAgo = Date.now() - 24 * 60 * 60 * 1000;
 		if (editingKey && editingKey > oneDayAgo) {
@@ -121,7 +121,7 @@ const ServiceDetail: React.FC<ServiceDetailProps> = ({ service, onSave }) => {
 		form.resetFields();
 	};
 
-	const handleAdd = () => {
+	const handleAddRow = () => {
 		const newConfig: AiServiceConfig = {
 			configId: Date.now(),
 			configKey: "",
@@ -134,7 +134,7 @@ const ServiceDetail: React.FC<ServiceDetailProps> = ({ service, onSave }) => {
 		setEditingKey(newConfig.configId);
 	};
 
-	const handleDelete = async (key: number) => {
+	const handleDeleteRow = async (key: number) => {
 		try {
 			const newConfigs = configs.filter(config => config.configId !== key);
 			setConfigs(newConfigs);
@@ -149,7 +149,7 @@ const ServiceDetail: React.FC<ServiceDetailProps> = ({ service, onSave }) => {
 			setLoading(true);
 			if (service?.serviceId) {
 				const filteredConfigs = configs.map(({ configId, ...rest }) => rest);
-				await addConfigs(service.serviceId, { configs: filteredConfigs });
+				await updateConfigs(service.serviceId, { configs: filteredConfigs });
 				message.success("提交成功");
 				onSave?.(service);
 				fetchServiceDetail(); // 刷新数据
@@ -179,10 +179,10 @@ const ServiceDetail: React.FC<ServiceDetailProps> = ({ service, onSave }) => {
 				const editable = isEditing(record);
 				return editable ? (
 					<Space>
-						<Button type="primary" onClick={() => handleSave(record.configId)}>
+						<Button type="primary" onClick={() => handleSaveRow(record.configId)}>
 							保存
 						</Button>
-						<Popconfirm title="确认取消编辑？" onConfirm={handleCancel}>
+						<Popconfirm title="确认取消编辑？" onConfirm={handleCancelRow}>
 							<Button>取消</Button>
 						</Popconfirm>
 					</Space>
@@ -195,7 +195,7 @@ const ServiceDetail: React.FC<ServiceDetailProps> = ({ service, onSave }) => {
 						>
 							编辑
 						</Button>
-						<Popconfirm title="确认删除此项？" onConfirm={() => handleDelete(record.configId)}>
+						<Popconfirm title="确认删除此项？" onConfirm={() => handleDeleteRow(record.configId)}>
 							<Button type="primary" danger>
 								删除
 							</Button>
@@ -226,7 +226,7 @@ const ServiceDetail: React.FC<ServiceDetailProps> = ({ service, onSave }) => {
 		<div className={clsx("w-full h-full", "p-4")}>
 			<Typography.Title level={4}>{service?.serviceName}</Typography.Title>
 			<Space className="mb-4">
-				<Button type="primary" onClick={handleAdd} disabled={editingKey !== null}>
+				<Button type="primary" onClick={handleAddRow} disabled={editingKey !== null}>
 					新增配置
 				</Button>
 				<Button
