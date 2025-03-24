@@ -8,10 +8,10 @@ import {
 	updateFile,
 	updateFilesAccess
 } from "@/api/modules/file";
-import DownloadList from "@/components/List/DownloadList";
-import FileAccess from "@/components/Table/FileAccess";
 import FileFilter from "@/components/FileFilter";
 import FileUpload from "@/components/FileUpload";
+import DownloadList from "@/components/List/DownloadList";
+import FileAccess from "@/components/Table/FileAccess";
 import FilePreview from "@/components/Table/FilePreview";
 import FileTypeTag from "@/components/Table/FileTypeTag";
 import { MIMETypeValue } from "@/constants";
@@ -20,7 +20,6 @@ import {
 	DeleteOutlined,
 	DownloadOutlined,
 	EditOutlined,
-	FileOutlined,
 	FolderOutlined,
 	SearchOutlined
 } from "@ant-design/icons";
@@ -34,16 +33,16 @@ import {
 	message,
 	Modal,
 	Popconfirm,
-	Splitter,
 	Table,
 	TableColumnsType,
 	Tabs,
 	TabsProps
 } from "antd";
 import { TableRowSelection } from "antd/es/table/interface";
+import clsx from "clsx";
 import dayjs from "dayjs";
 import React, { useEffect, useState } from "react";
-import clsx from "clsx";
+import { useNavigate } from "react-router";
 
 export type FileManageProps = {};
 export type FilterParams = {
@@ -75,6 +74,8 @@ const FileManage: React.FC<FileManageProps> = () => {
 	});
 	const [currentFile, setCurrentFile] = useState<FileMeta | null>(null);
 	const [newFileName, setNewFileName] = useState("");
+
+	const navigate = useNavigate();
 
 	const pendingFilesCount = Object.values(progress).filter(p => p < 100).length;
 
@@ -560,22 +561,9 @@ const FileManage: React.FC<FileManageProps> = () => {
 								"transition-all duration-300",
 								"flex items-center gap-2"
 							)}
+							onClick={() => navigate("/capture/dataset/create")}
 						>
-							新建文件夹
-						</Button>
-						<Button
-							icon={<FileOutlined />}
-							className={clsx(
-								"px-4 h-10",
-								"rounded-lg",
-								"bg-gray-100 hover:bg-gray-200",
-								"border-none",
-								"shadow-sm hover:shadow-md",
-								"transition-all duration-300",
-								"flex items-center gap-2"
-							)}
-						>
-							新建文件
+							新建数据集
 						</Button>
 					</div>
 				</div>
