@@ -1,8 +1,24 @@
 import { ResStartDiagnoseDisease } from "@/api/interface";
 import { startDiagnosis, uploadDiagnosisImage } from "@/api/modules";
-import { UploadOutlined } from "@ant-design/icons";
-import { Alert, Button, Card, message, Spin, Upload, UploadFile, UploadProps } from "antd";
+import { UploadOutlined, LoadingOutlined } from "@ant-design/icons";
+import {
+	Alert,
+	Button,
+	Card,
+	message,
+	Spin,
+	Upload,
+	UploadFile,
+	UploadProps,
+	Typography,
+	Tag,
+	Space,
+	Image
+} from "antd";
 import React, { useState } from "react";
+import type { Prediction } from "@/api/interface/diagnosis";
+
+const { Title, Text } = Typography;
 
 const DiseaseDiagnose: React.FC = () => {
 	const [selectedImage, setSelectedImage] = useState<File | null>(null);
@@ -10,6 +26,7 @@ const DiseaseDiagnose: React.FC = () => {
 	const [detectionResults, setDetectionResults] = useState<ResStartDiagnoseDisease>();
 	const [loading, setLoading] = useState<boolean>(false);
 	const [error, setError] = useState<string | null>(null);
+	const [previewUrl, setPreviewUrl] = useState<string>("");
 
 	// 上传并预测
 	const handleUploadAndPredict = async () => {
@@ -52,60 +69,120 @@ const DiseaseDiagnose: React.FC = () => {
 		}
 	};
 
+	// 渲染分类结果
+	const renderClassifyResult = (prediction: Prediction) => {
+		if (prediction.type !== "classify") return null;
+		return (
+			<Card key={prediction.class_name} style={{ marginBottom: 16 }}>
+				<Space direction="vertical" style={{ width: "100%" }}>
+					<Space>
+						<Tag color="blue">分类结果</Tag>
+						<Text strong>{prediction.class_name}</Text>
+					</Space>
+					<Space>
+						<Text type="secondary">置信度：</Text>
+						<Text strong style={{ color: "#1890ff" }}>
+							{(prediction.confidence * 100).toFixed(2)}%
+						</Text>
+					</Space>
+				</Space>
+			</Card>
+		);
+	};
+
+	// 渲染检测结果
+	const renderDetectResult = (prediction: Prediction) => {
+		if (prediction.type !== "detect") return null;
+		return (
+			<Card key={prediction.class_id} style={{ marginBottom: 16 }}>
+				<Space direction="vertical" style={{ width: "100%" }}>
+					<Space>
+						<Tag color="green">检测结果</Tag>
+						<Text strong>{prediction.class_name}</Text>
+					</Space>
+					<Space>
+						<Text type="secondary">置信度：</Text>
+						<Text strong style={{ color: "#1890ff" }}>
+							{(prediction.confidence * 100).toFixed(2)}%
+						</Text>
+					</Space>
+					<Space>
+						<Text type="secondary">位置：</Text>
+						<Text>
+							X: {prediction.bbox[0].x.toFixed(2)}, Y: {prediction.bbox[0].y.toFixed(2)}
+						</Text>
+					</Space>
+				</Space>
+			</Card>
+		);
+	};
+
 	return (
-		<Card title="上传图片进行检测" style={{ margin: "20px auto" }}>
-			{/* 图片选择与预览 */}
-			<Upload
-				accept="image/*"
-				beforeUpload={file => {
-					setSelectedImage(file);
-					return false; // 阻止自动上传
-				}}
-				showUploadList={{
-					showPreviewIcon: true // 显示预览图标
-				}}
-				fileList={fileList}
-				onChange={handleChange}
-				listType="picture"
-				previewFile={file => {
-					// 使用 Ant Design 提供的默认预览逻辑
-					return Promise.resolve(URL.createObjectURL(file as Blob));
-				}}
-				style={{ marginBottom: 16 }}
-			>
-				<Button icon={<UploadOutlined />}>选择图片</Button>
-			</Upload>
+		<Card title="植物病害诊断" style={{ margin: "20px auto", maxWidth: 800 }}>
+			<Space direction="vertical" style={{ width: "100%" }} size="large">
+				{/* 图片选择与预览 */}
+				<Card size="small" style={{ background: "#fafafa" }}>
+					<Upload
+						accept="image/*"
+						beforeUpload={file => {
+							setSelectedImage(file);
+							const reader = new FileReader();
+							reader.onload = e => setPreviewUrl(e.target?.result as string);
+							reader.readAsDataURL(file);
+							return false;
+						}}
+						showUploadList={false}
+						fileList={fileList}
+						onChange={handleChange}
+						listType="picture"
+						style={{ textAlign: "center" }}
+					>
+						<Button icon={<UploadOutlined />}>选择图片</Button>
+					</Upload>
+					{previewUrl && (
+						<div style={{ marginTop: 16, textAlign: "center" }}>
+							<Image src={previewUrl} alt="预览图" style={{ maxHeight: 300 }} />
+						</div>
+					)}
+				</Card>
 
-			{/* 上传按钮 */}
-			<Button
-				type="primary"
-				onClick={handleUploadAndPredict}
-				disabled={!selectedImage || loading}
-				style={{ width: "100%", marginTop: 16 }}
-			>
-				{loading ? "检测中..." : "上传并检测"}
-			</Button>
-			{loading && <Spin style={{ display: "block", margin: "16px auto" }} />}
+				{/* 上传按钮 */}
+				<Button
+					type="primary"
+					onClick={handleUploadAndPredict}
+					disabled={!selectedImage || loading}
+					block
+				>
+					{loading ? (
+						<>
+							<LoadingOutlined /> 检测中...
+						</>
+					) : (
+						"开始检测"
+					)}
+				</Button>
 
-			{/* 错误提示 */}
-			{error && (
-				<Alert
-					message={error}
-					type="error"
-					showIcon
-					closable
-					style={{ marginTop: 16 }}
-					onClose={() => setError(null)}
-				/>
-			)}
+				{/* 错误提示 */}
+				{error && (
+					<Alert message={error} type="error" showIcon closable onClose={() => setError(null)} />
+				)}
 
-			{/* 检测结果 */}
-			{detectionResults && (
-				<div>
-					<h3>检测结果</h3>
-					<p>{detectionResults.predictions.map(p => p.class_name).join(", ")}</p>
-				</div>
-			)}
+				{/* 检测结果 */}
+				{detectionResults && (
+					<Card title="检测结果" size="small">
+						<Space direction="vertical" style={{ width: "100%" }} size="middle">
+							{detectionResults.predictions.map(prediction => (
+								<React.Fragment
+									key={prediction.type === "classify" ? prediction.class_name : prediction.class_id}
+								>
+									{prediction.type === "classify" && renderClassifyResult(prediction)}
+									{prediction.type === "detect" && renderDetectResult(prediction)}
+								</React.Fragment>
+							))}
+						</Space>
+					</Card>
+				)}
+			</Space>
 		</Card>
 	);
 };
