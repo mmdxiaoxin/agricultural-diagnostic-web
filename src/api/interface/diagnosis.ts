@@ -32,6 +32,7 @@ export type Prediction = ClassifyPrediction | DetectPrediction;
 // 诊断历史记录
 export type DiagnosisHistory = {
 	id: number;
+	fileId: number;
 	created_at: string;
 	updated_at: string;
 	diagnosisResult: ResStartDiagnoseDisease;
