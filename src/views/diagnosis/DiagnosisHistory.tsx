@@ -1,12 +1,14 @@
 import { DiagnosisHistory } from "@/api/interface/diagnosis";
 import { deleteDiagnosisHistory, getDiagnosisHistoryList } from "@/api/modules";
+import DiagnosisDetailModal, {
+	DiagnosisDetailModalRef
+} from "@/components/Modal/DiagnosisDetailModal";
 import { DeleteOutlined } from "@ant-design/icons";
 import { Button, Popconfirm, Space, Table, Tag, Typography, message } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import clsx from "clsx";
 import dayjs from "dayjs";
-import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router";
+import React, { useEffect, useRef, useState } from "react";
 
 const { Text } = Typography;
 
@@ -18,7 +20,7 @@ const DiagnosisHistoryPage: React.FC = () => {
 		pageSize: 10,
 		total: 0
 	});
-	const navigate = useNavigate();
+	const modalRef = useRef<DiagnosisDetailModalRef>(null);
 
 	// 获取诊断历史列表
 	const fetchDiagnosisHistory = async (page: number = 1, pageSize: number = 10) => {
@@ -51,6 +53,11 @@ const DiagnosisHistoryPage: React.FC = () => {
 			console.error("删除失败", error);
 			message.error("删除失败");
 		}
+	};
+
+	// 查看详情
+	const handleViewDetail = (record: DiagnosisHistory) => {
+		modalRef.current?.open(record);
 	};
 
 	// 表格列定义
@@ -95,7 +102,7 @@ const DiagnosisHistoryPage: React.FC = () => {
 			width: 120,
 			render: (_, record) => (
 				<Space>
-					<Button type="link" onClick={() => navigate(`/diagnosis/detail/${record.id}`)}>
+					<Button type="link" onClick={() => handleViewDetail(record)}>
 						查看
 					</Button>
 					<Popconfirm
@@ -134,6 +141,7 @@ const DiagnosisHistoryPage: React.FC = () => {
 				onChange={handleTableChange}
 				scroll={{ x: 1000 }}
 			/>
+			<DiagnosisDetailModal ref={modalRef} />
 		</div>
 	);
 };
