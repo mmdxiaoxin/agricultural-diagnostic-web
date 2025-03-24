@@ -1,22 +1,21 @@
 import { ResStartDiagnoseDisease } from "@/api/interface";
+import type { Prediction } from "@/api/interface/diagnosis";
 import { startDiagnosis, uploadDiagnosisImage } from "@/api/modules";
-import { UploadOutlined, LoadingOutlined } from "@ant-design/icons";
+import { LoadingOutlined, UploadOutlined } from "@ant-design/icons";
 import {
 	Alert,
 	Button,
 	Card,
+	Image,
 	message,
-	Spin,
+	Space,
+	Tag,
+	Typography,
 	Upload,
 	UploadFile,
-	UploadProps,
-	Typography,
-	Tag,
-	Space,
-	Image
+	UploadProps
 } from "antd";
 import React, { useState } from "react";
-import type { Prediction } from "@/api/interface/diagnosis";
 
 const { Title, Text } = Typography;
 
@@ -73,15 +72,15 @@ const DiseaseDiagnose: React.FC = () => {
 	const renderClassifyResult = (prediction: Prediction) => {
 		if (prediction.type !== "classify") return null;
 		return (
-			<Card key={prediction.class_name} style={{ marginBottom: 16 }}>
-				<Space direction="vertical" style={{ width: "100%" }}>
+			<Card key={prediction.class_name} className="mb-4">
+				<Space direction="vertical" className="w-full">
 					<Space>
 						<Tag color="blue">分类结果</Tag>
 						<Text strong>{prediction.class_name}</Text>
 					</Space>
 					<Space>
 						<Text type="secondary">置信度：</Text>
-						<Text strong style={{ color: "#1890ff" }}>
+						<Text strong className="text-blue-500">
 							{(prediction.confidence * 100).toFixed(2)}%
 						</Text>
 					</Space>
@@ -94,15 +93,15 @@ const DiseaseDiagnose: React.FC = () => {
 	const renderDetectResult = (prediction: Prediction) => {
 		if (prediction.type !== "detect") return null;
 		return (
-			<Card key={prediction.class_id} style={{ marginBottom: 16 }}>
-				<Space direction="vertical" style={{ width: "100%" }}>
+			<Card key={prediction.class_id} className="mb-4">
+				<Space direction="vertical" className="w-full">
 					<Space>
 						<Tag color="green">检测结果</Tag>
 						<Text strong>{prediction.class_name}</Text>
 					</Space>
 					<Space>
 						<Text type="secondary">置信度：</Text>
-						<Text strong style={{ color: "#1890ff" }}>
+						<Text strong className="text-blue-500">
 							{(prediction.confidence * 100).toFixed(2)}%
 						</Text>
 					</Space>
@@ -118,10 +117,10 @@ const DiseaseDiagnose: React.FC = () => {
 	};
 
 	return (
-		<Card title="植物病害诊断" style={{ margin: "20px auto", maxWidth: 800 }}>
-			<Space direction="vertical" style={{ width: "100%" }} size="large">
+		<Card title="植物病害诊断" className="mx-auto max-w-3xl my-5">
+			<Space direction="vertical" className="w-full" size="large">
 				{/* 图片选择与预览 */}
-				<Card size="small" style={{ background: "#fafafa" }}>
+				<Card size="small" className="bg-gray-50">
 					<Upload
 						accept="image/*"
 						beforeUpload={file => {
@@ -135,13 +134,13 @@ const DiseaseDiagnose: React.FC = () => {
 						fileList={fileList}
 						onChange={handleChange}
 						listType="picture"
-						style={{ textAlign: "center" }}
+						className="text-center"
 					>
 						<Button icon={<UploadOutlined />}>选择图片</Button>
 					</Upload>
 					{previewUrl && (
-						<div style={{ marginTop: 16, textAlign: "center" }}>
-							<Image src={previewUrl} alt="预览图" style={{ maxHeight: 300 }} />
+						<div className="mt-4 text-center">
+							<Image src={previewUrl} alt="预览图" className="max-h-[300px]" />
 						</div>
 					)}
 				</Card>
@@ -170,7 +169,7 @@ const DiseaseDiagnose: React.FC = () => {
 				{/* 检测结果 */}
 				{detectionResults && (
 					<Card title="检测结果" size="small">
-						<Space direction="vertical" style={{ width: "100%" }} size="middle">
+						<Space direction="vertical" className="w-full" size="middle">
 							{detectionResults.predictions.map(prediction => (
 								<React.Fragment
 									key={prediction.type === "classify" ? prediction.class_name : prediction.class_id}
