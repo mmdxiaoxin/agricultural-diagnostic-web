@@ -14,7 +14,7 @@ export const getServiceList = (params: ReqAiServiceList) => {
 };
 
 export const getService = (serviceId: number) => {
-	return http.get<ResAiService>(`/ai-service/${serviceId}`, { loading: false });
+	return http.get<ResAiService>(`/ai-service/${serviceId}`, {}, { loading: false });
 };
 
 export const createService = (data: ReqCreateAiService) => {
@@ -26,7 +26,7 @@ export const updateService = (serviceId: number, data: ReqUpdateAiService) => {
 };
 
 export const deleteService = (serviceId: number) => {
-	return http.delete(`/ai-service/${serviceId}`, { loading: false });
+	return http.delete(`/ai-service/${serviceId}`, {}, { loading: false });
 };
 
 export const addConfigs = (serviceId: number, data: ReqAddConfigs) => {
@@ -35,4 +35,8 @@ export const addConfigs = (serviceId: number, data: ReqAddConfigs) => {
 
 export const updateConfigs = (serviceId: number, data: ReqUpdateConfigs) => {
 	return http.put(`/ai-service/${serviceId}/configs`, data, { loading: false });
+};
+
+export const deleteConfig = (serviceId: number, configId: number) => {
+	return http.delete(`/ai-service/${serviceId}/config/${configId}`, {}, { loading: false });
 };

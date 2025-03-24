@@ -1,5 +1,5 @@
 import { AiService, AiServiceConfig } from "@/api/interface";
-import { getService, updateConfigs } from "@/api/modules";
+import { deleteConfig, getService, updateConfigs } from "@/api/modules";
 import {
 	Button,
 	Form,
@@ -137,6 +137,7 @@ const ServiceDetail: React.FC<ServiceDetailProps> = ({ service, onSave }) => {
 	const handleDeleteRow = async (key: number) => {
 		try {
 			const newConfigs = configs.filter(config => config.configId !== key);
+			await deleteConfig(service?.serviceId || 0, key);
 			setConfigs(newConfigs);
 			message.success("删除成功");
 		} catch (error) {
