@@ -68,12 +68,13 @@ const ServiceDetail: React.FC<ServiceDetailProps> = ({ service, onSave }) => {
 	const [originalConfigs, setOriginalConfigs] = useState<AiServiceConfig[]>([]);
 	const [form] = Form.useForm();
 	const [editingKey, setEditingKey] = useState<number | null>(null);
-	const [loading, setLoading] = useState(false);
+	const [initLoading, setInitLoading] = useState(false);
+	const [saveLoading, setSaveLoading] = useState(false);
 
 	const fetchServiceDetail = async () => {
 		if (service?.serviceId) {
 			try {
-				setLoading(true);
+				setInitLoading(true);
 				const response = await getService(service.serviceId);
 				const newConfigs = response.data?.aiServiceConfigs || [];
 				setConfigs(newConfigs);
@@ -81,7 +82,7 @@ const ServiceDetail: React.FC<ServiceDetailProps> = ({ service, onSave }) => {
 			} catch (error) {
 				message.error("获取服务详情失败");
 			} finally {
-				setLoading(false);
+				setInitLoading(false);
 			}
 		}
 	};
@@ -156,7 +157,7 @@ const ServiceDetail: React.FC<ServiceDetailProps> = ({ service, onSave }) => {
 
 	const handleSubmit = async () => {
 		try {
-			setLoading(true);
+			setSaveLoading(true);
 			if (service?.serviceId) {
 				const filteredConfigs = configs.map(({ configId, ...rest }) => rest);
 				await updateConfigs(service.serviceId, { configs: filteredConfigs });
@@ -167,7 +168,7 @@ const ServiceDetail: React.FC<ServiceDetailProps> = ({ service, onSave }) => {
 		} catch (error) {
 			message.error("提交失败");
 		} finally {
-			setLoading(false);
+			setSaveLoading(false);
 		}
 	};
 
@@ -239,7 +240,12 @@ const ServiceDetail: React.FC<ServiceDetailProps> = ({ service, onSave }) => {
 				<Button type="primary" onClick={handleAddRow} disabled={editingKey !== null}>
 					新增配置
 				</Button>
-				<Button type="primary" onClick={handleSubmit} disabled={loading} loading={loading}>
+				<Button
+					type="primary"
+					onClick={handleSubmit}
+					disabled={initLoading || saveLoading}
+					loading={saveLoading}
+				>
 					{hasUnsavedChanges() ? "保存提交*" : "保存提交"}
 				</Button>
 			</Space>
@@ -258,7 +264,7 @@ const ServiceDetail: React.FC<ServiceDetailProps> = ({ service, onSave }) => {
 					columns={mergedColumns}
 					rowClassName="editable-row"
 					pagination={false}
-					loading={loading}
+					loading={initLoading}
 				/>
 			</Form>
 		</div>
