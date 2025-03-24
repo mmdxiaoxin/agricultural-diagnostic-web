@@ -1,8 +1,8 @@
 import { DatasetMeta } from "@/api/interface";
 import { deleteDataset, getDatasetsList } from "@/api/modules";
 import DatasetsList from "@/components/List/DatasetsList";
-import { Button, message, Spin } from "antd";
-import { PlusOutlined } from "@ant-design/icons";
+import { FolderAddOutlined, PlusOutlined } from "@ant-design/icons";
+import { Button, FloatButton, message, Spin } from "antd";
 import clsx from "clsx";
 import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router";
@@ -103,6 +103,13 @@ const DatasetManage: React.FC<DatasetManageProps> = () => {
 				"overflow-y-auto"
 			)}
 		>
+			<FloatButton
+				icon={<FolderAddOutlined />}
+				type="primary"
+				style={{ insetInlineEnd: 44 }}
+				onClick={handleAdd}
+			/>
+
 			<div
 				className={clsx(
 					"flex justify-between items-center",
