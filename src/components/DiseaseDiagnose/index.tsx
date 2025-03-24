@@ -1,37 +1,18 @@
-import { diagnoseDisease } from "@/api/modules/diagnosis";
-import { uploadSingleFile } from "@/api/modules/file";
+import { ResStartDiagnoseDisease } from "@/api/interface";
+import { startDiagnosis, uploadDiagnosisImage } from "@/api/modules";
 import { UploadOutlined } from "@ant-design/icons";
-import {
-	Alert,
-	Button,
-	Card,
-	Divider,
-	Image,
-	message,
-	Spin,
-	Upload,
-	UploadFile,
-	UploadProps
-} from "antd";
+import { Alert, Button, Card, message, Spin, Upload, UploadFile, UploadProps } from "antd";
 import React, { useState } from "react";
-
-interface DetectionResult {
-	class_name: string;
-	bbox: number[];
-	score: number;
-	class_id: number;
-}
 
 const DiseaseDiagnose: React.FC = () => {
 	const [selectedImage, setSelectedImage] = useState<File | null>(null);
 	const [fileList, setFileList] = useState<UploadFile[]>([]);
-	const [resultImageUrl, setResultImageUrl] = useState<string | null>(null);
-	const [detectionResults, setDetectionResults] = useState<DetectionResult[]>([]);
+	const [detectionResults, setDetectionResults] = useState<ResStartDiagnoseDisease>();
 	const [loading, setLoading] = useState<boolean>(false);
 	const [error, setError] = useState<string | null>(null);
 
 	// 上传并预测
-	const handleSubmit = async () => {
+	const handleUploadAndPredict = async () => {
 		if (!selectedImage) {
 			setError("请选择一张图片上传！");
 			return;
@@ -41,18 +22,17 @@ const DiseaseDiagnose: React.FC = () => {
 		setError(null);
 
 		try {
-			const response = await uploadSingleFile(selectedImage);
-			if (response.code !== 200 && response.code !== 201) throw new Error("上传失败，请重试！");
-			if (!response.data) throw new Error("上传失败，请重试！");
-			const fileId = response.data.id;
+			// * 上传图片
+			const uploadRes = await uploadDiagnosisImage(selectedImage);
+			if (uploadRes.code !== 200 && uploadRes.code !== 201) throw new Error("上传失败，请重试！");
+			if (!uploadRes.data) throw new Error("上传失败，请重试！");
+			const diagnosisId = uploadRes.data.id;
 
-			const diagnoseResponse = await diagnoseDisease(String(fileId));
-			if (diagnoseResponse.code !== 200 && diagnoseResponse.code !== 201)
+			// * 开始诊断
+			const diagnoseRes = await startDiagnosis({ diagnosisId, serviceId: 2 });
+			if (diagnoseRes.code !== 200 && diagnoseRes.code !== 201)
 				throw new Error("检测失败，请重试！");
-			const { processed_image, detections } = diagnoseResponse.data;
-
-			setResultImageUrl(processed_image);
-			setDetectionResults(detections);
+			setDetectionResults(diagnoseRes.data);
 			message.success("上传成功，检测完成！");
 		} catch (error) {
 			setError("上传失败，请重试！");
@@ -79,7 +59,6 @@ const DiseaseDiagnose: React.FC = () => {
 				accept="image/*"
 				beforeUpload={file => {
 					setSelectedImage(file);
-					setResultImageUrl(null); // 清空之前的检测结果
 					return false; // 阻止自动上传
 				}}
 				showUploadList={{
@@ -100,7 +79,7 @@ const DiseaseDiagnose: React.FC = () => {
 			{/* 上传按钮 */}
 			<Button
 				type="primary"
-				onClick={handleSubmit}
+				onClick={handleUploadAndPredict}
 				disabled={!selectedImage || loading}
 				style={{ width: "100%", marginTop: 16 }}
 			>
@@ -121,23 +100,10 @@ const DiseaseDiagnose: React.FC = () => {
 			)}
 
 			{/* 检测结果 */}
-			{resultImageUrl && (
-				<div style={{ marginTop: 16 }}>
-					<Divider>检测结果</Divider>
-					<Image src={resultImageUrl} alt="检测结果" style={{ maxWidth: "100%", maxHeight: 300 }} />
-					<div style={{ marginTop: 16 }}>
-						<h4>检测到的物体:</h4>
-						<ul>
-							{detectionResults.map((result, index) => (
-								<li key={index}>
-									<strong>{result.class_name}</strong> (置信度: {Math.round(result.score * 100)}%)
-									<br />
-									边框: [X: {result.bbox[0]}, Y: {result.bbox[1]}, W: {result.bbox[2]}, H:{" "}
-									{result.bbox[3]}]
-								</li>
-							))}
-						</ul>
-					</div>
+			{detectionResults && (
+				<div>
+					<h3>检测结果</h3>
+					<p>{detectionResults.predictions.map(p => p.class_name).join(", ")}</p>
 				</div>
 			)}
 		</Card>
