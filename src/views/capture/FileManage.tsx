@@ -554,6 +554,8 @@ const FileManage: React.FC<FileManageProps> = () => {
 						current: pagination.page,
 						pageSize: pagination.pageSize,
 						total: pagination.total,
+						showTotal: (total, range) => `${range[0]}-${range[1]} of ${total}`,
+						showQuickJumper: true,
 						onChange: (page, pageSize) => {
 							setPagination({ ...pagination, page, pageSize });
 							handleSearch({ ...filterParams, ...pagination, page, pageSize });
