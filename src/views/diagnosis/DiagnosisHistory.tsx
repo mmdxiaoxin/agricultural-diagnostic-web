@@ -7,8 +7,8 @@ import {
 import DiagnosisDetailModal, {
 	DiagnosisDetailModalRef
 } from "@/components/Modal/DiagnosisDetailModal";
-import { DeleteOutlined, SelectOutlined } from "@ant-design/icons";
-import { Button, Popconfirm, Space, Table, Tag, Typography, message, Tooltip } from "antd";
+import { DeleteOutlined, SelectOutlined, SearchOutlined } from "@ant-design/icons";
+import { Button, Input, Popconfirm, Space, Table, Tag, Typography, message, Tooltip } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import clsx from "clsx";
 import dayjs from "dayjs";
@@ -26,6 +26,7 @@ const DiagnosisHistoryPage: React.FC = () => {
 	});
 	const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
 	const [isSelectMode, setIsSelectMode] = useState(false);
+	const [searchText, setSearchText] = useState("");
 	const modalRef = useRef<DiagnosisDetailModalRef>(null);
 
 	// 获取诊断历史列表
@@ -86,14 +87,21 @@ const DiagnosisHistoryPage: React.FC = () => {
 			title: "诊断时间",
 			dataIndex: "createdAt",
 			width: 180,
-			render: (text: string) => dayjs(text).format("YYYY-MM-DD HH:mm:ss")
+			render: (text: string) => (
+				<Text className="text-gray-600">{dayjs(text).format("YYYY-MM-DD HH:mm:ss")}</Text>
+			)
 		},
 		{
 			title: "状态",
 			dataIndex: "status",
 			width: 100,
 			render: (status: string) => (
-				<Tag color={status === "completed" ? "success" : "processing"}>{status}</Tag>
+				<Tag
+					color={status === "completed" ? "success" : "processing"}
+					className="px-3 py-1 rounded-full"
+				>
+					{status === "completed" ? "已完成" : "处理中"}
+				</Tag>
 			)
 		},
 		{
@@ -120,7 +128,7 @@ const DiagnosisHistoryPage: React.FC = () => {
 					<Tooltip title={hasMore ? fullResult : null}>
 						<Space direction="vertical" size={0}>
 							{displayPredictions.map((prediction, index) => (
-								<Text key={index}>
+								<Text key={index} className="text-gray-700">
 									{prediction.type === "classify" ? "分类" : "检测"}: {prediction.class_name} (
 									{(prediction.confidence * 100).toFixed(2)}%)
 								</Text>
@@ -142,7 +150,11 @@ const DiagnosisHistoryPage: React.FC = () => {
 			width: 120,
 			render: (_, record) => (
 				<Space>
-					<Button type="link" onClick={() => handleViewDetail(record)}>
+					<Button
+						type="link"
+						onClick={() => handleViewDetail(record)}
+						className="text-blue-500 hover:text-blue-600"
+					>
 						查看
 					</Button>
 					<Popconfirm
@@ -172,22 +184,73 @@ const DiagnosisHistoryPage: React.FC = () => {
 		setSelectedRowKeys([]);
 	};
 
+	// 过滤数据
+	const filteredData = data.filter(item => {
+		const searchLower = searchText.toLowerCase();
+		return (
+			item.diagnosisResult?.predictions.some(prediction =>
+				prediction.class_name.toLowerCase().includes(searchLower)
+			) || dayjs(item.createdAt).format("YYYY-MM-DD HH:mm:ss").includes(searchLower)
+		);
+	});
+
 	useEffect(() => {
 		fetchDiagnosisHistory();
 	}, []);
 
 	return (
-		<div title="诊断历史" className={clsx("h-full", "bg-white rounded-lg overflow-y-auto px-4")}>
-			<div className="p-4 border-b border-gray-100">
-				<div className="flex items-center justify-between">
-					<div className="flex items-center gap-2">
+		<div
+			className={clsx(
+				"h-full w-full",
+				"p-6",
+				"rounded-2xl",
+				"flex flex-col",
+				"bg-gradient-to-br from-white to-gray-50"
+			)}
+		>
+			<div
+				className={clsx(
+					"flex flex-col gap-6",
+					"mb-6 p-6",
+					"rounded-2xl",
+					"bg-white",
+					"shadow-sm",
+					"border border-gray-100",
+					"transition-all duration-300",
+					"hover:shadow-md"
+				)}
+			>
+				<div className="flex justify-between items-center">
+					<div className="flex flex-col">
+						<h2 className="text-2xl font-semibold text-gray-800 mb-2">诊断历史</h2>
+						<p className="text-gray-500">共 {pagination.total} 条记录</p>
+					</div>
+					<div className="flex items-center gap-4">
+						<Input
+							placeholder="搜索诊断记录..."
+							prefix={<SearchOutlined className="text-gray-400" />}
+							value={searchText}
+							onChange={e => setSearchText(e.target.value)}
+							className={clsx(
+								"w-64",
+								"rounded-lg",
+								"border-gray-200",
+								"focus:border-blue-500",
+								"focus:ring-1 focus:ring-blue-500",
+								"transition-all duration-300"
+							)}
+						/>
 						<Button
 							type={isSelectMode ? "primary" : "default"}
 							icon={<SelectOutlined />}
 							onClick={toggleSelectMode}
 							className={clsx(
-								"transition-all duration-200",
-								isSelectMode && "bg-blue-500 hover:bg-blue-600"
+								"px-6 h-10",
+								"rounded-lg",
+								"shadow-sm hover:shadow-md",
+								"transition-all duration-300",
+								"flex items-center gap-2",
+								isSelectMode && "bg-blue-500 hover:bg-blue-600 border-none"
 							)}
 						>
 							{isSelectMode ? "退出选择" : "批量选择"}
@@ -204,42 +267,57 @@ const DiagnosisHistoryPage: React.FC = () => {
 									danger
 									icon={<DeleteOutlined />}
 									disabled={selectedRowKeys.length === 0}
-									className="transition-all duration-200"
+									className={clsx(
+										"px-6 h-10",
+										"rounded-lg",
+										"shadow-sm hover:shadow-md",
+										"transition-all duration-300",
+										"flex items-center gap-2"
+									)}
 								>
 									批量删除
 								</Button>
 							</Popconfirm>
 						)}
 					</div>
-					{isSelectMode && (
-						<div className="flex items-center gap-2">
-							<Tag color="blue" className="px-3 py-1 rounded-full">
-								已选择 {selectedRowKeys.length} 条记录
-							</Tag>
-						</div>
-					)}
 				</div>
+				{isSelectMode && (
+					<div className="flex items-center gap-2">
+						<Tag color="blue" className="px-3 py-1 rounded-full">
+							已选择 {selectedRowKeys.length} 条记录
+						</Tag>
+					</div>
+				)}
 			</div>
-			<Table
-				rowSelection={
-					isSelectMode
-						? {
-								selectedRowKeys,
-								onChange: newSelectedRowKeys => {
-									setSelectedRowKeys(newSelectedRowKeys);
+
+			<div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+				<Table
+					rowSelection={
+						isSelectMode
+							? {
+									selectedRowKeys,
+									onChange: newSelectedRowKeys => {
+										setSelectedRowKeys(newSelectedRowKeys);
+									}
 								}
-							}
-						: undefined
-				}
-				columns={columns}
-				dataSource={data}
-				rowKey="id"
-				pagination={pagination}
-				loading={loading}
-				onChange={handleTableChange}
-				scroll={{ x: 1000 }}
-				className={clsx("transition-all duration-200", isSelectMode && "bg-gray-50")}
-			/>
+							: undefined
+					}
+					columns={columns}
+					dataSource={filteredData}
+					rowKey="id"
+					pagination={{
+						...pagination,
+						showSizeChanger: true,
+						showQuickJumper: true,
+						showTotal: total => `共 ${total} 项`,
+						className: "mt-4"
+					}}
+					loading={loading}
+					onChange={handleTableChange}
+					scroll={{ x: 1000 }}
+					className={clsx("transition-all duration-300", isSelectMode && "bg-gray-50")}
+				/>
+			</div>
 			<DiagnosisDetailModal ref={modalRef} />
 		</div>
 	);
