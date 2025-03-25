@@ -457,6 +457,7 @@ const FileManage: React.FC<FileManageProps> = () => {
 								"flex items-center gap-2"
 							)}
 							onClick={handleBatchDownload}
+							loading={downloadLoading}
 						>
 							批量下载
 						</Button>
