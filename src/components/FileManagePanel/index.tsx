@@ -151,22 +151,27 @@ const FileManagePanel: React.FC<FileManagePanelProps> = ({
 							<h2 className="text-2xl font-semibold text-gray-800 mb-2">文件管理</h2>
 							<p className="text-gray-500">共 {fileList.length} 个文件</p>
 						</div>
-						<div className="flex items-center gap-4">
-							<Input
-								placeholder="搜索文件..."
-								prefix={<SearchOutlined className="text-gray-400" />}
-								value={filterParams.fileName}
-								onChange={e => onFilterParamsChange({ ...filterParams, fileName: e.target.value })}
-								className={clsx(
-									"w-64",
-									"rounded-lg",
-									"border-gray-200",
-									"focus:border-blue-500",
-									"focus:ring-1 focus:ring-blue-500",
-									"transition-all duration-300"
-								)}
-							/>
-						</div>
+						{activeKey !== "1" && (
+							<div className="flex items-center gap-4">
+								<Input
+									placeholder="搜索文件..."
+									prefix={<SearchOutlined className="text-gray-400" />}
+									value={filterParams.fileName}
+									onChange={e =>
+										onFilterParamsChange({ ...filterParams, fileName: e.target.value })
+									}
+									onPressEnter={() => onSearch({ ...filterParams, page: 1, pageSize: 10 })}
+									className={clsx(
+										"w-64",
+										"rounded-lg",
+										"border-gray-200",
+										"focus:border-blue-500",
+										"focus:ring-1 focus:ring-blue-500",
+										"transition-all duration-300"
+									)}
+								/>
+							</div>
+						)}
 					</div>
 
 					<Tabs
