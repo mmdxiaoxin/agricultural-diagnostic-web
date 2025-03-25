@@ -1,10 +1,11 @@
 import { FileMeta } from "@/api/interface";
 import { getAllFiles } from "@/api/modules/file";
 import type { GetProp, TableColumnsType, TableProps, TransferProps } from "antd";
-import { Flex, Table, Transfer } from "antd";
+import { Flex, Table, Transfer, Spin } from "antd";
 import React, { useEffect, useState } from "react";
 import FilePreview from "../Table/FilePreview";
 import FileTypeTag from "../Table/FileTypeTag";
+import clsx from "clsx";
 
 type TransferItem = GetProp<TransferProps, "dataSource">[number];
 type TableRowSelection<T extends object> = TableProps<T>["rowSelection"];
@@ -18,7 +19,12 @@ interface TableTransferProps extends TransferProps<TransferItem> {
 const TableTransfer: React.FC<TableTransferProps> = props => {
 	const { leftColumns, rightColumns, ...restProps } = props;
 	return (
-		<Transfer rowKey={item => item.id} style={{ width: "100%" }} {...restProps}>
+		<Transfer
+			rowKey={item => item.id}
+			style={{ width: "100%" }}
+			className="dataset-transfer"
+			{...restProps}
+		>
 			{({
 				direction,
 				filteredItems,
@@ -43,7 +49,14 @@ const TableTransfer: React.FC<TableTransferProps> = props => {
 						columns={columns}
 						dataSource={filteredItems}
 						pagination={{ pageSize: 9 }}
-						size="small"
+						size="middle"
+						className={clsx(
+							"rounded-lg",
+							"border border-gray-100",
+							"shadow-sm",
+							"hover:shadow-md",
+							"transition-all duration-300"
+						)}
 						style={{ pointerEvents: listDisabled ? "none" : undefined }}
 						onRow={({ key, disabled: itemDisabled }) => ({
 							onClick: () => {
@@ -82,14 +95,18 @@ export interface DatasetTransferProps {
 
 const DatasetTransfer: React.FC<DatasetTransferProps> = ({ value, onChange }) => {
 	const [fileList, setFileList] = useState<FileMeta[]>([]);
+	const [loading, setLoading] = useState(false);
 
 	const fetchFileList = async () => {
+		setLoading(true);
 		try {
 			const response = await getAllFiles();
 			if (response.code !== 200 || !response.data) throw new Error("Failed to fetch file list");
 			setFileList(response.data);
 		} catch (error: any) {
 			console.error(error);
+		} finally {
+			setLoading(false);
 		}
 	};
 
@@ -98,17 +115,24 @@ const DatasetTransfer: React.FC<DatasetTransferProps> = ({ value, onChange }) =>
 	}, []);
 
 	return (
-		<Flex align="start" gap="middle" vertical>
-			<TableTransfer
-				dataSource={fileList}
-				targetKeys={value}
-				showSearch
-				showSelectAll={false}
-				onChange={onChange}
-				filterOption={filterOption}
-				leftColumns={columns}
-				rightColumns={columns}
-			/>
+		<Flex align="start" gap="middle" vertical className="w-full">
+			{loading ? (
+				<div className="w-full h-64 flex items-center justify-center">
+					<Spin size="large" className="text-blue-500" />
+				</div>
+			) : (
+				<TableTransfer
+					dataSource={fileList}
+					targetKeys={value}
+					showSearch
+					showSelectAll={false}
+					onChange={onChange}
+					filterOption={filterOption}
+					leftColumns={columns}
+					rightColumns={columns}
+					className="dataset-transfer"
+				/>
+			)}
 		</Flex>
 	);
 };
