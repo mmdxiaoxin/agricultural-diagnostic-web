@@ -1,14 +1,28 @@
 import { DiagnosisHistory } from "@/api/interface/diagnosis";
+import { AiService } from "@/api/interface/service";
 import {
 	deleteDiagnosisHistories,
 	deleteDiagnosisHistory,
-	getDiagnosisHistoryList
+	getDiagnosisHistoryList,
+	getDiagnosisSupport,
+	startDiagnosis
 } from "@/api/modules";
 import DiagnosisDetailModal, {
 	DiagnosisDetailModalRef
 } from "@/components/Modal/DiagnosisDetailModal";
-import { DeleteOutlined, SelectOutlined, SearchOutlined } from "@ant-design/icons";
-import { Button, Input, Popconfirm, Space, Table, Tag, Typography, message, Tooltip } from "antd";
+import { DeleteOutlined, ReloadOutlined, SearchOutlined, SelectOutlined } from "@ant-design/icons";
+import {
+	Button,
+	Input,
+	message,
+	Popconfirm,
+	Select,
+	Space,
+	Table,
+	Tag,
+	Tooltip,
+	Typography
+} from "antd";
 import type { ColumnsType } from "antd/es/table";
 import clsx from "clsx";
 import dayjs from "dayjs";
@@ -27,7 +41,30 @@ const DiagnosisHistoryPage: React.FC = () => {
 	const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
 	const [isSelectMode, setIsSelectMode] = useState(false);
 	const [searchText, setSearchText] = useState("");
+	const [serviceList, setServiceList] = useState<AiService[]>([]);
+	const [selectedServiceId, setSelectedServiceId] = useState<number>();
+	const [selectedRecord, setSelectedRecord] = useState<DiagnosisHistory | null>(null);
 	const modalRef = useRef<DiagnosisDetailModalRef>(null);
+
+	// 获取诊断支持信息
+	const fetchDiagnosisSupport = async () => {
+		try {
+			const response = await getDiagnosisSupport();
+			if (response.code === 200 && response.data) {
+				setServiceList(response.data);
+				// 默认使用第一个服务
+				if (response.data.length > 0) {
+					setSelectedServiceId(response.data[0].serviceId);
+				}
+			}
+		} catch (error) {
+			console.error("获取诊断支持信息失败", error);
+		}
+	};
+
+	useEffect(() => {
+		fetchDiagnosisSupport();
+	}, []);
 
 	// 获取诊断历史列表
 	const fetchDiagnosisHistory = async (page: number = 1, pageSize: number = 10) => {
@@ -79,6 +116,30 @@ const DiagnosisHistoryPage: React.FC = () => {
 	// 查看详情
 	const handleViewDetail = (record: DiagnosisHistory) => {
 		modalRef.current?.open(record);
+	};
+
+	// 重新诊断
+	const handleReDiagnose = async (record: DiagnosisHistory) => {
+		if (!selectedServiceId) return;
+
+		try {
+			await startDiagnosis({
+				diagnosisId: record.id,
+				serviceId: selectedServiceId
+			});
+			message.success("重新诊断已开始");
+			fetchDiagnosisHistory(pagination.current, pagination.pageSize);
+		} catch (error) {
+			console.error("重新诊断失败", error);
+			message.error("重新诊断失败");
+		}
+	};
+
+	// 处理服务选择确认
+	const handleServiceSelectOk = async () => {
+		if (!selectedRecord) return;
+		await handleReDiagnose(selectedRecord);
+		setSelectedRecord(null);
 	};
 
 	// 表格列定义
@@ -147,7 +208,7 @@ const DiagnosisHistoryPage: React.FC = () => {
 			title: "操作",
 			key: "action",
 			fixed: "right",
-			width: 120,
+			width: 180,
 			render: (_, record) => (
 				<Space>
 					<Button
@@ -157,6 +218,36 @@ const DiagnosisHistoryPage: React.FC = () => {
 					>
 						查看
 					</Button>
+					<Popconfirm
+						title="选择诊断服务"
+						description={
+							<div className="py-2">
+								<Select
+									value={selectedServiceId}
+									onChange={value => {
+										setSelectedServiceId(value);
+										setSelectedRecord(record);
+									}}
+									className="w-full"
+									options={serviceList.map(service => ({
+										label: service.serviceName,
+										value: service.serviceId
+									}))}
+								/>
+							</div>
+						}
+						onConfirm={handleServiceSelectOk}
+						okText="确定"
+						cancelText="取消"
+					>
+						<Button
+							type="link"
+							icon={<ReloadOutlined />}
+							className="text-green-500 hover:text-green-600"
+						>
+							重新诊断
+						</Button>
+					</Popconfirm>
 					<Popconfirm
 						title="确定要删除这条诊断记录吗？"
 						description="删除后将无法恢复"
