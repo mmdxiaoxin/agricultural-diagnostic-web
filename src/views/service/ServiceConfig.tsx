@@ -9,22 +9,61 @@ const ServiceConfig: React.FC = () => {
 	const [service, setService] = useState<AiService>();
 
 	return (
-		<Splitter className={clsx("w-full h-full", "bg-white", "rounded-lg")}>
-			<Splitter.Panel defaultSize="40%" min="20%" max="50%%" collapsible>
-				<div className={clsx("w-full h-full", "p-4")}>
-					<ServiceList selected={service} onSelect={service => setService(service)} />
-				</div>
-			</Splitter.Panel>
-			<Splitter.Panel>
-				{service ? (
-					<ServiceDetail service={service} />
-				) : (
-					<div className={clsx("w-full h-full", "flex items-center justify-center")}>
-						<Empty description="请选择一个服务" />
-					</div>
+		<div
+			className={clsx(
+				"h-full w-full",
+				"p-6",
+				"rounded-2xl",
+				"flex flex-col",
+				"bg-gradient-to-br from-white to-gray-50",
+				"overflow-hidden"
+			)}
+		>
+			<div
+				className={clsx(
+					"flex flex-col gap-6",
+					"mb-6 p-6",
+					"rounded-2xl",
+					"bg-white",
+					"shadow-sm",
+					"border border-gray-100",
+					"transition-all duration-300",
+					"hover:shadow-md"
 				)}
-			</Splitter.Panel>
-		</Splitter>
+			>
+				<div className="flex justify-between items-center">
+					<div className="flex flex-col">
+						<h2 className="text-2xl font-semibold text-gray-800 mb-2">服务配置</h2>
+						<p className="text-gray-500">
+							{service ? `当前选择: ${service.serviceName}` : "请选择一个服务进行配置"}
+						</p>
+					</div>
+				</div>
+			</div>
+
+			<div className="flex-1 bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+				<Splitter className="h-full">
+					<Splitter.Panel defaultSize="40%" min="20%" max="50%" collapsible>
+						<div className="h-full p-4 border-r border-gray-100">
+							<ServiceList selected={service} onSelect={service => setService(service)} />
+						</div>
+					</Splitter.Panel>
+					<Splitter.Panel>
+						{service ? (
+							<ServiceDetail service={service} />
+						) : (
+							<div className="h-full flex items-center justify-center bg-gray-50">
+								<Empty
+									description="请从左侧选择一个服务进行配置"
+									image={Empty.PRESENTED_IMAGE_SIMPLE}
+									className="text-gray-400"
+								/>
+							</div>
+						)}
+					</Splitter.Panel>
+				</Splitter>
+			</div>
+		</div>
 	);
 };
 

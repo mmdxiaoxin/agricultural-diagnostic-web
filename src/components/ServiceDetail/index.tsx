@@ -10,10 +10,15 @@ import {
 	Space,
 	Table,
 	TableProps,
-	Typography
+	Typography,
+	Card,
+	Tag,
+	Tooltip
 } from "antd";
 import clsx from "clsx";
 import React, { useEffect, useState } from "react";
+import { StatusMapper } from "@/constants";
+import { PlusOutlined, SaveOutlined, ReloadOutlined } from "@ant-design/icons";
 
 interface EditableCellProps extends React.HTMLAttributes<HTMLElement> {
 	editing: boolean;
@@ -98,7 +103,6 @@ const ServiceDetail: React.FC<ServiceDetailProps> = ({ service, onSave }) => {
 		setEditingKey(record.configId);
 	};
 
-	// 检查是否有未保存的更改
 	const hasUnsavedChanges = () => {
 		if (configs.length !== originalConfigs.length) return true;
 		return configs.some((config, index) => {
@@ -124,7 +128,6 @@ const ServiceDetail: React.FC<ServiceDetailProps> = ({ service, onSave }) => {
 	};
 
 	const handleCancelRow = () => {
-		// 如果是新增的配置项（configId 大于当前时间戳减去一天），则从列表中移除
 		const oneDayAgo = Date.now() - 24 * 60 * 60 * 1000;
 		if (editingKey && editingKey > oneDayAgo) {
 			setConfigs(configs.filter(config => config.configId !== editingKey));
@@ -161,12 +164,12 @@ const ServiceDetail: React.FC<ServiceDetailProps> = ({ service, onSave }) => {
 			if (service?.serviceId) {
 				const filteredConfigs = configs.map(({ configId, ...rest }) => rest);
 				await updateConfigs(service.serviceId, { configs: filteredConfigs });
-				message.success("提交成功");
+				message.success("保存成功");
 				onSave?.(service);
 				fetchServiceDetail();
 			}
 		} catch (error) {
-			message.error("提交失败");
+			message.error("保存失败");
 		} finally {
 			setSaveLoading(false);
 		}
@@ -176,21 +179,28 @@ const ServiceDetail: React.FC<ServiceDetailProps> = ({ service, onSave }) => {
 		{
 			title: "配置项键名",
 			dataIndex: "configKey",
-			editable: true
+			editable: true,
+			width: "40%"
 		},
 		{
 			title: "配置项键值",
 			dataIndex: "configValue",
-			editable: true
+			editable: true,
+			width: "40%"
 		},
 		{
 			title: "操作",
 			dataIndex: "operation",
+			width: "20%",
 			render: (_: any, record: AiServiceConfig) => {
 				const editable = isEditing(record);
 				return editable ? (
 					<Space>
-						<Button type="primary" onClick={() => handleSaveRow(record.configId)}>
+						<Button
+							type="primary"
+							onClick={() => handleSaveRow(record.configId)}
+							className="bg-blue-500 hover:bg-blue-600 border-none"
+						>
 							保存
 						</Button>
 						<Popconfirm title="确认取消编辑？" onConfirm={handleCancelRow}>
@@ -203,6 +213,7 @@ const ServiceDetail: React.FC<ServiceDetailProps> = ({ service, onSave }) => {
 							type="primary"
 							disabled={editingKey !== null}
 							onClick={() => handleEdit(record)}
+							className="bg-blue-500 hover:bg-blue-600 border-none"
 						>
 							编辑
 						</Button>
@@ -234,39 +245,74 @@ const ServiceDetail: React.FC<ServiceDetailProps> = ({ service, onSave }) => {
 	});
 
 	return (
-		<div className={clsx("w-full h-full", "p-4")}>
-			<Typography.Title level={4}>{service?.serviceName}</Typography.Title>
-			<Space className="mb-4">
-				<Button type="primary" onClick={handleAddRow} disabled={editingKey !== null}>
-					新增配置
-				</Button>
-				<Button
-					type="primary"
-					onClick={handleSubmit}
-					disabled={initLoading || saveLoading}
-					loading={saveLoading}
-				>
-					{hasUnsavedChanges() ? "保存提交*" : "保存提交"}
-				</Button>
-			</Space>
-			{hasUnsavedChanges() && (
-				<Typography.Text type="warning" className="block mb-4">
-					您有未保存的更改，请点击"保存提交"按钮保存更改
-				</Typography.Text>
-			)}
-			<Form form={form} component={false}>
-				<Table<AiServiceConfig>
-					components={{
-						body: { cell: EditableCell }
-					}}
-					bordered
-					dataSource={configs}
-					columns={mergedColumns}
-					rowClassName="editable-row"
-					pagination={false}
-					loading={initLoading}
-				/>
-			</Form>
+		<div className="h-full flex flex-col p-6">
+			<Card
+				className="mb-6"
+				title={
+					<div className="flex items-center justify-between">
+						<div className="flex items-center gap-4">
+							<Typography.Title level={4} className="!m-0">
+								{service?.serviceName}
+							</Typography.Title>
+							<Tag color={service?.status === "active" ? "success" : "error"}>
+								{StatusMapper[service?.status || "inactive"]}
+							</Tag>
+						</div>
+						<Space>
+							<Tooltip title="刷新配置">
+								<Button
+									icon={<ReloadOutlined />}
+									onClick={fetchServiceDetail}
+									loading={initLoading}
+									className="hover:bg-gray-100"
+								/>
+							</Tooltip>
+							<Button
+								type="primary"
+								icon={<PlusOutlined />}
+								onClick={handleAddRow}
+								disabled={editingKey !== null}
+								className="bg-blue-500 hover:bg-blue-600 border-none"
+							>
+								新增配置
+							</Button>
+							<Button
+								type="primary"
+								icon={<SaveOutlined />}
+								onClick={handleSubmit}
+								disabled={initLoading || saveLoading}
+								loading={saveLoading}
+								className={clsx(
+									"bg-blue-500 hover:bg-blue-600 border-none",
+									hasUnsavedChanges() && "animate-pulse"
+								)}
+							>
+								{hasUnsavedChanges() ? "保存更改*" : "保存更改"}
+							</Button>
+						</Space>
+					</div>
+				}
+			>
+				{hasUnsavedChanges() && (
+					<Typography.Text type="warning" className="block mb-4">
+						您有未保存的更改，请点击"保存更改"按钮保存
+					</Typography.Text>
+				)}
+				<Form form={form} component={false}>
+					<Table<AiServiceConfig>
+						components={{
+							body: { cell: EditableCell }
+						}}
+						bordered
+						dataSource={configs}
+						columns={mergedColumns}
+						rowClassName="editable-row"
+						pagination={false}
+						loading={initLoading}
+						className="rounded-lg"
+					/>
+				</Form>
+			</Card>
 		</div>
 	);
 };
