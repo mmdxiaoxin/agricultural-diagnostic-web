@@ -56,7 +56,7 @@ export const MIME_TYPE = {
 	},
 
 	// 应用程序文件类型
-	App: {
+	Archive: {
 		Zip: "application/zip",
 		XZip: "application/x-zip-compressed",
 		RAR: "application/x-rar-compressed",
@@ -88,7 +88,7 @@ export type AudioTypeValue = (typeof MIME_TYPE.Audio)[keyof typeof MIME_TYPE.Aud
 export type ImageTypeValue = (typeof MIME_TYPE.Image)[keyof typeof MIME_TYPE.Image];
 export type FontTypeValue = (typeof MIME_TYPE.Font)[keyof typeof MIME_TYPE.Font];
 export type OtherTypeValue = (typeof MIME_TYPE.Other)[keyof typeof MIME_TYPE.Other];
-export type AppTypeValue = (typeof MIME_TYPE.App)[keyof typeof MIME_TYPE.App];
+export type AppTypeValue = (typeof MIME_TYPE.Archive)[keyof typeof MIME_TYPE.Archive];
 export type ApplicationTypeValue =
 	(typeof MIME_TYPE.Application)[keyof typeof MIME_TYPE.Application];
 

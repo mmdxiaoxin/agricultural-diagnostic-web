@@ -36,7 +36,7 @@ export function getFileTypeColor(mimeType: string): string {
 		return fileType_COLOR.Image;
 	} else if (Object.values(MIME_TYPE.Application).includes(mimeType as any)) {
 		return fileType_COLOR.Application;
-	} else if (Object.values(MIME_TYPE.App).includes(mimeType as any)) {
+	} else if (Object.values(MIME_TYPE.Archive).includes(mimeType as any)) {
 		return fileType_COLOR.Application;
 	} else if (Object.values(MIME_TYPE.Font).includes(mimeType as any)) {
 		return fileType_COLOR.Application;
@@ -62,8 +62,8 @@ export const getFileType = (type: string): MIMETypeValue[] => {
 			return [...Object.values(MIME_TYPE.Application)];
 		case "audio":
 			return [...Object.values(MIME_TYPE.Audio)];
-		case "app":
-			return [...Object.values(MIME_TYPE.App)];
+		case "archive":
+			return [...Object.values(MIME_TYPE.Archive)];
 		case "other":
 			return [...Object.values(MIME_TYPE.Other), ...Object.values(MIME_TYPE.Font)];
 		default:

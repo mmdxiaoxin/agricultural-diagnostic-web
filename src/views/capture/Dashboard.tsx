@@ -261,8 +261,8 @@ const Dashboard: React.FC = () => {
 										type="压缩包"
 										icon={"FileZipOutlined"}
 										color="#ccc200"
-										onClick={() => handleSelect("app")}
-										style={fileCardStyle("app")}
+										onClick={() => handleSelect("archive")}
+										style={fileCardStyle("archive")}
 									/>
 								</Col>
 								<Col span={12}>
