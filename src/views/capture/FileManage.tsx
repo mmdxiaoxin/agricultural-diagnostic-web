@@ -391,7 +391,7 @@ const FileManage: React.FC<FileManageProps> = () => {
 		}
 	};
 
-	const renderActionButtons = () => {
+	const renderLeftActionButtons = () => {
 		switch (activeKey) {
 			case "1": // 数据筛选
 				return (
@@ -468,6 +468,37 @@ const FileManage: React.FC<FileManageProps> = () => {
 		}
 	};
 
+	const renderRightActionButtons = () => {
+		switch (activeKey) {
+			case "1": // 数据筛选
+				return (
+					<Flex gap={4}>
+						<Button
+							icon={<FolderOutlined />}
+							className={clsx(
+								"px-4 h-10",
+								"rounded-lg",
+								"bg-gray-100 hover:bg-gray-200",
+								"border-none",
+								"shadow-sm hover:shadow-md",
+								"transition-all duration-300",
+								"flex items-center gap-2"
+							)}
+							onClick={() => navigate("/capture/dataset/create")}
+						>
+							新建数据集
+						</Button>
+					</Flex>
+				);
+			case "2": // 数据上传
+				return null;
+			case "3": // 下载列表
+				return null;
+			default:
+				return null;
+		}
+	};
+
 	return (
 		<div
 			className={clsx(
@@ -509,24 +540,8 @@ const FileManage: React.FC<FileManageProps> = () => {
 				)}
 			>
 				<div className="flex justify-between items-center mb-6">
-					{renderActionButtons()}
-					<div className="flex items-center gap-2">
-						<Button
-							icon={<FolderOutlined />}
-							className={clsx(
-								"px-4 h-10",
-								"rounded-lg",
-								"bg-gray-100 hover:bg-gray-200",
-								"border-none",
-								"shadow-sm hover:shadow-md",
-								"transition-all duration-300",
-								"flex items-center gap-2"
-							)}
-							onClick={() => navigate("/capture/dataset/create")}
-						>
-							新建数据集
-						</Button>
-					</div>
+					{renderLeftActionButtons()}
+					{renderRightActionButtons()}
 				</div>
 
 				<Table
