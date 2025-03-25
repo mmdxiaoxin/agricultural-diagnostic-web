@@ -7,7 +7,7 @@ import { SearchOutlined, SettingOutlined } from "@ant-design/icons";
 import { Badge, Collapse, Input, Tabs, TabsProps } from "antd";
 import clsx from "clsx";
 import dayjs from "dayjs";
-import React from "react";
+import React, { useState } from "react";
 
 interface FileManagePanelProps {
 	fileList: FileMeta[];
@@ -41,6 +41,7 @@ const FileManagePanel: React.FC<FileManagePanelProps> = ({
 	onCompressModeChange,
 	onDownloadListClear
 }) => {
+	const [isExpanded, setIsExpanded] = useState(false);
 	const pendingFilesCount = Object.values(progress).filter(p => p < 100).length;
 
 	const items: TabsProps["items"] = [
@@ -92,9 +93,15 @@ const FileManagePanel: React.FC<FileManagePanelProps> = ({
 		}
 	];
 
+	const tabItems = items.map(item => ({
+		key: item.key,
+		label: item.label
+	}));
+
 	return (
 		<Collapse
 			defaultActiveKey={[]}
+			onChange={keys => setIsExpanded(keys.length > 0)}
 			className={clsx(
 				"mb-6",
 				"rounded-2xl",
@@ -108,9 +115,32 @@ const FileManagePanel: React.FC<FileManagePanelProps> = ({
 			<Collapse.Panel
 				key="1"
 				header={
-					<div className="flex items-center gap-2">
-						<SettingOutlined className="text-lg text-gray-500" />
-						<span className="text-base font-medium">文件管理功能区</span>
+					<div className="flex items-center justify-between w-full pr-4">
+						<div className="flex items-center gap-2">
+							<SettingOutlined className="text-lg text-gray-500" />
+							<span className="text-base font-medium">文件管理功能区</span>
+						</div>
+						{!isExpanded && (
+							<div className="flex items-center gap-4">
+								{tabItems.map(item => (
+									<button
+										key={item.key}
+										onClick={e => {
+											e.stopPropagation();
+											onActiveKeyChange(item.key);
+										}}
+										className={clsx(
+											"px-3 py-1 rounded-md text-sm transition-colors",
+											activeKey === item.key
+												? "bg-blue-50 text-blue-600"
+												: "text-gray-500 hover:text-gray-700 hover:bg-gray-50"
+										)}
+									>
+										{item.label}
+									</button>
+								))}
+							</div>
+						)}
 					</div>
 				}
 				className="border-none"
