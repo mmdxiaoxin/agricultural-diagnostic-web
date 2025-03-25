@@ -8,12 +8,14 @@ import {
 	CopyOutlined,
 	DeleteOutlined,
 	PlusOutlined,
-	SearchOutlined
+	SearchOutlined,
+	SettingOutlined
 } from "@ant-design/icons/lib/icons";
-import { Button, Input, message, Popconfirm, Space, Table, Tag } from "antd";
+import { Button, Input, message, Popconfirm, Space, Table, Tag, Tooltip } from "antd";
 import { ColumnsType } from "antd/es/table";
-import { useEffect, useRef, useState } from "react";
 import clsx from "clsx";
+import { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router";
 
 const ServiceManage: React.FC = () => {
 	const [services, setServices] = useState<AiService[]>([]);
@@ -21,6 +23,7 @@ const ServiceManage: React.FC = () => {
 	const [pagination, setPagination] = useState({ page: 1, pageSize: 10 });
 	const [total, setTotal] = useState(0);
 	const [searchText, setSearchText] = useState("");
+	const navigate = useNavigate();
 
 	const fetchServices = async (page: number = 1, pageSize: number = 10) => {
 		const response = await getServiceList({ page, pageSize });
@@ -66,6 +69,13 @@ const ServiceManage: React.FC = () => {
 		}
 	};
 
+	const handleQuickConfig = (service: AiService) => {
+		// 将服务信息存储到 sessionStorage
+		sessionStorage.setItem("selectedService", JSON.stringify(service));
+		// 导航到配置页面
+		navigate("/service/config");
+	};
+
 	const filteredServices = services.filter(service =>
 		service.serviceName.toLowerCase().includes(searchText.toLowerCase())
 	);
@@ -104,6 +114,21 @@ const ServiceManage: React.FC = () => {
 			align: "center",
 			render: (_, record) => (
 				<Space>
+					<Tooltip title="快速配置">
+						<Button
+							onClick={() => handleQuickConfig(record)}
+							type="primary"
+							icon={<SettingOutlined />}
+							className={clsx(
+								"px-4 h-8",
+								"rounded-lg",
+								"bg-blue-500 hover:bg-blue-600",
+								"border-none",
+								"shadow-sm hover:shadow-md",
+								"transition-all duration-300"
+							)}
+						/>
+					</Tooltip>
 					<Button
 						onClick={() => {
 							const {

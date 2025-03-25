@@ -3,10 +3,25 @@ import ServiceList from "@/components/List/ServiceList";
 import ServiceDetail from "@/components/ServiceDetail";
 import { Empty, Splitter } from "antd";
 import clsx from "clsx";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 const ServiceConfig: React.FC = () => {
 	const [service, setService] = useState<AiService>();
+
+	useEffect(() => {
+		// 从 sessionStorage 读取选中的服务
+		const selectedServiceStr = sessionStorage.getItem("selectedService");
+		if (selectedServiceStr) {
+			try {
+				const selectedService = JSON.parse(selectedServiceStr);
+				setService(selectedService);
+				// 读取后清除 sessionStorage
+				sessionStorage.removeItem("selectedService");
+			} catch (error) {
+				console.error("解析选中的服务信息失败:", error);
+			}
+		}
+	}, []);
 
 	return (
 		<div
