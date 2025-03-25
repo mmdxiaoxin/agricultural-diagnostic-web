@@ -18,12 +18,14 @@ export type BBox = {
 // 分类预测
 export type ClassifyPrediction = BasePrediction & {
 	type: "classify";
+	top5: BasePrediction[];
 };
 
 // 检测预测
 export type DetectPrediction = BasePrediction & {
 	type: "detect";
 	bbox: BBox;
+	area: number;
 };
 
 // 预测结果联合类型
