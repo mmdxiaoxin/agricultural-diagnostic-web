@@ -15,6 +15,7 @@ import {
 	UploadFile,
 	UploadProps
 } from "antd";
+import clsx from "clsx";
 import React, { useEffect, useState } from "react";
 import DetectImage from "../DetectImage";
 
@@ -165,7 +166,18 @@ const DiseaseDiagnose: React.FC<DiseaseDiagnoseProps> = ({ onPredict }) => {
 						listType="picture"
 						className="text-center"
 					>
-						<Button icon={<UploadOutlined />}>选择图片</Button>
+						<Button
+							icon={<UploadOutlined />}
+							className={clsx(
+								"px-6 h-10",
+								"rounded-lg",
+								"shadow-sm hover:shadow-md",
+								"transition-all duration-300",
+								"flex items-center gap-2"
+							)}
+						>
+							选择图片
+						</Button>
 					</Upload>
 					{previewUrl && (
 						<div className="mt-4 text-center">
@@ -173,10 +185,10 @@ const DiseaseDiagnose: React.FC<DiseaseDiagnoseProps> = ({ onPredict }) => {
 								<DetectImage
 									imageUrl={previewUrl}
 									predictions={detectionResults.predictions}
-									className="max-h-[300px]"
+									className="max-h-[300px] rounded-lg shadow-sm"
 								/>
 							) : (
-								<img src={previewUrl} alt="预览图" className="max-h-[300px]" />
+								<img src={previewUrl} alt="预览图" className="max-h-[300px] rounded-lg shadow-sm" />
 							)}
 						</div>
 					)}
@@ -188,6 +200,12 @@ const DiseaseDiagnose: React.FC<DiseaseDiagnoseProps> = ({ onPredict }) => {
 					onClick={handleUploadAndPredict}
 					disabled={!selectedImage || loading}
 					block
+					className={clsx(
+						"h-10",
+						"rounded-lg",
+						"shadow-sm hover:shadow-md",
+						"transition-all duration-300"
+					)}
 				>
 					{loading ? (
 						<>
@@ -200,12 +218,19 @@ const DiseaseDiagnose: React.FC<DiseaseDiagnoseProps> = ({ onPredict }) => {
 
 				{/* 错误提示 */}
 				{error && (
-					<Alert message={error} type="error" showIcon closable onClose={() => setError(null)} />
+					<Alert
+						message={error}
+						type="error"
+						showIcon
+						closable
+						onClose={() => setError(null)}
+						className="rounded-lg"
+					/>
 				)}
 
 				{/* 检测结果 */}
 				{detectionResults && (
-					<Card title="检测结果" size="small">
+					<Card title="检测结果" size="small" className="bg-gray-50">
 						<Space direction="vertical" className="w-full" size="middle">
 							{detectionResults.predictions.map(prediction => (
 								<React.Fragment

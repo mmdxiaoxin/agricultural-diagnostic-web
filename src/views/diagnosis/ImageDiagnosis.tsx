@@ -12,42 +12,64 @@ const ImageDiagnosis = () => {
 	};
 
 	return (
-		<Row gutter={12} className={clsx("w-full h-full", "bg-white rounded-lg overflow-y-auto")}>
-			<Col
-				xs={24}
-				sm={24}
-				md={24}
-				lg={12}
-				xl={12}
-				xxl={12}
+		<div
+			className={clsx(
+				"h-full w-full",
+				"p-6",
+				"rounded-2xl",
+				"flex flex-col",
+				"bg-gradient-to-br from-white to-gray-50"
+			)}
+		>
+			<div
 				className={clsx(
-					"lg:h-full",
-					"overflow-y-auto",
-					"[&::-webkit-scrollbar]:hidden", // 隐藏 Webkit 浏览器的滚动条
-					"[-ms-overflow-style:none]", // 隐藏 IE 的滚动条
-					"[scrollbar-width:none]" // 隐藏 Firefox 的滚动条
+					"flex flex-col gap-6",
+					"mb-6 p-6",
+					"rounded-2xl",
+					"bg-white",
+					"shadow-sm",
+					"border border-gray-100",
+					"transition-all duration-300",
+					"hover:shadow-md"
 				)}
 			>
-				<DiseaseDiagnose onPredict={handlePredict} />
-			</Col>
-			<Col
-				xs={24}
-				sm={24}
-				md={24}
-				lg={12}
-				xl={12}
-				xxl={12}
-				className={clsx(
-					"lg:h-full",
-					"lg:overflow-y-auto",
-					"[&::-webkit-scrollbar]:hidden", // 隐藏 Webkit 浏览器的滚动条
-					"[-ms-overflow-style:none]", // 隐藏 IE 的滚动条
-					"[scrollbar-width:none]" // 隐藏 Firefox 的滚动条
-				)}
-			>
-				<DiagnosisList ref={diagnosisListRef} />
-			</Col>
-		</Row>
+				<div className="flex justify-between items-center">
+					<div className="flex flex-col">
+						<h2 className="text-2xl font-semibold text-gray-800 mb-2">植物病害诊断</h2>
+						<p className="text-gray-500">上传植物图片进行智能诊断</p>
+					</div>
+				</div>
+			</div>
+
+			<Row gutter={12} className="flex-1 min-h-0">
+				<Col xs={24} sm={24} md={24} lg={12} xl={12} xxl={12} className="h-full">
+					<div
+						className={clsx(
+							"h-full bg-white rounded-2xl shadow-sm border border-gray-100 p-6",
+							"overflow-y-auto",
+							"[&::-webkit-scrollbar]:hidden",
+							"[-ms-overflow-style:none]",
+							"[scrollbar-width:none]"
+						)}
+					>
+						<DiseaseDiagnose onPredict={handlePredict} />
+					</div>
+				</Col>
+				<Col xs={24} sm={24} md={24} lg={12} xl={12} xxl={12} className="h-full">
+					<div
+						className={clsx(
+							"h-full bg-white rounded-2xl shadow-sm border border-gray-100",
+							"overflow-y-auto",
+							"[&::-webkit-scrollbar]:hidden",
+							"[-ms-overflow-style:none]",
+							"[scrollbar-width:none]"
+						)}
+					>
+						<DiagnosisList ref={diagnosisListRef} />
+					</div>
+				</Col>
+			</Row>
+		</div>
 	);
 };
 
