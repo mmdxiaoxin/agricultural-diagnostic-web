@@ -94,7 +94,7 @@ const FileManagePanel: React.FC<FileManagePanelProps> = ({
 
 	return (
 		<Collapse
-			defaultActiveKey={["1"]}
+			defaultActiveKey={[]}
 			className={clsx(
 				"mb-6",
 				"rounded-2xl",

@@ -391,73 +391,11 @@ const FileManage: React.FC<FileManageProps> = () => {
 		}
 	};
 
-	return (
-		<div
-			className={clsx(
-				"h-full w-full",
-				"p-6",
-				"rounded-2xl",
-				"flex flex-col",
-				"bg-gradient-to-br from-white to-gray-50",
-				"overflow-y-auto"
-			)}
-		>
-			<FileManagePanel
-				fileList={fileList}
-				activeKey={activeKey}
-				onActiveKeyChange={setActiveKey}
-				filterParams={filterParams}
-				onFilterParamsChange={setFilterParams}
-				onSearch={handleSearch}
-				progress={progress}
-				downloadList={downloadList}
-				compressMode={compressMode}
-				onCompressModeChange={setCompressMode}
-				onDownloadListClear={() => {
-					setDownloadList([]);
-					setProgress({});
-				}}
-			/>
-
-			<div
-				className={clsx(
-					"flex-1",
-					"p-6",
-					"rounded-2xl",
-					"bg-white",
-					"shadow-sm",
-					"border border-gray-100",
-					"transition-all duration-300",
-					"hover:shadow-md"
-				)}
-			>
-				<div className="flex justify-between items-center mb-6">
+	const renderActionButtons = () => {
+		switch (activeKey) {
+			case "1": // 数据筛选
+				return (
 					<Flex gap={4}>
-						<Popconfirm
-							title="确认下载"
-							icon={<DownloadOutlined style={{ color: "green" }} />}
-							description="点击确认后将自动开启下载。"
-							onConfirm={handleBatchDownload}
-							okText="确认"
-							cancelText="取消"
-						>
-							<Button
-								type="primary"
-								loading={downloadLoading}
-								icon={<DownloadOutlined />}
-								className={clsx(
-									"px-6 h-10",
-									"rounded-lg",
-									"bg-blue-500 hover:bg-blue-600",
-									"border-none",
-									"shadow-sm hover:shadow-md",
-									"transition-all duration-300",
-									"flex items-center gap-2"
-								)}
-							>
-								批量下载
-							</Button>
-						</Popconfirm>
 						<Dropdown
 							menu={{ items: accessItems, onClick: handleBatchAccessChange }}
 							trigger={["click"]}
@@ -501,6 +439,76 @@ const FileManage: React.FC<FileManageProps> = () => {
 							</Button>
 						</Popconfirm>
 					</Flex>
+				);
+			case "2": // 数据上传
+				return null; // 上传组件内部已有按钮
+			case "3": // 下载列表
+				return (
+					<Flex gap={4}>
+						<Button
+							type="primary"
+							className={clsx(
+								"px-6 h-10",
+								"rounded-lg",
+								"bg-blue-500 hover:bg-blue-600",
+								"border-none",
+								"shadow-sm hover:shadow-md",
+								"transition-all duration-300",
+								"flex items-center gap-2"
+							)}
+							onClick={handleBatchDownload}
+						>
+							批量下载
+						</Button>
+					</Flex>
+				);
+			default:
+				return null;
+		}
+	};
+
+	return (
+		<div
+			className={clsx(
+				"h-full w-full",
+				"p-6",
+				"rounded-2xl",
+				"flex flex-col",
+				"bg-gradient-to-br from-white to-gray-50",
+				"overflow-y-auto"
+			)}
+		>
+			<FileManagePanel
+				fileList={fileList}
+				activeKey={activeKey}
+				onActiveKeyChange={setActiveKey}
+				filterParams={filterParams}
+				onFilterParamsChange={setFilterParams}
+				onSearch={handleSearch}
+				progress={progress}
+				downloadList={downloadList}
+				compressMode={compressMode}
+				onCompressModeChange={setCompressMode}
+				onDownloadListClear={() => {
+					setDownloadList([]);
+					setProgress({});
+				}}
+			/>
+
+			<div
+				className={clsx(
+					"flex-1",
+					"p-6",
+					"rounded-2xl",
+					"bg-white",
+					"shadow-sm",
+					"border border-gray-100",
+					"transition-all duration-300",
+					"hover:shadow-md"
+				)}
+			>
+				<div className="flex justify-between items-center mb-6">
+					{renderActionButtons()}
 					<div className="flex items-center gap-2">
 						<Button
 							icon={<FolderOutlined />}
