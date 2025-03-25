@@ -224,10 +224,7 @@ const DiagnosisHistoryPage: React.FC = () => {
 							<div className="py-2">
 								<Select
 									value={selectedServiceId}
-									onChange={value => {
-										setSelectedServiceId(value);
-										setSelectedRecord(record);
-									}}
+									onChange={value => setSelectedServiceId(value)}
 									className="w-full"
 									options={serviceList.map(service => ({
 										label: service.serviceName,
@@ -243,6 +240,7 @@ const DiagnosisHistoryPage: React.FC = () => {
 						<Button
 							type="link"
 							icon={<ReloadOutlined />}
+							onClick={() => setSelectedRecord(record)}
 							className="text-green-500 hover:text-green-600"
 						>
 							重新诊断
