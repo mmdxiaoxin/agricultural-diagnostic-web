@@ -28,6 +28,28 @@ function getClassColor(className: string): string {
 	return COLORS[hash % COLORS.length];
 }
 
+// 绘制带背景的标签
+function drawLabel(
+	ctx: OffscreenCanvasRenderingContext2D,
+	x: number,
+	y: number,
+	text: string,
+	color: string
+) {
+	// 设置字体
+	ctx.font = "14px Arial";
+	const labelWidth = ctx.measureText(text).width;
+	const labelHeight = 20;
+
+	// 绘制彩色背景
+	ctx.fillStyle = color;
+	ctx.fillRect(x, y, labelWidth, labelHeight);
+
+	// 绘制白色文字
+	ctx.fillStyle = "#ffffff";
+	ctx.fillText(text, x, y + labelHeight - 5);
+}
+
 self.onmessage = async (e: MessageEvent<WorkerMessage>) => {
 	const { imageUrl, predictions, width, height } = e.data;
 
@@ -63,19 +85,9 @@ self.onmessage = async (e: MessageEvent<WorkerMessage>) => {
 			// 绘制边框
 			ctx.strokeRect(x, y, w, h);
 
-			// 设置标签背景
-			ctx.fillStyle = color;
-			ctx.font = "14px Arial";
+			// 绘制标签（放在框内左上角）
 			const label = `${prediction.class_name} ${(prediction.confidence * 100).toFixed(1)}%`;
-			const labelWidth = ctx.measureText(label).width;
-			const labelHeight = 20;
-
-			// 绘制标签背景
-			ctx.fillRect(x, y - labelHeight, labelWidth + 10, labelHeight);
-
-			// 绘制标签文字
-			ctx.fillStyle = "#ffffff";
-			ctx.fillText(label, x + 5, y - 5);
+			drawLabel(ctx, x, y, label, color);
 		}
 
 		// 转换为 blob
