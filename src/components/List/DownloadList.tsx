@@ -6,7 +6,8 @@ import {
 	DeleteOutlined,
 	FileImageOutlined,
 	FileOutlined,
-	FileTextOutlined
+	FileTextOutlined,
+	VideoCameraOutlined
 } from "@ant-design/icons";
 import { Avatar, Button, Flex, List, Space, Switch, Tooltip } from "antd";
 import clsx from "clsx";
@@ -26,7 +27,7 @@ type DownloadListProps = {
 // 文件类型图标映射
 const fileTypeIcons = {
 	image: <FileImageOutlined className="text-xl" />,
-	video: <AudioOutlined className="text-xl" />,
+	video: <VideoCameraOutlined className="text-xl" />,
 	audio: <AudioOutlined className="text-xl" />,
 	document: <FileTextOutlined className="text-xl" />,
 	default: <FileOutlined className="text-xl" />
