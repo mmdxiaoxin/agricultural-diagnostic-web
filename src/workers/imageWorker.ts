@@ -28,26 +28,45 @@ function getClassColor(className: string): string {
 	return COLORS[hash % COLORS.length];
 }
 
+// 计算缩放因子
+function calculateScale(width: number, height: number): number {
+	// 基准分辨率（1920x1080）
+	const baseWidth = 1920;
+	const baseHeight = 1080;
+
+	// 计算宽度和高度的缩放比例
+	const scaleWidth = width / baseWidth;
+	const scaleHeight = height / baseHeight;
+
+	// 取较小的缩放比例，确保不会过大
+	return Math.min(scaleWidth, scaleHeight, 1.5);
+}
+
 // 绘制带背景的标签
 function drawLabel(
 	ctx: OffscreenCanvasRenderingContext2D,
 	x: number,
 	y: number,
 	text: string,
-	color: string
+	color: string,
+	scale: number
 ) {
+	// 根据缩放因子计算字体大小和标签高度
+	const fontSize = Math.max(12, Math.round(14 * scale));
+	const labelHeight = Math.max(16, Math.round(20 * scale));
+	const padding = Math.max(3, Math.round(5 * scale));
+
 	// 设置字体
-	ctx.font = "14px Arial";
+	ctx.font = `${fontSize}px Arial`;
 	const labelWidth = ctx.measureText(text).width;
-	const labelHeight = 20;
 
 	// 绘制彩色背景
 	ctx.fillStyle = color;
-	ctx.fillRect(x, y, labelWidth, labelHeight);
+	ctx.fillRect(x, y, labelWidth + padding * 2, labelHeight);
 
 	// 绘制白色文字
 	ctx.fillStyle = "#ffffff";
-	ctx.fillText(text, x, y + labelHeight - 5);
+	ctx.fillText(text, x + padding, y + labelHeight - padding);
 }
 
 self.onmessage = async (e: MessageEvent<WorkerMessage>) => {
@@ -58,6 +77,9 @@ self.onmessage = async (e: MessageEvent<WorkerMessage>) => {
 		const canvas = new OffscreenCanvas(width, height);
 		const ctx = canvas.getContext("2d");
 		if (!ctx) throw new Error("无法获取 canvas 上下文");
+
+		// 计算缩放因子
+		const scale = calculateScale(width, height);
 
 		// 加载图片
 		const img = await loadImage(imageUrl);
@@ -80,14 +102,14 @@ self.onmessage = async (e: MessageEvent<WorkerMessage>) => {
 
 			// 设置边框样式
 			ctx.strokeStyle = color;
-			ctx.lineWidth = 2;
+			ctx.lineWidth = Math.max(1, Math.round(2 * scale));
 
 			// 绘制边框
 			ctx.strokeRect(x, y, w, h);
 
 			// 绘制标签（放在框内左上角）
 			const label = `${prediction.class_name} ${(prediction.confidence * 100).toFixed(1)}%`;
-			drawLabel(ctx, x, y, label, color);
+			drawLabel(ctx, x + 5, y + 5, label, color, scale);
 		}
 
 		// 转换为 blob
