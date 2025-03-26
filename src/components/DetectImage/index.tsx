@@ -1,29 +1,19 @@
 import { Prediction } from "@/api/interface/diagnosis";
-import React, { useEffect, useRef, useState } from "react";
+import { Image, ImageProps } from "antd";
+import React, { useEffect, useState } from "react";
 
-interface DetectImageProps {
+export type DetectImageProps = Omit<ImageProps, "src" | "alt"> & {
 	imageUrl: string;
 	predictions: Prediction[];
-	className?: string;
-}
+};
 
-const DetectImage: React.FC<DetectImageProps> = ({ imageUrl, predictions, className }) => {
-	const canvasRef = useRef<HTMLCanvasElement>(null);
+const DetectImage: React.FC<DetectImageProps> = ({ imageUrl, predictions, ...props }) => {
+	const [processedImageUrl, setProcessedImageUrl] = useState<string>("");
 	const [imageSize, setImageSize] = useState({ width: 0, height: 0 });
-	const containerRef = useRef<HTMLDivElement>(null);
-
-	// 计算缩放比例
-	const calculateScale = (containerWidth: number, imageWidth: number, imageHeight: number) => {
-		const scale = containerWidth / imageWidth;
-		return {
-			scale,
-			width: imageWidth * scale,
-			height: imageHeight * scale
-		};
-	};
 
 	useEffect(() => {
-		const img = new Image();
+		// 获取图片尺寸
+		const img = document.createElement("img");
 		img.src = imageUrl;
 		img.onload = () => {
 			setImageSize({ width: img.width, height: img.height });
@@ -31,83 +21,38 @@ const DetectImage: React.FC<DetectImageProps> = ({ imageUrl, predictions, classN
 	}, [imageUrl]);
 
 	useEffect(() => {
-		const canvas = canvasRef.current;
-		const container = containerRef.current;
-		if (!canvas || !container) return;
+		if (!imageSize.width || !imageSize.height) return;
 
-		const ctx = canvas.getContext("2d");
-		if (!ctx) return;
+		// 创建 Worker
+		const worker = new Worker(new URL("@/workers/imageWorker.ts", import.meta.url), {
+			type: "module"
+		});
 
-		const { scale, width, height } = calculateScale(
-			container.clientWidth,
-			imageSize.width,
-			imageSize.height
-		);
+		// 处理 Worker 消息
+		worker.onmessage = e => {
+			if (e.data.success) {
+				setProcessedImageUrl(e.data.data);
+			} else {
+				console.error("图像处理失败:", e.data.error);
+			}
+			worker.terminate();
+		};
 
-		// 设置画布尺寸为缩放后的尺寸
-		canvas.width = width;
-		canvas.height = height;
+		// 发送数据到 Worker
+		worker.postMessage({
+			imageUrl,
+			predictions,
+			width: imageSize.width,
+			height: imageSize.height
+		});
 
-		// 绘制图片
-		const img = new Image();
-		img.src = imageUrl;
-		img.onload = () => {
-			// 绘制图片
-			ctx.drawImage(img, 0, 0, width, height);
-
-			// 绘制检测框
-			predictions.forEach(prediction => {
-				if (prediction.type !== "detect") return;
-
-				const bbox = prediction.bbox;
-				const x = bbox.x * scale;
-				const y = bbox.y * scale;
-				const width = bbox.width * scale;
-				const height = bbox.height * scale;
-
-				// 设置边框样式
-				ctx.strokeStyle = "#00ff00";
-				ctx.lineWidth = 2;
-
-				// 绘制边框
-				ctx.strokeRect(x, y, width, height);
-
-				// 设置标签背景
-				ctx.fillStyle = "#00ff00";
-				ctx.font = "14px Arial";
-				const label = `${prediction.class_name} ${(prediction.confidence * 100).toFixed(1)}%`;
-				const labelWidth = ctx.measureText(label).width;
-				const labelHeight = 20;
-
-				// 绘制标签背景
-				ctx.fillRect(x, y - labelHeight, labelWidth + 10, labelHeight);
-
-				// 绘制标签文字
-				ctx.fillStyle = "#ffffff";
-				ctx.fillText(label, x + 5, y - 5);
-			});
+		// 清理函数
+		return () => {
+			worker.terminate();
 		};
 	}, [imageUrl, predictions, imageSize]);
 
-	return (
-		<div ref={containerRef} className="relative w-full">
-			<img
-				src={imageUrl}
-				alt="检测图片"
-				className={className}
-				style={{
-					width: "100%",
-					height: "auto",
-					display: "block"
-				}}
-			/>
-			<canvas
-				ref={canvasRef}
-				className="absolute top-0 left-0 w-full h-full"
-				style={{ pointerEvents: "none" }}
-			/>
-		</div>
-	);
+	return <Image src={processedImageUrl || imageUrl} alt="检测图片" {...props} />;
 };
 
 export default DetectImage;
