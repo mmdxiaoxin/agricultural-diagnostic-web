@@ -71,7 +71,7 @@ const DownloadList: React.FC<DownloadListProps> = ({
 		>
 			<Flex align="center" justify="space-between">
 				<Space>
-					<Tooltip title="下载列表">
+					<Tooltip title="开启压缩模式后，批量下载时将生成并提供一个压缩包进行下载。">
 						<span className="text-gray-600">压缩模式：</span>
 					</Tooltip>
 					<Switch
