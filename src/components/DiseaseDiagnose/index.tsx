@@ -155,6 +155,7 @@ const DiseaseDiagnose: React.FC<DiseaseDiagnoseProps> = ({ onPredict }) => {
 						accept="image/*"
 						beforeUpload={file => {
 							setSelectedImage(file);
+							setDetectionResults(undefined); // 清空上一次的检测结果
 							const reader = new FileReader();
 							reader.onload = e => setPreviewUrl(e.target?.result as string);
 							reader.readAsDataURL(file);
