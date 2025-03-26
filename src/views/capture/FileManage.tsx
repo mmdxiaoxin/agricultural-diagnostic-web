@@ -211,7 +211,11 @@ const FileManage: React.FC<FileManageProps> = () => {
 					compressMode
 				});
 			} else {
-				setDownloadList(fileList.filter(file => selectedRowKeys.includes(file.id)));
+				// 过滤掉已经在下载列表中的文件
+				const newFiles = fileList.filter(
+					file => selectedRowKeys.includes(file.id) && !downloadList.some(d => d.id === file.id)
+				);
+				setDownloadList(prev => [...prev, ...newFiles]);
 				await downloadMultipleFiles(selectedRowKeys, {
 					onProgress: (fileId, progressValue) => {
 						setProgress(prevProgress => ({
@@ -253,7 +257,10 @@ const FileManage: React.FC<FileManageProps> = () => {
 		try {
 			setActiveKey("3");
 			setDownloadLoading(true);
-			setDownloadList(prev => [...prev, file]);
+			// 检查文件是否已经在下载列表中
+			if (!downloadList.some(d => d.id === file.id)) {
+				setDownloadList(prev => [...prev, file]);
+			}
 			await downloadMultipleFiles([file.id], {
 				onProgress: (fileId, progressValue) => {
 					setProgress(prevProgress => ({
