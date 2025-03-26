@@ -2,10 +2,10 @@ import { DiagnosisHistory } from "@/api/interface/diagnosis";
 import { downloadFile } from "@/api/modules/file";
 import { CheckCircleOutlined, ClockCircleOutlined } from "@ant-design/icons";
 import { Card, Image, Modal, Space, Tag, Typography } from "antd";
+import clsx from "clsx";
 import dayjs from "dayjs";
 import { forwardRef, useImperativeHandle, useState } from "react";
 import DetectImage from "../DetectImage";
-import clsx from "clsx";
 
 const { Text, Title } = Typography;
 
@@ -135,12 +135,12 @@ const DiagnosisDetailModal = forwardRef<DiagnosisDetailModalRef>((_, ref) => {
 								src={imageUrl}
 								alt="诊断图片"
 								className="object-contain w-full h-full"
-								preview={true}
 								fallback="/images/image-placeholder.png"
 							/>
 							{record.diagnosisResult?.predictions?.[0].type === "detect" && (
 								<DetectImage
 									src={imageUrl}
+									alt="诊断结果"
 									predictions={record.diagnosisResult?.predictions || []}
 								/>
 							)}
