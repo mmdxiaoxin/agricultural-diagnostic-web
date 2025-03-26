@@ -127,7 +127,7 @@ const DiagnosisHistoryPage: React.FC = () => {
 				diagnosisId: record.id,
 				serviceId: selectedServiceId
 			});
-			message.success("重新诊断已开始");
+			message.success("诊断成功");
 			fetchDiagnosisHistory(pagination.current, pagination.pageSize);
 		} catch (error) {
 			console.error("重新诊断失败", error);
