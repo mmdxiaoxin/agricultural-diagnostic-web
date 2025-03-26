@@ -6,6 +6,7 @@ import {
 	Alert,
 	Button,
 	Card,
+	Image,
 	message,
 	Select,
 	Space,
@@ -184,12 +185,17 @@ const DiseaseDiagnose: React.FC<DiseaseDiagnoseProps> = ({ onPredict }) => {
 						<div className="mt-4 text-center">
 							{detectionResults ? (
 								<DetectImage
-									imageUrl={previewUrl}
-									predictions={detectionResults.predictions}
+									src={previewUrl}
+									alt="Detect结果"
 									className="max-h-[300px] rounded-lg shadow-sm"
+									predictions={detectionResults.predictions}
 								/>
 							) : (
-								<img src={previewUrl} alt="预览图" className="max-h-[300px] rounded-lg shadow-sm" />
+								<Image
+									src={previewUrl}
+									alt="预览图"
+									className="max-h-[300px] rounded-lg shadow-sm"
+								/>
 							)}
 						</div>
 					)}

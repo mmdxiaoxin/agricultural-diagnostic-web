@@ -140,7 +140,7 @@ const DiagnosisDetailModal = forwardRef<DiagnosisDetailModalRef>((_, ref) => {
 							/>
 							{record.diagnosisResult?.predictions?.[0].type === "detect" && (
 								<DetectImage
-									imageUrl={imageUrl}
+									src={imageUrl}
 									predictions={record.diagnosisResult?.predictions || []}
 								/>
 							)}
