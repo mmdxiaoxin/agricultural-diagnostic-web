@@ -1,20 +1,31 @@
-interface Prediction {
-	type: string;
-	class_name: string;
-	confidence: number;
-	bbox: {
-		x: number;
-		y: number;
-		width: number;
-		height: number;
-	};
-}
+import { DetectPrediction } from "@/api/interface";
 
 interface WorkerMessage {
 	imageUrl: string;
-	predictions: Prediction[];
+	predictions: DetectPrediction[];
 	width: number;
 	height: number;
+}
+
+// 预定义的颜色数组
+const COLORS = [
+	"#FF0000", // 红色
+	"#00FF00", // 绿色
+	"#0000FF", // 蓝色
+	"#FFA500", // 橙色
+	"#800080", // 紫色
+	"#008080", // 青色
+	"#FFC0CB", // 粉色
+	"#A52A2A", // 棕色
+	"#808080", // 灰色
+	"#FFD700" // 金色
+];
+
+// 获取类别的颜色
+function getClassColor(className: string): string {
+	// 使用字符串的字符编码总和来确定颜色索引
+	const hash = className.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0);
+	return COLORS[hash % COLORS.length];
 }
 
 self.onmessage = async (e: MessageEvent<WorkerMessage>) => {
@@ -33,8 +44,8 @@ self.onmessage = async (e: MessageEvent<WorkerMessage>) => {
 		ctx.drawImage(img, 0, 0, width, height);
 
 		// 绘制检测框
-		predictions.forEach(prediction => {
-			if (prediction.type !== "detect") return;
+		for (const prediction of predictions) {
+			if (prediction.type !== "detect") continue;
 
 			const bbox = prediction.bbox;
 			const x = bbox.x;
@@ -42,15 +53,18 @@ self.onmessage = async (e: MessageEvent<WorkerMessage>) => {
 			const w = bbox.width;
 			const h = bbox.height;
 
+			// 根据类别名称获取颜色
+			const color = getClassColor(prediction.class_name);
+
 			// 设置边框样式
-			ctx.strokeStyle = "#00ff00";
+			ctx.strokeStyle = color;
 			ctx.lineWidth = 2;
 
 			// 绘制边框
 			ctx.strokeRect(x, y, w, h);
 
 			// 设置标签背景
-			ctx.fillStyle = "#00ff00";
+			ctx.fillStyle = color;
 			ctx.font = "14px Arial";
 			const label = `${prediction.class_name} ${(prediction.confidence * 100).toFixed(1)}%`;
 			const labelWidth = ctx.measureText(label).width;
@@ -62,7 +76,7 @@ self.onmessage = async (e: MessageEvent<WorkerMessage>) => {
 			// 绘制标签文字
 			ctx.fillStyle = "#ffffff";
 			ctx.fillText(label, x + 5, y - 5);
-		});
+		}
 
 		// 转换为 blob
 		const blob = await canvas.convertToBlob();
