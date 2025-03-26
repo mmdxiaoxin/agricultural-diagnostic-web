@@ -98,9 +98,16 @@ const FileManagePanel: React.FC<FileManagePanelProps> = ({
 		label: item.label
 	}));
 
+	const handleTabChange = (key: string) => {
+		onActiveKeyChange(key);
+		if (key === "2") {
+			setIsExpanded(true);
+		}
+	};
+
 	return (
 		<Collapse
-			defaultActiveKey={[]}
+			activeKey={isExpanded ? ["1"] : []}
 			onChange={keys => setIsExpanded(keys.length > 0)}
 			className={clsx(
 				"mb-6",
@@ -127,7 +134,7 @@ const FileManagePanel: React.FC<FileManagePanelProps> = ({
 										key={item.key}
 										onClick={e => {
 											e.stopPropagation();
-											onActiveKeyChange(item.key);
+											handleTabChange(item.key);
 										}}
 										className={clsx(
 											"px-3 py-1 rounded-md text-sm transition-colors",
