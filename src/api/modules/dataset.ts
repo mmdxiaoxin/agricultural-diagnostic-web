@@ -11,6 +11,10 @@ import {
 export const getDatasetsList = async (params: ReqDatasetList) =>
 	http.get<ResDatasetList>("/dataset/list", params, { loading: false });
 
+// * 获取公共数据集列表
+export const getPublicDatasetsList = async (params: ReqDatasetList) =>
+	http.get<ResDatasetList>("/dataset/public/list", params, { loading: false });
+
 // * 获取数据集详情
 export const getDatasetDetail = async (datasetId: number) =>
 	http.get<ResDatasetDetail>(`/dataset/${datasetId}`, {}, { loading: false });

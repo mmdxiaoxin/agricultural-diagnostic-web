@@ -1,5 +1,5 @@
 import { DatasetMeta } from "@/api/interface";
-import { deleteDataset, getDatasetsList } from "@/api/modules";
+import { deleteDataset, getDatasetsList, getPublicDatasetsList } from "@/api/modules";
 import DatasetsList from "@/components/List/DatasetsList";
 import { FolderAddOutlined, PlusOutlined, SearchOutlined } from "@ant-design/icons";
 import { Button, FloatButton, Input, message, Spin, Tabs } from "antd";
@@ -24,7 +24,10 @@ const DatasetManage: React.FC<DatasetManageProps> = () => {
 		if (loading || !hasMore) return;
 		setLoading(true);
 		try {
-			const res = await getDatasetsList({ page: currentPage, pageSize: 10 });
+			const res = await (activeTab === "1" ? getPublicDatasetsList : getDatasetsList)({
+				page: currentPage,
+				pageSize: 10
+			});
 			if (res.code !== 200 || !res.data) {
 				throw new Error(res.message);
 			}
@@ -38,14 +41,23 @@ const DatasetManage: React.FC<DatasetManageProps> = () => {
 		}
 	};
 
-	useEffect(() => {
-		fetchListData(pageRef.current);
-	}, []);
+	// 切换标签页时重置数据
+	const handleTabChange = (key: string) => {
+		setActiveTab(key);
+		setDatasets([]);
+		pageRef.current = 1;
+		setHasMore(true);
+		fetchListData(1);
+	};
 
 	useEffect(() => {
+		// 初始加载数据
+		fetchListData(1);
+
+		// 设置无限滚动观察者
 		const observer = new IntersectionObserver(
 			entries => {
-				if (entries[0].isIntersecting && hasMore) {
+				if (entries[0].isIntersecting && hasMore && !loading) {
 					pageRef.current += 1;
 					fetchListData(pageRef.current);
 				}
@@ -64,7 +76,7 @@ const DatasetManage: React.FC<DatasetManageProps> = () => {
 				observer.unobserve(loadMoreRef.current);
 			}
 		};
-	}, [hasMore]);
+	}, [activeTab]); // 只在 activeTab 变化时重新设置观察者
 
 	const handleAdd = () => {
 		navigate("/capture/dataset/create");
@@ -91,7 +103,7 @@ const DatasetManage: React.FC<DatasetManageProps> = () => {
 	const items = [
 		{
 			key: "1",
-			label: "全部数据集",
+			label: "公共数据集",
 			children: (
 				<div className="flex-1">
 					<DatasetsList datasets={filteredDatasets} onEdit={handleEdit} onDelete={handleDelete} />
@@ -173,7 +185,7 @@ const DatasetManage: React.FC<DatasetManageProps> = () => {
 
 				<Tabs
 					activeKey={activeTab}
-					onChange={setActiveTab}
+					onChange={handleTabChange}
 					items={items}
 					className="mt-4"
 					tabBarStyle={{
