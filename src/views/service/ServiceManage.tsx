@@ -1,7 +1,6 @@
 import { RemoteService } from "@/api/interface/service";
-import { copyRemote, remoteRemote, getRemotesList } from "@/api/modules";
+import { copyRemote, getRemotesList, remoteRemote } from "@/api/modules";
 import ServiceModal, { ServiceModalRef } from "@/components/Modal/ServiceModal";
-import QuickCopy from "@/components/Table/QuickCopy";
 import { StatusMapper } from "@/constants";
 import {
 	CodepenOutlined,
@@ -84,43 +83,93 @@ const ServiceManage: React.FC = () => {
 		{
 			title: "服务名称",
 			dataIndex: "serviceName",
-			key: "serviceName"
+			key: "serviceName",
+			width: 200,
+			ellipsis: true,
+			render: text => (
+				<Tooltip title={text}>
+					<span className="font-medium text-gray-800">{text}</span>
+				</Tooltip>
+			)
 		},
 		{
 			title: "服务类型",
 			dataIndex: "serviceType",
 			key: "serviceType",
-			render: text => <Tag>{text}</Tag>
+			width: 120,
+			render: text => (
+				<Tag color="blue" className="px-2 py-0.5 rounded-md">
+					{text}
+				</Tag>
+			)
+		},
+		{
+			title: "服务描述",
+			dataIndex: "description",
+			key: "description",
+			ellipsis: true,
+			render: text => (
+				<Tooltip title={text}>
+					<span className="text-gray-600">{text || "-"}</span>
+				</Tooltip>
+			)
 		},
 		{
 			title: "服务状态",
 			dataIndex: "status",
 			key: "status",
+			width: 100,
 			render: text => (
-				<Tag color={text === "active" ? "success" : text === "inactive" ? "error" : "warning"}>
+				<Tag
+					color={text === "active" ? "success" : text === "inactive" ? "error" : "warning"}
+					className="px-2 py-0.5 rounded-md"
+				>
 					{StatusMapper[text as RemoteService["status"]]}
 				</Tag>
 			)
 		},
 		{
-			title: "服务URL",
-			dataIndex: "endpointUrl",
-			key: "endpointUrl",
-			render: text => <QuickCopy text={text} />
+			title: "配置数量",
+			key: "configCount",
+			width: 100,
+			render: (_, record) => (
+				<Tag color="purple" className="px-2 py-0.5 rounded-md">
+					{record.configs?.length || 0} 个配置
+				</Tag>
+			)
+		},
+		{
+			title: "接口数量",
+			key: "interfaceCount",
+			width: 100,
+			render: (_, record) => (
+				<Tag color="cyan" className="px-2 py-0.5 rounded-md">
+					{record.interfaces?.length || 0} 个接口
+				</Tag>
+			)
+		},
+		{
+			title: "更新时间",
+			dataIndex: "updatedAt",
+			key: "updatedAt",
+			width: 180,
+			render: text => <span className="text-gray-500">{new Date(text).toLocaleString()}</span>
 		},
 		{
 			title: "操作",
 			key: "actions",
 			align: "center",
+			width: 280,
+			fixed: "right",
 			render: (_, record) => (
-				<Space>
+				<Space size="middle">
 					<Tooltip title="快速配置">
 						<Button
 							onClick={() => handleQuickConfig(record)}
 							type="primary"
 							icon={<SettingOutlined />}
 							className={clsx(
-								"px-4 h-8",
+								"px-3 h-8",
 								"rounded-lg",
 								"bg-blue-500 hover:bg-blue-600",
 								"border-none",
@@ -137,7 +186,7 @@ const ServiceManage: React.FC = () => {
 						type="primary"
 						icon={<CodepenOutlined />}
 						className={clsx(
-							"px-4 h-8",
+							"px-3 h-8",
 							"rounded-lg",
 							"bg-blue-500 hover:bg-blue-600",
 							"border-none",
@@ -152,7 +201,7 @@ const ServiceManage: React.FC = () => {
 						type="primary"
 						icon={<CopyOutlined />}
 						className={clsx(
-							"px-4 h-8",
+							"px-3 h-8",
 							"rounded-lg",
 							"bg-blue-500 hover:bg-blue-600",
 							"border-none",
@@ -173,7 +222,7 @@ const ServiceManage: React.FC = () => {
 							icon={<DeleteOutlined />}
 							danger
 							className={clsx(
-								"px-4 h-8",
+								"px-3 h-8",
 								"rounded-lg",
 								"border-none",
 								"shadow-sm hover:shadow-md",
