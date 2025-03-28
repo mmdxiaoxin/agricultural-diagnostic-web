@@ -1,4 +1,4 @@
-import { AiService } from "@/api/interface/service";
+import { RemoteService } from "@/api/interface/service";
 import { copyService, deleteService, getServiceList } from "@/api/modules";
 import ServiceModal, { ServiceModalRef } from "@/components/Modal/ServiceModal";
 import QuickCopy from "@/components/Table/QuickCopy";
@@ -18,7 +18,7 @@ import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router";
 
 const ServiceManage: React.FC = () => {
-	const [services, setServices] = useState<AiService[]>([]);
+	const [services, setServices] = useState<RemoteService[]>([]);
 	const serviceModalRef = useRef<ServiceModalRef>(null);
 	const [pagination, setPagination] = useState({ page: 1, pageSize: 10 });
 	const [total, setTotal] = useState(0);
@@ -69,7 +69,7 @@ const ServiceManage: React.FC = () => {
 		}
 	};
 
-	const handleQuickConfig = (service: AiService) => {
+	const handleQuickConfig = (service: RemoteService) => {
 		// 将服务信息存储到 sessionStorage
 		sessionStorage.setItem("selectedService", JSON.stringify(service));
 		// 导航到配置页面
@@ -80,7 +80,7 @@ const ServiceManage: React.FC = () => {
 		service.serviceName.toLowerCase().includes(searchText.toLowerCase())
 	);
 
-	const columns: ColumnsType<AiService> = [
+	const columns: ColumnsType<RemoteService> = [
 		{
 			title: "服务名称",
 			dataIndex: "serviceName",
@@ -98,7 +98,7 @@ const ServiceManage: React.FC = () => {
 			key: "status",
 			render: text => (
 				<Tag color={text === "active" ? "success" : text === "inactive" ? "error" : "warning"}>
-					{StatusMapper[text as AiService["status"]]}
+					{StatusMapper[text as RemoteService["status"]]}
 				</Tag>
 			)
 		},
@@ -155,7 +155,7 @@ const ServiceManage: React.FC = () => {
 						编辑
 					</Button>
 					<Button
-						onClick={() => handleCopyService(record.serviceId)}
+						onClick={() => handleCopyService(record.id)}
 						type="primary"
 						icon={<CopyOutlined />}
 						className={clsx(
@@ -171,7 +171,7 @@ const ServiceManage: React.FC = () => {
 					</Button>
 					<Popconfirm
 						title="确定删除该服务吗？"
-						onConfirm={() => handleDeleteService(record.serviceId)}
+						onConfirm={() => handleDeleteService(record.id)}
 						okText="确定"
 						cancelText="取消"
 					>
@@ -259,7 +259,7 @@ const ServiceManage: React.FC = () => {
 			</div>
 
 			<div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-				<Table<AiService>
+				<Table<RemoteService>
 					columns={columns}
 					dataSource={filteredServices}
 					rowKey="serviceId"

@@ -1,25 +1,25 @@
 import http from "@/api";
 import {
 	ReqAddConfigs,
-	ReqAiServiceList,
+	ReqRemoteServiceList,
 	ReqCreateAiService,
 	ReqUpdateAiService,
 	ReqUpdateConfigs,
-	ResAiService,
-	ResAiServiceDetail,
-	ResAiServiceList
+	ResRemoteService,
+	ResRemoteServiceDetail,
+	ResRemoteServiceList
 } from "@/api/interface/service";
 
-export const getServiceList = (params: ReqAiServiceList) => {
-	return http.get<ResAiServiceList>("/ai-service/list", params, { loading: false });
+export const getServiceList = (params: ReqRemoteServiceList) => {
+	return http.get<ResRemoteServiceList>("/ai-service/list", params, { loading: false });
 };
 
 export const getService = () => {
-	return http.get<ResAiService>("/ai-service", {}, { loading: false });
+	return http.get<ResRemoteService>("/ai-service", {}, { loading: false });
 };
 
 export const getServiceDetail = (serviceId: number | string) => {
-	return http.get<ResAiServiceDetail>(`/ai-service/${serviceId}`, {}, { loading: false });
+	return http.get<ResRemoteServiceDetail>(`/ai-service/${serviceId}`, {}, { loading: false });
 };
 
 export const createService = (data: ReqCreateAiService) => {
@@ -47,5 +47,5 @@ export const deleteConfig = (serviceId: number, configId: number) => {
 };
 
 export const copyService = (serviceId: number) => {
-	return http.post<ResAiServiceDetail>(`/ai-service/${serviceId}/copy`, {}, { loading: false });
+	return http.post<ResRemoteServiceDetail>(`/ai-service/${serviceId}/copy`, {}, { loading: false });
 };

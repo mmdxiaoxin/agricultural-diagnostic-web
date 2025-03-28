@@ -1,4 +1,4 @@
-import { AiService } from "@/api/interface";
+import { RemoteService } from "@/api/interface";
 import { getServiceList } from "@/api/modules";
 import { Avatar, Button, Flex, List, Skeleton, Tooltip, Typography } from "antd";
 import clsx from "clsx";
@@ -7,11 +7,11 @@ import ServiceFilter from "../ServiceFilter";
 import { AvatarColorMapper, StatusMapper } from "@/constants";
 
 export type ServiceListProps = {
-	selected?: AiService | null;
-	onSelect?: (service: AiService) => void;
+	selected?: RemoteService | null;
+	onSelect?: (service: RemoteService) => void;
 };
 
-export type ServiceListItem = AiService & {
+export type ServiceListItem = RemoteService & {
 	loading: boolean;
 };
 
@@ -75,7 +75,7 @@ const ServiceList: React.FC<ServiceListProps> = ({ onSelect, selected }) => {
 			const response = await getServiceList({ page: 1, pageSize });
 			if (response.code === 200 && response.data) {
 				setServiceList(
-					response.data.list.map((service: AiService) => ({ ...service, loading: false })) || []
+					response.data.list.map((service: RemoteService) => ({ ...service, loading: false })) || []
 				);
 				setTotal(response.data.total);
 			}
@@ -108,7 +108,7 @@ const ServiceList: React.FC<ServiceListProps> = ({ onSelect, selected }) => {
 					className={clsx(
 						"hover:bg-gray-100 rounded-lg",
 						"cursor-pointer",
-						selected?.serviceId === item.serviceId && "bg-gray-100"
+						selected?.id === item.id && "bg-gray-100"
 					)}
 					onClick={() => onSelect?.(item)}
 				>

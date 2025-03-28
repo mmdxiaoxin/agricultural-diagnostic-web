@@ -1,4 +1,4 @@
-import { AiService, AiServiceConfig } from "@/api/interface";
+import { RemoteService, AiServiceConfig } from "@/api/interface";
 import { getServiceDetail, updateConfigs } from "@/api/modules";
 import {
 	Button,
@@ -64,8 +64,8 @@ const EditableCell: React.FC<React.PropsWithChildren<EditableCellProps>> = ({
 };
 
 export type ServiceDetailProps = {
-	service?: AiService;
-	onSave?: (service: AiService) => void;
+	service?: RemoteService;
+	onSave?: (service: RemoteService) => void;
 };
 
 const ServiceDetail: React.FC<ServiceDetailProps> = ({ service, onSave }) => {
@@ -77,10 +77,10 @@ const ServiceDetail: React.FC<ServiceDetailProps> = ({ service, onSave }) => {
 	const [saveLoading, setSaveLoading] = useState(false);
 
 	const fetchServiceDetail = async () => {
-		if (service?.serviceId) {
+		if (service?.id) {
 			try {
 				setInitLoading(true);
-				const response = await getServiceDetail(service.serviceId);
+				const response = await getServiceDetail(service.id);
 				const newConfigs = response.data?.aiServiceConfigs || [];
 				setConfigs(newConfigs);
 				setOriginalConfigs(newConfigs);
@@ -141,7 +141,7 @@ const ServiceDetail: React.FC<ServiceDetailProps> = ({ service, onSave }) => {
 			configId: Date.now(),
 			configKey: "",
 			configValue: "",
-			service: service || ({} as AiService),
+			service: service || ({} as RemoteService),
 			createdAt: new Date().toISOString(),
 			updatedAt: new Date().toISOString()
 		};
@@ -161,9 +161,9 @@ const ServiceDetail: React.FC<ServiceDetailProps> = ({ service, onSave }) => {
 	const handleSubmit = async () => {
 		try {
 			setSaveLoading(true);
-			if (service?.serviceId) {
+			if (service?.id) {
 				const filteredConfigs = configs.map(({ configId, ...rest }) => rest);
-				await updateConfigs(service.serviceId, { configs: filteredConfigs });
+				await updateConfigs(service.id, { configs: filteredConfigs });
 				message.success("保存成功");
 				onSave?.(service);
 				fetchServiceDetail();

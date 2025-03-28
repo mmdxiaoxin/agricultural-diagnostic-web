@@ -1,5 +1,5 @@
 import { DiagnosisHistory } from "@/api/interface/diagnosis";
-import { AiService } from "@/api/interface/service";
+import { RemoteService } from "@/api/interface/service";
 import {
 	deleteDiagnosisHistories,
 	deleteDiagnosisHistory,
@@ -41,7 +41,7 @@ const DiagnosisHistoryPage: React.FC = () => {
 	const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
 	const [isSelectMode, setIsSelectMode] = useState(false);
 	const [searchText, setSearchText] = useState("");
-	const [serviceList, setServiceList] = useState<AiService[]>([]);
+	const [serviceList, setServiceList] = useState<RemoteService[]>([]);
 	const [selectedServiceId, setSelectedServiceId] = useState<number>();
 	const [selectedRecord, setSelectedRecord] = useState<DiagnosisHistory | null>(null);
 	const modalRef = useRef<DiagnosisDetailModalRef>(null);
@@ -54,7 +54,7 @@ const DiagnosisHistoryPage: React.FC = () => {
 				setServiceList(response.data);
 				// 默认使用第一个服务
 				if (response.data.length > 0) {
-					setSelectedServiceId(response.data[0].serviceId);
+					setSelectedServiceId(response.data[0].id);
 				}
 			}
 		} catch (error) {
@@ -221,7 +221,7 @@ const DiagnosisHistoryPage: React.FC = () => {
 									className="w-full"
 									options={serviceList.map(service => ({
 										label: service.serviceName,
-										value: service.serviceId
+										value: service.id
 									}))}
 								/>
 							</div>

@@ -1,4 +1,4 @@
-import { AiService, PageData, ReqPage } from ".";
+import { RemoteService, PageData, ReqPage } from ".";
 
 // 基础预测类型
 export type BasePrediction = {
@@ -56,4 +56,4 @@ export type ResStartDiagnoseDisease = {
 };
 export type ResUploadDiagnosisImage = DiagnosisHistory;
 export type ResDiagnosisHistoryList = PageData<DiagnosisHistory>;
-export type ResDiagnosisSupport = AiService[];
+export type ResDiagnosisSupport = RemoteService[];

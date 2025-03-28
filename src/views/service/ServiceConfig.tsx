@@ -1,4 +1,4 @@
-import { AiService } from "@/api/interface";
+import { RemoteService } from "@/api/interface";
 import ServiceList from "@/components/List/ServiceList";
 import ServiceDetail from "@/components/ServiceDetail";
 import { Empty, Splitter } from "antd";
@@ -6,7 +6,7 @@ import clsx from "clsx";
 import React, { useEffect, useState } from "react";
 
 const ServiceConfig: React.FC = () => {
-	const [service, setService] = useState<AiService>();
+	const [service, setService] = useState<RemoteService>();
 
 	useEffect(() => {
 		// 从 sessionStorage 读取选中的服务

@@ -1,4 +1,4 @@
-import { AiService, ResStartDiagnoseDisease } from "@/api/interface";
+import { RemoteService, ResStartDiagnoseDisease } from "@/api/interface";
 import type { Prediction } from "@/api/interface/diagnosis";
 import { getDiagnosisSupport, startDiagnosis, uploadDiagnosisImage } from "@/api/modules";
 import { LoadingOutlined, UploadOutlined } from "@ant-design/icons";
@@ -34,7 +34,7 @@ const DiseaseDiagnose: React.FC<DiseaseDiagnoseProps> = ({ onPredict }) => {
 	const [error, setError] = useState<string | null>(null);
 	const [previewUrl, setPreviewUrl] = useState<string>("");
 	const [serviceId, setServiceId] = useState<number>(3);
-	const [serviceList, setServiceList] = useState<AiService[]>([]);
+	const [serviceList, setServiceList] = useState<RemoteService[]>([]);
 
 	const fetchServiceList = async () => {
 		const res = await getDiagnosisSupport();
@@ -144,7 +144,7 @@ const DiseaseDiagnose: React.FC<DiseaseDiagnoseProps> = ({ onPredict }) => {
 					placeholder="请选择诊断服务"
 					options={serviceList.map(service => ({
 						label: service.serviceName,
-						value: service.serviceId
+						value: service.id
 					}))}
 					className="w-full"
 					onChange={setServiceId}
