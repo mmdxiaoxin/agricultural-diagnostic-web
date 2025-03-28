@@ -1,8 +1,10 @@
 import { RemoteService } from "@/api/interface/service";
 import { copyRemote, getRemotesList, remoteRemote } from "@/api/modules";
+import InterfaceListModal from "@/components/Modal/InterfaceListModal";
 import ServiceModal, { ServiceModalRef } from "@/components/Modal/ServiceModal";
 import { StatusMapper } from "@/constants";
 import {
+	ApiOutlined,
 	CodepenOutlined,
 	CopyOutlined,
 	DeleteOutlined,
@@ -22,6 +24,8 @@ const ServiceManage: React.FC = () => {
 	const [pagination, setPagination] = useState({ page: 1, pageSize: 10 });
 	const [total, setTotal] = useState(0);
 	const [searchText, setSearchText] = useState("");
+	const [interfaceModalVisible, setInterfaceModalVisible] = useState(false);
+	const [selectedService, setSelectedService] = useState<RemoteService | null>(null);
 	const navigate = useNavigate();
 
 	const fetchServices = async (page: number = 1, pageSize: number = 10) => {
@@ -73,6 +77,11 @@ const ServiceManage: React.FC = () => {
 		sessionStorage.setItem("selectedService", JSON.stringify(service));
 		// 导航到配置页面
 		navigate("/service/config");
+	};
+
+	const handleShowInterfaces = (service: RemoteService) => {
+		setSelectedService(service);
+		setInterfaceModalVisible(true);
 	};
 
 	const filteredServices = services.filter(service =>
@@ -143,7 +152,15 @@ const ServiceManage: React.FC = () => {
 			key: "interfaceCount",
 			width: 100,
 			render: (_, record) => (
-				<Tag color="cyan" className="px-2 py-0.5 rounded-md">
+				<Tag
+					color="cyan"
+					className={clsx(
+						"px-2 py-0.5 rounded-md",
+						"cursor-pointer hover:opacity-80",
+						"transition-all duration-300"
+					)}
+					onClick={() => handleShowInterfaces(record)}
+				>
 					{record.interfaces?.length || 0} 个接口
 				</Tag>
 			)
@@ -328,6 +345,11 @@ const ServiceManage: React.FC = () => {
 				onSave={() => {
 					fetchServices(pagination.page, pagination.pageSize);
 				}}
+			/>
+			<InterfaceListModal
+				visible={interfaceModalVisible}
+				onClose={() => setInterfaceModalVisible(false)}
+				interfaces={selectedService?.interfaces || []}
 			/>
 		</div>
 	);
