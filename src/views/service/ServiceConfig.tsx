@@ -1,17 +1,12 @@
 import { RemoteService } from "@/api/interface";
 import ServiceList from "@/components/List/ServiceList";
 import ServiceDetail from "@/components/ServiceDetail";
-import { Empty, Splitter, Card, Typography, Button, Space, message } from "antd";
+import { Empty, Splitter } from "antd";
 import clsx from "clsx";
 import React, { useEffect, useState } from "react";
-import MonacoEditor from "@/components/Editor";
-import { updateRemote } from "@/api/modules";
 
 const ServiceConfig: React.FC = () => {
 	const [service, setService] = useState<RemoteService>();
-	const [configs, setConfigs] = useState<any[]>([]);
-	const [isEditing, setIsEditing] = useState(false);
-	const [saveLoading, setSaveLoading] = useState(false);
 
 	useEffect(() => {
 		// 从 sessionStorage 读取选中的服务
@@ -20,7 +15,6 @@ const ServiceConfig: React.FC = () => {
 			try {
 				const selectedService = JSON.parse(selectedServiceStr);
 				setService(selectedService);
-				setConfigs(selectedService.configs || []);
 				// 读取后清除 sessionStorage
 				sessionStorage.removeItem("selectedService");
 			} catch (error) {
@@ -28,20 +22,6 @@ const ServiceConfig: React.FC = () => {
 			}
 		}
 	}, []);
-
-	const handleSave = async () => {
-		if (!service?.id) return;
-		try {
-			setSaveLoading(true);
-			await updateRemote(service.id, { configs });
-			message.success("保存成功");
-			setIsEditing(false);
-		} catch (error) {
-			message.error("保存失败");
-		} finally {
-			setSaveLoading(false);
-		}
-	};
 
 	return (
 		<div
@@ -85,50 +65,7 @@ const ServiceConfig: React.FC = () => {
 					</Splitter.Panel>
 					<Splitter.Panel>
 						{service ? (
-							<div className="h-full flex flex-col">
-								<Card className="flex-1 m-4">
-									<div className="flex justify-between items-center mb-4">
-										<Typography.Title level={4} className="!m-0">
-											服务配置
-										</Typography.Title>
-										<Space>
-											{isEditing ? (
-												<>
-													<Button onClick={() => setIsEditing(false)}>取消</Button>
-													<Button type="primary" onClick={handleSave} loading={saveLoading}>
-														保存
-													</Button>
-												</>
-											) : (
-												<Button type="primary" onClick={() => setIsEditing(true)}>
-													编辑配置
-												</Button>
-											)}
-										</Space>
-									</div>
-									<MonacoEditor
-										language="json"
-										value={JSON.stringify(configs, null, 2)}
-										onChange={value => {
-											if (isEditing) {
-												try {
-													setConfigs(JSON.parse(value));
-												} catch (e) {
-													// 忽略 JSON 解析错误
-												}
-											}
-										}}
-										options={{
-											readOnly: !isEditing,
-											minimap: { enabled: true },
-											fontSize: 14,
-											wordWrap: "on",
-											scrollBeyondLastLine: false
-										}}
-									/>
-								</Card>
-								<ServiceDetail service={service} />
-							</div>
+							<ServiceDetail service={service} />
 						) : (
 							<div className="h-full flex items-center justify-center bg-gray-50">
 								<Empty
