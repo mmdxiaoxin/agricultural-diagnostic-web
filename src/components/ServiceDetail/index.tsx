@@ -70,22 +70,11 @@ const ServiceDetail: React.FC<ServiceDetailProps> = ({ service }) => {
 	};
 
 	const handleAddInterface = () => {
-		interfaceModalRef.current?.open("create");
-	};
-
-	const handleInterfaceSave = async (values: any) => {
-		if (!service?.id) return;
-		try {
-			await createRemoteInterface(service.id, values);
-			message.success("添加接口成功");
-			fetchServiceDetail();
-		} catch (error) {
-			message.error("添加接口失败");
-		}
+		interfaceModalRef.current?.open("create", undefined, service?.id);
 	};
 
 	const handleEditInterface = (record: RemoteInterface) => {
-		interfaceModalRef.current?.open("edit", record);
+		interfaceModalRef.current?.open("edit", record, service?.id);
 	};
 
 	const handleDeleteInterface = async (id: number) => {
@@ -245,7 +234,7 @@ const ServiceDetail: React.FC<ServiceDetailProps> = ({ service }) => {
 					<Tabs items={items} />
 				</Card>
 			</div>
-			<InterfaceModal ref={interfaceModalRef} onSave={handleInterfaceSave} />
+			<InterfaceModal ref={interfaceModalRef} />
 		</>
 	);
 };
