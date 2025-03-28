@@ -1,7 +1,6 @@
 import { createRemote, updateRemote } from "@/api/modules";
 import { Button, Form, Input, message, Modal, Select, Table, Space } from "antd";
 import { forwardRef, useImperativeHandle, useState } from "react";
-import MonacoEditor from "../Editor";
 import { RemoteInterface } from "@/api/interface/service";
 
 export type ServiceModalProps = {
@@ -39,8 +38,6 @@ const ServiceModal = forwardRef<ServiceModalRef, ServiceModalProps>(({ onCancel,
 		serviceType: string;
 		description: string;
 		status: "active" | "inactive" | "under_maintenance";
-		endpointUrl: string;
-		configs: object[];
 		interfaces: RemoteInterface[];
 	}) => {
 		const { serviceId, ...rest } = values;
@@ -168,20 +165,6 @@ const ServiceModal = forwardRef<ServiceModalRef, ServiceModalProps>(({ onCancel,
 						</Select>
 					</Form.Item>
 
-					<Form.Item label="服务配置" name="configs">
-						<MonacoEditor
-							language="json"
-							value={JSON.stringify(form.getFieldValue("configs") || [], null, 2)}
-							onChange={value => {
-								try {
-									form.setFieldValue("configs", JSON.parse(value));
-								} catch (e) {
-									// 忽略 JSON 解析错误
-								}
-							}}
-						/>
-					</Form.Item>
-
 					<Form.Item label="接口列表">
 						<Button type="primary" onClick={handleAddInterface} style={{ marginBottom: 16 }}>
 							添加接口
@@ -231,20 +214,6 @@ const ServiceModal = forwardRef<ServiceModalRef, ServiceModalProps>(({ onCancel,
 
 					<Form.Item label="接口描述" name="description">
 						<Input.TextArea />
-					</Form.Item>
-
-					<Form.Item label="接口配置" name="config">
-						<MonacoEditor
-							language="json"
-							value={JSON.stringify(interfaceForm.getFieldValue("config") || {}, null, 2)}
-							onChange={value => {
-								try {
-									interfaceForm.setFieldValue("config", JSON.parse(value));
-								} catch (e) {
-									// 忽略 JSON 解析错误
-								}
-							}}
-						/>
 					</Form.Item>
 
 					<Form.Item>

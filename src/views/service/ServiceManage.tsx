@@ -131,14 +131,7 @@ const ServiceManage: React.FC = () => {
 					</Tooltip>
 					<Button
 						onClick={() => {
-							const {
-								aiServiceAccessLogs,
-								aiServiceConfigs,
-								aiServiceLogs,
-								createdAt,
-								updatedAt,
-								...serviceData
-							} = record;
+							const { createdAt, updatedAt, ...serviceData } = record;
 							handleEditService(serviceData);
 						}}
 						type="primary"

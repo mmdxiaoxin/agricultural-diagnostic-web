@@ -6,13 +6,26 @@ interface MonacoEditorProps {
 	onChange?: (value: string) => void;
 	language?: string;
 	theme?: "light" | "vs-dark";
+	options?: {
+		readOnly?: boolean;
+		minimap?: { enabled: boolean };
+		fontSize?: number;
+		wordWrap?: "on" | "off";
+		scrollBeyondLastLine?: boolean;
+	};
 }
 
 const MonacoEditor: React.FC<MonacoEditorProps> = ({
 	value,
 	onChange,
 	language = "javascript",
-	theme = "vs-dark"
+	theme = "vs-dark",
+	options = {
+		minimap: { enabled: true },
+		fontSize: 14,
+		wordWrap: "on",
+		scrollBeyondLastLine: false
+	}
 }) => {
 	return (
 		<Editor
@@ -21,12 +34,7 @@ const MonacoEditor: React.FC<MonacoEditorProps> = ({
 			defaultValue={value}
 			theme={theme}
 			onChange={newValue => onChange?.(newValue || "")}
-			options={{
-				minimap: { enabled: true },
-				fontSize: 14,
-				wordWrap: "on",
-				scrollBeyondLastLine: false
-			}}
+			options={options}
 		/>
 	);
 };
