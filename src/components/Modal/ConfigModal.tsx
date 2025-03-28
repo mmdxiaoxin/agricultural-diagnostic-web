@@ -36,7 +36,15 @@ const ConfigModal = forwardRef<ConfigModalRef, ConfigModalProps>(
 			setIsModalVisible(true);
 			if (values) {
 				form.setFieldsValue(values);
-				setConfigContent(JSON.stringify(values.config, null, 2));
+				try {
+					const configStr =
+						typeof values.config === "string"
+							? values.config
+							: JSON.stringify(values.config, null, 2);
+					setConfigContent(configStr);
+				} catch (error) {
+					setConfigContent("{}");
+				}
 			} else {
 				form.resetFields();
 				setConfigContent("{}");
