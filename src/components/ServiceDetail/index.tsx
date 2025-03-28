@@ -1,13 +1,10 @@
 import { RemoteConfig, RemoteInterface, RemoteService } from "@/api/interface";
 import {
-	createRemoteConfig,
 	getRemote,
 	getRemoteConfigs,
 	removeRemoteConfig,
-	removeRemoteInterface,
-	updateRemoteConfig
+	removeRemoteInterface
 } from "@/api/modules";
-import MonacoEditor from "@/components/Editor";
 import ConfigModal, { ConfigModalRef } from "@/components/Modal/ConfigModal";
 import InterfaceModal, { InterfaceModalRef } from "@/components/Modal/InterfaceModal";
 import { StatusMapper } from "@/constants";
@@ -75,24 +72,6 @@ const ServiceDetail: React.FC<ServiceDetailProps> = ({ service }) => {
 			fetchServiceDetail();
 		} catch (error) {
 			message.error("删除配置失败");
-		}
-	};
-
-	const handleConfigSave = async (values: any) => {
-		if (!service?.id) return;
-		try {
-			if (values.id) {
-				// 编辑模式
-				await updateRemoteConfig(service.id, values.id, values);
-				message.success("更新配置成功");
-			} else {
-				// 创建模式
-				await createRemoteConfig(service.id, values);
-				message.success("添加配置成功");
-			}
-			fetchServiceDetail();
-		} catch (error) {
-			message.error(values.id ? "更新配置失败" : "添加配置失败");
 		}
 	};
 
