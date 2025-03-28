@@ -1,5 +1,6 @@
 import http from "@/api";
 import {
+	RemoteConfig,
 	ReqCreateRemoteInterface,
 	ReqCreateRemoteService,
 	ReqRemoteInterfaceList,
@@ -11,6 +12,7 @@ import {
 	ResRemoteServiceDetail,
 	ResRemoteServiceList
 } from "@/api/interface/service";
+import { PageData } from "../interface";
 import { ReqUpdateRemoteInterface } from "./../interface/service";
 
 export const getRemotesList = (params: ReqRemoteServiceList) => {
@@ -69,4 +71,39 @@ export const updateRemoteInterface = (
 
 export const removeRemoteInterface = (serviceId: number, interfaceId: number) => {
 	return http.delete(`/remote/${serviceId}/interface/${interfaceId}`, {}, { loading: false });
+};
+
+// 配置相关接口
+export const getRemoteConfigs = (serviceId: number) => {
+	return http.get<RemoteConfig[]>(`/remote/${serviceId}/config`, {}, { loading: false });
+};
+
+export const getRemoteConfigList = (serviceId: number, page: number, pageSize: number) => {
+	return http.get<PageData<RemoteConfig>>(
+		`/remote/${serviceId}/config/list`,
+		{ page, pageSize },
+		{ loading: false }
+	);
+};
+
+export const getRemoteConfigById = (serviceId: number, configId: number) => {
+	return http.get<RemoteConfig>(`/remote/${serviceId}/config/${configId}`, {}, { loading: false });
+};
+
+export const createRemoteConfig = (serviceId: number, data: Partial<RemoteConfig>) => {
+	return http.post<RemoteConfig>(`/remote/${serviceId}/config`, data, { loading: false });
+};
+
+export const updateRemoteConfig = (
+	serviceId: number,
+	configId: number,
+	data: Partial<RemoteConfig>
+) => {
+	return http.put<RemoteConfig>(`/remote/${serviceId}/config/${configId}`, data, {
+		loading: false
+	});
+};
+
+export const removeRemoteConfig = (serviceId: number, configId: number) => {
+	return http.delete(`/remote/${serviceId}/config/${configId}`, {}, { loading: false });
 };

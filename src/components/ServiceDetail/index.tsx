@@ -1,5 +1,12 @@
 import { RemoteConfig, RemoteInterface, RemoteService } from "@/api/interface";
-import { getRemote, removeRemoteInterface, updateRemote } from "@/api/modules";
+import {
+	createRemoteConfig,
+	getRemote,
+	getRemoteConfigs,
+	removeRemoteConfig,
+	removeRemoteInterface,
+	updateRemoteConfig
+} from "@/api/modules";
 import MonacoEditor from "@/components/Editor";
 import ConfigModal, { ConfigModalRef } from "@/components/Modal/ConfigModal";
 import InterfaceModal, { InterfaceModalRef } from "@/components/Modal/InterfaceModal";
@@ -27,8 +34,6 @@ const ServiceDetail: React.FC<ServiceDetailProps> = ({ service }) => {
 	const [configs, setConfigs] = useState<RemoteConfig[]>([]);
 	const [interfaces, setInterfaces] = useState<RemoteInterface[]>([]);
 	const [initLoading, setInitLoading] = useState(false);
-	const [saveLoading, setSaveLoading] = useState(false);
-	const [isEditing, setIsEditing] = useState(false);
 	const interfaceModalRef = useRef<InterfaceModalRef>(null);
 	const configModalRef = useRef<ConfigModalRef>(null);
 
@@ -36,9 +41,12 @@ const ServiceDetail: React.FC<ServiceDetailProps> = ({ service }) => {
 		if (service?.id) {
 			try {
 				setInitLoading(true);
-				const response = await getRemote(service.id);
-				setConfigs(response.data?.configs || []);
-				setInterfaces(response.data?.interfaces || []);
+				const [serviceResponse, configsResponse] = await Promise.all([
+					getRemote(service.id),
+					getRemoteConfigs(service.id)
+				]);
+				setConfigs(configsResponse.data || []);
+				setInterfaces(serviceResponse.data?.interfaces || []);
 			} catch (error) {
 				message.error("获取服务详情失败");
 			} finally {
@@ -51,21 +59,6 @@ const ServiceDetail: React.FC<ServiceDetailProps> = ({ service }) => {
 		fetchServiceDetail();
 	}, [service]);
 
-	const handleSave = async () => {
-		if (!service?.id) return;
-		try {
-			setSaveLoading(true);
-			await updateRemote(service.id, { configs });
-			message.success("保存成功");
-			setIsEditing(false);
-			fetchServiceDetail();
-		} catch (error) {
-			message.error("保存失败");
-		} finally {
-			setSaveLoading(false);
-		}
-	};
-
 	const handleAddConfig = () => {
 		configModalRef.current?.open("create");
 	};
@@ -77,8 +70,7 @@ const ServiceDetail: React.FC<ServiceDetailProps> = ({ service }) => {
 	const handleDeleteConfig = async (id: number) => {
 		if (!service?.id) return;
 		try {
-			const newConfigs = configs.filter(config => config.id !== id);
-			await updateRemote(service.id, { configs: newConfigs });
+			await removeRemoteConfig(service.id, id);
 			message.success("删除配置成功");
 			fetchServiceDetail();
 		} catch (error) {
@@ -89,23 +81,15 @@ const ServiceDetail: React.FC<ServiceDetailProps> = ({ service }) => {
 	const handleConfigSave = async (values: any) => {
 		if (!service?.id) return;
 		try {
-			const newConfigs = [...configs];
 			if (values.id) {
 				// 编辑模式
-				const index = newConfigs.findIndex(config => config.id === values.id);
-				if (index !== -1) {
-					newConfigs[index] = { ...newConfigs[index], ...values };
-				}
+				await updateRemoteConfig(service.id, values.id, values);
+				message.success("更新配置成功");
 			} else {
 				// 创建模式
-				newConfigs.push({
-					...values,
-					id: Date.now(), // 临时ID，实际应该由后端生成
-					serviceId: service.id
-				});
+				await createRemoteConfig(service.id, values);
+				message.success("添加配置成功");
 			}
-			await updateRemote(service.id, { configs: newConfigs });
-			message.success(values.id ? "更新配置成功" : "添加配置成功");
 			fetchServiceDetail();
 		} catch (error) {
 			message.error(values.id ? "更新配置失败" : "添加配置失败");
@@ -295,7 +279,7 @@ const ServiceDetail: React.FC<ServiceDetailProps> = ({ service }) => {
 				</Card>
 			</div>
 			<InterfaceModal ref={interfaceModalRef} onSave={fetchServiceDetail} />
-			<ConfigModal ref={configModalRef} onSave={handleConfigSave} />
+			<ConfigModal ref={configModalRef} serviceId={service?.id} onSuccess={fetchServiceDetail} />
 		</>
 	);
 };
