@@ -1,12 +1,15 @@
 import { RemoteService } from "@/api/interface";
 import ServiceList from "@/components/List/ServiceList";
 import ServiceDetail from "@/components/ServiceDetail";
-import { Empty, Splitter } from "antd";
+import { Empty, Splitter, Button, Tooltip } from "antd";
+import { FullscreenOutlined, FullscreenExitOutlined } from "@ant-design/icons";
 import clsx from "clsx";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 
 const ServiceConfig: React.FC = () => {
 	const [service, setService] = useState<RemoteService>();
+	const [isFullscreen, setIsFullscreen] = useState(false);
+	const containerRef = useRef<HTMLDivElement>(null);
 
 	useEffect(() => {
 		// 从 sessionStorage 读取选中的服务
@@ -21,7 +24,56 @@ const ServiceConfig: React.FC = () => {
 				console.error("解析选中的服务信息失败:", error);
 			}
 		}
+
+		// 监听全屏变化事件
+		const handleFullscreenChange = () => {
+			setIsFullscreen(!!document.fullscreenElement);
+		};
+
+		document.addEventListener("fullscreenchange", handleFullscreenChange);
+		document.addEventListener("webkitfullscreenchange", handleFullscreenChange);
+		document.addEventListener("mozfullscreenchange", handleFullscreenChange);
+		document.addEventListener("MSFullscreenChange", handleFullscreenChange);
+
+		return () => {
+			document.removeEventListener("fullscreenchange", handleFullscreenChange);
+			document.removeEventListener("webkitfullscreenchange", handleFullscreenChange);
+			document.removeEventListener("mozfullscreenchange", handleFullscreenChange);
+			document.removeEventListener("MSFullscreenChange", handleFullscreenChange);
+		};
 	}, []);
+
+	const toggleFullscreen = async () => {
+		if (!containerRef.current) return;
+
+		try {
+			if (!isFullscreen) {
+				// 进入全屏
+				if (containerRef.current.requestFullscreen) {
+					await containerRef.current.requestFullscreen();
+				} else if ((containerRef.current as any).webkitRequestFullscreen) {
+					await (containerRef.current as any).webkitRequestFullscreen();
+				} else if ((containerRef.current as any).mozRequestFullScreen) {
+					await (containerRef.current as any).mozRequestFullScreen();
+				} else if ((containerRef.current as any).msRequestFullscreen) {
+					await (containerRef.current as any).msRequestFullscreen();
+				}
+			} else {
+				// 退出全屏
+				if (document.exitFullscreen) {
+					await document.exitFullscreen();
+				} else if ((document as any).webkitExitFullscreen) {
+					await (document as any).webkitExitFullscreen();
+				} else if ((document as any).mozCancelFullScreen) {
+					await (document as any).mozCancelFullScreen();
+				} else if ((document as any).msExitFullscreen) {
+					await (document as any).msExitFullscreen();
+				}
+			}
+		} catch (error) {
+			console.error("全屏切换失败:", error);
+		}
+	};
 
 	return (
 		<div
@@ -53,11 +105,45 @@ const ServiceConfig: React.FC = () => {
 							{service ? `当前选择: ${service.serviceName}` : "请选择一个服务进行配置"}
 						</p>
 					</div>
+					{service && (
+						<Tooltip title={isFullscreen ? "退出全屏" : "全屏显示"}>
+							<Button
+								type="text"
+								icon={isFullscreen ? <FullscreenExitOutlined /> : <FullscreenOutlined />}
+								onClick={toggleFullscreen}
+								className="hover:bg-gray-100"
+							/>
+						</Tooltip>
+					)}
 				</div>
 			</div>
 
-			<div className="flex-1 bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-				<Splitter className="h-full">
+			<div
+				ref={containerRef}
+				className={clsx(
+					"flex-1 bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden relative",
+					isFullscreen && "fixed inset-0 z-50 m-0 rounded-none"
+				)}
+			>
+				{isFullscreen && (
+					<div className="absolute top-0 left-0 right-0 h-16 bg-white border-b border-gray-100 flex items-center justify-between px-6 z-10">
+						<div className="flex items-center gap-4">
+							<h3 className="text-lg font-medium text-gray-800">服务配置</h3>
+							<p className="text-gray-500">
+								{service ? `当前选择: ${service.serviceName}` : "请选择一个服务进行配置"}
+							</p>
+						</div>
+						<Tooltip title="退出全屏">
+							<Button
+								type="text"
+								icon={<FullscreenExitOutlined />}
+								onClick={toggleFullscreen}
+								className="hover:bg-gray-100"
+							/>
+						</Tooltip>
+					</div>
+				)}
+				<Splitter className={clsx("h-full", isFullscreen && "pt-16")}>
 					<Splitter.Panel defaultSize="40%" min="20%" max="50%" collapsible>
 						<div className="h-full p-4 border-r border-gray-100">
 							<ServiceList selected={service} onSelect={service => setService(service)} />
