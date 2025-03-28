@@ -42,3 +42,11 @@ export type ReqCreateRemoteInterface = ReqUpdateRemoteInterface & { name: string
 export type ReqUpdateRemoteInterface = Partial<
 	Pick<RemoteInterface, "name" | "type" | "description" | "config" | "url">
 >;
+
+export type ReqRemoteInterfaceList = ReqPage & {};
+
+export type ResRemoteInterface = RemoteInterface[];
+
+export type ResRemoteInterfaceList = PageData<RemoteInterface>;
+
+export type ResRemoteInterfaceDetail = RemoteInterface;

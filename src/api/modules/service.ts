@@ -2,8 +2,11 @@ import http from "@/api";
 import {
 	ReqCreateRemoteInterface,
 	ReqCreateRemoteService,
+	ReqRemoteInterfaceList,
 	ReqRemoteServiceList,
 	ReqUpdateRemoteService,
+	ResRemoteInterfaceDetail,
+	ResRemoteInterfaceList,
 	ResRemoteService,
 	ResRemoteServiceDetail,
 	ResRemoteServiceList
@@ -36,6 +39,20 @@ export const updateRemote = (serviceId: number, data: ReqUpdateRemoteService) =>
 
 export const remoteRemote = (serviceId: number) => {
 	return http.delete(`/remote/${serviceId}`, {}, { loading: false });
+};
+
+export const getRemoteInterfaces = (serviceId: number, params: ReqRemoteInterfaceList) => {
+	return http.get<ResRemoteInterfaceList>(`/remote/${serviceId}/interface`, params, {
+		loading: false
+	});
+};
+
+export const getRemoteInterface = (serviceId: number, interfaceId: number) => {
+	return http.get<ResRemoteInterfaceDetail>(
+		`/remote/${serviceId}/interface/${interfaceId}`,
+		{},
+		{ loading: false }
+	);
 };
 
 export const createRemoteInterface = (serviceId: number, data: ReqCreateRemoteInterface) => {
