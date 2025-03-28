@@ -234,7 +234,7 @@ const ServiceDetail: React.FC<ServiceDetailProps> = ({ service }) => {
 					<Tabs items={items} />
 				</Card>
 			</div>
-			<InterfaceModal ref={interfaceModalRef} />
+			<InterfaceModal ref={interfaceModalRef} onSave={fetchServiceDetail} />
 		</>
 	);
 };
