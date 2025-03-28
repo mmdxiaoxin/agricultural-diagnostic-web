@@ -6,8 +6,19 @@ export interface RemoteService {
 	serviceType: string; // 服务类型
 	description: string; // 服务描述
 	status: "active" | "inactive" | "under_maintenance"; // 服务状态
-	configs: object[]; // 服务配置
+	configs: RemoteConfig[]; // 服务配置
 	interfaces: RemoteInterface[];
+	createdAt: string; // 创建时间
+	updatedAt: string; // 更新时间
+}
+
+export interface RemoteConfig {
+	id: number; // 配置ID
+	name: string; // 配置名称
+	description: string; // 配置描述
+	status: "active" | "inactive"; // 配置状态
+	config: object; // 配置内容
+	serviceId: number; // 服务ID
 	createdAt: string; // 创建时间
 	updatedAt: string; // 更新时间
 }

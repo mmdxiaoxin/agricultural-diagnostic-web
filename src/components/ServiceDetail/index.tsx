@@ -1,11 +1,7 @@
-import { RemoteInterface, RemoteService } from "@/api/interface";
-import {
-	createRemoteInterface,
-	getRemote,
-	removeRemoteInterface,
-	updateRemote
-} from "@/api/modules";
+import { RemoteConfig, RemoteInterface, RemoteService } from "@/api/interface";
+import { getRemote, removeRemoteInterface, updateRemote } from "@/api/modules";
 import MonacoEditor from "@/components/Editor";
+import ConfigModal, { ConfigModalRef } from "@/components/Modal/ConfigModal";
 import InterfaceModal, { InterfaceModalRef } from "@/components/Modal/InterfaceModal";
 import { StatusMapper } from "@/constants";
 import { PlusOutlined, ReloadOutlined } from "@ant-design/icons";
@@ -28,12 +24,13 @@ export type ServiceDetailProps = {
 };
 
 const ServiceDetail: React.FC<ServiceDetailProps> = ({ service }) => {
-	const [configs, setConfigs] = useState<any[]>([]);
+	const [configs, setConfigs] = useState<RemoteConfig[]>([]);
 	const [interfaces, setInterfaces] = useState<RemoteInterface[]>([]);
 	const [initLoading, setInitLoading] = useState(false);
 	const [saveLoading, setSaveLoading] = useState(false);
 	const [isEditing, setIsEditing] = useState(false);
 	const interfaceModalRef = useRef<InterfaceModalRef>(null);
+	const configModalRef = useRef<ConfigModalRef>(null);
 
 	const fetchServiceDetail = async () => {
 		if (service?.id) {
@@ -68,6 +65,91 @@ const ServiceDetail: React.FC<ServiceDetailProps> = ({ service }) => {
 			setSaveLoading(false);
 		}
 	};
+
+	const handleAddConfig = () => {
+		configModalRef.current?.open("create");
+	};
+
+	const handleEditConfig = (record: RemoteConfig) => {
+		configModalRef.current?.open("edit", record);
+	};
+
+	const handleDeleteConfig = async (id: number) => {
+		if (!service?.id) return;
+		try {
+			const newConfigs = configs.filter(config => config.id !== id);
+			await updateRemote(service.id, { configs: newConfigs });
+			message.success("删除配置成功");
+			fetchServiceDetail();
+		} catch (error) {
+			message.error("删除配置失败");
+		}
+	};
+
+	const handleConfigSave = async (values: any) => {
+		if (!service?.id) return;
+		try {
+			const newConfigs = [...configs];
+			if (values.id) {
+				// 编辑模式
+				const index = newConfigs.findIndex(config => config.id === values.id);
+				if (index !== -1) {
+					newConfigs[index] = { ...newConfigs[index], ...values };
+				}
+			} else {
+				// 创建模式
+				newConfigs.push({
+					...values,
+					id: Date.now(), // 临时ID，实际应该由后端生成
+					serviceId: service.id
+				});
+			}
+			await updateRemote(service.id, { configs: newConfigs });
+			message.success(values.id ? "更新配置成功" : "添加配置成功");
+			fetchServiceDetail();
+		} catch (error) {
+			message.error(values.id ? "更新配置失败" : "添加配置失败");
+		}
+	};
+
+	const configColumns = [
+		{
+			title: "配置名称",
+			dataIndex: "name",
+			key: "name"
+		},
+		{
+			title: "配置描述",
+			dataIndex: "description",
+			key: "description"
+		},
+		{
+			title: "状态",
+			dataIndex: "status",
+			key: "status",
+			render: (status: string) => (
+				<Tag color={status === "active" ? "success" : "error"}>
+					{status === "active" ? "启用" : "禁用"}
+				</Tag>
+			)
+		},
+		{
+			title: "操作",
+			key: "action",
+			render: (_: any, record: RemoteConfig) => (
+				<Space>
+					<Button type="link" onClick={() => handleEditConfig(record)}>
+						编辑
+					</Button>
+					<Popconfirm title="确认删除此配置？" onConfirm={() => handleDeleteConfig(record.id)}>
+						<Button type="link" danger>
+							删除
+						</Button>
+					</Popconfirm>
+				</Space>
+			)
+		}
+	];
 
 	const handleAddInterface = () => {
 		interfaceModalRef.current?.open("create", undefined, service?.id);
@@ -141,39 +223,17 @@ const ServiceDetail: React.FC<ServiceDetailProps> = ({ service }) => {
 									className="hover:bg-gray-100"
 								/>
 							</Tooltip>
-							{isEditing ? (
-								<>
-									<Button onClick={() => setIsEditing(false)}>取消</Button>
-									<Button type="primary" onClick={handleSave} loading={saveLoading}>
-										保存
-									</Button>
-								</>
-							) : (
-								<Button type="primary" onClick={() => setIsEditing(true)}>
-									编辑配置
-								</Button>
-							)}
+							<Button type="primary" icon={<PlusOutlined />} onClick={handleAddConfig}>
+								添加配置
+							</Button>
 						</Space>
 					</div>
-					<MonacoEditor
-						language="json"
-						value={JSON.stringify(configs, null, 2)}
-						onChange={value => {
-							if (isEditing) {
-								try {
-									setConfigs(JSON.parse(value));
-								} catch (e) {
-									// 忽略 JSON 解析错误
-								}
-							}
-						}}
-						options={{
-							readOnly: !isEditing,
-							minimap: { enabled: true },
-							fontSize: 14,
-							wordWrap: "on",
-							scrollBeyondLastLine: false
-						}}
+					<Table
+						columns={configColumns}
+						dataSource={configs}
+						rowKey="id"
+						pagination={false}
+						loading={initLoading}
 					/>
 				</Card>
 			)
@@ -235,6 +295,7 @@ const ServiceDetail: React.FC<ServiceDetailProps> = ({ service }) => {
 				</Card>
 			</div>
 			<InterfaceModal ref={interfaceModalRef} onSave={fetchServiceDetail} />
+			<ConfigModal ref={configModalRef} onSave={handleConfigSave} />
 		</>
 	);
 };
