@@ -1,6 +1,9 @@
-import { Button, message, Tooltip } from "antd";
+import { message, Tooltip, Typography } from "antd";
+import clsx from "clsx";
 import copy from "copy-to-clipboard";
 import React from "react";
+
+const { Paragraph } = Typography;
 
 export type QuickCopyProps = {
 	text: string;
@@ -22,9 +25,13 @@ const QuickCopy: React.FC<QuickCopyProps> = ({ text }) => {
 
 	return (
 		<Tooltip title="点击复制">
-			<Button type="link" onClick={copyToClipboard}>
+			<Paragraph
+				onClick={copyToClipboard}
+				ellipsis={{ rows: 1, expandable: true }}
+				className={clsx("text-blue-500 cursor-pointer hover:text-blue-600", "!mb-0")}
+			>
 				{text}
-			</Button>
+			</Paragraph>
 		</Tooltip>
 	);
 };

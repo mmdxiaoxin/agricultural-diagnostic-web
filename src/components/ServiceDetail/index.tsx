@@ -21,7 +21,9 @@ import {
 	Tooltip,
 	Typography
 } from "antd";
+import { ColumnsType } from "antd/es/table";
 import React, { useEffect, useRef, useState } from "react";
+import QuickCopy from "../Table/QuickCopy";
 
 export type ServiceDetailProps = {
 	service?: RemoteService;
@@ -75,7 +77,7 @@ const ServiceDetail: React.FC<ServiceDetailProps> = ({ service }) => {
 		}
 	};
 
-	const configColumns = [
+	const configColumns: ColumnsType<RemoteConfig> = [
 		{
 			title: "配置名称",
 			dataIndex: "name",
@@ -99,7 +101,7 @@ const ServiceDetail: React.FC<ServiceDetailProps> = ({ service }) => {
 		{
 			title: "操作",
 			key: "action",
-			render: (_: any, record: RemoteConfig) => (
+			render: (_, record) => (
 				<Space>
 					<Button type="link" onClick={() => handleEditConfig(record)}>
 						编辑
@@ -133,7 +135,7 @@ const ServiceDetail: React.FC<ServiceDetailProps> = ({ service }) => {
 		}
 	};
 
-	const interfaceColumns = [
+	const interfaceColumns: ColumnsType<RemoteInterface> = [
 		{
 			title: "接口名称",
 			dataIndex: "name",
@@ -147,12 +149,13 @@ const ServiceDetail: React.FC<ServiceDetailProps> = ({ service }) => {
 		{
 			title: "接口地址",
 			dataIndex: "url",
-			key: "url"
+			key: "url",
+			render: text => <QuickCopy text={text} />
 		},
 		{
 			title: "操作",
 			key: "action",
-			render: (_: any, record: RemoteInterface) => (
+			render: (_, record) => (
 				<Space>
 					<Button type="link" onClick={() => handleEditInterface(record)}>
 						编辑
@@ -191,7 +194,7 @@ const ServiceDetail: React.FC<ServiceDetailProps> = ({ service }) => {
 							</Button>
 						</Space>
 					</div>
-					<Table
+					<Table<RemoteConfig>
 						columns={configColumns}
 						dataSource={configs}
 						rowKey="id"
@@ -224,7 +227,7 @@ const ServiceDetail: React.FC<ServiceDetailProps> = ({ service }) => {
 							</Button>
 						</Space>
 					</div>
-					<Table
+					<Table<RemoteInterface>
 						columns={interfaceColumns}
 						dataSource={interfaces}
 						rowKey="id"
