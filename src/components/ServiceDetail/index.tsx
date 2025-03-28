@@ -1,5 +1,5 @@
 import { RemoteService, AiServiceConfig } from "@/api/interface";
-import { getServiceDetail, updateConfigs } from "@/api/modules";
+import { getRemote, updateRemoteInterface } from "@/api/modules";
 import {
 	Button,
 	Form,
@@ -80,7 +80,7 @@ const ServiceDetail: React.FC<ServiceDetailProps> = ({ service, onSave }) => {
 		if (service?.id) {
 			try {
 				setInitLoading(true);
-				const response = await getServiceDetail(service.id);
+				const response = await getRemote(service.id);
 				const newConfigs = response.data?.aiServiceConfigs || [];
 				setConfigs(newConfigs);
 				setOriginalConfigs(newConfigs);
@@ -163,7 +163,7 @@ const ServiceDetail: React.FC<ServiceDetailProps> = ({ service, onSave }) => {
 			setSaveLoading(true);
 			if (service?.id) {
 				const filteredConfigs = configs.map(({ configId, ...rest }) => rest);
-				await updateConfigs(service.id, { configs: filteredConfigs });
+				await updateRemoteInterface(service.id, { configs: filteredConfigs });
 				message.success("保存成功");
 				onSave?.(service);
 				fetchServiceDetail();

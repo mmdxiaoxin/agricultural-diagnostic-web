@@ -1,51 +1,55 @@
 import http from "@/api";
 import {
-	ReqAddConfigs,
+	ReqCreateRemoteInterface,
+	ReqCreateRemoteService,
 	ReqRemoteServiceList,
-	ReqCreateAiService,
-	ReqUpdateAiService,
-	ReqUpdateConfigs,
+	ReqUpdateRemoteService,
 	ResRemoteService,
 	ResRemoteServiceDetail,
 	ResRemoteServiceList
 } from "@/api/interface/service";
+import { ReqUpdateRemoteInterface } from "./../interface/service";
 
-export const getServiceList = (params: ReqRemoteServiceList) => {
-	return http.get<ResRemoteServiceList>("/ai-service/list", params, { loading: false });
+export const getRemotesList = (params: ReqRemoteServiceList) => {
+	return http.get<ResRemoteServiceList>("/remote/list", params, { loading: false });
 };
 
-export const getService = () => {
-	return http.get<ResRemoteService>("/ai-service", {}, { loading: false });
+export const getRemotes = () => {
+	return http.get<ResRemoteService>("/remote", {}, { loading: false });
 };
 
-export const getServiceDetail = (serviceId: number | string) => {
-	return http.get<ResRemoteServiceDetail>(`/ai-service/${serviceId}`, {}, { loading: false });
+export const getRemote = (serviceId: number | string) => {
+	return http.get<ResRemoteServiceDetail>(`/remote/${serviceId}`, {}, { loading: false });
 };
 
-export const createService = (data: ReqCreateAiService) => {
-	return http.post<null>("/ai-service", data, { loading: false });
+export const createRemote = (data: ReqCreateRemoteService) => {
+	return http.post<null>("/remote", data, { loading: false });
 };
 
-export const updateService = (serviceId: number, data: ReqUpdateAiService) => {
-	return http.put<null>(`/ai-service/${serviceId}`, data, { loading: false });
+export const copyRemote = (serviceId: number) => {
+	return http.post<ResRemoteServiceDetail>(`/remote/${serviceId}/copy`, {}, { loading: false });
 };
 
-export const deleteService = (serviceId: number) => {
-	return http.delete(`/ai-service/${serviceId}`, {}, { loading: false });
+export const updateRemote = (serviceId: number, data: ReqUpdateRemoteService) => {
+	return http.put<null>(`/remote/${serviceId}`, data, { loading: false });
 };
 
-export const addConfigs = (serviceId: number, data: ReqAddConfigs) => {
-	return http.post(`/ai-service/${serviceId}/configs`, data, { loading: false });
+export const remoteRemote = (serviceId: number) => {
+	return http.delete(`/remote/${serviceId}`, {}, { loading: false });
 };
 
-export const updateConfigs = (serviceId: number, data: ReqUpdateConfigs) => {
-	return http.put(`/ai-service/${serviceId}/configs`, data, { loading: false });
+export const createRemoteInterface = (serviceId: number, data: ReqCreateRemoteInterface) => {
+	return http.post(`/remote/${serviceId}/interface`, data, { loading: false });
 };
 
-export const deleteConfig = (serviceId: number, configId: number) => {
-	return http.delete(`/ai-service/${serviceId}/config/${configId}`, {}, { loading: false });
+export const updateRemoteInterface = (
+	serviceId: number,
+	interfaceId: number,
+	data: ReqUpdateRemoteInterface
+) => {
+	return http.put(`/remote/${serviceId}/interface/${interfaceId}`, data, { loading: false });
 };
 
-export const copyService = (serviceId: number) => {
-	return http.post<ResRemoteServiceDetail>(`/ai-service/${serviceId}/copy`, {}, { loading: false });
+export const removeRemoteInterface = (serviceId: number, interfaceId: number) => {
+	return http.delete(`/remote/${serviceId}/interface/${interfaceId}`, {}, { loading: false });
 };

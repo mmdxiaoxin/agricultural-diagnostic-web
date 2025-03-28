@@ -1,5 +1,5 @@
 import { RemoteService } from "@/api/interface/service";
-import { copyService, deleteService, getServiceList } from "@/api/modules";
+import { copyRemote, remoteRemote, getRemotesList } from "@/api/modules";
 import ServiceModal, { ServiceModalRef } from "@/components/Modal/ServiceModal";
 import QuickCopy from "@/components/Table/QuickCopy";
 import { StatusMapper } from "@/constants";
@@ -26,7 +26,7 @@ const ServiceManage: React.FC = () => {
 	const navigate = useNavigate();
 
 	const fetchServices = async (page: number = 1, pageSize: number = 10) => {
-		const response = await getServiceList({ page, pageSize });
+		const response = await getRemotesList({ page, pageSize });
 		if (response.code === 200 && response.data) {
 			setServices(response.data.list || []);
 			setTotal(response.data.total || 0);
@@ -47,7 +47,7 @@ const ServiceManage: React.FC = () => {
 
 	const handleDeleteService = async (serviceId: number) => {
 		try {
-			await deleteService(serviceId);
+			await remoteRemote(serviceId);
 			setPagination({
 				...pagination,
 				page: 1
@@ -61,7 +61,7 @@ const ServiceManage: React.FC = () => {
 
 	const handleCopyService = async (serviceId: number) => {
 		try {
-			await copyService(serviceId);
+			await copyRemote(serviceId);
 			fetchServices(pagination.page, pagination.pageSize);
 			message.success("复制服务成功");
 		} catch (error) {

@@ -1,5 +1,5 @@
 import { RemoteService } from "@/api/interface";
-import { getServiceList } from "@/api/modules";
+import { getRemotesList } from "@/api/modules";
 import { Avatar, Button, Flex, List, Skeleton, Tooltip, Typography } from "antd";
 import clsx from "clsx";
 import React, { useEffect, useMemo, useState } from "react";
@@ -32,7 +32,7 @@ const ServiceList: React.FC<ServiceListProps> = ({ onSelect, selected }) => {
 		setLoading(true);
 		setServiceList(prevList => prevList.concat(Array(pageSize).fill({ loading: true })));
 		const nextPage = currentPage + 1;
-		getServiceList({ page: nextPage, pageSize })
+		getRemotesList({ page: nextPage, pageSize })
 			.then(response => {
 				if (response.code === 200 && response.data) {
 					const newServiceList = serviceList.concat(
@@ -72,7 +72,7 @@ const ServiceList: React.FC<ServiceListProps> = ({ onSelect, selected }) => {
 		setInitLoading(true);
 		try {
 			setServiceList(Array(pageSize).fill({ loading: true }));
-			const response = await getServiceList({ page: 1, pageSize });
+			const response = await getRemotesList({ page: 1, pageSize });
 			if (response.code === 200 && response.data) {
 				setServiceList(
 					response.data.list.map((service: RemoteService) => ({ ...service, loading: false })) || []

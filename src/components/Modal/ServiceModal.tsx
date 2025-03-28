@@ -1,4 +1,4 @@
-import { createService, updateService } from "@/api/modules";
+import { createRemote, updateRemote } from "@/api/modules";
 import { Button, Form, Input, message, Modal, Select } from "antd";
 import { forwardRef, useImperativeHandle, useState } from "react";
 
@@ -38,8 +38,7 @@ const ServiceModal = forwardRef<ServiceModalRef, ServiceModalProps>(({ onCancel,
 	}) => {
 		const { serviceId, ...rest } = values;
 		setSaveLoading(true);
-		const submitValues =
-			modalMode === "edit" ? updateService(serviceId, rest) : createService(rest);
+		const submitValues = modalMode === "edit" ? updateRemote(serviceId, rest) : createRemote(rest);
 		submitValues
 			.then(() => {
 				handleClose();
