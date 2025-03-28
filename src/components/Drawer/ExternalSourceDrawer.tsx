@@ -1,5 +1,6 @@
 import { LinkOutlined } from "@ant-design/icons";
 import { Button, Drawer, List, message, Typography } from "antd";
+import copy from "copy-to-clipboard";
 import { forwardRef, useImperativeHandle, useState } from "react";
 
 const { Paragraph } = Typography;
@@ -45,6 +46,19 @@ const ExternalSourceDrawer = forwardRef<ExternalSourceDrawerRef, ExternalSourceD
 			handleClose();
 		};
 
+		const copyToClipboard = (text: string) => {
+			try {
+				const success = copy(text);
+				if (success) {
+					message.success("URL已复制到剪贴板");
+				} else {
+					message.error("复制失败");
+				}
+			} catch (err) {
+				message.error("复制失败");
+			}
+		};
+
 		return (
 			<Drawer
 				title="第三方病害知识库来源"
@@ -76,16 +90,7 @@ const ExternalSourceDrawer = forwardRef<ExternalSourceDrawerRef, ExternalSourceD
 								}
 								description={
 									<Paragraph
-										onClick={() => {
-											navigator.clipboard
-												.writeText(item.url)
-												.then(() => {
-													message.success("URL已复制到剪贴板");
-												})
-												.catch(() => {
-													message.error("复制失败");
-												});
-										}}
+										onClick={() => copyToClipboard(item.url)}
 										ellipsis={{ rows: 1, expandable: true }}
 										className="text-blue-400 cursor-pointer hover:text-blue-500"
 									>
