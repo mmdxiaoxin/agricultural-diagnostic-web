@@ -188,7 +188,7 @@ const DiseaseDiagnose: React.FC<DiseaseDiagnoseProps> = ({ onPredict }) => {
 									src={previewUrl}
 									alt="Detect结果"
 									className="max-h-[300px] rounded-lg shadow-sm"
-									predictions={detectionResults.predictions}
+									predictions={detectionResults?.predictions || []}
 								/>
 							) : (
 								<Image
@@ -239,7 +239,7 @@ const DiseaseDiagnose: React.FC<DiseaseDiagnoseProps> = ({ onPredict }) => {
 				{detectionResults && (
 					<Card title="检测结果" size="small" className="bg-gray-50">
 						<Space direction="vertical" className="w-full" size="middle">
-							{detectionResults.predictions.map((prediction, index) => (
+							{detectionResults?.predictions?.map((prediction, index) => (
 								<React.Fragment key={index}>
 									{prediction.type === "classify" && renderClassifyResult(prediction)}
 									{prediction.type === "detect" && renderDetectResult(prediction)}

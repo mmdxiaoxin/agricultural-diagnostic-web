@@ -92,7 +92,7 @@ const DiagnosisDetailModal = forwardRef<DiagnosisDetailModalRef>((_, ref) => {
 							</Text>
 							{record.diagnosisResult ? (
 								<div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-									{record.diagnosisResult.predictions.map((prediction, index) => (
+									{record.diagnosisResult?.predictions?.map((prediction, index) => (
 										<div
 											key={index}
 											className="bg-white p-2 rounded-md border border-gray-100 shadow-sm hover:shadow-md transition-shadow"

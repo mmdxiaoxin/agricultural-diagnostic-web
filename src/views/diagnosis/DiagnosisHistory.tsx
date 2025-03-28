@@ -174,19 +174,12 @@ const DiagnosisHistoryPage: React.FC = () => {
 				const predictions = diagnosisResult.predictions;
 
 				// 生成完整的结果文本
-				const fullResult = predictions
-					.map(
-						prediction =>
-							`${prediction.type === "classify" ? "分类" : "检测"}: ${prediction.class_name} (${(prediction.confidence * 100).toFixed(2)}%)`
-					)
-					.join("\n");
-
-				// 如果预测结果超过2个，则只显示前2个
-				const displayPredictions = predictions.slice(0, 2);
-				const hasMore = predictions.length > 2;
+				const fullResult = predictions || [];
+				const displayPredictions = (predictions || []).slice(0, 2);
+				const hasMore = (predictions || []).length > 2;
 
 				return (
-					<Tooltip title={hasMore ? fullResult : null}>
+					<Tooltip title={hasMore ? fullResult.join("\n") : null}>
 						<Space direction="vertical" size={0}>
 							{displayPredictions.map((prediction, index) => (
 								<Text key={index} className="text-gray-700">
@@ -196,7 +189,7 @@ const DiagnosisHistoryPage: React.FC = () => {
 							))}
 							{hasMore && (
 								<Text type="secondary" className="text-xs">
-									等 {predictions.length} 个结果...
+									等 {(predictions || []).length} 个结果...
 								</Text>
 							)}
 						</Space>
@@ -277,7 +270,7 @@ const DiagnosisHistoryPage: React.FC = () => {
 	const filteredData = data.filter(item => {
 		const searchLower = searchText.toLowerCase();
 		return (
-			item.diagnosisResult?.predictions.some(prediction =>
+			item.diagnosisResult?.predictions?.some(prediction =>
 				prediction.class_name.toLowerCase().includes(searchLower)
 			) || dayjs(item.createdAt).format("YYYY-MM-DD HH:mm:ss").includes(searchLower)
 		);

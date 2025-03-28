@@ -151,7 +151,7 @@ const DiagnosisList = forwardRef<DiagnosisListRef, DiagnosisListProps>((_, ref) 
 				confidence: 0
 			};
 		}
-		const prediction = item.diagnosisResult.predictions[0];
+		const prediction = item.diagnosisResult?.predictions?.[0];
 		return {
 			className: prediction?.class_name || "未知",
 			confidence: prediction?.confidence || 0

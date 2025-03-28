@@ -52,7 +52,7 @@ export type ReqStartDiagnoseDisease = {
 
 // 响应类型
 export type ResStartDiagnoseDisease = {
-	predictions: Prediction[];
+	predictions?: Prediction[];
 };
 export type ResUploadDiagnosisImage = DiagnosisHistory;
 export type ResDiagnosisHistoryList = PageData<DiagnosisHistory>;
