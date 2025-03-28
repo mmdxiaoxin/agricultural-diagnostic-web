@@ -1,9 +1,9 @@
-import { RemoteService, RemoteInterface } from "@/api/interface";
+import { RemoteInterface, RemoteService } from "@/api/interface";
 import {
-	getRemote,
-	updateRemote,
 	createRemoteInterface,
-	removeRemoteInterface
+	getRemote,
+	removeRemoteInterface,
+	updateRemote
 } from "@/api/modules";
 import MonacoEditor from "@/components/Editor";
 import InterfaceModal, { InterfaceModalRef } from "@/components/Modal/InterfaceModal";
@@ -25,10 +25,9 @@ import React, { useEffect, useRef, useState } from "react";
 
 export type ServiceDetailProps = {
 	service?: RemoteService;
-	onSave?: (service: RemoteService) => void;
 };
 
-const ServiceDetail: React.FC<ServiceDetailProps> = ({ service, onSave }) => {
+const ServiceDetail: React.FC<ServiceDetailProps> = ({ service }) => {
 	const [configs, setConfigs] = useState<any[]>([]);
 	const [interfaces, setInterfaces] = useState<RemoteInterface[]>([]);
 	const [initLoading, setInitLoading] = useState(false);
