@@ -1,10 +1,10 @@
 import { RemoteService } from "@/api/interface";
 import ServiceList from "@/components/List/ServiceList";
 import ServiceDetail from "@/components/ServiceDetail";
-import { Empty, Splitter, Button, Tooltip } from "antd";
-import { FullscreenOutlined, FullscreenExitOutlined } from "@ant-design/icons";
+import { CaretDownOutlined, CaretUpOutlined } from "@ant-design/icons";
+import { Button, Empty, Splitter, Tooltip } from "antd";
 import clsx from "clsx";
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 const ServiceConfig: React.FC = () => {
 	const [service, setService] = useState<RemoteService>();
@@ -24,55 +24,10 @@ const ServiceConfig: React.FC = () => {
 				console.error("解析选中的服务信息失败:", error);
 			}
 		}
-
-		// 监听全屏变化事件
-		const handleFullscreenChange = () => {
-			setIsFullscreen(!!document.fullscreenElement);
-		};
-
-		document.addEventListener("fullscreenchange", handleFullscreenChange);
-		document.addEventListener("webkitfullscreenchange", handleFullscreenChange);
-		document.addEventListener("mozfullscreenchange", handleFullscreenChange);
-		document.addEventListener("MSFullscreenChange", handleFullscreenChange);
-
-		return () => {
-			document.removeEventListener("fullscreenchange", handleFullscreenChange);
-			document.removeEventListener("webkitfullscreenchange", handleFullscreenChange);
-			document.removeEventListener("mozfullscreenchange", handleFullscreenChange);
-			document.removeEventListener("MSFullscreenChange", handleFullscreenChange);
-		};
 	}, []);
 
-	const toggleFullscreen = async () => {
-		if (!containerRef.current) return;
-
-		try {
-			if (!isFullscreen) {
-				// 进入全屏
-				if (containerRef.current.requestFullscreen) {
-					await containerRef.current.requestFullscreen();
-				} else if ((containerRef.current as any).webkitRequestFullscreen) {
-					await (containerRef.current as any).webkitRequestFullscreen();
-				} else if ((containerRef.current as any).mozRequestFullScreen) {
-					await (containerRef.current as any).mozRequestFullScreen();
-				} else if ((containerRef.current as any).msRequestFullscreen) {
-					await (containerRef.current as any).msRequestFullscreen();
-				}
-			} else {
-				// 退出全屏
-				if (document.exitFullscreen) {
-					await document.exitFullscreen();
-				} else if ((document as any).webkitExitFullscreen) {
-					await (document as any).webkitExitFullscreen();
-				} else if ((document as any).mozCancelFullScreen) {
-					await (document as any).mozCancelFullScreen();
-				} else if ((document as any).msExitFullscreen) {
-					await (document as any).msExitFullscreen();
-				}
-			}
-		} catch (error) {
-			console.error("全屏切换失败:", error);
-		}
+	const toggleFullscreen = () => {
+		setIsFullscreen(!isFullscreen);
 	};
 
 	return (
@@ -86,43 +41,45 @@ const ServiceConfig: React.FC = () => {
 				"overflow-hidden"
 			)}
 		>
-			<div
-				className={clsx(
-					"flex flex-col gap-6",
-					"mb-6 p-6",
-					"rounded-2xl",
-					"bg-white",
-					"shadow-sm",
-					"border border-gray-100",
-					"transition-all duration-300",
-					"hover:shadow-md"
-				)}
-			>
-				<div className="flex justify-between items-center">
-					<div className="flex flex-col">
-						<h2 className="text-2xl font-semibold text-gray-800 mb-2">服务配置</h2>
-						<p className="text-gray-500">
-							{service ? `当前选择: ${service.serviceName}` : "请选择一个服务进行配置"}
-						</p>
-					</div>
-					{service && (
-						<Tooltip title={isFullscreen ? "退出全屏" : "全屏显示"}>
-							<Button
-								type="text"
-								icon={isFullscreen ? <FullscreenExitOutlined /> : <FullscreenOutlined />}
-								onClick={toggleFullscreen}
-								className="hover:bg-gray-100"
-							/>
-						</Tooltip>
+			{!isFullscreen && (
+				<div
+					className={clsx(
+						"flex flex-col gap-6",
+						"mb-6 p-6",
+						"rounded-2xl",
+						"bg-white",
+						"shadow-sm",
+						"border border-gray-100",
+						"transition-all duration-300",
+						"hover:shadow-md"
 					)}
+				>
+					<div className="flex justify-between items-center">
+						<div className="flex flex-col">
+							<h2 className="text-2xl font-semibold text-gray-800 mb-2">服务配置</h2>
+							<p className="text-gray-500">
+								{service ? `当前选择: ${service.serviceName}` : "请选择一个服务进行配置"}
+							</p>
+						</div>
+						{service && (
+							<Tooltip title={isFullscreen ? "展开" : "折叠"}>
+								<Button
+									type="text"
+									icon={isFullscreen ? <CaretDownOutlined /> : <CaretUpOutlined />}
+									onClick={toggleFullscreen}
+									className="hover:bg-gray-100"
+								/>
+							</Tooltip>
+						)}
+					</div>
 				</div>
-			</div>
+			)}
 
 			<div
 				ref={containerRef}
 				className={clsx(
 					"flex-1 bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden relative",
-					isFullscreen && "fixed inset-0 z-50 m-0 rounded-none"
+					isFullscreen && "fixed inset-0 z-50 m-0 rounded-none transform scale-100"
 				)}
 			>
 				{isFullscreen && (
@@ -133,10 +90,10 @@ const ServiceConfig: React.FC = () => {
 								{service ? `当前选择: ${service.serviceName}` : "请选择一个服务进行配置"}
 							</p>
 						</div>
-						<Tooltip title="退出全屏">
+						<Tooltip title="展开">
 							<Button
 								type="text"
-								icon={<FullscreenExitOutlined />}
+								icon={<CaretDownOutlined />}
 								onClick={toggleFullscreen}
 								className="hover:bg-gray-100"
 							/>

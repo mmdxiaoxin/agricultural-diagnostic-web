@@ -19,7 +19,7 @@ const MonacoEditor: React.FC<MonacoEditorProps> = ({
 	value,
 	onChange,
 	language = "javascript",
-	theme = "vs-dark",
+	theme = "light",
 	options = {
 		minimap: { enabled: true },
 		fontSize: 14,

@@ -225,27 +225,28 @@ const ServiceDetail: React.FC<ServiceDetailProps> = ({ service }) => {
 	];
 
 	return (
-		<div className="h-full flex flex-col p-6">
-			<Card
-				className="mb-6"
-				title={
-					<div className="flex items-center justify-between">
-						<div className="flex items-center gap-4">
-							<Typography.Title level={4} className="!m-0">
-								{service?.serviceName}
-							</Typography.Title>
-							<Tag color={service?.status === "active" ? "success" : "error"}>
-								{StatusMapper[service?.status || "inactive"]}
-							</Tag>
+		<>
+			<div className="h-full flex flex-col p-6">
+				<Card
+					className="mb-6"
+					title={
+						<div className="flex items-center justify-between">
+							<div className="flex items-center gap-4">
+								<Typography.Title level={4} className="!m-0">
+									{service?.serviceName}
+								</Typography.Title>
+								<Tag color={service?.status === "active" ? "success" : "error"}>
+									{StatusMapper[service?.status || "inactive"]}
+								</Tag>
+							</div>
 						</div>
-					</div>
-				}
-			>
-				<Tabs items={items} />
-			</Card>
-
+					}
+				>
+					<Tabs items={items} />
+				</Card>
+			</div>
 			<InterfaceModal ref={interfaceModalRef} onSave={handleInterfaceSave} />
-		</div>
+		</>
 	);
 };
 

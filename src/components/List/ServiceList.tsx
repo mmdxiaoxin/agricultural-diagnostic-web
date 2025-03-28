@@ -92,7 +92,7 @@ const ServiceList: React.FC<ServiceListProps> = ({ onSelect, selected }) => {
 
 	return (
 		<List
-			rowKey={"serviceId"}
+			rowKey={"id"}
 			header={
 				<Flex align="center" justify="space-between">
 					<Typography.Title level={4}>AI 服务列表</Typography.Title>
