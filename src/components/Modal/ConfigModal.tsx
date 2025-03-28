@@ -1,12 +1,13 @@
-import { RemoteConfig } from "@/api/interface";
+import { RemoteConfig, RemoteInterface } from "@/api/interface";
 import { createRemoteConfig, updateRemoteConfig } from "@/api/modules";
+import MonacoEditor from "@/components/Editor";
 import { Button, Form, Input, Modal, Select, Space, message } from "antd";
 import { forwardRef, useImperativeHandle, useState } from "react";
-import MonacoEditor from "@/components/Editor";
+import InterfaceListModal from "./InterfaceListModal";
 
 export type ConfigModalProps = {
-	serviceId?: number;
 	onSuccess?: () => void;
+	interfaces?: RemoteInterface[];
 };
 
 export type ConfigModalRef = {
@@ -15,12 +16,14 @@ export type ConfigModalRef = {
 };
 
 const ConfigModal = forwardRef<ConfigModalRef, ConfigModalProps>(
-	({ serviceId, onSuccess }, ref) => {
+	({ onSuccess, interfaces = [] }, ref) => {
 		const [form] = Form.useForm();
 		const [isModalVisible, setIsModalVisible] = useState(false);
 		const [modalMode, setModalMode] = useState<"create" | "edit">("create");
 		const [configContent, setConfigContent] = useState<string>("{}");
 		const [loading, setLoading] = useState(false);
+		const [interfaceModalVisible, setInterfaceModalVisible] = useState(false);
+		const [serviceId, setServiceId] = useState(0);
 
 		useImperativeHandle(
 			ref,
@@ -34,6 +37,8 @@ const ConfigModal = forwardRef<ConfigModalRef, ConfigModalProps>(
 		const handleOpen = (mode: "create" | "edit", values?: RemoteConfig) => {
 			setModalMode(mode);
 			setIsModalVisible(true);
+			setServiceId(values?.id || 0);
+
 			if (values) {
 				form.setFieldsValue(values);
 				try {
@@ -56,6 +61,7 @@ const ConfigModal = forwardRef<ConfigModalRef, ConfigModalProps>(
 			form.resetFields();
 			setConfigContent("{}");
 			setLoading(false);
+			setInterfaceModalVisible(false);
 		};
 
 		const handleSave = async (values: any) => {
@@ -131,6 +137,17 @@ const ConfigModal = forwardRef<ConfigModalRef, ConfigModalProps>(
 										]}
 									/>
 								</Form.Item>
+
+								{/* 接口列表按钮 */}
+								<Form.Item>
+									<Button
+										type="link"
+										onClick={() => setInterfaceModalVisible(true)}
+										className="px-0"
+									>
+										查看接口列表 ({interfaces.length})
+									</Button>
+								</Form.Item>
 							</div>
 
 							<div className="flex justify-end">
@@ -162,6 +179,11 @@ const ConfigModal = forwardRef<ConfigModalRef, ConfigModalProps>(
 						</div>
 					</div>
 				</Form>
+				<InterfaceListModal
+					visible={interfaceModalVisible}
+					onClose={() => setInterfaceModalVisible(false)}
+					interfaces={interfaces}
+				/>
 			</Modal>
 		);
 	}

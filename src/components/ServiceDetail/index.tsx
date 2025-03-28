@@ -261,7 +261,11 @@ const ServiceDetail: React.FC<ServiceDetailProps> = ({ service }) => {
 				</Card>
 			</div>
 			<InterfaceModal ref={interfaceModalRef} onSave={fetchServiceDetail} />
-			<ConfigModal ref={configModalRef} serviceId={service?.id} onSuccess={fetchServiceDetail} />
+			<ConfigModal
+				ref={configModalRef}
+				onSuccess={fetchServiceDetail}
+				interfaces={interfaces || []}
+			/>
 		</>
 	);
 };
