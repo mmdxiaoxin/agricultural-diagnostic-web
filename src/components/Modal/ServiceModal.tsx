@@ -28,15 +28,15 @@ const ServiceModal = forwardRef<ServiceModalRef, ServiceModalProps>(({ onCancel,
 	);
 
 	const handleSave = (values: {
-		serviceId: number;
+		id: number;
 		serviceName: string;
 		serviceType: string;
 		description: string;
 		status: "active" | "inactive" | "under_maintenance";
 	}) => {
-		const { serviceId, ...rest } = values;
+		const { id, ...rest } = values;
 		setSaveLoading(true);
-		const submitValues = modalMode === "edit" ? updateRemote(serviceId, rest) : createRemote(rest);
+		const submitValues = modalMode === "edit" ? updateRemote(id, rest) : createRemote(rest);
 		submitValues
 			.then(() => {
 				handleClose();
@@ -74,7 +74,7 @@ const ServiceModal = forwardRef<ServiceModalRef, ServiceModalProps>(({ onCancel,
 			width={600}
 		>
 			<Form form={form} onFinish={handleSave} layout="vertical">
-				<Form.Item name="serviceId" hidden />
+				<Form.Item name="id" hidden />
 				<Form.Item
 					label="服务名称"
 					name="serviceName"
