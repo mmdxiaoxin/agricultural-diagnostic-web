@@ -1,4 +1,5 @@
 import { Button, message, Tooltip } from "antd";
+import copy from "copy-to-clipboard";
 import React from "react";
 
 export type QuickCopyProps = {
@@ -7,14 +8,16 @@ export type QuickCopyProps = {
 
 const QuickCopy: React.FC<QuickCopyProps> = ({ text }) => {
 	const copyToClipboard = () => {
-		navigator.clipboard
-			.writeText(text)
-			.then(() => {
+		try {
+			const success = copy(text);
+			if (success) {
 				message.success("URL已复制到剪贴板");
-			})
-			.catch(() => {
+			} else {
 				message.error("复制失败");
-			});
+			}
+		} catch (err) {
+			message.error("复制失败");
+		}
 	};
 
 	return (
