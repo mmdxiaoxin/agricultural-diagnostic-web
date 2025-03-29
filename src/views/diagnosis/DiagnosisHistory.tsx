@@ -13,10 +13,10 @@ import DiagnosisDetailModal, {
 import { DeleteOutlined, ReloadOutlined, SearchOutlined, SelectOutlined } from "@ant-design/icons";
 import {
 	Button,
+	Cascader,
 	Input,
 	message,
 	Popconfirm,
-	Select,
 	Space,
 	Table,
 	Tag,
@@ -43,6 +43,7 @@ const DiagnosisHistoryPage: React.FC = () => {
 	const [searchText, setSearchText] = useState("");
 	const [serviceList, setServiceList] = useState<RemoteService[]>([]);
 	const [selectedServiceId, setSelectedServiceId] = useState<number>();
+	const [selectedConfigId, setSelectedConfigId] = useState<number>();
 	const [selectedRecord, setSelectedRecord] = useState<DiagnosisHistory | null>(null);
 	const modalRef = useRef<DiagnosisDetailModalRef>(null);
 
@@ -52,9 +53,12 @@ const DiagnosisHistoryPage: React.FC = () => {
 			const response = await getDiagnosisSupport();
 			if (response.code === 200 && response.data) {
 				setServiceList(response.data);
-				// 默认使用第一个服务
+				// 默认使用第一个服务和配置
 				if (response.data.length > 0) {
 					setSelectedServiceId(response.data[0].id);
+					if (response.data[0].configs.length > 0) {
+						setSelectedConfigId(response.data[0].configs[0].id);
+					}
 				}
 			}
 		} catch (error) {
@@ -120,12 +124,13 @@ const DiagnosisHistoryPage: React.FC = () => {
 
 	// 重新诊断
 	const handleReDiagnose = async (record: DiagnosisHistory) => {
-		if (!selectedServiceId) return;
+		if (!selectedServiceId || !selectedConfigId) return;
 
 		try {
 			await startDiagnosis({
 				diagnosisId: record.id,
-				serviceId: selectedServiceId
+				serviceId: selectedServiceId,
+				configId: selectedConfigId
 			});
 			message.success("诊断成功");
 			fetchDiagnosisHistory(pagination.current, pagination.pageSize);
@@ -134,6 +139,27 @@ const DiagnosisHistoryPage: React.FC = () => {
 			message.error("重新诊断失败");
 		}
 	};
+
+	// 处理级联选择器的变化
+	const handleCascaderChange = (value: (number | string)[]) => {
+		if (value.length === 2) {
+			setSelectedServiceId(value[0] as number);
+			setSelectedConfigId(value[1] as number);
+		} else {
+			setSelectedServiceId(undefined);
+			setSelectedConfigId(undefined);
+		}
+	};
+
+	// 构建级联选择器的选项
+	const cascaderOptions = serviceList.map(service => ({
+		value: service.id,
+		label: service.serviceName,
+		children: service.configs.map(config => ({
+			value: config.id,
+			label: config.name
+		}))
+	}));
 
 	// 处理服务选择确认
 	const handleServiceSelectOk = async () => {
@@ -215,14 +241,16 @@ const DiagnosisHistoryPage: React.FC = () => {
 						title="选择诊断服务"
 						description={
 							<div className="py-2">
-								<Select
-									value={selectedServiceId}
-									onChange={value => setSelectedServiceId(value)}
+								<Cascader
+									options={cascaderOptions}
+									onChange={handleCascaderChange}
+									placeholder="请选择诊断服务和配置"
 									className="w-full"
-									options={serviceList.map(service => ({
-										label: service.serviceName,
-										value: service.id
-									}))}
+									value={
+										selectedServiceId && selectedConfigId
+											? [selectedServiceId, selectedConfigId]
+											: undefined
+									}
 								/>
 							</div>
 						}
