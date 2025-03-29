@@ -27,6 +27,14 @@ export const startDiagnosis = async (params: ReqStartDiagnoseDisease) => {
 	});
 };
 
+// * 开始诊断（异步）
+export const startDiagnosisAsync = async (params: ReqStartDiagnoseDisease) => {
+	const { diagnosisId, ...data } = params;
+	return http.post<ResStartDiagnoseDisease>(`/diagnosis/${diagnosisId}/start/async`, data, {
+		loading: false
+	});
+};
+
 // * 获取诊断状态
 export const getDiagnosisStatus = async (id: number) => {
 	return http.get<any>(`/diagnosis/${id}/status`);

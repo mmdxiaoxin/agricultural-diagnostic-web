@@ -6,9 +6,9 @@ import {
 	Alert,
 	Button,
 	Card,
+	Cascader,
 	Image,
 	message,
-	Select,
 	Space,
 	Tag,
 	Typography,
@@ -33,7 +33,8 @@ const DiseaseDiagnose: React.FC<DiseaseDiagnoseProps> = ({ onPredict }) => {
 	const [loading, setLoading] = useState<boolean>(false);
 	const [error, setError] = useState<string | null>(null);
 	const [previewUrl, setPreviewUrl] = useState<string>("");
-	const [serviceId, setServiceId] = useState<number>(3);
+	const [serviceId, setServiceId] = useState<number>();
+	const [configId, setConfigId] = useState<number>();
 	const [serviceList, setServiceList] = useState<RemoteService[]>([]);
 
 	const fetchServiceList = async () => {
@@ -47,10 +48,36 @@ const DiseaseDiagnose: React.FC<DiseaseDiagnoseProps> = ({ onPredict }) => {
 		fetchServiceList();
 	}, []);
 
+	// 构建级联选择器的选项
+	const cascaderOptions = serviceList.map(service => ({
+		value: service.id,
+		label: service.serviceName,
+		children: service.configs.map(config => ({
+			value: config.id,
+			label: config.name
+		}))
+	}));
+
+	// 处理级联选择器的变化
+	const handleCascaderChange = (value: (number | string)[]) => {
+		if (value.length === 2) {
+			setServiceId(value[0] as number);
+			setConfigId(value[1] as number);
+		} else {
+			setServiceId(undefined);
+			setConfigId(undefined);
+		}
+	};
+
 	// 上传并预测
 	const handleUploadAndPredict = async () => {
 		if (!selectedImage) {
 			setError("请选择一张图片上传！");
+			return;
+		}
+
+		if (!serviceId || !configId) {
+			setError("请选择服务和配置！");
 			return;
 		}
 
@@ -65,7 +92,7 @@ const DiseaseDiagnose: React.FC<DiseaseDiagnoseProps> = ({ onPredict }) => {
 			const diagnosisId = uploadRes.data.id;
 
 			// * 开始诊断
-			const diagnoseRes = await startDiagnosis({ diagnosisId, serviceId });
+			const diagnoseRes = await startDiagnosis({ diagnosisId, serviceId, configId });
 			if (diagnoseRes.code !== 200 && diagnoseRes.code !== 201)
 				throw new Error("检测失败，请重试！");
 			setDetectionResults(diagnoseRes.data);
@@ -140,15 +167,12 @@ const DiseaseDiagnose: React.FC<DiseaseDiagnoseProps> = ({ onPredict }) => {
 	return (
 		<Card title="植物病害诊断" className="max-w-3xl">
 			<Space direction="vertical" className="w-full" size="large">
-				<Select
-					placeholder="请选择诊断服务"
-					options={serviceList.map(service => ({
-						label: service.serviceName,
-						value: service.id
-					}))}
+				<Cascader
+					options={cascaderOptions}
+					onChange={handleCascaderChange}
+					placeholder="请选择诊断服务和配置"
 					className="w-full"
-					onChange={setServiceId}
-					value={serviceId}
+					value={serviceId && configId ? [serviceId, configId] : undefined}
 				/>
 				{/* 图片选择与预览 */}
 				<Card size="small" className="bg-gray-50">
@@ -205,7 +229,7 @@ const DiseaseDiagnose: React.FC<DiseaseDiagnoseProps> = ({ onPredict }) => {
 				<Button
 					type="primary"
 					onClick={handleUploadAndPredict}
-					disabled={!selectedImage || loading}
+					disabled={!selectedImage || loading || !serviceId || !configId}
 					block
 					className={clsx(
 						"h-10",

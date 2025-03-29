@@ -1,4 +1,4 @@
-import { RemoteService, PageData, ReqPage } from ".";
+import { PageData, RemoteService, ReqPage } from ".";
 
 // 基础预测类型
 export type BasePrediction = {
@@ -48,6 +48,7 @@ export type ReqDiagnosisHistoryList = ReqPage;
 export type ReqStartDiagnoseDisease = {
 	diagnosisId: string | number;
 	serviceId: number;
+	configId: number;
 };
 
 // 响应类型
