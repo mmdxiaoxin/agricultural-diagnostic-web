@@ -315,7 +315,8 @@ const DiagnosisHistoryPage: React.FC = () => {
 				"p-6",
 				"rounded-2xl",
 				"flex flex-col",
-				"bg-gradient-to-br from-white to-gray-50"
+				"bg-gradient-to-br from-white to-gray-50",
+				"overflow-y-auto"
 			)}
 		>
 			<div
