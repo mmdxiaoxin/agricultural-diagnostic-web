@@ -23,7 +23,8 @@ export const uploadDiagnosisImage = async (file: File) => {
 export const startDiagnosis = async (params: ReqStartDiagnoseDisease) => {
 	const { diagnosisId, ...data } = params;
 	return http.post<ResStartDiagnoseDisease>(`/diagnosis/${diagnosisId}/start`, data, {
-		loading: false
+		loading: false,
+		timeout: 100000
 	});
 };
 
