@@ -2,8 +2,8 @@ import { RemoteConfig, RemoteInterface } from "@/api/interface";
 import { createRemoteConfig, updateRemoteConfig } from "@/api/modules";
 import MonacoEditor from "@/components/Editor";
 import { Button, Form, Input, Modal, Select, Space, message } from "antd";
-import { forwardRef, useImperativeHandle, useState } from "react";
-import InterfaceListModal from "./InterfaceListModal";
+import { forwardRef, useImperativeHandle, useRef, useState } from "react";
+import InterfaceListModal, { InterfaceListModalRef } from "./InterfaceListModal";
 
 export type ConfigModalProps = {
 	onSuccess?: () => void;
@@ -22,8 +22,8 @@ const ConfigModal = forwardRef<ConfigModalRef, ConfigModalProps>(
 		const [modalMode, setModalMode] = useState<"create" | "edit">("create");
 		const [configContent, setConfigContent] = useState<string>("{}");
 		const [loading, setLoading] = useState(false);
-		const [interfaceModalVisible, setInterfaceModalVisible] = useState(false);
 		const [serviceId, setServiceId] = useState(0);
+		const interfaceModalRef = useRef<InterfaceListModalRef>(null);
 
 		useImperativeHandle(
 			ref,
@@ -61,7 +61,7 @@ const ConfigModal = forwardRef<ConfigModalRef, ConfigModalProps>(
 			form.resetFields();
 			setConfigContent("{}");
 			setLoading(false);
-			setInterfaceModalVisible(false);
+			interfaceModalRef.current?.close();
 		};
 
 		const handleSave = async (values: any) => {
@@ -142,7 +142,7 @@ const ConfigModal = forwardRef<ConfigModalRef, ConfigModalProps>(
 								<Form.Item>
 									<Button
 										type="link"
-										onClick={() => setInterfaceModalVisible(true)}
+										onClick={() => interfaceModalRef.current?.open()}
 										className="px-0"
 									>
 										查看接口列表 ({interfaces.length})
@@ -179,11 +179,7 @@ const ConfigModal = forwardRef<ConfigModalRef, ConfigModalProps>(
 						</div>
 					</div>
 				</Form>
-				<InterfaceListModal
-					visible={interfaceModalVisible}
-					onClose={() => setInterfaceModalVisible(false)}
-					interfaces={interfaces}
-				/>
+				<InterfaceListModal ref={interfaceModalRef} interfaces={interfaces} />
 			</Modal>
 		);
 	}

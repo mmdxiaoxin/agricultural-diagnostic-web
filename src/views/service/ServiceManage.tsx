@@ -1,6 +1,6 @@
 import { RemoteService } from "@/api/interface/service";
 import { copyRemote, getRemotesList, remoteRemote } from "@/api/modules";
-import InterfaceListModal from "@/components/Modal/InterfaceListModal";
+import InterfaceListModal, { InterfaceListModalRef } from "@/components/Modal/InterfaceListModal";
 import ServiceModal, { ServiceModalRef } from "@/components/Modal/ServiceModal";
 import { StatusMapper } from "@/constants";
 import {
@@ -20,10 +20,10 @@ import { useNavigate } from "react-router";
 const ServiceManage: React.FC = () => {
 	const [services, setServices] = useState<RemoteService[]>([]);
 	const serviceModalRef = useRef<ServiceModalRef>(null);
+	const interfaceModalRef = useRef<InterfaceListModalRef>(null);
 	const [pagination, setPagination] = useState({ page: 1, pageSize: 10 });
 	const [total, setTotal] = useState(0);
 	const [searchText, setSearchText] = useState("");
-	const [interfaceModalVisible, setInterfaceModalVisible] = useState(false);
 	const [selectedService, setSelectedService] = useState<RemoteService | null>(null);
 	const navigate = useNavigate();
 
@@ -80,7 +80,7 @@ const ServiceManage: React.FC = () => {
 
 	const handleShowInterfaces = (service: RemoteService) => {
 		setSelectedService(service);
-		setInterfaceModalVisible(true);
+		interfaceModalRef.current?.open();
 	};
 
 	const filteredServices = services.filter(service =>
@@ -345,11 +345,7 @@ const ServiceManage: React.FC = () => {
 					fetchServices(pagination.page, pagination.pageSize);
 				}}
 			/>
-			<InterfaceListModal
-				visible={interfaceModalVisible}
-				onClose={() => setInterfaceModalVisible(false)}
-				interfaces={selectedService?.interfaces || []}
-			/>
+			<InterfaceListModal ref={interfaceModalRef} interfaces={selectedService?.interfaces || []} />
 		</div>
 	);
 };
