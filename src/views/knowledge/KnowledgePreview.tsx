@@ -39,8 +39,28 @@ const KnowledgePreview: React.FC = () => {
 	const [loading, setLoading] = useState(false);
 
 	return (
-		<div className={clsx("p-6", "w-full h-full")}>
-			<Card className="mb-6">
+		<div
+			className={clsx(
+				"h-full w-full",
+				"p-6",
+				"rounded-2xl",
+				"flex flex-col",
+				"bg-gradient-to-br from-white to-gray-50",
+				"overflow-y-auto"
+			)}
+		>
+			<div
+				className={clsx(
+					"flex flex-col gap-6",
+					"mb-6 p-6",
+					"rounded-2xl",
+					"bg-white",
+					"shadow-sm",
+					"border border-gray-100",
+					"transition-all duration-300",
+					"hover:shadow-md"
+				)}
+			>
 				<div className="flex justify-between items-center">
 					<Title level={3}>病害知识库预览</Title>
 					<Space>
@@ -50,9 +70,20 @@ const KnowledgePreview: React.FC = () => {
 						</Button>
 					</Space>
 				</div>
-			</Card>
+			</div>
 
-			<Card>
+			<div
+				className={clsx(
+					"flex flex-col gap-6",
+					"mb-6 p-6",
+					"rounded-2xl",
+					"bg-white",
+					"shadow-sm",
+					"border border-gray-100",
+					"transition-all duration-300",
+					"hover:shadow-md"
+				)}
+			>
 				<Tabs defaultActiveKey="1">
 					<TabPane tab="基本信息" key="1">
 						<div className="space-y-6">
@@ -137,7 +168,7 @@ const KnowledgePreview: React.FC = () => {
 						</div>
 					</TabPane>
 				</Tabs>
-			</Card>
+			</div>
 		</div>
 	);
 };
