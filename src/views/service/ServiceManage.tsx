@@ -28,13 +28,21 @@ const ServiceManage: React.FC = () => {
 	const [total, setTotal] = useState(0);
 	const [searchText, setSearchText] = useState("");
 	const [selectedService, setSelectedService] = useState<RemoteService | null>(null);
+	const [initLoading, setInitLoading] = useState(false);
+
 	const navigate = useNavigate();
 
 	const fetchServices = async (page: number = 1, pageSize: number = 10) => {
-		const response = await getRemotesList({ page, pageSize });
-		if (response.code === 200 && response.data) {
-			setServices(response.data.list || []);
-			setTotal(response.data.total || 0);
+		setInitLoading(true);
+		try {
+			const response = await getRemotesList({ page, pageSize });
+			if (response.code === 200 && response.data) {
+				setServices(response.data.list || []);
+				setTotal(response.data.total || 0);
+			}
+		} catch (error) {
+		} finally {
+			setInitLoading(false);
 		}
 	};
 
@@ -334,9 +342,10 @@ const ServiceManage: React.FC = () => {
 
 			<div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
 				<Table<RemoteService>
+					loading={initLoading}
 					columns={columns}
 					dataSource={filteredServices}
-					rowKey="serviceId"
+					rowKey="id"
 					pagination={{
 						current: pagination.page,
 						pageSize: pagination.pageSize,
