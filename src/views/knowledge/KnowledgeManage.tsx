@@ -1,118 +1,114 @@
-import KnowledgeModal, { KnowledgeModalRef } from "@/components/KnowledgeModel";
-import { AppstoreAddOutlined, FileDoneOutlined } from "@ant-design/icons";
-import { Button, Card, Col, Flex, Layout, Row, Table, Tooltip, Tree, Typography } from "antd";
+import { Disease } from "@/api/interface/knowledge";
+import KnowledgeModal, { KnowledgeModalRef } from "@/components/Modal/KnowledgeModel";
+import { DeleteOutlined, EditOutlined, PlusOutlined } from "@ant-design/icons";
+import { Button, Card, Input, Select, Space, Table, Tag } from "antd";
+import clsx from "clsx";
 import React, { useRef, useState } from "react";
-import styles from "./KnowledgeManage.module.scss";
 
-// 假设的作物数据和病虫害数据
-const cropData = [
-	{
-		key: "1",
-		title: "禾本科",
-		children: [
-			{ key: "1-1", title: "小麦" },
-			{ key: "1-2", title: "大麦" },
-			{ key: "1-3", title: "玉米" }
-		]
-	},
-	{
-		key: "2",
-		title: "薯类",
-		children: [
-			{ key: "2-1", title: "甘薯" },
-			{ key: "2-2", title: "马铃薯" }
-		]
-	},
-	{
-		key: "3",
-		title: "纤维类",
-		children: [
-			{ key: "3-1", title: "棉花" },
-			{ key: "3-2", title: "亚麻" }
-		]
-	}
-];
+const { Search } = Input;
+const { Option } = Select;
 
-const { Sider, Content } = Layout;
-const { Title } = Typography;
+const KnowledgeManage: React.FC = () => {
+	const knowledgeModalRef = useRef<KnowledgeModalRef>(null);
+	const [diseases, setDiseases] = useState<Disease[]>([]);
+	const [loading, setLoading] = useState(false);
+	const [searchText, setSearchText] = useState("");
+	const [selectedCrop, setSelectedCrop] = useState<string>("all");
 
-export type KnowledgeManageProps = {};
-
-const KnowledgeManage: React.FC<KnowledgeManageProps> = () => {
-	const knowledgeRef = useRef<KnowledgeModalRef>(null);
-
-	const [selectedCrop, setSelectedCrop] = useState<string | null>(null);
-
-	// Tree选中事件
-	const onSelect = (selectedKeys: React.Key[]) => {
-		const selectedTitle = selectedKeys[0] as string;
-		setSelectedCrop(selectedTitle);
+	const handleAddDisease = () => {
+		knowledgeModalRef.current?.open("add");
 	};
 
-	const onAddKnowledge = () => {
-		knowledgeRef.current?.open("add");
-	};
-
-	// 表格数据
 	const columns = [
-		{ title: "类型", dataIndex: "type", key: "type" },
-		{ title: "名称", dataIndex: "name", key: "name" }
+		{
+			title: "病害名称",
+			dataIndex: "name",
+			key: "name",
+			render: (text: string) => <span className="font-medium">{text}</span>
+		},
+		{
+			title: "别名",
+			dataIndex: "alias",
+			key: "alias"
+		},
+		{
+			title: "作物",
+			dataIndex: ["crop", "name"],
+			key: "crop",
+			render: (text: string) => <Tag color="blue">{text}</Tag>
+		},
+		{
+			title: "病因",
+			dataIndex: "cause",
+			key: "cause",
+			ellipsis: true
+		},
+		{
+			title: "传播方式",
+			dataIndex: "transmission",
+			key: "transmission",
+			ellipsis: true
+		},
+		{
+			title: "操作",
+			key: "action",
+			render: (_: any, record: Disease) => (
+				<Space size="middle">
+					<Button type="link" icon={<EditOutlined />}>
+						编辑
+					</Button>
+					<Button type="link" danger icon={<DeleteOutlined />}>
+						删除
+					</Button>
+				</Space>
+			)
+		}
 	];
 
 	return (
-		<Layout className={styles["container"]}>
-			<KnowledgeModal ref={knowledgeRef} />
-			<Sider theme="light" className={styles["sider"]} width={300}>
-				<Title level={4}>作物分类</Title>
-				<Tree
-					showLine
-					defaultExpandedKeys={["1", "2", "3"]}
-					onSelect={onSelect}
-					treeData={cropData}
-				/>
-			</Sider>
+		<div className={clsx("p-6 min-h-screen bg-gray-100")}>
+			<Card className="mb-6">
+				<div className="flex justify-between items-center">
+					<div className="flex space-x-4">
+						<Search
+							placeholder="搜索病害名称"
+							allowClear
+							onSearch={value => setSearchText(value)}
+							className="w-64"
+						/>
+						<Select
+							defaultValue="all"
+							style={{ width: 120 }}
+							onChange={value => setSelectedCrop(value)}
+						>
+							<Option value="all">全部作物</Option>
+							<Option value="rice">水稻</Option>
+							<Option value="wheat">小麦</Option>
+							<Option value="corn">玉米</Option>
+						</Select>
+					</div>
+					<Button type="primary" icon={<PlusOutlined />} onClick={handleAddDisease}>
+						添加病害
+					</Button>
+				</div>
+			</Card>
 
-			<Layout>
-				<Content style={{ background: "#fff", margin: 0, minHeight: 280 }}>
-					{selectedCrop ? (
-						<>
-							<Title level={4}>{selectedCrop} 的病虫害信息</Title>
-							<Row gutter={24}>
-								<Col span={24}>
-									<Card
-										title="病虫害类型"
-										extra={
-											<Tooltip title="新增病虫害信息">
-												<Button
-													icon={<AppstoreAddOutlined />}
-													type="text"
-													onClick={onAddKnowledge}
-												/>
-											</Tooltip>
-										}
-										style={{ borderRadius: "8px", boxShadow: "0 4px 8px rgba(0,0,0,0.1)" }}
-									>
-										<Table
-											rowKey="id"
-											columns={columns}
-											// dataSource={dataSource}
-											pagination={false}
-											size="middle"
-											style={{ borderRadius: "8px" }}
-										/>
-									</Card>
-								</Col>
-							</Row>
-						</>
-					) : (
-						<Flex align="center" justify="center" style={{ height: "100%" }}>
-							<FileDoneOutlined style={{ fontSize: 48, color: "#ccc" }} />
-							<p>请选择作物分类</p>
-						</Flex>
-					)}
-				</Content>
-			</Layout>
-		</Layout>
+			<Card>
+				<Table
+					columns={columns}
+					dataSource={diseases}
+					loading={loading}
+					rowKey="id"
+					pagination={{
+						total: diseases.length,
+						pageSize: 10,
+						showSizeChanger: true,
+						showQuickJumper: true
+					}}
+				/>
+			</Card>
+			<KnowledgeModal ref={knowledgeModalRef} />
+		</div>
 	);
 };
 
