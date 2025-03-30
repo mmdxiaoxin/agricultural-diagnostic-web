@@ -1,5 +1,6 @@
 import { RemoteService } from "@/api/interface/service";
 import { copyRemote, getRemotesList, remoteRemote } from "@/api/modules";
+import ConfigListModal, { ConfigListModalRef } from "@/components/Modal/ConfigListModal";
 import InterfaceListModal, { InterfaceListModalRef } from "@/components/Modal/InterfaceListModal";
 import ServiceModal, { ServiceModalRef } from "@/components/Modal/ServiceModal";
 import { StatusMapper } from "@/constants";
@@ -18,9 +19,11 @@ import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router";
 
 const ServiceManage: React.FC = () => {
-	const [services, setServices] = useState<RemoteService[]>([]);
 	const serviceModalRef = useRef<ServiceModalRef>(null);
 	const interfaceModalRef = useRef<InterfaceListModalRef>(null);
+	const configModalRef = useRef<ConfigListModalRef>(null);
+
+	const [services, setServices] = useState<RemoteService[]>([]);
 	const [pagination, setPagination] = useState({ page: 1, pageSize: 10 });
 	const [total, setTotal] = useState(0);
 	const [searchText, setSearchText] = useState("");
@@ -83,6 +86,11 @@ const ServiceManage: React.FC = () => {
 		interfaceModalRef.current?.open();
 	};
 
+	const handleShowConfigs = (service: RemoteService) => {
+		setSelectedService(service);
+		configModalRef.current?.open();
+	};
+
 	const filteredServices = services.filter(service =>
 		service.serviceName.toLowerCase().includes(searchText.toLowerCase())
 	);
@@ -141,7 +149,15 @@ const ServiceManage: React.FC = () => {
 			key: "configCount",
 			width: 100,
 			render: (_, record) => (
-				<Tag color="purple" className="px-2 py-0.5 rounded-md">
+				<Tag
+					color="purple"
+					className={clsx(
+						"px-2 py-0.5 rounded-md",
+						"cursor-pointer hover:opacity-80",
+						"transition-all duration-300"
+					)}
+					onClick={() => handleShowConfigs(record)}
+				>
 					{record.configs?.length || 0} 个配置
 				</Tag>
 			)
@@ -346,6 +362,7 @@ const ServiceManage: React.FC = () => {
 				}}
 			/>
 			<InterfaceListModal ref={interfaceModalRef} interfaces={selectedService?.interfaces || []} />
+			<ConfigListModal ref={configModalRef} configs={selectedService?.configs || []} />
 		</div>
 	);
 };

@@ -1,7 +1,7 @@
 import { RemoteInterface } from "@/api/interface/service";
 import { Table, Tag } from "antd";
 import { ColumnsType } from "antd/es/table";
-import React, { forwardRef, useImperativeHandle, useState } from "react";
+import { forwardRef, useImperativeHandle, useState } from "react";
 import Draggable from "react-draggable";
 
 interface InterfaceListModalProps {
