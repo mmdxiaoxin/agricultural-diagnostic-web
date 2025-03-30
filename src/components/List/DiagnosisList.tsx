@@ -13,7 +13,8 @@ import {
 	message
 } from "antd";
 import dayjs from "dayjs";
-import { forwardRef, useEffect, useImperativeHandle, useMemo, useState } from "react";
+import { forwardRef, useEffect, useImperativeHandle, useMemo, useRef, useState } from "react";
+import DiagnosisDetailModal, { DiagnosisDetailModalRef } from "../Modal/DiagnosisDetailModal";
 
 const pageSize = 5;
 
@@ -30,6 +31,7 @@ const DiagnosisList = forwardRef<DiagnosisListRef, DiagnosisListProps>((_, ref) 
 	const [loading, setLoading] = useState(false);
 	const [currentPage, setCurrentPage] = useState(1);
 	const [total, setTotal] = useState(0);
+	const modalRef = useRef<DiagnosisDetailModalRef>(null);
 
 	const hasMore = useMemo(() => currentPage < Math.ceil(total / pageSize), [currentPage, total]);
 
@@ -159,79 +161,88 @@ const DiagnosisList = forwardRef<DiagnosisListRef, DiagnosisListProps>((_, ref) 
 	};
 
 	return (
-		<List
-			rowKey="id"
-			className="px-4"
-			header={
-				<Flex align="center" justify="space-between">
-					<Typography.Title level={4}>诊断历史</Typography.Title>
-				</Flex>
-			}
-			loading={initLoading}
-			itemLayout="horizontal"
-			dataSource={diagnosisList}
-			loadMore={loadMore}
-			renderItem={item => {
-				const { className, confidence } = getDiagnosisInfo(item);
-				return (
-					<List.Item
-						className="hover:bg-gray-100 rounded-lg cursor-pointer group"
-						actions={[
-							<Popconfirm
-								key="delete"
-								title="确定要删除这条诊断记录吗？"
-								description="删除后将无法恢复"
-								onConfirm={() => handleDelete(item.id)}
-								okText="确定"
-								cancelText="取消"
-							>
-								<Button
-									type="text"
-									danger
-									icon={<DeleteOutlined />}
-									className="opacity-0 group-hover:opacity-100 transition-opacity"
+		<>
+			<DiagnosisDetailModal ref={modalRef} />
+			<List
+				rowKey="id"
+				className="px-4"
+				header={
+					<Flex align="center" justify="space-between">
+						<Typography.Title level={4}>诊断历史</Typography.Title>
+					</Flex>
+				}
+				loading={initLoading}
+				itemLayout="horizontal"
+				dataSource={diagnosisList}
+				loadMore={loadMore}
+				renderItem={item => {
+					const { className, confidence } = getDiagnosisInfo(item);
+					return (
+						<List.Item
+							className="hover:bg-gray-100 rounded-lg cursor-pointer group"
+							onClick={() => modalRef.current?.open(item)}
+							actions={[
+								<Popconfirm
+									key="delete"
+									title="确定要删除这条诊断记录吗？"
+									description="删除后将无法恢复"
+									onConfirm={e => {
+										e?.stopPropagation();
+										handleDelete(item.id);
+									}}
+									okText="确定"
+									cancelText="取消"
+									onCancel={e => e?.stopPropagation()}
+								>
+									<Button
+										type="text"
+										danger
+										icon={<DeleteOutlined />}
+										onClick={e => e.stopPropagation()}
+										className="opacity-0 group-hover:opacity-100 transition-opacity"
+									/>
+								</Popconfirm>
+							]}
+						>
+							<Skeleton avatar title={false} loading={item.loading} active>
+								<List.Item.Meta
+									avatar={
+										<div className="w-12 h-12 rounded-lg overflow-hidden">
+											{item.imageUrl ? (
+												<img
+													src={item.imageUrl}
+													alt="诊断图片"
+													className="w-full h-full object-cover"
+												/>
+											) : (
+												<div className="w-full h-full bg-gray-200 flex items-center justify-center">
+													<Typography.Text type="secondary">无图片</Typography.Text>
+												</div>
+											)}
+										</div>
+									}
+									title={
+										<Tooltip title={className}>
+											<Typography.Text ellipsis>{className}</Typography.Text>
+										</Tooltip>
+									}
+									description={
+										<Space direction="vertical" size={0}>
+											<Typography.Text type="secondary">
+												诊断时间: {dayjs(item.createdAt).format("YYYY-MM-DD HH:mm:ss")}
+											</Typography.Text>
+											<Typography.Text type="secondary">
+												置信度: {(confidence * 100).toFixed(2)}%
+											</Typography.Text>
+										</Space>
+									}
 								/>
-							</Popconfirm>
-						]}
-					>
-						<Skeleton avatar title={false} loading={item.loading} active>
-							<List.Item.Meta
-								avatar={
-									<div className="w-12 h-12 rounded-lg overflow-hidden">
-										{item.imageUrl ? (
-											<img
-												src={item.imageUrl}
-												alt="诊断图片"
-												className="w-full h-full object-cover"
-											/>
-										) : (
-											<div className="w-full h-full bg-gray-200 flex items-center justify-center">
-												<Typography.Text type="secondary">无图片</Typography.Text>
-											</div>
-										)}
-									</div>
-								}
-								title={
-									<Tooltip title={className}>
-										<Typography.Text ellipsis>{className}</Typography.Text>
-									</Tooltip>
-								}
-								description={
-									<Space direction="vertical" size={0}>
-										<Typography.Text type="secondary">
-											诊断时间: {dayjs(item.createdAt).format("YYYY-MM-DD HH:mm:ss")}
-										</Typography.Text>
-										<Typography.Text type="secondary">
-											置信度: {(confidence * 100).toFixed(2)}%
-										</Typography.Text>
-									</Space>
-								}
-							/>
-						</Skeleton>
-					</List.Item>
-				);
-			}}
-		/>
+							</Skeleton>
+						</List.Item>
+					);
+				}}
+			/>
+		</>
 	);
 });
 

@@ -1,5 +1,6 @@
 import { DiagnosisHistory } from "@/api/interface/diagnosis";
 import { downloadFile } from "@/api/modules/file";
+import { DIAGNOSIS_STATUS_COLOR, DIAGNOSIS_STATUS_TEXT } from "@/constants/status";
 import { CheckCircleOutlined, ClockCircleOutlined } from "@ant-design/icons";
 import { Card, Image, Modal, Space, Tag, Typography } from "antd";
 import clsx from "clsx";
@@ -57,10 +58,10 @@ const DiagnosisDetailModal = forwardRef<DiagnosisDetailModalRef>((_, ref) => {
 						诊断详情
 					</Title>
 					<Tag
-						color={record.status === "completed" ? "success" : "processing"}
-						icon={record.status === "completed" ? <CheckCircleOutlined /> : <ClockCircleOutlined />}
+						color={DIAGNOSIS_STATUS_COLOR[record.status]}
+						icon={record.status === "success" ? <CheckCircleOutlined /> : <ClockCircleOutlined />}
 					>
-						{record.status === "completed" ? "已完成" : "处理中"}
+						{DIAGNOSIS_STATUS_TEXT[record.status]}
 					</Tag>
 				</div>
 			}
@@ -137,13 +138,17 @@ const DiagnosisDetailModal = forwardRef<DiagnosisDetailModalRef>((_, ref) => {
 								className="object-contain w-full h-full"
 								fallback="/images/image-placeholder.png"
 							/>
-							{record.diagnosisResult?.predictions?.[0].type === "detect" && (
-								<DetectImage
-									src={imageUrl}
-									alt="诊断结果"
-									predictions={record.diagnosisResult?.predictions || []}
-								/>
-							)}
+							{record.diagnosisResult?.predictions &&
+								record.diagnosisResult?.predictions?.length > 0 &&
+								record.diagnosisResult?.predictions?.some(
+									prediction => prediction.type === "detect"
+								) && (
+									<DetectImage
+										src={imageUrl}
+										alt="诊断结果"
+										predictions={record.diagnosisResult?.predictions || []}
+									/>
+								)}
 						</div>
 					</Card>
 				)}

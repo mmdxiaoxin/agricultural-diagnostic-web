@@ -10,6 +10,7 @@ import {
 import DiagnosisDetailModal, {
 	DiagnosisDetailModalRef
 } from "@/components/Modal/DiagnosisDetailModal";
+import { DIAGNOSIS_STATUS_COLOR, DIAGNOSIS_STATUS_TEXT } from "@/constants/status";
 import { DeleteOutlined, ReloadOutlined, SearchOutlined, SelectOutlined } from "@ant-design/icons";
 import {
 	Button,
@@ -174,7 +175,7 @@ const DiagnosisHistoryPage: React.FC = () => {
 			title: "诊断时间",
 			dataIndex: "createdAt",
 			width: 180,
-			render: (text: string) => (
+			render: text => (
 				<Text className="text-gray-600">{dayjs(text).format("YYYY-MM-DD HH:mm:ss")}</Text>
 			)
 		},
@@ -182,12 +183,9 @@ const DiagnosisHistoryPage: React.FC = () => {
 			title: "状态",
 			dataIndex: "status",
 			width: 100,
-			render: (status: string) => (
-				<Tag
-					color={status === "completed" ? "success" : "processing"}
-					className="px-3 py-1 rounded-full"
-				>
-					{status === "completed" ? "已完成" : "处理中"}
+			render: (status: DiagnosisHistory["status"]) => (
+				<Tag color={DIAGNOSIS_STATUS_COLOR[status]} className="px-3 py-1 rounded-full">
+					{DIAGNOSIS_STATUS_TEXT[status]}
 				</Tag>
 			)
 		},

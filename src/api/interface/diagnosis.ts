@@ -38,7 +38,7 @@ export type DiagnosisHistory = {
 	createdAt: string;
 	updatedAt: string;
 	diagnosisResult: ResStartDiagnoseDisease;
-	status: string;
+	status: "pending" | "success" | "failed" | "processing";
 	createdBy: number;
 	updatedBy: number;
 };
