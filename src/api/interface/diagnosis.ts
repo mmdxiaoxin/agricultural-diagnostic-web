@@ -54,6 +54,8 @@ export type ReqStartDiagnoseDisease = {
 // 响应类型
 export type ResStartDiagnoseDisease = {
 	predictions?: Prediction[];
+	status: "success" | "failed";
+	task_id: string;
 };
 export type ResUploadDiagnosisImage = DiagnosisHistory;
 export type ResDiagnosisHistoryList = PageData<DiagnosisHistory>;

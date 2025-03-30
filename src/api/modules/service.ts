@@ -61,6 +61,14 @@ export const createRemoteInterface = (serviceId: number, data: ReqCreateRemoteIn
 	return http.post(`/remote/${serviceId}/interface`, data, { loading: false });
 };
 
+export const copyRemoteInterface = (serviceId: number, interfaceId: number) => {
+	return http.post<ResRemoteInterfaceDetail>(
+		`/remote/${serviceId}/interface/${interfaceId}/copy`,
+		{},
+		{ loading: false }
+	);
+};
+
 export const updateRemoteInterface = (
 	serviceId: number,
 	interfaceId: number,
@@ -92,6 +100,14 @@ export const getRemoteConfigById = (serviceId: number, configId: number) => {
 
 export const createRemoteConfig = (serviceId: number, data: Partial<RemoteConfig>) => {
 	return http.post<RemoteConfig>(`/remote/${serviceId}/config`, data, { loading: false });
+};
+
+export const copyRemoteConfig = (serviceId: number, configId: number) => {
+	return http.post<RemoteConfig>(
+		`/remote/${serviceId}/config/${configId}/copy`,
+		{},
+		{ loading: false }
+	);
 };
 
 export const updateRemoteConfig = (

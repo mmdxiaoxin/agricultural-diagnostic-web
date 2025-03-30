@@ -1,5 +1,7 @@
 import { RemoteConfig, RemoteInterface, RemoteService } from "@/api/interface";
 import {
+	copyRemoteConfig,
+	copyRemoteInterface,
 	getRemote,
 	getRemoteConfigs,
 	removeRemoteConfig,
@@ -66,6 +68,17 @@ const ServiceDetail: React.FC<ServiceDetailProps> = ({ service }) => {
 		configModalRef.current?.open("edit", record);
 	};
 
+	const handleCopyConfig = async (record: RemoteConfig) => {
+		if (!service?.id) return;
+		try {
+			await copyRemoteConfig(service.id, record.id);
+			message.success("复制配置成功");
+			fetchServiceDetail();
+		} catch (error) {
+			message.error("复制配置失败");
+		}
+	};
+
 	const handleDeleteConfig = async (id: number) => {
 		if (!service?.id) return;
 		try {
@@ -106,6 +119,9 @@ const ServiceDetail: React.FC<ServiceDetailProps> = ({ service }) => {
 					<Button type="link" onClick={() => handleEditConfig(record)}>
 						编辑
 					</Button>
+					<Button type="link" onClick={() => handleCopyConfig(record)}>
+						复制
+					</Button>
 					<Popconfirm title="确认删除此配置？" onConfirm={() => handleDeleteConfig(record.id)}>
 						<Button type="link" danger>
 							删除
@@ -122,6 +138,17 @@ const ServiceDetail: React.FC<ServiceDetailProps> = ({ service }) => {
 
 	const handleEditInterface = (record: RemoteInterface) => {
 		interfaceModalRef.current?.open("edit", record, service?.id);
+	};
+
+	const handleCopyInterface = async (record: RemoteInterface) => {
+		if (!service?.id) return;
+		try {
+			await copyRemoteInterface(service.id, record.id);
+			message.success("复制接口成功");
+			fetchServiceDetail();
+		} catch (error) {
+			message.error("复制接口失败");
+		}
 	};
 
 	const handleDeleteInterface = async (id: number) => {
@@ -159,6 +186,9 @@ const ServiceDetail: React.FC<ServiceDetailProps> = ({ service }) => {
 				<Space>
 					<Button type="link" onClick={() => handleEditInterface(record)}>
 						编辑
+					</Button>
+					<Button type="link" onClick={() => handleCopyInterface(record)}>
+						复制
 					</Button>
 					<Popconfirm title="确认删除此接口？" onConfirm={() => handleDeleteInterface(record.id)}>
 						<Button type="link" danger>
