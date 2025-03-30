@@ -1,6 +1,6 @@
 import NProgress from "@/config/nprogress";
 import { showFullScreenLoading, tryHideFullScreenLoading } from "@/config/serviceLoading";
-import { ResultEnum } from "@/enums/httpEnum";
+import { ResultEnum } from "@/enums/http.enum";
 import { store } from "@/store/index"; // 导入 store
 import { removeToken } from "@/store/modules/authSlice";
 import { message } from "antd";
