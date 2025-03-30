@@ -151,6 +151,9 @@ class RequestHttp {
 	put<T>(url: string, data?: object, _object: PutConfig = {}): Promise<ApiResponse<T>> {
 		return this.service.put(url, data, _object);
 	}
+	patch<T>(url: string, data?: object, _object: PutConfig = {}): Promise<ApiResponse<T>> {
+		return this.service.patch(url, data, _object);
+	}
 	delete<T>(url: string, params?: any, _object: DeleteConfig = {}): Promise<ApiResponse<T>> {
 		return this.service.delete(url, { params, ..._object });
 	}
