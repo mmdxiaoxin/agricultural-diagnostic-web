@@ -18,7 +18,8 @@ const ImageDiagnosis = () => {
 				"p-6",
 				"rounded-2xl",
 				"flex flex-col",
-				"bg-gradient-to-br from-white to-gray-50"
+				"bg-gradient-to-br from-white to-gray-50",
+				"overflow-y-auto"
 			)}
 		>
 			<div
@@ -59,7 +60,7 @@ const ImageDiagnosis = () => {
 					<div
 						className={clsx(
 							"h-full bg-white rounded-2xl shadow-sm border border-gray-100",
-							"overflow-y-auto",
+							"lg:overflow-y-auto",
 							"[&::-webkit-scrollbar]:hidden",
 							"[-ms-overflow-style:none]",
 							"[scrollbar-width:none]"
