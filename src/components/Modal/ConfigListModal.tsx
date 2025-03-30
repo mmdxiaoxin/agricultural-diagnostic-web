@@ -74,7 +74,7 @@ const ConfigListModal = forwardRef<ConfigListModalRef, ConfigListModalProps>(({ 
 						columns={columns}
 						dataSource={configs}
 						rowKey="id"
-						pagination={false}
+						pagination={{ pageSize: 5 }}
 						size="small"
 					/>
 				</div>

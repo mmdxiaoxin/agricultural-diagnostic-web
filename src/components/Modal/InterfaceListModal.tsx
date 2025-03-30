@@ -80,7 +80,7 @@ const InterfaceListModal = forwardRef<InterfaceListModalRef, InterfaceListModalP
 							columns={columns}
 							dataSource={interfaces}
 							rowKey="id"
-							pagination={false}
+							pagination={{ pageSize: 5 }}
 							size="small"
 						/>
 					</div>
