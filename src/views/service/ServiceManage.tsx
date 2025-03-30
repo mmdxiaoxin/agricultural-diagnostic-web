@@ -108,7 +108,6 @@ const ServiceManage: React.FC = () => {
 			title: "服务名称",
 			dataIndex: "serviceName",
 			key: "serviceName",
-			width: 200,
 			ellipsis: true,
 			render: text => (
 				<Tooltip title={text}>
@@ -120,7 +119,6 @@ const ServiceManage: React.FC = () => {
 			title: "服务类型",
 			dataIndex: "serviceType",
 			key: "serviceType",
-			width: 120,
 			render: text => (
 				<Tag color="blue" className="px-2 py-0.5 rounded-md">
 					{text}
@@ -132,9 +130,12 @@ const ServiceManage: React.FC = () => {
 			dataIndex: "description",
 			key: "description",
 			ellipsis: true,
+			width: 200,
 			render: text => (
-				<Tooltip title={text}>
-					<span className="text-gray-600">{text || "-"}</span>
+				<Tooltip title={text?.length > 20 ? text : null}>
+					<span className="text-gray-600">
+						{text?.length > 20 ? text.slice(0, 20) + "..." : text || "-"}
+					</span>
 				</Tooltip>
 			)
 		},
@@ -142,7 +143,6 @@ const ServiceManage: React.FC = () => {
 			title: "服务状态",
 			dataIndex: "status",
 			key: "status",
-			width: 100,
 			render: text => (
 				<Tag
 					color={text === "active" ? "success" : text === "inactive" ? "error" : "warning"}
@@ -155,7 +155,6 @@ const ServiceManage: React.FC = () => {
 		{
 			title: "配置数量",
 			key: "configCount",
-			width: 100,
 			render: (_, record) => (
 				<Tag
 					color="purple"
@@ -173,7 +172,6 @@ const ServiceManage: React.FC = () => {
 		{
 			title: "接口数量",
 			key: "interfaceCount",
-			width: 100,
 			render: (_, record) => (
 				<Tag
 					color="cyan"
@@ -192,15 +190,12 @@ const ServiceManage: React.FC = () => {
 			title: "更新时间",
 			dataIndex: "updatedAt",
 			key: "updatedAt",
-			width: 180,
 			render: text => <span className="text-gray-500">{new Date(text).toLocaleString()}</span>
 		},
 		{
 			title: "操作",
 			key: "actions",
 			align: "center",
-			width: 280,
-			fixed: "right",
 			render: (_, record) => (
 				<Space size="middle">
 					<Tooltip title="快速配置">
@@ -340,12 +335,13 @@ const ServiceManage: React.FC = () => {
 				</div>
 			</div>
 
-			<div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+			<div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 w-full overflow-x-auto">
 				<Table<RemoteService>
 					loading={initLoading}
 					columns={columns}
 					dataSource={filteredServices}
 					rowKey="id"
+					scroll={{ x: true }}
 					pagination={{
 						current: pagination.page,
 						pageSize: pagination.pageSize,
