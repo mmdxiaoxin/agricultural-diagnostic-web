@@ -8,7 +8,7 @@ import React, { useRef, useState } from "react";
 const { Search } = Input;
 const { Option } = Select;
 
-const KnowledgeManage: React.FC = () => {
+const DiseaseManage: React.FC = () => {
 	const knowledgeModalRef = useRef<KnowledgeModalRef>(null);
 	const [diseases, setDiseases] = useState<Disease[]>([]);
 	const [loading, setLoading] = useState(false);
@@ -90,7 +90,7 @@ const KnowledgeManage: React.FC = () => {
 			>
 				<div className="flex flex-col gap-4">
 					<div className="flex justify-between items-center">
-						<h2 className="text-2xl font-semibold text-gray-800">病害知识库管理</h2>
+						<h2 className="text-2xl font-semibold text-gray-800">病害管理</h2>
 						<p className="text-gray-500">共 {diseases.length} 个病害</p>
 					</div>
 					<div className="flex justify-between items-center">
@@ -140,4 +140,4 @@ const KnowledgeManage: React.FC = () => {
 	);
 };
 
-export default KnowledgeManage;
+export default DiseaseManage;

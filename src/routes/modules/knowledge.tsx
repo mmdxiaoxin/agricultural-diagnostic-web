@@ -4,12 +4,12 @@ import { RouteObjectEx } from "../interface";
 
 const knowledgeRoutes: RouteObjectEx[] = [
 	{
-		path: "/knowledge/manage",
-		element: lazyLoad(React.lazy(() => import("@/views/knowledge/KnowledgeManage"))),
+		path: "/knowledge/disease",
+		element: lazyLoad(React.lazy(() => import("@/views/knowledge/DiseaseManage"))),
 		meta: {
 			requiresAuth: true,
-			title: "知识库管理",
-			key: "knowledge-manage"
+			title: "病害管理",
+			key: "knowledge-disease"
 		}
 	},
 	{
