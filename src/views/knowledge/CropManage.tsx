@@ -11,7 +11,6 @@ const { Search } = Input;
 const CropManage: React.FC = () => {
 	const [crops, setCrops] = useState<Crop[]>([]);
 	const [loading, setLoading] = useState(false);
-	const [searchText, setSearchText] = useState("");
 
 	const cropModalRef = useRef<CropModalRef>(null);
 
