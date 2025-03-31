@@ -89,7 +89,7 @@ const DiagnosisDetailModal = forwardRef<DiagnosisDetailModalRef>((_, ref) => {
 								{dayjs(record.updatedAt).format("YYYY-MM-DD HH:mm:ss")}
 							</Text>
 						</div>
-						<div className="bg-gray-50 p-4 rounded-lg">
+						<div className="bg-gray-50 p-4 rounded-lg max-h-[250px] overflow-y-auto">
 							<Text type="secondary" className="block mb-2">
 								诊断结果
 							</Text>
@@ -117,6 +117,14 @@ const DiagnosisDetailModal = forwardRef<DiagnosisDetailModalRef>((_, ref) => {
 							) : (
 								<Text type="secondary">无结果</Text>
 							)}
+						</div>
+						<div className="bg-gray-50 p-4 rounded-lg">
+							<Text type="secondary" className="block mb-2">
+								操作记录
+							</Text>
+							<Button type="primary" onClick={() => setDrawerVisible(true)} className="w-full">
+								查看诊断日志
+							</Button>
 						</div>
 					</Space>
 				</Card>
@@ -155,7 +163,6 @@ const DiagnosisDetailModal = forwardRef<DiagnosisDetailModalRef>((_, ref) => {
 					</Card>
 				)}
 			</div>
-			<Button onClick={() => setDrawerVisible(true)}>查看日志</Button>
 			<Drawer
 				title="诊断日志"
 				placement="right"
