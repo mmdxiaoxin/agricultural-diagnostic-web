@@ -1,39 +1,12 @@
 import { uploadChunksFile, uploadSingleFile } from "@/api/modules/file";
-import {
-	AudioOutlined,
-	DeleteFilled,
-	FileImageOutlined,
-	FileOutlined,
-	FileTextOutlined,
-	FolderOutlined,
-	UploadOutlined
-} from "@ant-design/icons";
+import { DeleteFilled, FileOutlined, FolderOutlined, UploadOutlined } from "@ant-design/icons";
 import { Button, Empty, Space, Switch, Upload, message, notification } from "antd";
 import { RcFile, UploadChangeParam, UploadFile } from "antd/lib/upload";
-import React, { useState } from "react";
 import clsx from "clsx";
-import { formatSize } from "@/utils";
+import React, { useState } from "react";
 
 export type FileUploadProps = {
 	onUpload?: () => void;
-};
-
-// 文件类型图标映射
-const fileTypeIcons = {
-	image: <FileImageOutlined className="text-xl" />,
-	video: <AudioOutlined className="text-xl" />,
-	audio: <AudioOutlined className="text-xl" />,
-	document: <FileTextOutlined className="text-xl" />,
-	default: <FileOutlined className="text-xl" />
-};
-
-const getFileTypeIcon = (fileType: string | undefined) => {
-	if (!fileType) return fileTypeIcons.default;
-	if (fileType.startsWith("image")) return fileTypeIcons.image;
-	if (fileType.startsWith("video")) return fileTypeIcons.video;
-	if (fileType.startsWith("audio")) return fileTypeIcons.audio;
-	if (fileType.startsWith("application")) return fileTypeIcons.document;
-	return fileTypeIcons.default;
 };
 
 const FileUpload: React.FC<FileUploadProps> = ({ onUpload }) => {
