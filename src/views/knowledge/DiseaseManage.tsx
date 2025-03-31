@@ -1,7 +1,7 @@
 import { ReqPage } from "@/api/interface";
-import { Crop, Disease } from "@/api/interface/knowledge";
-import { getCrops, getDiseaseList } from "@/api/modules/Knowledge";
-import { deleteKnowledge } from "@/api/modules/Knowledge/knowledge";
+import { Crop, Disease, ReqDiseaseList } from "@/api/interface/knowledge";
+import { getCrops } from "@/api/modules/Knowledge";
+import { deleteKnowledge, getKnowledgeList } from "@/api/modules/Knowledge/knowledge";
 import DiseaseModal, { DiseaseModalRef } from "@/components/Modal/DiseaseModal";
 import { DeleteOutlined, EditOutlined, PlusOutlined, SearchOutlined } from "@ant-design/icons";
 import {
@@ -28,18 +28,16 @@ const DiseaseManage: React.FC = () => {
 	const [diseases, setDiseases] = useState<Disease[]>([]);
 	const [crops, setCrops] = useState<Crop[]>([]);
 	const [loading, setLoading] = useState(false);
-	const [searchText, setSearchText] = useState("");
-	const [selectedCrop, setSelectedCrop] = useState<string>("all");
 	const [total, setTotal] = useState(0);
 	const [params, setParams] = useState<ReqPage>({
 		page: 1,
 		pageSize: 10
 	});
 
-	const fetchDiseaseList = async (params: ReqPage) => {
+	const fetchDiseaseList = async (params: ReqDiseaseList) => {
 		setLoading(true);
 		try {
-			const res = await getDiseaseList(params);
+			const res = await getKnowledgeList(params);
 			setDiseases(res.data?.list || []);
 			setTotal(res.data?.total || 0);
 		} catch (error) {
@@ -161,16 +159,18 @@ const DiseaseManage: React.FC = () => {
 							<Search
 								placeholder="搜索病害名称"
 								allowClear
-								onSearch={value => setSearchText(value)}
+								onSearch={value => fetchDiseaseList({ ...params, keyword: value })}
 								className="w-64"
 								prefix={<SearchOutlined />}
 							/>
 							<Select
-								defaultValue="0"
+								defaultValue={0}
 								style={{ width: 120 }}
-								onChange={value => setSelectedCrop(value)}
+								onChange={value =>
+									fetchDiseaseList({ ...params, cropId: value === 0 ? undefined : value })
+								}
 							>
-								<Option value="0">全部作物</Option>
+								<Option value={0}>全部作物</Option>
 								{crops.map(crop => (
 									<Option key={crop.id} value={crop.id}>
 										{crop.name}
