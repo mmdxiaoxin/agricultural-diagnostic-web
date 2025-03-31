@@ -228,7 +228,13 @@ const ServiceDetail: React.FC<ServiceDetailProps> = ({ service }) => {
 						columns={configColumns}
 						dataSource={configs}
 						rowKey="id"
-						pagination={false}
+						pagination={{
+							total: configs.length,
+							pageSize: 5,
+							showSizeChanger: true,
+							showQuickJumper: true,
+							showTotal: total => `共 ${total} 项`
+						}}
 						loading={initLoading}
 					/>
 				</Card>
@@ -261,7 +267,13 @@ const ServiceDetail: React.FC<ServiceDetailProps> = ({ service }) => {
 						columns={interfaceColumns}
 						dataSource={interfaces}
 						rowKey="id"
-						pagination={false}
+						pagination={{
+							total: interfaces.length,
+							pageSize: 5,
+							showSizeChanger: true,
+							showQuickJumper: true,
+							showTotal: total => `共 ${total} 项`
+						}}
 						loading={initLoading}
 					/>
 				</Card>
