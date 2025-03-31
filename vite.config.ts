@@ -5,6 +5,7 @@ import { createHtmlPlugin } from "vite-plugin-html";
 import viteCompression from "vite-plugin-compression";
 import viteImagemin from "vite-plugin-imagemin";
 import { wrapperEnv } from "./src/build/getEnv";
+import svgr from "vite-plugin-svgr";
 
 // https://vite.dev/config/
 export default defineConfig((mode: ConfigEnv): UserConfig => {
@@ -32,6 +33,7 @@ export default defineConfig((mode: ConfigEnv): UserConfig => {
 		},
 		plugins: [
 			react(),
+			svgr({ svgrOptions: { icon: true } }),
 			createHtmlPlugin({
 				inject: {
 					data: {
