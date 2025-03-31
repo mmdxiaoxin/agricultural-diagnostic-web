@@ -1,5 +1,6 @@
 import http from "@/api";
 import {
+	DiagnosisLog,
 	ReqDiagnosisHistoryList,
 	ReqStartDiagnoseDisease,
 	ResDiagnosisHistoryList,
@@ -7,6 +8,7 @@ import {
 	ResStartDiagnoseDisease,
 	ResUploadDiagnosisImage
 } from "../interface/diagnosis";
+import { PageData, ReqPage } from "../interface";
 
 // * 上传诊断图片
 export const uploadDiagnosisImage = async (file: File) => {
@@ -39,6 +41,16 @@ export const startDiagnosisAsync = async (params: ReqStartDiagnoseDisease) => {
 // * 获取诊断状态
 export const getDiagnosisStatus = async (id: number) => {
 	return http.get<any>(`/diagnosis/${id}/status`);
+};
+
+// * 获取诊断日志
+export const getDiagnosisLog = async (id: number) => {
+	return http.get<DiagnosisLog>(`/diagnosis/${id}/log`);
+};
+
+// * 获取诊断日志列表
+export const getDiagnosisLogList = async (id: number, params: ReqPage) => {
+	return http.get<PageData<DiagnosisLog>>(`/diagnosis/${id}/log/list`, params);
 };
 
 // * 获取诊断支持信息

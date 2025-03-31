@@ -1,3 +1,4 @@
+import { LogLevel } from "@/enums";
 import { PageData, RemoteService, ReqPage } from ".";
 
 // 基础预测类型
@@ -41,6 +42,17 @@ export type DiagnosisHistory = {
 	status: "pending" | "success" | "failed" | "processing";
 	createdBy: number;
 	updatedBy: number;
+};
+
+// 诊断日志
+export type DiagnosisLog = {
+	id: number;
+	diagnosisId: number;
+	diagnosis?: DiagnosisHistory;
+	level: LogLevel;
+	message: string;
+	metadata: Record<string, any>;
+	createdAt: string;
 };
 
 // 请求类型
