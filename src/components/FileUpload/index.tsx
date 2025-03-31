@@ -334,53 +334,7 @@ const FileUpload: React.FC<FileUploadProps> = ({ onUpload }) => {
 							customRequest={customRequest}
 							showUploadList={{ showRemoveIcon: true }}
 							className="upload-list"
-						>
-							<div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-								{fileList.map(file => (
-									<div
-										key={file.uid}
-										className={clsx(
-											"relative",
-											"p-4",
-											"rounded-lg",
-											"bg-gray-50",
-											"border border-gray-200",
-											"transition-all duration-300",
-											"hover:shadow-md"
-										)}
-									>
-										<div className="flex items-center gap-3">
-											<div
-												className={clsx(
-													"w-10 h-10",
-													"rounded-lg",
-													"bg-white",
-													"flex items-center justify-center",
-													"text-gray-500"
-												)}
-											>
-												{getFileTypeIcon(file.type)}
-											</div>
-											<div className="flex-1 min-w-0">
-												<p className="text-sm font-medium text-gray-800 truncate">{file.name}</p>
-												<p className="text-xs text-gray-500">{formatSize(file.size || 0)}</p>
-											</div>
-										</div>
-										{file.percent !== undefined && file.percent < 100 && (
-											<div className="mt-2">
-												<div className="h-1 bg-gray-200 rounded-full overflow-hidden">
-													<div
-														className="h-full bg-blue-500 transition-all duration-300"
-														style={{ width: `${file.percent}%` }}
-													/>
-												</div>
-												<p className="text-xs text-gray-500 mt-1">{Math.round(file.percent)}%</p>
-											</div>
-										)}
-									</div>
-								))}
-							</div>
-						</Upload>
+						/>
 					)}
 				</div>
 			</div>
