@@ -31,8 +31,7 @@ const DiseaseModal = forwardRef<DiseaseModalRef, DiseaseModalProps>(({ onFinish 
 		{ title: "基本信息", description: "填写病害基础信息" },
 		{ title: "症状特征", description: "添加症状描述" },
 		{ title: "防治措施", description: "设置防治方案" },
-		{ title: "环境因素", description: "配置环境条件" },
-		...(mode === "edit" ? [{ title: "诊断规则", description: "设置诊断规则" }] : [])
+		{ title: "环境因素", description: "配置环境条件" }
 	];
 
 	useImperativeHandle(ref, () => ({
@@ -287,56 +286,6 @@ const DiseaseModal = forwardRef<DiseaseModalRef, DiseaseModalProps>(({ onFinish 
 		</Form.List>
 	);
 
-	const renderDiagnosisRules = () => (
-		<Form.List name="diagnosisRules">
-			{(fields, { add, remove }) => (
-				<div className="space-y-4">
-					{fields.map(({ key, name, ...restField }) => (
-						<Card key={key} className="bg-gray-50">
-							<div className="flex justify-between items-start mb-4">
-								<h4 className="text-base font-medium">诊断规则 {name + 1}</h4>
-								<MinusCircleOutlined onClick={() => remove(name)} className="text-red-500" />
-							</div>
-							<div className="space-y-4">
-								<Form.Item
-									{...restField}
-									name={[name, "symptomIds"]}
-									label="相关症状"
-									rules={[{ required: true, message: "请选择相关症状" }]}
-								>
-									<Select mode="multiple" placeholder="请选择相关症状">
-										{/* 这里需要从symptoms中获取选项 */}
-									</Select>
-								</Form.Item>
-
-								<Form.Item
-									{...restField}
-									name={[name, "probability"]}
-									label="诊断概率"
-									rules={[{ required: true, message: "请输入诊断概率" }]}
-								>
-									<Input type="number" min={0} max={100} placeholder="请输入诊断概率(0-100)" />
-								</Form.Item>
-
-								<Form.Item
-									{...restField}
-									name={[name, "recommendedAction"]}
-									label="建议措施"
-									rules={[{ required: true, message: "请输入建议措施" }]}
-								>
-									<TextArea rows={3} placeholder="请输入建议措施" />
-								</Form.Item>
-							</div>
-						</Card>
-					))}
-					<Button type="dashed" onClick={() => add()} block icon={<PlusOutlined />}>
-						添加诊断规则
-					</Button>
-				</div>
-			)}
-		</Form.List>
-	);
-
 	const renderContent = () => {
 		switch (currentStep) {
 			case 0:
@@ -347,8 +296,6 @@ const DiseaseModal = forwardRef<DiseaseModalRef, DiseaseModalProps>(({ onFinish 
 				return renderTreatments();
 			case 3:
 				return renderEnvironmentFactors();
-			case 4:
-				return mode === "edit" ? renderDiagnosisRules() : null;
 			default:
 				return null;
 		}
