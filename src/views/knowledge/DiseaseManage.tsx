@@ -1,30 +1,74 @@
+import { ReqPage } from "@/api/interface";
 import { Disease } from "@/api/interface/knowledge";
-import KnowledgeModal, { KnowledgeModalRef } from "@/components/Modal/KnowledgeModel";
+import { getDiseaseList } from "@/api/modules/Knowledge";
+import DiseaseModal, { DiseaseModalRef } from "@/components/Modal/DiseaseModal";
 import { DeleteOutlined, EditOutlined, PlusOutlined, SearchOutlined } from "@ant-design/icons";
-import { Button, Card, Input, Select, Space, Table, Tag, Tooltip } from "antd";
+import {
+	Button,
+	Card,
+	Input,
+	Popconfirm,
+	Select,
+	Space,
+	Table,
+	TableColumnType,
+	Tag,
+	Tooltip
+} from "antd";
 import clsx from "clsx";
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 const { Search } = Input;
 const { Option } = Select;
 
 const DiseaseManage: React.FC = () => {
-	const knowledgeModalRef = useRef<KnowledgeModalRef>(null);
+	const diseaseModalRef = useRef<DiseaseModalRef>(null);
 	const [diseases, setDiseases] = useState<Disease[]>([]);
 	const [loading, setLoading] = useState(false);
 	const [searchText, setSearchText] = useState("");
 	const [selectedCrop, setSelectedCrop] = useState<string>("all");
+	const [total, setTotal] = useState(0);
+	const [params, setParams] = useState<ReqPage>({
+		page: 1,
+		pageSize: 10
+	});
 
-	const handleAddDisease = () => {
-		knowledgeModalRef.current?.open("add");
+	const fetchDiseaseList = async (params: ReqPage) => {
+		setLoading(true);
+		try {
+			const res = await getDiseaseList(params);
+			setDiseases(res.data?.list || []);
+			setTotal(res.data?.total || 0);
+		} catch (error) {
+			console.error(error);
+		} finally {
+			setLoading(false);
+		}
 	};
 
-	const columns = [
+	useEffect(() => {
+		fetchDiseaseList({ page: 1, pageSize: 10 });
+	}, []);
+
+	const handleAddDisease = () => {
+		diseaseModalRef.current?.open("add");
+	};
+
+	const handleEditDisease = (record: Disease) => {
+		diseaseModalRef.current?.open("edit", record);
+	};
+
+	const handleDeleteDisease = (record: Disease) => {
+		// knowledgeModalRef.current?.open("delete", record);
+		console.log(record);
+	};
+
+	const columns: TableColumnType<Disease>[] = [
 		{
 			title: "病害名称",
 			dataIndex: "name",
 			key: "name",
-			render: (text: string) => <span className="font-medium">{text}</span>
+			render: text => <span className="font-medium">{text}</span>
 		},
 		{
 			title: "别名",
@@ -35,7 +79,7 @@ const DiseaseManage: React.FC = () => {
 			title: "作物",
 			dataIndex: ["crop", "name"],
 			key: "crop",
-			render: (text: string) => <Tag color="blue">{text}</Tag>
+			render: text => <Tag color="blue">{text}</Tag>
 		},
 		{
 			title: "病因",
@@ -52,14 +96,19 @@ const DiseaseManage: React.FC = () => {
 		{
 			title: "操作",
 			key: "action",
-			render: (_: any, record: Disease) => (
+			render: (_: any, record) => (
 				<Space size="middle">
 					<Tooltip title="编辑">
-						<Button type="link" icon={<EditOutlined />} />
+						<Button type="link" icon={<EditOutlined />} onClick={() => handleEditDisease(record)} />
 					</Tooltip>
-					<Tooltip title="删除">
-						<Button type="link" danger icon={<DeleteOutlined />} />
-					</Tooltip>
+					<Popconfirm
+						title="确定删除该病害吗？"
+						onConfirm={() => handleDeleteDisease(record)}
+						okText="确定"
+						cancelText="取消"
+					>
+						<Button type="link" icon={<DeleteOutlined />} />
+					</Popconfirm>
 				</Space>
 			)
 		}
@@ -121,21 +170,25 @@ const DiseaseManage: React.FC = () => {
 			</div>
 
 			<Card>
-				<Table
+				<Table<Disease>
 					columns={columns}
 					dataSource={diseases}
 					loading={loading}
 					rowKey="id"
 					pagination={{
-						total: diseases.length,
-						pageSize: 10,
+						total,
+						pageSize: params.pageSize,
 						showSizeChanger: true,
 						showQuickJumper: true,
-						showTotal: total => `共 ${total} 项`
+						showTotal: total => `共 ${total} 项`,
+						onChange: (page, pageSize) => {
+							setParams({ ...params, page, pageSize });
+							fetchDiseaseList({ ...params, page, pageSize });
+						}
 					}}
 				/>
 			</Card>
-			<KnowledgeModal ref={knowledgeModalRef} />
+			<DiseaseModal ref={diseaseModalRef} onFinish={() => fetchDiseaseList(params)} />
 		</div>
 	);
 };

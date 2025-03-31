@@ -9,13 +9,13 @@ import {
 } from "@/api/interface/knowledge/disease";
 
 // * 获取病害
-export const getDisease = async (params: ReqPage) => {
-	return http.get<ResDisease>("/knowledge/disease", params, { loading: false });
+export const getDisease = async () => {
+	return http.get<ResDisease>("/knowledge/disease", {}, { loading: false });
 };
 
 // * 获取病害列表
-export const getDiseaseList = async () => {
-	return http.get<ResDiseaseList>("/knowledge/disease/list", {}, { loading: false });
+export const getDiseaseList = async (params: ReqPage) => {
+	return http.get<ResDiseaseList>("/knowledge/disease/list", params, { loading: false });
 };
 
 // * 获取病害详情
