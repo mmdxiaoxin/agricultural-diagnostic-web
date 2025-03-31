@@ -172,9 +172,15 @@ const DiagnosisHistoryPage: React.FC = () => {
 	// 表格列定义
 	const columns: ColumnsType<DiagnosisHistory> = [
 		{
-			title: "诊断时间",
+			title: "创建时间",
 			dataIndex: "createdAt",
-			width: 180,
+			render: text => (
+				<Text className="text-gray-600">{dayjs(text).format("YYYY-MM-DD HH:mm:ss")}</Text>
+			)
+		},
+		{
+			title: "最近诊断",
+			dataIndex: "updatedAt",
 			render: text => (
 				<Text className="text-gray-600">{dayjs(text).format("YYYY-MM-DD HH:mm:ss")}</Text>
 			)
@@ -182,7 +188,6 @@ const DiagnosisHistoryPage: React.FC = () => {
 		{
 			title: "状态",
 			dataIndex: "status",
-			width: 100,
 			render: (status: DiagnosisHistory["status"]) => (
 				<Tag color={DIAGNOSIS_STATUS_COLOR[status]} className="px-3 py-1 rounded-full">
 					{DIAGNOSIS_STATUS_TEXT[status]}
@@ -192,7 +197,6 @@ const DiagnosisHistoryPage: React.FC = () => {
 		{
 			title: "诊断结果",
 			dataIndex: "diagnosisResult",
-			width: 200,
 			render: (diagnosisResult: DiagnosisHistory["diagnosisResult"]) => {
 				if (!diagnosisResult) return <Text type="secondary">无结果</Text>;
 				const predictions = diagnosisResult.predictions;
@@ -225,7 +229,6 @@ const DiagnosisHistoryPage: React.FC = () => {
 			title: "操作",
 			key: "action",
 			fixed: "right",
-			width: 180,
 			render: (_, record) => (
 				<Space>
 					<Button
@@ -423,7 +426,7 @@ const DiagnosisHistoryPage: React.FC = () => {
 					}}
 					loading={loading}
 					onChange={handleTableChange}
-					scroll={{ x: 1000 }}
+					scroll={{ x: true }}
 					className={clsx("transition-all duration-300", isSelectMode && "bg-gray-50")}
 				/>
 			</div>

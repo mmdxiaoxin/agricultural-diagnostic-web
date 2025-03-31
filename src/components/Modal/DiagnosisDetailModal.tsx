@@ -84,7 +84,7 @@ const DiagnosisDetailModal = forwardRef<DiagnosisDetailModalRef>((_, ref) => {
 								诊断时间
 							</Text>
 							<Text className="text-lg">
-								{dayjs(record.createdAt).format("YYYY-MM-DD HH:mm:ss")}
+								{dayjs(record.updatedAt).format("YYYY-MM-DD HH:mm:ss")}
 							</Text>
 						</div>
 						<div className="bg-gray-50 p-4 rounded-lg">
