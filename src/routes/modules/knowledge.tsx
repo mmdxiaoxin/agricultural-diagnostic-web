@@ -29,6 +29,15 @@ const knowledgeRoutes: RouteObjectEx[] = [
 			title: "第三方知识库",
 			key: "knowledge-external"
 		}
+	},
+	{
+		path: "/knowledge/crop",
+		element: lazyLoad(React.lazy(() => import("@/views/knowledge/CropManage"))),
+		meta: {
+			requiresAuth: true,
+			title: "作物管理",
+			key: "knowledge-crop"
+		}
 	}
 ];
 export default knowledgeRoutes;
