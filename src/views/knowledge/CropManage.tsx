@@ -1,12 +1,12 @@
 import { Crop } from "@/api/interface/knowledge/crop"; // 假设您有一个 Crop 类型
+import { deleteCrop, getCropsList } from "@/api/modules/Knowledge";
 import CropModal, { CropModalRef } from "@/components/Modal/CropModal";
 import { DeleteOutlined, EditOutlined, PlusOutlined, SearchOutlined } from "@ant-design/icons";
-import { Button, Card, Input, Select, Space, Table, Tooltip } from "antd";
+import { Button, Card, Input, message, Modal, Space, Table, Tooltip } from "antd";
 import clsx from "clsx";
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 const { Search } = Input;
-const { Option } = Select;
 
 const CropManage: React.FC = () => {
 	const [crops, setCrops] = useState<Crop[]>([]);
@@ -15,8 +15,45 @@ const CropManage: React.FC = () => {
 
 	const cropModalRef = useRef<CropModalRef>(null);
 
+	const fetchCrops = async (keyword?: string) => {
+		setLoading(true);
+		try {
+			const res = await getCropsList({ page: 1, pageSize: 10, keyword: keyword });
+			if (!res.data) return;
+			setCrops(res?.data.list || []);
+		} catch (error) {
+			console.error(error);
+		} finally {
+			setLoading(false);
+		}
+	};
+
+	const handleSearch = (value: string) => {
+		fetchCrops(value);
+	};
+
+	useEffect(() => {
+		fetchCrops();
+	}, []);
+
 	const handleAddCrop = () => {
 		cropModalRef.current?.open("add");
+	};
+
+	const handleEditCrop = (crop: Crop) => {
+		cropModalRef.current?.open("edit", crop);
+	};
+
+	const handleDeleteCrop = (crop: Crop) => {
+		Modal.confirm({
+			title: "删除作物",
+			content: `确定删除作物 ${crop.name} 吗？`,
+			onOk: async () => {
+				await deleteCrop(crop.id);
+				message.success("删除成功");
+				fetchCrops();
+			}
+		});
 	};
 
 	const columns = [
@@ -42,10 +79,15 @@ const CropManage: React.FC = () => {
 			render: (_: any, record: Crop) => (
 				<Space size="middle">
 					<Tooltip title="编辑">
-						<Button type="link" icon={<EditOutlined />} />
+						<Button type="link" icon={<EditOutlined />} onClick={() => handleEditCrop(record)} />
 					</Tooltip>
 					<Tooltip title="删除">
-						<Button type="link" danger icon={<DeleteOutlined />} />
+						<Button
+							type="link"
+							danger
+							icon={<DeleteOutlined />}
+							onClick={() => handleDeleteCrop(record)}
+						/>
 					</Tooltip>
 				</Space>
 			)
@@ -83,9 +125,9 @@ const CropManage: React.FC = () => {
 					<div className="flex justify-between items-center">
 						<div className="flex space-x-4">
 							<Search
-								placeholder="搜索作物名称"
+								placeholder="搜索关键词"
 								allowClear
-								onSearch={value => setSearchText(value)}
+								onSearch={handleSearch}
 								className="w-64"
 								prefix={<SearchOutlined />}
 							/>
@@ -112,7 +154,7 @@ const CropManage: React.FC = () => {
 					}}
 				/>
 			</Card>
-			<CropModal ref={cropModalRef} />
+			<CropModal ref={cropModalRef} onSubmit={() => fetchCrops()} />
 		</div>
 	);
 };

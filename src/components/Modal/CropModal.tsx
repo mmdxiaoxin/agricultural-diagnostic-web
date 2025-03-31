@@ -1,3 +1,4 @@
+import { createCrop, updateCrop } from "@/api/modules/Knowledge";
 import { Button, Form, Input, message, Modal } from "antd";
 import { forwardRef, useImperativeHandle, useState } from "react";
 
@@ -7,7 +8,7 @@ export interface CropModalProps {
 }
 
 export interface CropModalRef {
-	open: (type: "add" | "edit" | "view", data?: CropModalForm) => void;
+	open: (type: "add" | "edit" | "view", data?: CropModalForm & { id: number }) => void;
 	close: () => void;
 }
 
@@ -20,12 +21,15 @@ type CropModalForm = {
 const CropModal = forwardRef<CropModalRef, CropModalProps>(({ onReset, onSubmit }, ref) => {
 	const [form] = Form.useForm();
 	const [visible, setVisible] = useState(false);
+	const [loading, setLoading] = useState(false);
 	const [type, setType] = useState<"add" | "edit" | "view">("add");
+	const [corpId, setCorpId] = useState<number>();
 
 	useImperativeHandle(ref, () => ({
 		open: (type, data) => {
 			form.setFieldsValue(data);
 			setType(type);
+			setCorpId(data?.id);
 			setVisible(true);
 		},
 		close: () => {
@@ -40,10 +44,23 @@ const CropModal = forwardRef<CropModalRef, CropModalProps>(({ onReset, onSubmit 
 		onReset?.();
 	};
 
-	const handleFinish = (values: any) => {
-		console.log("Form Values:", values);
-		onSubmit?.(values);
-		message.success("作物信息提交成功");
+	const handleFinish = async (values: CropModalForm) => {
+		setLoading(true);
+		try {
+			if (type === "add") {
+				await createCrop(values);
+			} else if (type === "edit") {
+				if (!corpId) return;
+				await updateCrop(corpId, values);
+			}
+			message.success("提交成功");
+			handleCancel();
+			onSubmit?.(values);
+		} catch (error) {
+			console.error(error);
+		} finally {
+			setLoading(false);
+		}
 	};
 
 	const getTitle = (type: "add" | "edit" | "view") => {
@@ -81,12 +98,12 @@ const CropModal = forwardRef<CropModalRef, CropModalProps>(({ onReset, onSubmit 
 					<Input />
 				</Form.Item>
 
-				<Form.Item label="生长周期" name="growthStage">
+				<Form.Item label="生长阶段" name="growthStage">
 					<Input />
 				</Form.Item>
 
 				<Form.Item wrapperCol={{ span: 24, offset: 6 }}>
-					<Button type="primary" htmlType="submit">
+					<Button type="primary" htmlType="submit" loading={loading}>
 						提交
 					</Button>
 				</Form.Item>
