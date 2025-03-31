@@ -1,11 +1,15 @@
 import http from "@/api";
 import {
+	Crop,
 	ReqCreateCrop,
 	ReqCropList,
 	ReqUpdateCrop,
 	ResCropDetail,
 	ResCropList
 } from "@/api/interface/knowledge";
+
+// * 获取全部作物
+export const getCrops = async () => http.get<Crop[]>("/knowledge/crop", {}, { loading: false });
 
 // * 获取作物列表
 export const getCropsList = async (params: ReqCropList) =>

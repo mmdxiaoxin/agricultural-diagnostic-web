@@ -1,25 +1,30 @@
+import { Crop, Disease } from "@/api/interface/knowledge";
+import { getCrops } from "@/api/modules/Knowledge/crop";
 import { MinusCircleOutlined, PlusOutlined, UploadOutlined } from "@ant-design/icons";
-import { Button, Card, Form, Input, Modal, Select, Space, Upload, Steps, message } from "antd";
-import React, { forwardRef, useImperativeHandle, useState } from "react";
-import clsx from "clsx";
+import { Button, Card, Form, Input, Modal, Select, Space, Steps, Upload, message } from "antd";
+import { forwardRef, useEffect, useImperativeHandle, useState } from "react";
 
 const { Option } = Select;
 const { TextArea } = Input;
 
 export type DiseaseModalRef = {
-	open: (mode: "edit" | "add", initialValues?: any) => void;
+	open: (mode: "edit" | "add", initialValues?: Disease) => void;
 	close: () => void;
 };
 
 export type DiseaseModalProps = {
-	onFinish: (values: any) => void;
+	onFinish: (values: Omit<Disease, "id" | "createdAt" | "updatedAt">) => void;
 };
 
 const DiseaseModal = forwardRef<DiseaseModalRef, DiseaseModalProps>(({ onFinish }, ref) => {
 	const [visible, setVisible] = useState(false);
 	const [mode, setMode] = useState<"edit" | "add">("add");
-	const [initialValues, setInitialValues] = useState<any>({});
 	const [currentStep, setCurrentStep] = useState(0);
+	const [crops, setCrops] = useState<Crop[]>([]);
+	const [diseaseId, setDiseaseId] = useState<number>(0);
+	const [initLoading, setInitLoading] = useState(false);
+	const [formData, setFormData] = useState<Omit<Disease, "id" | "createdAt" | "updatedAt">>();
+
 	const [form] = Form.useForm();
 
 	const steps = [
@@ -27,15 +32,17 @@ const DiseaseModal = forwardRef<DiseaseModalRef, DiseaseModalProps>(({ onFinish 
 		{ title: "症状特征", description: "添加症状描述" },
 		{ title: "防治措施", description: "设置防治方案" },
 		{ title: "环境因素", description: "配置环境条件" },
-		{ title: "诊断规则", description: "设置诊断规则" }
+		...(mode === "edit" ? [{ title: "诊断规则", description: "设置诊断规则" }] : [])
 	];
 
 	useImperativeHandle(ref, () => ({
-		open: (mode: "edit" | "add", initialValues?: any) => {
+		open: (mode: "edit" | "add", initialValues?: Disease) => {
 			setMode(mode);
-			if (initialValues) {
-				setInitialValues(initialValues);
-				form.setFieldsValue(initialValues);
+			if (mode === "edit" && initialValues) {
+				const { id, ...rest } = initialValues;
+				setDiseaseId(id);
+				form.setFieldsValue(rest);
+				setFormData(rest);
 			}
 			setVisible(true);
 		},
@@ -46,22 +53,60 @@ const DiseaseModal = forwardRef<DiseaseModalRef, DiseaseModalProps>(({ onFinish 
 		}
 	}));
 
+	const fetchCrops = async () => {
+		setInitLoading(true);
+		try {
+			const res = await getCrops();
+			setCrops(res.data || []);
+		} catch (error) {
+			console.error(error);
+		} finally {
+			setInitLoading(false);
+		}
+	};
+
+	useEffect(() => {
+		fetchCrops();
+	}, []);
+
 	const handleNext = async () => {
 		try {
 			const values = await form.validateFields();
 			if (currentStep < steps.length - 1) {
+				setFormData(prev => ({ ...prev, ...values }));
 				setCurrentStep(currentStep + 1);
 			} else {
-				onFinish(values);
-				setVisible(false);
+				form.submit();
 			}
 		} catch (error) {
-			message.error("请填写必填项");
+			message.error("请检查表单需求！");
 		}
 	};
 
 	const handlePrev = () => {
 		setCurrentStep(currentStep - 1);
+	};
+
+	const handleFinish = async (values: Omit<Disease, "id" | "createdAt" | "updatedAt">) => {
+		try {
+			const finalValues = { ...formData, ...values };
+			if (mode === "edit") {
+				console.log("edit", diseaseId, finalValues);
+				onFinish(finalValues);
+			} else {
+				console.log("add", finalValues);
+				onFinish(finalValues);
+			}
+			handleCancel();
+		} catch (error) {
+			message.error("请检查表单需求！");
+		}
+	};
+
+	const handleCancel = () => {
+		setVisible(false);
+		form.resetFields();
+		setCurrentStep(0);
 	};
 
 	const renderBasicInfo = () => (
@@ -84,14 +129,16 @@ const DiseaseModal = forwardRef<DiseaseModalRef, DiseaseModalProps>(({ onFinish 
 				rules={[{ required: true, message: "请选择所属作物" }]}
 			>
 				<Select placeholder="请选择作物">
-					<Option value="1">水稻</Option>
-					<Option value="2">小麦</Option>
-					<Option value="3">玉米</Option>
+					{crops.map(crop => (
+						<Option key={crop.id} value={crop.id}>
+							{crop.name}
+						</Option>
+					))}
 				</Select>
 			</Form.Item>
 
-			<Form.Item name="difficultyLevel" label="难度等级">
-				<Select placeholder="请选择难度等级">
+			<Form.Item name="difficultyLevel" label="防治难度等级">
+				<Select placeholder="请选择防治难度等级">
 					<Option value="easy">简单</Option>
 					<Option value="medium">中等</Option>
 					<Option value="hard">困难</Option>
@@ -301,7 +348,7 @@ const DiseaseModal = forwardRef<DiseaseModalRef, DiseaseModalProps>(({ onFinish 
 			case 3:
 				return renderEnvironmentFactors();
 			case 4:
-				return renderDiagnosisRules();
+				return mode === "edit" ? renderDiagnosisRules() : null;
 			default:
 				return null;
 		}
@@ -311,11 +358,8 @@ const DiseaseModal = forwardRef<DiseaseModalRef, DiseaseModalProps>(({ onFinish 
 		<Modal
 			title={mode === "edit" ? "编辑病害信息" : "新增病害信息"}
 			open={visible}
-			onCancel={() => {
-				setVisible(false);
-				form.resetFields();
-				setCurrentStep(0);
-			}}
+			onCancel={handleCancel}
+			loading={initLoading}
 			width={1200}
 			footer={null}
 			style={{ top: 20 }}
@@ -324,11 +368,11 @@ const DiseaseModal = forwardRef<DiseaseModalRef, DiseaseModalProps>(({ onFinish 
 				<Steps current={currentStep} items={steps} />
 			</div>
 
-			<Form form={form} layout="vertical" initialValues={initialValues} className="space-y-4">
+			<Form form={form} layout="vertical" className="space-y-4" onFinish={handleFinish}>
 				<div className="min-h-[400px] max-h-[600px] overflow-y-auto px-4">{renderContent()}</div>
 
 				<div className="flex justify-between mt-6 pt-4 border-t">
-					<Button onClick={() => setVisible(false)}>取消</Button>
+					<Button onClick={handleCancel}>取消</Button>
 					<Space>
 						{currentStep > 0 && <Button onClick={handlePrev}>上一步</Button>}
 						<Button type="primary" onClick={handleNext}>

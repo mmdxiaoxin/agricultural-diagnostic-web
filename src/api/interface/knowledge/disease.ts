@@ -11,7 +11,6 @@ export type Disease = {
 	cropId: number;
 	cause: string;
 	transmission: string;
-	difficultyLevel: string;
 	symptoms: Symptom[];
 	treatments: Treatment[];
 	environmentFactors: EnvironmentFactor[];
