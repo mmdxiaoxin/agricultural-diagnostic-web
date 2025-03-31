@@ -1,8 +1,9 @@
-import React, { useRef, useState } from "react";
-import { Button, Card, Input, Select, Space, Table, Tooltip } from "antd";
-import { DeleteOutlined, EditOutlined, PlusOutlined, SearchOutlined } from "@ant-design/icons";
-import clsx from "clsx";
 import { Crop } from "@/api/interface/knowledge/crop"; // 假设您有一个 Crop 类型
+import CropModal, { CropModalRef } from "@/components/Modal/CropModal";
+import { DeleteOutlined, EditOutlined, PlusOutlined, SearchOutlined } from "@ant-design/icons";
+import { Button, Card, Input, Select, Space, Table, Tooltip } from "antd";
+import clsx from "clsx";
+import React, { useRef, useState } from "react";
 
 const { Search } = Input;
 const { Option } = Select;
@@ -12,8 +13,10 @@ const CropManage: React.FC = () => {
 	const [loading, setLoading] = useState(false);
 	const [searchText, setSearchText] = useState("");
 
+	const cropModalRef = useRef<CropModalRef>(null);
+
 	const handleAddCrop = () => {
-		// 添加作物的逻辑
+		cropModalRef.current?.open("add");
 	};
 
 	const columns = [
@@ -109,6 +112,7 @@ const CropManage: React.FC = () => {
 					}}
 				/>
 			</Card>
+			<CropModal ref={cropModalRef} />
 		</div>
 	);
 };
