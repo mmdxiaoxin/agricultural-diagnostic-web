@@ -2,11 +2,12 @@ import { DiagnosisHistory } from "@/api/interface/diagnosis";
 import { downloadFile } from "@/api/modules/file";
 import { DIAGNOSIS_STATUS_COLOR, DIAGNOSIS_STATUS_TEXT } from "@/constants/status";
 import { CheckCircleOutlined, ClockCircleOutlined } from "@ant-design/icons";
-import { Card, Image, Modal, Space, Tag, Typography } from "antd";
+import { Button, Card, Drawer, Image, Modal, Space, Tag, Typography } from "antd";
 import clsx from "clsx";
 import dayjs from "dayjs";
 import { forwardRef, useImperativeHandle, useState } from "react";
 import DetectImage from "../DetectImage";
+import DiagnosisLogsList from "../List/DiagnosisLogsList";
 
 const { Text, Title } = Typography;
 
@@ -19,6 +20,7 @@ const DiagnosisDetailModal = forwardRef<DiagnosisDetailModalRef>((_, ref) => {
 	const [open, setOpen] = useState(false);
 	const [record, setRecord] = useState<DiagnosisHistory | null>(null);
 	const [imageUrl, setImageUrl] = useState<string>("");
+	const [drawerVisible, setDrawerVisible] = useState(false);
 
 	useImperativeHandle(ref, () => ({
 		open: (record: DiagnosisHistory) => {
@@ -153,6 +155,16 @@ const DiagnosisDetailModal = forwardRef<DiagnosisDetailModalRef>((_, ref) => {
 					</Card>
 				)}
 			</div>
+			<Button onClick={() => setDrawerVisible(true)}>查看日志</Button>
+			<Drawer
+				title="诊断日志"
+				placement="right"
+				onClose={() => setDrawerVisible(false)}
+				open={drawerVisible}
+				width={400}
+			>
+				<DiagnosisLogsList diagnosisId={record.id} />
+			</Drawer>
 		</Modal>
 	);
 });
