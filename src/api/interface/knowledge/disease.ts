@@ -1,3 +1,4 @@
+import { PageData } from "..";
 import { DiagnosisRule } from "./diagnosis-rule";
 import { EnvironmentFactor } from "./environment-factor";
 import { Symptom } from "./symptom";
@@ -10,6 +11,7 @@ export type Disease = {
 	cropId: number;
 	cause: string;
 	transmission: string;
+	difficultyLevel: string;
 	symptoms: Symptom[];
 	treatments: Treatment[];
 	environmentFactors: EnvironmentFactor[];
@@ -17,3 +19,8 @@ export type Disease = {
 	createdAt: string;
 	updatedAt: string;
 };
+export type ReqCreateDisease = Omit<Disease, "id" | "createdAt" | "updatedAt">;
+export type ReqUpdateDisease = Partial<ReqCreateDisease>;
+
+export type ResDisease = Disease[];
+export type ResDiseaseList = PageData<Disease>;
