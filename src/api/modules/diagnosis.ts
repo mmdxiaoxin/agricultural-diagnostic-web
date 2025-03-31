@@ -40,17 +40,17 @@ export const startDiagnosisAsync = async (params: ReqStartDiagnoseDisease) => {
 
 // * 获取诊断状态
 export const getDiagnosisStatus = async (id: number) => {
-	return http.get<any>(`/diagnosis/${id}/status`);
+	return http.get<any>(`/diagnosis/${id}/status`, { loading: false });
 };
 
 // * 获取诊断日志
 export const getDiagnosisLog = async (id: number) => {
-	return http.get<DiagnosisLog>(`/diagnosis/${id}/log`);
+	return http.get<DiagnosisLog>(`/diagnosis/${id}/log`, { loading: false });
 };
 
 // * 获取诊断日志列表
 export const getDiagnosisLogList = async (id: number, params: ReqPage) => {
-	return http.get<PageData<DiagnosisLog>>(`/diagnosis/${id}/log/list`, params);
+	return http.get<PageData<DiagnosisLog>>(`/diagnosis/${id}/log/list`, params, { loading: false });
 };
 
 // * 获取诊断支持信息
