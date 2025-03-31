@@ -1,5 +1,6 @@
 import { Crop, Disease } from "@/api/interface/knowledge";
 import { getCrops } from "@/api/modules/Knowledge/crop";
+import { createKnowledge, updateKnowledge } from "@/api/modules/Knowledge/knowledge";
 import { MinusCircleOutlined, PlusOutlined, UploadOutlined } from "@ant-design/icons";
 import { Button, Card, Form, Input, Modal, Select, Space, Steps, Upload, message } from "antd";
 import { forwardRef, useEffect, useImperativeHandle, useState } from "react";
@@ -38,7 +39,7 @@ const DiseaseModal = forwardRef<DiseaseModalRef, DiseaseModalProps>(({ onFinish 
 		open: (mode: "edit" | "add", initialValues?: Disease) => {
 			setMode(mode);
 			if (mode === "edit" && initialValues) {
-				const { id, ...rest } = initialValues;
+				const { id, createdAt, updatedAt, crop, ...rest } = initialValues;
 				setDiseaseId(id);
 				form.setFieldsValue(rest);
 				setFormData(rest);
@@ -90,15 +91,16 @@ const DiseaseModal = forwardRef<DiseaseModalRef, DiseaseModalProps>(({ onFinish 
 		try {
 			const finalValues = { ...formData, ...values };
 			if (mode === "edit") {
-				console.log("edit", diseaseId, finalValues);
+				await updateKnowledge(diseaseId, finalValues);
 				onFinish(finalValues);
 			} else {
-				console.log("add", finalValues);
+				await createKnowledge(finalValues);
 				onFinish(finalValues);
 			}
+			message.success("操作成功！");
 			handleCancel();
 		} catch (error) {
-			message.error("请检查表单需求！");
+			console.log(error);
 		}
 	};
 

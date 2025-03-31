@@ -1,4 +1,5 @@
-import { PageData } from "..";
+import { ReqPage } from "..";
+import { Crop } from "./crop";
 import { DiagnosisRule } from "./diagnosis-rule";
 import { EnvironmentFactor } from "./environment-factor";
 import { Symptom } from "./symptom";
@@ -9,6 +10,7 @@ export type Disease = {
 	name: string;
 	alias: string;
 	cropId: number;
+	crop?: Crop;
 	cause: string;
 	transmission: string;
 	symptoms: Symptom[];
@@ -20,6 +22,7 @@ export type Disease = {
 };
 export type ReqCreateDisease = Omit<Disease, "id" | "createdAt" | "updatedAt">;
 export type ReqUpdateDisease = Partial<ReqCreateDisease>;
-
-export type ResDisease = Disease[];
-export type ResDiseaseList = PageData<Disease>;
+export type ReqDiseaseList = ReqPage & {
+	cropId?: number;
+	keyword?: string;
+};

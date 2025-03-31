@@ -1,12 +1,14 @@
 import { ReqPage } from "@/api/interface";
-import { Disease } from "@/api/interface/knowledge";
-import { getDiseaseList } from "@/api/modules/Knowledge";
+import { Crop, Disease } from "@/api/interface/knowledge";
+import { getCrops, getDiseaseList } from "@/api/modules/Knowledge";
+import { deleteKnowledge } from "@/api/modules/Knowledge/knowledge";
 import DiseaseModal, { DiseaseModalRef } from "@/components/Modal/DiseaseModal";
 import { DeleteOutlined, EditOutlined, PlusOutlined, SearchOutlined } from "@ant-design/icons";
 import {
 	Button,
 	Card,
 	Input,
+	message,
 	Popconfirm,
 	Select,
 	Space,
@@ -24,6 +26,7 @@ const { Option } = Select;
 const DiseaseManage: React.FC = () => {
 	const diseaseModalRef = useRef<DiseaseModalRef>(null);
 	const [diseases, setDiseases] = useState<Disease[]>([]);
+	const [crops, setCrops] = useState<Crop[]>([]);
 	const [loading, setLoading] = useState(false);
 	const [searchText, setSearchText] = useState("");
 	const [selectedCrop, setSelectedCrop] = useState<string>("all");
@@ -46,8 +49,13 @@ const DiseaseManage: React.FC = () => {
 		}
 	};
 
+	const fetchCrops = async () => {
+		const res = await getCrops();
+		setCrops(res.data || []);
+	};
+
 	useEffect(() => {
-		fetchDiseaseList({ page: 1, pageSize: 10 });
+		Promise.allSettled([fetchDiseaseList(params), fetchCrops()]);
 	}, []);
 
 	const handleAddDisease = () => {
@@ -58,9 +66,15 @@ const DiseaseManage: React.FC = () => {
 		diseaseModalRef.current?.open("edit", record);
 	};
 
-	const handleDeleteDisease = (record: Disease) => {
-		// knowledgeModalRef.current?.open("delete", record);
-		console.log(record);
+	const handleDeleteDisease = async (record: Disease) => {
+		try {
+			await deleteKnowledge(record.id);
+			message.success("删除成功");
+			fetchDiseaseList(params);
+		} catch (error) {
+			console.error(error);
+			message.error("删除失败");
+		}
 	};
 
 	const columns: TableColumnType<Disease>[] = [
@@ -152,14 +166,16 @@ const DiseaseManage: React.FC = () => {
 								prefix={<SearchOutlined />}
 							/>
 							<Select
-								defaultValue="all"
+								defaultValue="0"
 								style={{ width: 120 }}
 								onChange={value => setSelectedCrop(value)}
 							>
-								<Option value="all">全部作物</Option>
-								<Option value="rice">水稻</Option>
-								<Option value="wheat">小麦</Option>
-								<Option value="corn">玉米</Option>
+								<Option value="0">全部作物</Option>
+								{crops.map(crop => (
+									<Option key={crop.id} value={crop.id}>
+										{crop.name}
+									</Option>
+								))}
 							</Select>
 						</div>
 						<Button type="primary" icon={<PlusOutlined />} onClick={handleAddDisease}>

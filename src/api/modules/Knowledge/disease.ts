@@ -1,21 +1,15 @@
 import http from "@/api";
-import { ReqPage } from "@/api/interface";
-import {
-	Disease,
-	ReqCreateDisease,
-	ReqUpdateDisease,
-	ResDisease,
-	ResDiseaseList
-} from "@/api/interface/knowledge/disease";
+import { PageData, ReqPage } from "@/api/interface";
+import { Disease, ReqCreateDisease, ReqUpdateDisease } from "@/api/interface/knowledge/disease";
 
 // * 获取病害
 export const getDisease = async () => {
-	return http.get<ResDisease>("/knowledge/disease", {}, { loading: false });
+	return http.get<Disease[]>("/knowledge/disease", {}, { loading: false });
 };
 
 // * 获取病害列表
 export const getDiseaseList = async (params: ReqPage) => {
-	return http.get<ResDiseaseList>("/knowledge/disease/list", params, { loading: false });
+	return http.get<PageData<Disease>>("/knowledge/disease/list", params, { loading: false });
 };
 
 // * 获取病害详情

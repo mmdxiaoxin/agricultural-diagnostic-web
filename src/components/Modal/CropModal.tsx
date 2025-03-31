@@ -1,3 +1,4 @@
+import { Crop } from "@/api/interface/knowledge";
 import { createCrop, updateCrop } from "@/api/modules/Knowledge";
 import { Button, Form, Input, message, Modal } from "antd";
 import { forwardRef, useImperativeHandle, useState } from "react";
@@ -8,7 +9,7 @@ export interface CropModalProps {
 }
 
 export interface CropModalRef {
-	open: (type: "add" | "edit" | "view", data?: CropModalForm & { id: number }) => void;
+	open: (type: "add" | "edit" | "view", data?: Crop) => void;
 	close: () => void;
 }
 
