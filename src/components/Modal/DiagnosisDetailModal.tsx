@@ -168,7 +168,7 @@ const DiagnosisDetailModal = forwardRef<DiagnosisDetailModalRef>((_, ref) => {
 				placement="right"
 				onClose={() => setDrawerVisible(false)}
 				open={drawerVisible}
-				width={400}
+				width={600}
 			>
 				<DiagnosisLogsList diagnosisId={record.id} />
 			</Drawer>
