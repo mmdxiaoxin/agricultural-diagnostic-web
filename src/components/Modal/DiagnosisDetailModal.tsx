@@ -6,6 +6,7 @@ import { Button, Card, Drawer, Image, Modal, Space, Tag, Typography } from "antd
 import clsx from "clsx";
 import dayjs from "dayjs";
 import { forwardRef, useImperativeHandle, useState } from "react";
+import DiagnosisResultCard from "../Card/DiagnosisResultCard";
 import DetectImage from "../DetectImage";
 import DiagnosisLogsList from "../List/DiagnosisLogsList";
 
@@ -96,22 +97,7 @@ const DiagnosisDetailModal = forwardRef<DiagnosisDetailModalRef>((_, ref) => {
 							{record.diagnosisResult ? (
 								<div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
 									{record.diagnosisResult?.predictions?.map((prediction, index) => (
-										<div
-											key={index}
-											className="bg-white p-2 rounded-md border border-gray-100 shadow-sm hover:shadow-md transition-shadow"
-										>
-											<div className="flex items-center justify-between gap-1">
-												<Text strong className="text-sm">
-													{prediction.type === "classify" ? "分类" : "检测"}
-												</Text>
-												<Tag color="blue" className="text-xs">
-													{(prediction.confidence * 100).toFixed(2)}%
-												</Tag>
-											</div>
-											<Text className="block mt-0.5 text-gray-700 text-sm truncate">
-												{prediction.class_name}
-											</Text>
-										</div>
+										<DiagnosisResultCard key={index} prediction={prediction} />
 									))}
 								</div>
 							) : (
