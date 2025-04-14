@@ -1,15 +1,14 @@
 import { Crop, Disease } from "@/api/interface/knowledge";
-import { getCrops } from "@/api/modules/Knowledge/crop";
 import { createKnowledge, updateKnowledge } from "@/api/modules/Knowledge/knowledge";
 import { MinusCircleOutlined, PlusOutlined, UploadOutlined } from "@ant-design/icons";
 import { Button, Card, Form, Input, Modal, Select, Space, Steps, Upload, message } from "antd";
-import { forwardRef, useEffect, useImperativeHandle, useState } from "react";
+import { forwardRef, useImperativeHandle, useState } from "react";
 
 const { Option } = Select;
 const { TextArea } = Input;
 
 export type DiseaseModalRef = {
-	open: (mode: "edit" | "add", initialValues?: Disease) => void;
+	open: (mode: "edit" | "add", initialValues?: Disease, crops?: Crop[]) => void;
 	close: () => void;
 };
 
@@ -23,7 +22,6 @@ const DiseaseModal = forwardRef<DiseaseModalRef, DiseaseModalProps>(({ onFinish 
 	const [currentStep, setCurrentStep] = useState(0);
 	const [crops, setCrops] = useState<Crop[]>([]);
 	const [diseaseId, setDiseaseId] = useState<number>(0);
-	const [initLoading, setInitLoading] = useState(false);
 	const [formData, setFormData] = useState<Omit<Disease, "id" | "createdAt" | "updatedAt">>();
 
 	const [form] = Form.useForm();
@@ -36,8 +34,9 @@ const DiseaseModal = forwardRef<DiseaseModalRef, DiseaseModalProps>(({ onFinish 
 	];
 
 	useImperativeHandle(ref, () => ({
-		open: (mode: "edit" | "add", initialValues?: Disease) => {
+		open: (mode: "edit" | "add", initialValues?: Disease, crops?: Crop[]) => {
 			setMode(mode);
+			setCrops(crops || []);
 			if (mode === "edit" && initialValues) {
 				const { id, createdAt, updatedAt, crop, ...rest } = initialValues;
 				setDiseaseId(id);
@@ -52,22 +51,6 @@ const DiseaseModal = forwardRef<DiseaseModalRef, DiseaseModalProps>(({ onFinish 
 			setCurrentStep(0);
 		}
 	}));
-
-	const fetchCrops = async () => {
-		setInitLoading(true);
-		try {
-			const res = await getCrops();
-			setCrops(res.data || []);
-		} catch (error) {
-			console.error(error);
-		} finally {
-			setInitLoading(false);
-		}
-	};
-
-	useEffect(() => {
-		fetchCrops();
-	}, []);
 
 	const handleNext = async () => {
 		try {
@@ -308,17 +291,25 @@ const DiseaseModal = forwardRef<DiseaseModalRef, DiseaseModalProps>(({ onFinish 
 			title={mode === "edit" ? "编辑病害信息" : "新增病害信息"}
 			open={visible}
 			onCancel={handleCancel}
-			loading={initLoading}
-			width={1200}
+			width={{
+				xs: "90%",
+				sm: "80%",
+				md: "70%",
+				lg: "60%",
+				xl: "60%",
+				xxl: "60%"
+			}}
 			footer={null}
-			style={{ top: 20 }}
+			className="top-[20px]"
 		>
 			<div className="mb-6">
 				<Steps current={currentStep} items={steps} />
 			</div>
 
 			<Form form={form} layout="vertical" className="space-y-4" onFinish={handleFinish}>
-				<div className="min-h-[400px] max-h-[600px] overflow-y-auto px-4">{renderContent()}</div>
+				<div className="min-h-[400px] max-h-[calc(100vh-300px)] overflow-y-auto px-4">
+					{renderContent()}
+				</div>
 
 				<div className="flex justify-between mt-6 pt-4 border-t">
 					<Button onClick={handleCancel}>取消</Button>

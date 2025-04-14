@@ -57,11 +57,11 @@ const DiseaseManage: React.FC = () => {
 	}, []);
 
 	const handleAddDisease = () => {
-		diseaseModalRef.current?.open("add");
+		diseaseModalRef.current?.open("add", undefined, crops);
 	};
 
 	const handleEditDisease = (record: Disease) => {
-		diseaseModalRef.current?.open("edit", record);
+		diseaseModalRef.current?.open("edit", record, crops);
 	};
 
 	const handleDeleteDisease = async (record: Disease) => {
