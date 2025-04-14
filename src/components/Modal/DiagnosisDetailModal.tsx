@@ -98,8 +98,15 @@ const DiagnosisDetailModal = forwardRef<DiagnosisDetailModalRef>((_, ref) => {
 				setImageUrl("");
 			}}
 			footer={null}
-			width={900}
-			className="diagnosis-detail-modal"
+			width={{
+				xs: "90%",
+				sm: "80%",
+				md: "70%",
+				lg: "60%",
+				xl: "60%",
+				xxl: "60%"
+			}}
+			className="top-8"
 		>
 			<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 				{/* 左侧信息 */}
@@ -144,24 +151,20 @@ const DiagnosisDetailModal = forwardRef<DiagnosisDetailModalRef>((_, ref) => {
 				</Card>
 
 				{/* 右侧图片 */}
-				<Card>
+				<Card className="h-full">
 					<Text type="secondary" className="block mb-4">
 						诊断图片
 					</Text>
-					<div className={clsx("rounded-lg bg-gray-50", "w-full", "relative overflow-y-auto")}>
-						<Image
-							src={imageUrl}
-							alt="诊断图片"
-							className="object-contain w-full h-full aspect-[4/3]"
-							fallback="/images/image-placeholder.png"
-						/>
-						{shouldShowDetectImage && (
+					<div className={clsx("bg-gray-50", "w-full", "overflow-y-auto")}>
+						{shouldShowDetectImage ? (
 							<DetectImage
 								src={imageUrl}
-								className="object-contain w-full h-full aspect-[4/3]"
+								className="object-contain w-full aspect-[4/3]"
 								alt="诊断结果"
 								predictions={predictions}
 							/>
+						) : (
+							<Image src={imageUrl} alt="诊断图片" className="object-contain w-full aspect-[4/3]" />
 						)}
 					</div>
 				</Card>
