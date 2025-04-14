@@ -202,7 +202,10 @@ const DiagnosisHistoryPage: React.FC = () => {
 				const predictions = diagnosisResult.predictions;
 
 				// 生成完整的结果文本
-				const fullResult = predictions || [];
+				const fullResult = (predictions || []).map(
+					prediction =>
+						`${prediction.type === "classify" ? "分类" : "检测"}: ${prediction.class_name} (${(prediction.confidence * 100).toFixed(2)}%)`
+				);
 				const displayPredictions = (predictions || []).slice(0, 2);
 				const hasMore = (predictions || []).length > 2;
 
