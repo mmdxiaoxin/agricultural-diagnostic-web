@@ -13,7 +13,7 @@ interface DiagnosisResultCardProps {
 const DiagnosisResultCard = React.memo(({ prediction }: DiagnosisResultCardProps) => {
 	const content =
 		prediction.type === "classify" && prediction.top5 ? (
-			<div className="w-[300px] h-[300px] p-2">
+			<div className="w-[500px] h-[300px] p-2">
 				<Top5ProbabilityChart predictions={prediction.top5} />
 			</div>
 		) : null;
