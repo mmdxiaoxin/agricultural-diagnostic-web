@@ -60,6 +60,11 @@ const DiagnosisDetailModal = forwardRef<DiagnosisDetailModalRef>((_, ref) => {
 		return record.diagnosisResult.predictions;
 	}, [record]);
 
+	const shouldShowDetectImage = useMemo(() => {
+		if (!predictions.length) return false;
+		return predictions.some(prediction => prediction.type === "detect");
+	}, [predictions]);
+
 	const Row = ({ index, style }: { index: number; style: React.CSSProperties }) => {
 		const prediction = predictions[index];
 		return (
@@ -139,34 +144,25 @@ const DiagnosisDetailModal = forwardRef<DiagnosisDetailModalRef>((_, ref) => {
 				</Card>
 
 				{/* 右侧图片 */}
-				<Card className="h-full">
+				<Card>
 					<Text type="secondary" className="block mb-4">
 						诊断图片
 					</Text>
-					<div
-						className={clsx(
-							"rounded-lg bg-gray-50",
-							"w-full",
-							"relative aspect-[4/3] overflow-y-auto"
-						)}
-					>
+					<div className={clsx("rounded-lg bg-gray-50", "w-full", "relative overflow-y-auto")}>
 						<Image
 							src={imageUrl}
 							alt="诊断图片"
-							className="object-contain w-full h-full"
+							className="object-contain w-full h-full aspect-[4/3]"
 							fallback="/images/image-placeholder.png"
 						/>
-						{record.diagnosisResult?.predictions &&
-							record.diagnosisResult?.predictions?.length > 0 &&
-							record.diagnosisResult?.predictions?.some(
-								prediction => prediction.type === "detect"
-							) && (
-								<DetectImage
-									src={imageUrl}
-									alt="诊断结果"
-									predictions={record.diagnosisResult?.predictions || []}
-								/>
-							)}
+						{shouldShowDetectImage && (
+							<DetectImage
+								src={imageUrl}
+								className="object-contain w-full h-full aspect-[4/3]"
+								alt="诊断结果"
+								predictions={predictions}
+							/>
+						)}
 					</div>
 				</Card>
 			</div>
