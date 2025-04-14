@@ -1,6 +1,5 @@
 import { LinkOutlined } from "@ant-design/icons";
-import { Button, Drawer, List, message, Typography } from "antd";
-import copy from "copy-to-clipboard";
+import { Button, Drawer, List, Typography } from "antd";
 import { forwardRef, useImperativeHandle, useState } from "react";
 
 const { Paragraph } = Typography;
@@ -35,7 +34,7 @@ const ExternalSourceDrawer = forwardRef<ExternalSourceDrawerRef, ExternalSourceD
 
 		const data = [
 			{ name: "农业病虫害信息云数据库", url: "https://cloud.sinoverse.cn/index_bch.html" },
-			{ name: "药用植物病虫害数据库", url: "https://www.pests.cn/" },
+			{ name: "药用植物病虫害数据库", url: "https://www.pests.cn" },
 			{ name: "农业病虫草害图文数据库", url: "https://farm.sino-eco.com/website/bingchonghai" }
 		];
 
@@ -44,19 +43,6 @@ const ExternalSourceDrawer = forwardRef<ExternalSourceDrawerRef, ExternalSourceD
 				onClick(url, name);
 			}
 			handleClose();
-		};
-
-		const copyToClipboard = (text: string) => {
-			try {
-				const success = copy(text);
-				if (success) {
-					message.success("URL已复制到剪贴板");
-				} else {
-					message.error("复制失败");
-				}
-			} catch (err) {
-				message.error("复制失败");
-			}
 		};
 
 		return (
@@ -90,7 +76,7 @@ const ExternalSourceDrawer = forwardRef<ExternalSourceDrawerRef, ExternalSourceD
 								}
 								description={
 									<Paragraph
-										onClick={() => copyToClipboard(item.url)}
+										copyable
 										ellipsis={{ rows: 1, expandable: true }}
 										className="text-blue-400 cursor-pointer hover:text-blue-500"
 									>
