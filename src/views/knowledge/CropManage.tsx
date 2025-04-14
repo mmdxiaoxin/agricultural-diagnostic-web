@@ -11,15 +11,24 @@ const { Search } = Input;
 const CropManage: React.FC = () => {
 	const [crops, setCrops] = useState<Crop[]>([]);
 	const [loading, setLoading] = useState(false);
+	const [total, setTotal] = useState(0);
+	const [currentPage, setCurrentPage] = useState(1);
+	const [pageSize, setPageSize] = useState(10);
+	const [keyword, setKeyword] = useState("");
 
 	const cropModalRef = useRef<CropModalRef>(null);
 
-	const fetchCrops = async (keyword?: string) => {
+	const fetchCrops = async () => {
 		setLoading(true);
 		try {
-			const res = await getCropsList({ page: 1, pageSize: 10, keyword: keyword });
+			const res = await getCropsList({
+				page: currentPage,
+				pageSize: pageSize,
+				keyword: keyword
+			});
 			if (!res.data) return;
 			setCrops(res?.data.list || []);
+			setTotal(res?.data.total || 0);
 		} catch (error) {
 			console.error(error);
 		} finally {
@@ -28,12 +37,19 @@ const CropManage: React.FC = () => {
 	};
 
 	const handleSearch = (value: string) => {
-		fetchCrops(value);
+		setKeyword(value);
+		setCurrentPage(1);
+		fetchCrops();
+	};
+
+	const handleTableChange = (pagination: any) => {
+		setCurrentPage(pagination.current);
+		setPageSize(pagination.pageSize);
 	};
 
 	useEffect(() => {
 		fetchCrops();
-	}, []);
+	}, [currentPage, pageSize]);
 
 	const handleAddCrop = () => {
 		cropModalRef.current?.open("add");
@@ -145,12 +161,14 @@ const CropManage: React.FC = () => {
 					loading={loading}
 					rowKey="id"
 					pagination={{
-						total: crops.length,
-						pageSize: 10,
+						current: currentPage,
+						pageSize: pageSize,
+						total: total,
 						showSizeChanger: true,
 						showQuickJumper: true,
 						showTotal: total => `共 ${total} 项`
 					}}
+					onChange={handleTableChange}
 				/>
 			</Card>
 			<CropModal ref={cropModalRef} onSubmit={() => fetchCrops()} />
