@@ -5,7 +5,8 @@ import { CheckCircleOutlined, ClockCircleOutlined } from "@ant-design/icons";
 import { Button, Card, Drawer, Image, Modal, Space, Tag, Typography } from "antd";
 import clsx from "clsx";
 import dayjs from "dayjs";
-import { forwardRef, useImperativeHandle, useState } from "react";
+import { forwardRef, useImperativeHandle, useMemo, useState } from "react";
+import { FixedSizeList as List } from "react-window";
 import DiagnosisResultCard from "../Card/DiagnosisResultCard";
 import DetectImage from "../DetectImage";
 import DiagnosisLogsList from "../List/DiagnosisLogsList";
@@ -16,6 +17,9 @@ export interface DiagnosisDetailModalRef {
 	open: (record: DiagnosisHistory) => void;
 	close: () => void;
 }
+
+const ITEM_HEIGHT = 100; // 每个卡片的高度
+const ITEM_WIDTH = 300; // 每个卡片的宽度
 
 const DiagnosisDetailModal = forwardRef<DiagnosisDetailModalRef>((_, ref) => {
 	const [open, setOpen] = useState(false);
@@ -49,6 +53,20 @@ const DiagnosisDetailModal = forwardRef<DiagnosisDetailModalRef>((_, ref) => {
 		} catch (error) {
 			console.error("图片加载失败", error);
 		}
+	};
+
+	const predictions = useMemo(() => {
+		if (!record?.diagnosisResult?.predictions) return [];
+		return record.diagnosisResult.predictions;
+	}, [record]);
+
+	const Row = ({ index, style }: { index: number; style: React.CSSProperties }) => {
+		const prediction = predictions[index];
+		return (
+			<div style={style} className="px-2">
+				<DiagnosisResultCard prediction={prediction} />
+			</div>
+		);
 	};
 
 	if (!record) return null;
@@ -90,15 +108,20 @@ const DiagnosisDetailModal = forwardRef<DiagnosisDetailModalRef>((_, ref) => {
 								{dayjs(record.updatedAt).format("YYYY-MM-DD HH:mm:ss")}
 							</Text>
 						</div>
-						<div className="bg-gray-50 p-4 rounded-lg max-h-[250px] overflow-y-auto">
+						<div className="bg-gray-50 p-4 rounded-lg">
 							<Text type="secondary" className="block mb-2">
 								诊断结果
 							</Text>
 							{record.diagnosisResult ? (
-								<div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-									{record.diagnosisResult?.predictions?.map((prediction, index) => (
-										<DiagnosisResultCard key={index} prediction={prediction} />
-									))}
+								<div className="h-[180px]">
+									<List
+										height={180}
+										itemCount={predictions.length}
+										itemSize={ITEM_HEIGHT}
+										width={ITEM_WIDTH}
+									>
+										{Row}
+									</List>
 								</div>
 							) : (
 								<Text type="secondary">无结果</Text>
@@ -116,38 +139,36 @@ const DiagnosisDetailModal = forwardRef<DiagnosisDetailModalRef>((_, ref) => {
 				</Card>
 
 				{/* 右侧图片 */}
-				{record.fileId && (
-					<Card className="h-full">
-						<Text type="secondary" className="block mb-4">
-							诊断图片
-						</Text>
-						<div
-							className={clsx(
-								"rounded-lg bg-gray-50",
-								"w-full",
-								"relative aspect-[4/3] overflow-y-auto"
+				<Card className="h-full">
+					<Text type="secondary" className="block mb-4">
+						诊断图片
+					</Text>
+					<div
+						className={clsx(
+							"rounded-lg bg-gray-50",
+							"w-full",
+							"relative aspect-[4/3] overflow-y-auto"
+						)}
+					>
+						<Image
+							src={imageUrl}
+							alt="诊断图片"
+							className="object-contain w-full h-full"
+							fallback="/images/image-placeholder.png"
+						/>
+						{record.diagnosisResult?.predictions &&
+							record.diagnosisResult?.predictions?.length > 0 &&
+							record.diagnosisResult?.predictions?.some(
+								prediction => prediction.type === "detect"
+							) && (
+								<DetectImage
+									src={imageUrl}
+									alt="诊断结果"
+									predictions={record.diagnosisResult?.predictions || []}
+								/>
 							)}
-						>
-							<Image
-								src={imageUrl}
-								alt="诊断图片"
-								className="object-contain w-full h-full"
-								fallback="/images/image-placeholder.png"
-							/>
-							{record.diagnosisResult?.predictions &&
-								record.diagnosisResult?.predictions?.length > 0 &&
-								record.diagnosisResult?.predictions?.some(
-									prediction => prediction.type === "detect"
-								) && (
-									<DetectImage
-										src={imageUrl}
-										alt="诊断结果"
-										predictions={record.diagnosisResult?.predictions || []}
-									/>
-								)}
-						</div>
-					</Card>
-				)}
+					</div>
+				</Card>
 			</div>
 			<Drawer
 				title="诊断日志"

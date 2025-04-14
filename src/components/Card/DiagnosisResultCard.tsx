@@ -1,5 +1,6 @@
 import { Tag, Typography } from "antd";
 import { Prediction } from "@/api/interface/diagnosis";
+import React from "react";
 
 const { Text, Paragraph } = Typography;
 
@@ -7,7 +8,7 @@ interface DiagnosisResultCardProps {
 	prediction: Prediction;
 }
 
-const DiagnosisResultCard = ({ prediction }: DiagnosisResultCardProps) => {
+const DiagnosisResultCard = React.memo(({ prediction }: DiagnosisResultCardProps) => {
 	return (
 		<div className="bg-white p-2 rounded-md border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
 			<div className="flex items-center justify-between gap-1">
@@ -30,6 +31,8 @@ const DiagnosisResultCard = ({ prediction }: DiagnosisResultCardProps) => {
 			</Paragraph>
 		</div>
 	);
-};
+});
+
+DiagnosisResultCard.displayName = "DiagnosisResultCard";
 
 export default DiagnosisResultCard;
