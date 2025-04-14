@@ -303,7 +303,15 @@ const DiseaseModal = forwardRef<DiseaseModalRef, DiseaseModalProps>(({ onFinish 
 			className="top-[20px]"
 		>
 			<div className="mb-6">
-				<Steps current={currentStep} items={steps} />
+				<Steps
+					current={currentStep}
+					items={steps}
+					onChange={current => {
+						if (mode === "edit") {
+							setCurrentStep(current);
+						}
+					}}
+				/>
 			</div>
 
 			<Form form={form} layout="vertical" className="space-y-4" onFinish={handleFinish}>
