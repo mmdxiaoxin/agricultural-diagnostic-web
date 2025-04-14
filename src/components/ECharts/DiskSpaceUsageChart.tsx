@@ -1,6 +1,5 @@
 import { useEcharts } from "@/hooks/useEcharts";
 import * as echarts from "echarts";
-import styles from "./index.module.scss";
 
 export interface DiskSpaceUsageChartProps {
 	usedSpace?: number; // 单位：字节（B）
@@ -78,7 +77,7 @@ const DiskSpaceUsageChart: React.FC<DiskSpaceUsageChartProps> = ({
 
 	const [echartsRef] = useEcharts(option, [usedSpaceInMB, remainingSpaceInMB]);
 
-	return <div ref={echartsRef} className={styles["chart-container"]} {...props} />;
+	return <div ref={echartsRef} className="w-full h-full box-border" {...props} />;
 };
 
 export default DiskSpaceUsageChart;
