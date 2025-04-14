@@ -1,7 +1,7 @@
 import { Tag, Typography } from "antd";
 import { Prediction } from "@/api/interface/diagnosis";
 
-const { Text } = Typography;
+const { Text, Paragraph } = Typography;
 
 interface DiagnosisResultCardProps {
 	prediction: Prediction;
@@ -18,7 +18,16 @@ const DiagnosisResultCard = ({ prediction }: DiagnosisResultCardProps) => {
 					{(prediction.confidence * 100).toFixed(2)}%
 				</Tag>
 			</div>
-			<Text className="block mt-0.5 text-gray-700 text-sm truncate">{prediction.class_name}</Text>
+			<Paragraph
+				copyable
+				ellipsis={{
+					rows: 1,
+					expandable: true
+				}}
+				className="mt-0.5 text-gray-700 text-sm"
+			>
+				{prediction.class_name}
+			</Paragraph>
 		</div>
 	);
 };
