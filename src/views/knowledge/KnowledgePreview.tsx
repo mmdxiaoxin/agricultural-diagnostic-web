@@ -1,174 +1,244 @@
-import React, { useState } from "react";
-import { Card, Tabs, Tag, Typography, Image, Space, Button } from "antd";
-import { BookOutlined, EnvironmentOutlined, MedicineBoxOutlined } from "@ant-design/icons";
+import { Disease } from "@/api/interface/knowledge/disease";
+import { getKnowledge, getKnowledgeDetail } from "@/api/modules/Knowledge/knowledge";
+import {
+	BookOutlined,
+	EnvironmentOutlined,
+	MedicineBoxOutlined,
+	SearchOutlined
+} from "@ant-design/icons";
+import { Button, Card, Image, Input, List, Space, Spin, Tabs, Tag, Typography } from "antd";
 import clsx from "clsx";
+import { motion } from "framer-motion";
+import React, { useEffect, useState } from "react";
 
 const { Title, Paragraph } = Typography;
 const { TabPane } = Tabs;
 
-interface DiseaseDetail {
-	id: number;
-	name: string;
-	alias: string;
-	crop: {
-		name: string;
-	};
-	cause: string;
-	transmission: string;
-	symptoms: Array<{
-		id: number;
-		description: string;
-		imageUrl: string;
-		stage: string;
-	}>;
-	treatments: Array<{
-		id: number;
-		type: "chemical" | "biological" | "physical" | "cultural";
-		method: string;
-		recommendedProducts: string;
-	}>;
-	environmentFactors: Array<{
-		id: number;
-		factor: string;
-		optimalRange: string;
-	}>;
-}
-
 const KnowledgePreview: React.FC = () => {
-	const [disease, setDisease] = useState<DiseaseDetail | null>(null);
+	const [disease, setDisease] = useState<Disease | null>(null);
 	const [loading, setLoading] = useState(false);
+	const [diseaseList, setDiseaseList] = useState<Disease[]>([]);
+	const [searchText, setSearchText] = useState("");
+
+	useEffect(() => {
+		fetchDiseaseList();
+	}, []);
+
+	const fetchDiseaseList = async () => {
+		setLoading(true);
+		try {
+			const res = await getKnowledge();
+			setDiseaseList(res.data || []);
+		} catch (error) {
+			console.error("获取病害列表失败:", error);
+		} finally {
+			setLoading(false);
+		}
+	};
+
+	const handleDiseaseSelect = async (diseaseId: number) => {
+		setLoading(true);
+		try {
+			const res = await getKnowledgeDetail(diseaseId);
+			setDisease(res.data || null);
+		} catch (error) {
+			console.error("获取病害详情失败:", error);
+		} finally {
+			setLoading(false);
+		}
+	};
+
+	const filteredDiseaseList = diseaseList.filter(
+		disease =>
+			disease.name.toLowerCase().includes(searchText.toLowerCase()) ||
+			disease.alias.toLowerCase().includes(searchText.toLowerCase())
+	);
 
 	return (
-		<div
-			className={clsx(
-				"h-full w-full",
-				"p-6",
-				"rounded-2xl",
-				"flex flex-col",
-				"bg-gradient-to-br from-white to-gray-50",
-				"overflow-y-auto"
-			)}
-		>
-			<div
+		<div className="flex h-full w-full gap-6 p-6">
+			{/* 病害列表区域 */}
+			<motion.div
+				initial={{ x: -100, opacity: 0 }}
+				animate={{ x: 0, opacity: 1 }}
 				className={clsx(
-					"flex flex-col gap-6",
-					"mb-6 p-6",
+					"w-80",
 					"rounded-2xl",
 					"bg-white",
 					"shadow-sm",
 					"border border-gray-100",
-					"transition-all duration-300",
-					"hover:shadow-md"
+					"p-4",
+					"h-full",
+					"overflow-hidden",
+					"flex flex-col"
 				)}
 			>
-				<div className="flex justify-between items-center">
-					<Title level={3}>病害知识库预览</Title>
-					<Space>
-						<Button icon={<BookOutlined />}>导出PDF</Button>
-						<Button type="primary" icon={<MedicineBoxOutlined />}>
-							诊断建议
-						</Button>
-					</Space>
+				<div className="mb-4">
+					<Input
+						prefix={<SearchOutlined />}
+						placeholder="搜索病害名称"
+						value={searchText}
+						onChange={e => setSearchText(e.target.value)}
+						className="rounded-lg"
+					/>
 				</div>
-			</div>
+				<List
+					className="flex-1 overflow-y-auto"
+					dataSource={filteredDiseaseList}
+					renderItem={item => (
+						<List.Item
+							className={clsx(
+								"cursor-pointer rounded-lg p-3",
+								"hover:bg-gray-50",
+								"transition-colors duration-200",
+								disease?.id === item.id && "bg-blue-50"
+							)}
+							onClick={() => handleDiseaseSelect(item.id)}
+						>
+							<div className="flex flex-col">
+								<span className="font-medium">{item.name}</span>
+								<span className="text-sm text-gray-500">{item.alias}</span>
+							</div>
+						</List.Item>
+					)}
+				/>
+			</motion.div>
 
-			<div
+			{/* 预览区域 */}
+			<motion.div
+				key={disease?.id}
+				initial={{ opacity: 0, y: 20 }}
+				animate={{ opacity: 1, y: 0 }}
 				className={clsx(
-					"flex flex-col gap-6",
-					"mb-6 p-6",
+					"flex-1",
 					"rounded-2xl",
-					"bg-white",
-					"shadow-sm",
-					"border border-gray-100",
-					"transition-all duration-300",
-					"hover:shadow-md"
+					"bg-gradient-to-br from-white to-gray-50",
+					"overflow-y-auto"
 				)}
 			>
-				<Tabs defaultActiveKey="1">
-					<TabPane tab="基本信息" key="1">
-						<div className="space-y-6">
-							<div>
-								<Title level={4}>病害名称</Title>
+				{loading ? (
+					<div className="flex h-full items-center justify-center">
+						<Spin size="large" />
+					</div>
+				) : disease ? (
+					<div className="p-6">
+						<div
+							className={clsx(
+								"flex flex-col gap-6",
+								"mb-6 p-6",
+								"rounded-2xl",
+								"bg-white",
+								"shadow-sm",
+								"border border-gray-100",
+								"transition-all duration-300",
+								"hover:shadow-md"
+							)}
+						>
+							<div className="flex justify-between items-center">
+								<Title level={3}>{disease.name}</Title>
 								<Space>
-									<span className="text-xl font-medium">稻瘟病</span>
-									<Tag color="blue">水稻</Tag>
+									<Button icon={<BookOutlined />}>导出PDF</Button>
+									<Button type="primary" icon={<MedicineBoxOutlined />}>
+										诊断建议
+									</Button>
 								</Space>
 							</div>
-
-							<div>
-								<Title level={4}>病因</Title>
-								<Paragraph>
-									稻瘟病是由稻瘟病菌（Magnaporthe
-									oryzae）引起的一种真菌性病害。该病害在高温高湿条件下容易发生，特别是在雨季和灌溉条件良好的地区。
-								</Paragraph>
-							</div>
-
-							<div>
-								<Title level={4}>传播方式</Title>
-								<Paragraph>
-									稻瘟病主要通过以下方式传播： 1. 种子传播 2. 病株残体传播 3. 气流传播 4. 灌溉水传播
-								</Paragraph>
-							</div>
 						</div>
-					</TabPane>
 
-					<TabPane tab="症状特征" key="2">
-						<div className="grid grid-cols-2 gap-6">
-							{[1, 2, 3].map(item => (
-								<Card key={item} className="hover:shadow-lg transition-shadow">
-									<Image
-										src="https://example.com/disease-image.jpg"
-										alt="病害症状"
-										className="w-full h-48 object-cover rounded-lg mb-4"
-									/>
-									<Title level={5}>苗期症状</Title>
-									<Paragraph>
-										幼苗叶片出现褐色斑点，逐渐扩大形成不规则病斑，严重时导致幼苗死亡。
-									</Paragraph>
-								</Card>
-							))}
-						</div>
-					</TabPane>
-
-					<TabPane tab="防治措施" key="3">
-						<div className="space-y-6">
-							<div>
-								<Title level={4}>农业防治</Title>
-								<Paragraph>1. 选用抗病品种 2. 合理密植 3. 科学施肥 4. 及时清除病株</Paragraph>
-							</div>
-
-							<div>
-								<Title level={4}>化学防治</Title>
-								<Paragraph>
-									1. 使用三环唑等药剂进行种子处理 2. 发病初期喷施稻瘟灵等药剂 3.
-									注意轮换用药，防止抗性产生
-								</Paragraph>
-							</div>
-						</div>
-					</TabPane>
-
-					<TabPane tab="环境因素" key="4">
-						<div className="grid grid-cols-2 gap-6">
-							{[
-								{ factor: "温度", range: "25-30℃" },
-								{ factor: "湿度", range: "85-95%" },
-								{ factor: "光照", range: "弱光" },
-								{ factor: "土壤pH", range: "5.5-6.5" }
-							].map(item => (
-								<Card key={item.factor} className="hover:shadow-lg transition-shadow">
-									<Space direction="vertical" className="w-full">
-										<div className="flex items-center">
-											<EnvironmentOutlined className="text-blue-500 mr-2" />
-											<span className="font-medium">{item.factor}</span>
+						<div
+							className={clsx(
+								"flex flex-col gap-6",
+								"mb-6 p-6",
+								"rounded-2xl",
+								"bg-white",
+								"shadow-sm",
+								"border border-gray-100",
+								"transition-all duration-300",
+								"hover:shadow-md"
+							)}
+						>
+							<Tabs defaultActiveKey="1">
+								<TabPane tab="基本信息" key="1">
+									<div className="space-y-6">
+										<div>
+											<Title level={4}>病害名称</Title>
+											<Space>
+												<span className="text-xl font-medium">{disease.name}</span>
+												<Tag color="blue">{disease.crop?.name}</Tag>
+											</Space>
 										</div>
-										<div className="text-gray-600">适宜范围：{item.range}</div>
-									</Space>
-								</Card>
-							))}
+
+										<div>
+											<Title level={4}>病因</Title>
+											<Paragraph>{disease.cause}</Paragraph>
+										</div>
+
+										<div>
+											<Title level={4}>传播方式</Title>
+											<Paragraph>{disease.transmission}</Paragraph>
+										</div>
+									</div>
+								</TabPane>
+
+								<TabPane tab="症状特征" key="2">
+									<div className="grid grid-cols-2 gap-6">
+										{disease.symptoms.map(symptom => (
+											<Card key={symptom.id} className="hover:shadow-lg transition-shadow">
+												<Image
+													src={symptom.imageUrl}
+													alt="病害症状"
+													className="w-full h-48 object-cover rounded-lg mb-4"
+												/>
+												<Title level={5}>{symptom.stage}</Title>
+												<Paragraph>{symptom.description}</Paragraph>
+											</Card>
+										))}
+									</div>
+								</TabPane>
+
+								<TabPane tab="防治措施" key="3">
+									<div className="space-y-6">
+										{disease.treatments.map(treatment => (
+											<div key={treatment.id}>
+												<Title level={4}>{treatment.type}</Title>
+												<Paragraph>{treatment.method}</Paragraph>
+												{treatment.recommendedProducts && (
+													<div className="mt-2">
+														<span className="font-medium">推荐产品：</span>
+														<span>{treatment.recommendedProducts}</span>
+													</div>
+												)}
+											</div>
+										))}
+									</div>
+								</TabPane>
+
+								<TabPane tab="环境因素" key="4">
+									<div className="grid grid-cols-2 gap-6">
+										{disease.environmentFactors.map(factor => (
+											<Card key={factor.id} className="hover:shadow-lg transition-shadow">
+												<Space direction="vertical" className="w-full">
+													<div className="flex items-center">
+														<EnvironmentOutlined className="text-blue-500 mr-2" />
+														<span className="font-medium">{factor.factor}</span>
+													</div>
+													<div className="text-gray-600">适宜范围：{factor.optimalRange}</div>
+												</Space>
+											</Card>
+										))}
+									</div>
+								</TabPane>
+							</Tabs>
 						</div>
-					</TabPane>
-				</Tabs>
-			</div>
+					</div>
+				) : (
+					<div className="flex h-full items-center justify-center">
+						<div className="text-center">
+							<BookOutlined className="text-6xl text-gray-300 mb-4" />
+							<p className="text-gray-500">请从左侧选择病害进行预览</p>
+						</div>
+					</div>
+				)}
+			</motion.div>
 		</div>
 	);
 };
