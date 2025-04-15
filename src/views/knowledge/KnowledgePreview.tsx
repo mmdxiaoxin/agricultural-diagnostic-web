@@ -101,8 +101,8 @@ const KnowledgePreview: React.FC = () => {
 							)}
 							onClick={() => handleDiseaseSelect(item.id)}
 						>
-							<div className="flex flex-col w-full">
-								<div className="flex justify-between items-center">
+							<div className="flex flex-col w-full p-2">
+								<div className="flex justify-between items-center mb-2">
 									<span className="font-medium">{item.name}</span>
 									<Tag color="blue">{item.crop?.name}</Tag>
 								</div>
