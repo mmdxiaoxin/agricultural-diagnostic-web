@@ -7,10 +7,22 @@ import {
 	MedicineBoxOutlined,
 	SearchOutlined
 } from "@ant-design/icons";
-import { Button, Card, Image, Input, List, Space, Spin, Tabs, Tag, Typography } from "antd";
+import {
+	Button,
+	Card,
+	Image,
+	Input,
+	List,
+	Space,
+	Spin,
+	Tabs,
+	Tag,
+	Typography,
+	message
+} from "antd";
 import clsx from "clsx";
 import { motion } from "framer-motion";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useSearchParams } from "react-router";
 
 const { Title, Paragraph } = Typography;
@@ -22,6 +34,8 @@ const KnowledgePreview: React.FC = () => {
 	const [loading, setLoading] = useState(false);
 	const [diseaseList, setDiseaseList] = useState<Disease[]>([]);
 	const [searchText, setSearchText] = useState("");
+	const [exporting, setExporting] = useState(false);
+	const pdfWorkerRef = useRef<Worker | null>(null);
 
 	useEffect(() => {
 		fetchDiseaseList();
@@ -36,6 +50,34 @@ const KnowledgePreview: React.FC = () => {
 			}
 		}
 	}, [diseaseList, searchParams]);
+
+	useEffect(() => {
+		// 初始化Web Worker
+		pdfWorkerRef.current = new Worker(new URL("@/workers/pdfWorker", import.meta.url));
+		pdfWorkerRef.current.onmessage = e => {
+			if (e.data.success) {
+				const blob = e.data.blob;
+				const url = URL.createObjectURL(blob);
+				const a = document.createElement("a");
+				a.href = url;
+				a.download = `${selectedDisease?.name || "病害信息"}.pdf`;
+				document.body.appendChild(a);
+				a.click();
+				document.body.removeChild(a);
+				URL.revokeObjectURL(url);
+				message.success("PDF导出成功");
+			} else {
+				message.error("PDF导出失败：" + e.data.error);
+			}
+			setExporting(false);
+		};
+
+		return () => {
+			if (pdfWorkerRef.current) {
+				pdfWorkerRef.current.terminate();
+			}
+		};
+	}, [selectedDisease]);
 
 	const fetchDiseaseList = async () => {
 		setLoading(true);
@@ -58,6 +100,18 @@ const KnowledgePreview: React.FC = () => {
 			disease.name.toLowerCase().includes(searchText.toLowerCase()) ||
 			disease.alias.toLowerCase().includes(searchText.toLowerCase())
 	);
+
+	const handleExportPDF = () => {
+		if (!selectedDisease) return;
+
+		setExporting(true);
+		pdfWorkerRef.current?.postMessage({
+			disease: selectedDisease,
+			symptoms: selectedDisease.symptoms,
+			treatments: selectedDisease.treatments,
+			environmentFactors: selectedDisease.environmentFactors
+		});
+	};
 
 	return (
 		<div className="flex h-full w-full gap-2">
@@ -155,7 +209,9 @@ const KnowledgePreview: React.FC = () => {
 									</div>
 								</div>
 								<Space>
-									<Button icon={<BookOutlined />}>导出PDF</Button>
+									<Button icon={<BookOutlined />} loading={exporting} onClick={handleExportPDF}>
+										导出PDF
+									</Button>
 									<Button type="primary" icon={<MedicineBoxOutlined />}>
 										诊断建议
 									</Button>
