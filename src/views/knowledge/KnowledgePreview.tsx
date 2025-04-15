@@ -26,7 +26,6 @@ import React, { useEffect, useRef, useState } from "react";
 import { useSearchParams } from "react-router";
 
 const { Title, Paragraph } = Typography;
-const { TabPane } = Tabs;
 
 const KnowledgePreview: React.FC = () => {
 	const [searchParams] = useSearchParams();
@@ -53,7 +52,9 @@ const KnowledgePreview: React.FC = () => {
 
 	useEffect(() => {
 		// 初始化Web Worker
-		pdfWorkerRef.current = new Worker(new URL("@/workers/pdfWorker", import.meta.url));
+		pdfWorkerRef.current = new Worker(new URL("@/workers/pdfWorker.ts", import.meta.url), {
+			type: "module"
+		});
 		pdfWorkerRef.current.onmessage = e => {
 			if (e.data.success) {
 				const blob = e.data.blob;
@@ -112,6 +113,83 @@ const KnowledgePreview: React.FC = () => {
 			environmentFactors: selectedDisease.environmentFactors
 		});
 	};
+
+	const tabItems = [
+		{
+			key: "1",
+			label: "基本信息",
+			children: (
+				<div className="space-y-6">
+					<div>
+						<Title level={4}>病因</Title>
+						<Paragraph>{selectedDisease?.cause}</Paragraph>
+					</div>
+					<div>
+						<Title level={4}>传播方式</Title>
+						<Paragraph>{selectedDisease?.transmission}</Paragraph>
+					</div>
+				</div>
+			)
+		},
+		{
+			key: "2",
+			label: "症状特征",
+			children: (
+				<div className="grid grid-cols-2 gap-6">
+					{selectedDisease?.symptoms.map(symptom => (
+						<Card key={symptom.id} className="hover:shadow-lg transition-shadow">
+							<Image
+								src={symptom.imageUrl}
+								alt="病害症状"
+								className="w-full h-48 object-cover rounded-lg mb-4"
+							/>
+							<Title level={5}>{symptom.stage}</Title>
+							<Paragraph>{symptom.description}</Paragraph>
+						</Card>
+					))}
+				</div>
+			)
+		},
+		{
+			key: "3",
+			label: "防治措施",
+			children: (
+				<div className="space-y-6">
+					{selectedDisease?.treatments.map(treatment => (
+						<div key={treatment.id}>
+							<Title level={4}>{TREATMENT_METHOD[treatment.type]}</Title>
+							<Paragraph>{treatment.method}</Paragraph>
+							{treatment.recommendedProducts && (
+								<div className="mt-2">
+									<span className="font-medium">推荐产品：</span>
+									<span>{treatment.recommendedProducts}</span>
+								</div>
+							)}
+						</div>
+					))}
+				</div>
+			)
+		},
+		{
+			key: "4",
+			label: "环境因素",
+			children: (
+				<div className="grid grid-cols-2 gap-6">
+					{selectedDisease?.environmentFactors.map(factor => (
+						<Card key={factor.id} className="hover:shadow-lg transition-shadow">
+							<Space direction="vertical" className="w-full">
+								<div className="flex items-center">
+									<EnvironmentOutlined className="text-blue-500 mr-2" />
+									<span className="font-medium">{factor.factor}</span>
+								</div>
+								<div className="text-gray-600">适宜范围：{factor.optimalRange}</div>
+							</Space>
+						</Card>
+					))}
+				</div>
+			)
+		}
+	];
 
 	return (
 		<div className="flex h-full w-full gap-2">
@@ -231,70 +309,7 @@ const KnowledgePreview: React.FC = () => {
 								"hover:shadow-md"
 							)}
 						>
-							<Tabs defaultActiveKey="1">
-								<TabPane tab="基本信息" key="1">
-									<div className="space-y-6">
-										<div>
-											<Title level={4}>病因</Title>
-											<Paragraph>{selectedDisease.cause}</Paragraph>
-										</div>
-
-										<div>
-											<Title level={4}>传播方式</Title>
-											<Paragraph>{selectedDisease.transmission}</Paragraph>
-										</div>
-									</div>
-								</TabPane>
-
-								<TabPane tab="症状特征" key="2">
-									<div className="grid grid-cols-2 gap-6">
-										{selectedDisease.symptoms.map(symptom => (
-											<Card key={symptom.id} className="hover:shadow-lg transition-shadow">
-												<Image
-													src={symptom.imageUrl}
-													alt="病害症状"
-													className="w-full h-48 object-cover rounded-lg mb-4"
-												/>
-												<Title level={5}>{symptom.stage}</Title>
-												<Paragraph>{symptom.description}</Paragraph>
-											</Card>
-										))}
-									</div>
-								</TabPane>
-
-								<TabPane tab="防治措施" key="3">
-									<div className="space-y-6">
-										{selectedDisease.treatments.map(treatment => (
-											<div key={treatment.id}>
-												<Title level={4}>{TREATMENT_METHOD[treatment.type]}</Title>
-												<Paragraph>{treatment.method}</Paragraph>
-												{treatment.recommendedProducts && (
-													<div className="mt-2">
-														<span className="font-medium">推荐产品：</span>
-														<span>{treatment.recommendedProducts}</span>
-													</div>
-												)}
-											</div>
-										))}
-									</div>
-								</TabPane>
-
-								<TabPane tab="环境因素" key="4">
-									<div className="grid grid-cols-2 gap-6">
-										{selectedDisease.environmentFactors.map(factor => (
-											<Card key={factor.id} className="hover:shadow-lg transition-shadow">
-												<Space direction="vertical" className="w-full">
-													<div className="flex items-center">
-														<EnvironmentOutlined className="text-blue-500 mr-2" />
-														<span className="font-medium">{factor.factor}</span>
-													</div>
-													<div className="text-gray-600">适宜范围：{factor.optimalRange}</div>
-												</Space>
-											</Card>
-										))}
-									</div>
-								</TabPane>
-							</Tabs>
+							<Tabs defaultActiveKey="1" items={tabItems} />
 						</div>
 					</div>
 				) : (

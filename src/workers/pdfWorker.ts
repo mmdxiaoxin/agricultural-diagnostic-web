@@ -1,3 +1,5 @@
+/// <reference lib="webworker" />
+
 import { jsPDF } from "jspdf";
 
 interface PDFData {
@@ -25,7 +27,9 @@ interface PDFData {
 	}>;
 }
 
-self.onmessage = (e: MessageEvent) => {
+const worker = self as unknown as Worker;
+
+worker.onmessage = (e: MessageEvent) => {
 	const { disease, symptoms, treatments, environmentFactors } = e.data as PDFData;
 
 	try {
@@ -82,9 +86,9 @@ self.onmessage = (e: MessageEvent) => {
 		});
 
 		const pdfBlob = doc.output("blob");
-		self.postMessage({ success: true, blob: pdfBlob });
+		worker.postMessage({ success: true, blob: pdfBlob });
 	} catch (error: unknown) {
 		const errorMessage = error instanceof Error ? error.message : "未知错误";
-		self.postMessage({ success: false, error: errorMessage });
+		worker.postMessage({ success: false, error: errorMessage });
 	}
 };
