@@ -69,6 +69,16 @@ export const copyRemoteInterface = (serviceId: number, interfaceId: number) => {
 	);
 };
 
+export const callRemoteInterface = <T = any>(
+	serviceId: number,
+	interfaceId: number,
+	data?: { params?: any; data?: any }
+) => {
+	return http.post<T>(`/remote/${serviceId}/interface/${interfaceId}/call`, data, {
+		loading: false
+	});
+};
+
 export const updateRemoteInterface = (
 	serviceId: number,
 	interfaceId: number,

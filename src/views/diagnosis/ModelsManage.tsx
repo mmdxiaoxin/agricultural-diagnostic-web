@@ -1,9 +1,7 @@
-import type { RemoteInterface, RemoteInterfaceConfig } from "@/api/interface/service";
 import { RemoteService } from "@/api/interface/service";
-import { getRemotes } from "@/api/modules/service";
+import { callRemoteInterface, getRemotes } from "@/api/modules/service";
 import ModelManageModal, { ModelManageModalRef } from "@/components/Modal/ModelManageModal";
-import { useAppSelector } from "@/hooks";
-import type { ModelConfig, ModelResponse } from "@/typings/model";
+import type { ModelConfig } from "@/typings/model";
 import {
 	DeleteOutlined,
 	DownloadOutlined,
@@ -32,7 +30,6 @@ const ModelsManage = () => {
 		total: 0
 	});
 	const modalRef = useRef<ModelManageModalRef>(null);
-	const { token } = useAppSelector(state => state.auth);
 
 	// 获取服务列表
 	const fetchServices = async () => {
@@ -47,44 +44,6 @@ const ModelsManage = () => {
 		}
 	};
 
-	// 构建完整的请求URL
-	const buildRequestUrl = (interfaceConfig: RemoteInterface): string => {
-		const { url, config } = interfaceConfig;
-		const { prefix = "", path = "" } = config || {};
-
-		return `${url}${prefix}${path}`;
-	};
-
-	// 构建请求配置
-	const buildRequestConfig = (config: RemoteInterfaceConfig): RequestInit => {
-		const requestConfig: RequestInit = {
-			method: config.method || "GET",
-			headers: {
-				"Content-Type": config.contentType || "application/json",
-				Authorization: `Bearer ${token}`,
-				// 添加跨域相关头
-				"Access-Control-Allow-Origin": "*",
-				"Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
-				"Access-Control-Allow-Headers": "Content-Type, Authorization"
-			},
-			credentials: "include" // 允许携带认证信息
-		};
-
-		// 添加其他配置
-		if (config.headers) {
-			requestConfig.headers = {
-				...requestConfig.headers,
-				...config.headers
-			};
-		}
-
-		if (config.timeout) {
-			requestConfig.signal = AbortSignal.timeout(config.timeout);
-		}
-
-		return requestConfig;
-	};
-
 	// 获取模型列表
 	const fetchModels = async (serviceId: number, interfaceId: number) => {
 		setLoading(true);
@@ -97,36 +56,12 @@ const ModelsManage = () => {
 				return;
 			}
 
-			// 构建请求URL和配置
-			const requestUrl = buildRequestUrl(selectedInterface);
-			const requestConfig = buildRequestConfig(selectedInterface.config || {});
-
-			// 调用接口获取模型数据
-			const response = await fetch(requestUrl, requestConfig);
-
-			if (!response.ok) {
-				throw new Error("获取模型数据失败");
-			}
-
-			// 根据配置的responseType处理响应
-			const responseType = selectedInterface.config?.responseType || "json";
-			let data: ModelResponse;
-
-			switch (responseType) {
-				case "json":
-					data = await response.json();
-					break;
-				case "text":
-					data = JSON.parse(await response.text());
-					break;
-				default:
-					throw new Error(`不支持的响应类型: ${responseType}`);
-			}
+			const response = await callRemoteInterface(serviceId, interfaceId);
 
 			// 转换数据格式
 			const modelList: ModelConfig[] = [];
-			Object.entries(data.data.versions).forEach(([modelName, versions]) => {
-				versions.forEach(version => {
+			Object.entries(response.data.versions).forEach(([modelName, versions]) => {
+				(versions as any[]).forEach((version: any) => {
 					modelList.push({
 						id: version.version_id.toString(),
 						name: modelName,
