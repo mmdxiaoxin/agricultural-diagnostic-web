@@ -100,9 +100,9 @@ const DiagnosisDetailModal = forwardRef<DiagnosisDetailModalRef>((_, ref) => {
 			footer={null}
 			width={{
 				xs: "90%",
-				sm: "80%",
-				md: "70%",
-				lg: "60%",
+				sm: "90%",
+				md: "90%",
+				lg: "70%",
 				xl: "60%",
 				xxl: "60%"
 			}}
