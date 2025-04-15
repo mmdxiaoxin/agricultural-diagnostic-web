@@ -1,5 +1,30 @@
 import { PageData, ReqPage } from ".";
 
+export type HttpMethod = "GET" | "POST" | "PUT" | "DELETE";
+export type ContentType =
+	| "application/json"
+	| "multipart/form-data"
+	| "application/x-www-form-urlencoded";
+
+export interface RemoteInterfaceConfig {
+	method?: HttpMethod;
+	prefix?: string;
+	path?: string;
+	headers?: Record<string, string>;
+	timeout?: number;
+	validateStatus?: (status: number) => boolean;
+	contentType?: ContentType;
+	responseType?: "json" | "text" | "blob" | "arraybuffer";
+	maxContentLength?: number;
+	maxBodyLength?: number;
+	maxRedirects?: number;
+	withCredentials?: boolean;
+	auth?: {
+		username: string;
+		password: string;
+	};
+}
+
 export interface RemoteService {
 	id: number; // 服务ID
 	serviceName: string; // 服务名称
@@ -29,7 +54,7 @@ export interface RemoteInterface {
 	type: string; // 服务类型
 	description: string; // 服务描述
 	url: string; // 服务地址
-	config: object; // 服务配置
+	config: RemoteInterfaceConfig; // 服务配置
 	createdAt: string; // 创建时间
 	updatedAt: string; // 更新时间
 }
