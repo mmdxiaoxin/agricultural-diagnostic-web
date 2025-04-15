@@ -1,6 +1,7 @@
 import { Disease } from "@/api/interface/knowledge/disease";
 import { getDiseaseDetail } from "@/api/modules/Knowledge";
 import { getKnowledge } from "@/api/modules/Knowledge/knowledge";
+import { TREATMENT_METHOD } from "@/constants/knowledge";
 import {
 	BookOutlined,
 	EnvironmentOutlined,
@@ -206,7 +207,7 @@ const KnowledgePreview: React.FC = () => {
 									<div className="space-y-6">
 										{disease.treatments.map(treatment => (
 											<div key={treatment.id}>
-												<Title level={4}>{treatment.type}</Title>
+												<Title level={4}>{TREATMENT_METHOD[treatment.type]}</Title>
 												<Paragraph>{treatment.method}</Paragraph>
 												{treatment.recommendedProducts && (
 													<div className="mt-2">
