@@ -1,5 +1,4 @@
 import { Disease } from "@/api/interface/knowledge/disease";
-import { getDiseaseDetail } from "@/api/modules/Knowledge";
 import { getKnowledge } from "@/api/modules/Knowledge/knowledge";
 import { TREATMENT_METHOD } from "@/constants/knowledge";
 import {
@@ -17,7 +16,7 @@ const { Title, Paragraph } = Typography;
 const { TabPane } = Tabs;
 
 const KnowledgePreview: React.FC = () => {
-	const [disease, setDisease] = useState<Disease | null>(null);
+	const [selectedDisease, setSelectedDisease] = useState<Disease | null>(null);
 	const [loading, setLoading] = useState(false);
 	const [diseaseList, setDiseaseList] = useState<Disease[]>([]);
 	const [searchText, setSearchText] = useState("");
@@ -38,16 +37,8 @@ const KnowledgePreview: React.FC = () => {
 		}
 	};
 
-	const handleDiseaseSelect = async (diseaseId: number) => {
-		setLoading(true);
-		try {
-			const res = await getDiseaseDetail(diseaseId);
-			setDisease(res.data || null);
-		} catch (error) {
-			console.error("获取病害详情失败:", error);
-		} finally {
-			setLoading(false);
-		}
+	const handleDiseaseSelect = (disease: Disease) => {
+		setSelectedDisease(disease);
 	};
 
 	const filteredDiseaseList = diseaseList.filter(
@@ -97,9 +88,9 @@ const KnowledgePreview: React.FC = () => {
 								"cursor-pointer rounded-lg p-3",
 								"hover:bg-gray-50",
 								"transition-colors duration-200",
-								disease?.id === item.id && "bg-blue-50"
+								selectedDisease?.id === item.id && "bg-blue-50"
 							)}
-							onClick={() => handleDiseaseSelect(item.id)}
+							onClick={() => handleDiseaseSelect(item)}
 						>
 							<div className="flex flex-col w-full p-2">
 								<div className="flex justify-between items-center mb-2">
@@ -115,7 +106,7 @@ const KnowledgePreview: React.FC = () => {
 
 			{/* 预览区域 */}
 			<motion.div
-				key={disease?.id}
+				key={selectedDisease?.id}
 				initial={{ opacity: 0, y: 20 }}
 				animate={{ opacity: 1, y: 0 }}
 				className={clsx(
@@ -129,7 +120,7 @@ const KnowledgePreview: React.FC = () => {
 					<div className="flex h-full items-center justify-center">
 						<Spin size="large" />
 					</div>
-				) : disease ? (
+				) : selectedDisease ? (
 					<div className="p-6">
 						<div
 							className={clsx(
@@ -145,10 +136,10 @@ const KnowledgePreview: React.FC = () => {
 						>
 							<div className="flex justify-between items-center">
 								<div className="flex flex-col gap-2">
-									<Title level={3}>{disease.name}</Title>
+									<Title level={3}>{selectedDisease.name}</Title>
 									<div className="flex items-center gap-2">
-										<Tag color="blue">{disease.crop?.name}</Tag>
-										<span className="text-gray-500">{disease.alias}</span>
+										<Tag color="blue">{selectedDisease.crop?.name}</Tag>
+										<span className="text-gray-500">{selectedDisease.alias}</span>
 									</div>
 								</div>
 								<Space>
@@ -177,19 +168,19 @@ const KnowledgePreview: React.FC = () => {
 									<div className="space-y-6">
 										<div>
 											<Title level={4}>病因</Title>
-											<Paragraph>{disease.cause}</Paragraph>
+											<Paragraph>{selectedDisease.cause}</Paragraph>
 										</div>
 
 										<div>
 											<Title level={4}>传播方式</Title>
-											<Paragraph>{disease.transmission}</Paragraph>
+											<Paragraph>{selectedDisease.transmission}</Paragraph>
 										</div>
 									</div>
 								</TabPane>
 
 								<TabPane tab="症状特征" key="2">
 									<div className="grid grid-cols-2 gap-6">
-										{disease.symptoms.map(symptom => (
+										{selectedDisease.symptoms.map(symptom => (
 											<Card key={symptom.id} className="hover:shadow-lg transition-shadow">
 												<Image
 													src={symptom.imageUrl}
@@ -205,7 +196,7 @@ const KnowledgePreview: React.FC = () => {
 
 								<TabPane tab="防治措施" key="3">
 									<div className="space-y-6">
-										{disease.treatments.map(treatment => (
+										{selectedDisease.treatments.map(treatment => (
 											<div key={treatment.id}>
 												<Title level={4}>{TREATMENT_METHOD[treatment.type]}</Title>
 												<Paragraph>{treatment.method}</Paragraph>
@@ -222,7 +213,7 @@ const KnowledgePreview: React.FC = () => {
 
 								<TabPane tab="环境因素" key="4">
 									<div className="grid grid-cols-2 gap-6">
-										{disease.environmentFactors.map(factor => (
+										{selectedDisease.environmentFactors.map(factor => (
 											<Card key={factor.id} className="hover:shadow-lg transition-shadow">
 												<Space direction="vertical" className="w-full">
 													<div className="flex items-center">
