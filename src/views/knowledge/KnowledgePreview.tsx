@@ -11,11 +11,13 @@ import { Button, Card, Image, Input, List, Space, Spin, Tabs, Tag, Typography } 
 import clsx from "clsx";
 import { motion } from "framer-motion";
 import React, { useEffect, useState } from "react";
+import { useSearchParams } from "react-router";
 
 const { Title, Paragraph } = Typography;
 const { TabPane } = Tabs;
 
 const KnowledgePreview: React.FC = () => {
+	const [searchParams] = useSearchParams();
 	const [selectedDisease, setSelectedDisease] = useState<Disease | null>(null);
 	const [loading, setLoading] = useState(false);
 	const [diseaseList, setDiseaseList] = useState<Disease[]>([]);
@@ -24,6 +26,16 @@ const KnowledgePreview: React.FC = () => {
 	useEffect(() => {
 		fetchDiseaseList();
 	}, []);
+
+	useEffect(() => {
+		const diseaseId = searchParams.get("id");
+		if (diseaseId && diseaseList.length > 0) {
+			const disease = diseaseList.find(d => d.id === parseInt(diseaseId));
+			if (disease) {
+				setSelectedDisease(disease);
+			}
+		}
+	}, [diseaseList, searchParams]);
 
 	const fetchDiseaseList = async () => {
 		setLoading(true);

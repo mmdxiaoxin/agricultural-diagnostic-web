@@ -3,7 +3,13 @@ import { Crop, Disease, ReqDiseaseList } from "@/api/interface/knowledge";
 import { getCrops } from "@/api/modules/Knowledge";
 import { deleteKnowledge, getKnowledgeList } from "@/api/modules/Knowledge/knowledge";
 import DiseaseModal, { DiseaseModalRef } from "@/components/Modal/DiseaseModal";
-import { DeleteOutlined, EditOutlined, PlusOutlined, SearchOutlined } from "@ant-design/icons";
+import {
+	DeleteOutlined,
+	EditOutlined,
+	EyeOutlined,
+	PlusOutlined,
+	SearchOutlined
+} from "@ant-design/icons";
 import {
 	Button,
 	Card,
@@ -19,11 +25,13 @@ import {
 } from "antd";
 import clsx from "clsx";
 import React, { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router";
 
 const { Search } = Input;
 const { Option } = Select;
 
 const DiseaseManage: React.FC = () => {
+	const navigate = useNavigate();
 	const diseaseModalRef = useRef<DiseaseModalRef>(null);
 	const [diseases, setDiseases] = useState<Disease[]>([]);
 	const [crops, setCrops] = useState<Crop[]>([]);
@@ -75,6 +83,10 @@ const DiseaseManage: React.FC = () => {
 		}
 	};
 
+	const handlePreviewDisease = (record: Disease) => {
+		navigate(`/knowledge/preview?id=${record.id}`);
+	};
+
 	const columns: TableColumnType<Disease>[] = [
 		{
 			title: "病害名称",
@@ -110,6 +122,13 @@ const DiseaseManage: React.FC = () => {
 			key: "action",
 			render: (_: any, record) => (
 				<Space size="middle">
+					<Tooltip title="预览">
+						<Button
+							type="link"
+							icon={<EyeOutlined />}
+							onClick={() => handlePreviewDisease(record)}
+						/>
+					</Tooltip>
 					<Tooltip title="编辑">
 						<Button type="link" icon={<EditOutlined />} onClick={() => handleEditDisease(record)} />
 					</Tooltip>
@@ -119,7 +138,7 @@ const DiseaseManage: React.FC = () => {
 						okText="确定"
 						cancelText="取消"
 					>
-						<Button type="link" icon={<DeleteOutlined />} />
+						<Button type="link" icon={<DeleteOutlined />} danger />
 					</Popconfirm>
 				</Space>
 			)
