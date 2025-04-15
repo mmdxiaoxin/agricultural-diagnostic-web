@@ -1,5 +1,6 @@
 import { Disease } from "@/api/interface/knowledge/disease";
-import { getKnowledge, getKnowledgeDetail } from "@/api/modules/Knowledge/knowledge";
+import { getDiseaseDetail } from "@/api/modules/Knowledge";
+import { getKnowledge } from "@/api/modules/Knowledge/knowledge";
 import {
 	BookOutlined,
 	EnvironmentOutlined,
@@ -39,7 +40,7 @@ const KnowledgePreview: React.FC = () => {
 	const handleDiseaseSelect = async (diseaseId: number) => {
 		setLoading(true);
 		try {
-			const res = await getKnowledgeDetail(diseaseId);
+			const res = await getDiseaseDetail(diseaseId);
 			setDisease(res.data || null);
 		} catch (error) {
 			console.error("获取病害详情失败:", error);
