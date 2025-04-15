@@ -55,7 +55,7 @@ const KnowledgePreview: React.FC = () => {
 	);
 
 	return (
-		<div className="flex h-full w-full gap-6 p-6">
+		<div className="flex h-full w-full gap-2">
 			{/* 病害列表区域 */}
 			<motion.div
 				initial={{ x: -100, opacity: 0 }}
@@ -66,13 +66,17 @@ const KnowledgePreview: React.FC = () => {
 					"bg-white",
 					"shadow-sm",
 					"border border-gray-100",
-					"p-4",
+					"p-6",
 					"h-full",
 					"overflow-hidden",
 					"flex flex-col"
 				)}
 			>
-				<div className="mb-4">
+				<div className="flex flex-col gap-4">
+					<div className="flex justify-between items-center">
+						<h2 className="text-2xl font-semibold text-gray-800">病害列表</h2>
+						<p className="text-gray-500">共 {diseaseList.length} 个病害</p>
+					</div>
 					<Input
 						prefix={<SearchOutlined />}
 						placeholder="搜索病害名称"
@@ -82,8 +86,9 @@ const KnowledgePreview: React.FC = () => {
 					/>
 				</div>
 				<List
-					className="flex-1 overflow-y-auto"
+					className="flex-1 overflow-y-auto mt-4"
 					dataSource={filteredDiseaseList}
+					loading={loading}
 					renderItem={item => (
 						<List.Item
 							className={clsx(
@@ -94,8 +99,11 @@ const KnowledgePreview: React.FC = () => {
 							)}
 							onClick={() => handleDiseaseSelect(item.id)}
 						>
-							<div className="flex flex-col">
-								<span className="font-medium">{item.name}</span>
+							<div className="flex flex-col w-full">
+								<div className="flex justify-between items-center">
+									<span className="font-medium">{item.name}</span>
+									<Tag color="blue">{item.crop?.name}</Tag>
+								</div>
 								<span className="text-sm text-gray-500">{item.alias}</span>
 							</div>
 						</List.Item>
@@ -134,7 +142,13 @@ const KnowledgePreview: React.FC = () => {
 							)}
 						>
 							<div className="flex justify-between items-center">
-								<Title level={3}>{disease.name}</Title>
+								<div className="flex flex-col gap-2">
+									<Title level={3}>{disease.name}</Title>
+									<div className="flex items-center gap-2">
+										<Tag color="blue">{disease.crop?.name}</Tag>
+										<span className="text-gray-500">{disease.alias}</span>
+									</div>
+								</div>
 								<Space>
 									<Button icon={<BookOutlined />}>导出PDF</Button>
 									<Button type="primary" icon={<MedicineBoxOutlined />}>
@@ -159,14 +173,6 @@ const KnowledgePreview: React.FC = () => {
 							<Tabs defaultActiveKey="1">
 								<TabPane tab="基本信息" key="1">
 									<div className="space-y-6">
-										<div>
-											<Title level={4}>病害名称</Title>
-											<Space>
-												<span className="text-xl font-medium">{disease.name}</span>
-												<Tag color="blue">{disease.crop?.name}</Tag>
-											</Space>
-										</div>
-
 										<div>
 											<Title level={4}>病因</Title>
 											<Paragraph>{disease.cause}</Paragraph>
