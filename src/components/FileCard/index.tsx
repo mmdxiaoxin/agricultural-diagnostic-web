@@ -4,11 +4,11 @@ import { Card, Tooltip } from "antd";
 import dayjs from "dayjs";
 import React from "react";
 import IconComponent, { Icons } from "../IconComponent";
-import { motion } from "framer-motion";
+import { motion, HTMLMotionProps } from "framer-motion";
 import clsx from "clsx";
 
 // 组件属性接口
-interface FileCardProps extends React.HTMLAttributes<HTMLDivElement> {
+interface FileCardProps extends Omit<HTMLMotionProps<"div">, "onDrag"> {
 	info?: DiskSpaceStatus;
 	type: string; // 文件类型，如 '文件'
 	icon?: keyof typeof Icons; // 图标（可以是 URL 或者字体图标）
