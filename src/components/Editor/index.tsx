@@ -225,31 +225,6 @@ const MonacoEditor: React.FC<MonacoEditorProps> = ({
 		[height, minHeight, maxHeight, style]
 	);
 
-	const isMobile = useMemo(() => {
-		return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-			navigator.userAgent
-		);
-	}, []);
-
-	if (isMobile) {
-		return (
-			<textarea
-				value={value}
-				onChange={e => onChange?.(e.target.value)}
-				style={{
-					width: "100%",
-					minHeight: minHeight || "200px",
-					maxHeight: maxHeight || "800px",
-					padding: "10px",
-					boxSizing: "border-box",
-					...style
-				}}
-				className={className}
-				placeholder={placeholder}
-			/>
-		);
-	}
-
 	if (loading) {
 		return (
 			<div className={`monaco-editor-loading ${className || ""}`} style={containerStyle}>
