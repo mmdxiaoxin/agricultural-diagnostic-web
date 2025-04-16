@@ -26,9 +26,6 @@ const AvatarIcon = () => {
 	const fetchUser = async () => {
 		try {
 			const res = await getUserProfile();
-			if (res.code !== 200 || !res.data) {
-				throw new Error(res.message);
-			}
 			setUserData(res.data);
 		} catch (error: any) {
 			message.error(error.message);
@@ -38,7 +35,7 @@ const AvatarIcon = () => {
 	const fetchAvatar = async () => {
 		try {
 			const res = await getAvatar();
-			if (!res) throw new Error("获取头像失败！");
+			if (!(res instanceof Blob)) return;
 			const url = URL.createObjectURL(res);
 			setAvatar(url);
 		} catch (error: any) {
