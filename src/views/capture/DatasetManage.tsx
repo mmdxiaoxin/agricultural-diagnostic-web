@@ -14,7 +14,7 @@ const DatasetManage: React.FC<DatasetManageProps> = () => {
 	const [datasets, setDatasets] = useState<DatasetMeta[]>([]);
 	const [hasMore, setHasMore] = useState<boolean>(true);
 	const [searchText, setSearchText] = useState("");
-	const [activeTab, setActiveTab] = useState("1");
+	const [activeTab, setActiveTab] = useState("2");
 	const pageRef = useRef<number>(1);
 	const loadMoreRef = useRef<HTMLDivElement | null>(null);
 	const navigate = useNavigate();
