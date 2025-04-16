@@ -1,4 +1,5 @@
 import { DatasetMeta } from "@/api/interface";
+import { useAppSelector } from "@/hooks";
 import { formatSize } from "@/utils";
 import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
 import { Button, Popconfirm, Tag } from "antd";
@@ -11,6 +12,7 @@ export interface DatasetsListProps {
 }
 
 const DatasetsList: React.FC<DatasetsListProps> = ({ datasets, onEdit, onDelete }) => {
+	const { user } = useAppSelector(state => state.user);
 	return (
 		<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-4 p-4 ease-in-out">
 			{datasets?.map(dataset => (
@@ -29,32 +31,34 @@ const DatasetsList: React.FC<DatasetsListProps> = ({ datasets, onEdit, onDelete 
 						</div>
 					</div>
 
-					<div className="flex justify-between items-center mt-4">
-						<Button
-							type="link"
-							icon={<EditOutlined />}
-							onClick={() => onEdit?.(dataset.id)}
-							className="text-blue-500 hover:text-blue-700"
-						>
-							编辑
-						</Button>
-						<Popconfirm
-							title="确认删除?"
-							description="删除数据集后不可恢复"
-							onConfirm={() => onDelete?.(dataset.id)}
-							okText="确认"
-							cancelText="取消"
-						>
+					{user.id === dataset.createdBy && (
+						<div className="flex justify-between items-center mt-4">
 							<Button
 								type="link"
-								danger
-								icon={<DeleteOutlined />}
-								className="text-red-500 hover:text-red-700"
+								icon={<EditOutlined />}
+								onClick={() => onEdit?.(dataset.id)}
+								className="text-blue-500 hover:text-blue-700"
 							>
-								删除
+								编辑
 							</Button>
-						</Popconfirm>
-					</div>
+							<Popconfirm
+								title="确认删除?"
+								description="删除数据集后不可恢复"
+								onConfirm={() => onDelete?.(dataset.id)}
+								okText="确认"
+								cancelText="取消"
+							>
+								<Button
+									type="link"
+									danger
+									icon={<DeleteOutlined />}
+									className="text-red-500 hover:text-red-700"
+								>
+									删除
+								</Button>
+							</Popconfirm>
+						</div>
+					)}
 				</div>
 			))}
 		</div>

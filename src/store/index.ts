@@ -6,6 +6,7 @@ import breadcrumbReducer from "./modules/breadcrumbSlice";
 import globalReducer from "./modules/globalSlice";
 import menuReducer from "./modules/menuSlice";
 import tabsReducer from "./modules/tabsSlice";
+import userReducer from "./modules/userSlice";
 
 // 设置持久化配置
 const persistConfig = {
@@ -20,6 +21,7 @@ const persistedAuthReducer = persistReducer(persistConfig, authReducer);
 export const store = configureStore({
 	reducer: {
 		auth: persistedAuthReducer,
+		user: userReducer,
 		menu: menuReducer,
 		tabs: tabsReducer,
 		breadcrumb: breadcrumbReducer,

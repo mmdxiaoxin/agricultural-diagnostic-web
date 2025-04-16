@@ -12,6 +12,7 @@ import styles from "../index.module.scss";
 import InfoModal, { InfoModalRef } from "./InfoModal";
 import PasswordModal, { PasswordModalRef } from "./PasswordModal";
 import { User } from "@/api/interface";
+import { setUser } from "@/store/modules/userSlice";
 
 const AvatarIcon = () => {
 	const navigate = useNavigate();
@@ -26,6 +27,10 @@ const AvatarIcon = () => {
 	const fetchUser = async () => {
 		try {
 			const res = await getUserProfile();
+			if (res.code !== 200 || !res.data) {
+				throw new Error(res.message);
+			}
+			dispatch(setUser(res.data));
 			setUserData(res.data);
 		} catch (error: any) {
 			message.error(error.message);
