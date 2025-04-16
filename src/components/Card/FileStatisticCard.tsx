@@ -1,11 +1,11 @@
 import { DiskSpaceStatus } from "@/api/interface";
 import { formatSize } from "@/utils";
 import { Card, Tooltip } from "antd";
+import clsx from "clsx";
 import dayjs from "dayjs";
+import { HTMLMotionProps, motion } from "framer-motion";
 import React from "react";
 import IconComponent, { Icons } from "../IconComponent";
-import { motion, HTMLMotionProps } from "framer-motion";
-import clsx from "clsx";
 
 // 组件属性接口
 interface FileCardProps extends Omit<HTMLMotionProps<"div">, "onDrag"> {
