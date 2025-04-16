@@ -55,16 +55,22 @@ const UserInfoDrawer = forwardRef<InfoDrawerRef, InfoDrawerProps>(({ onSave }, r
 	};
 
 	// 打开抽屉
-	const handleOpen = (type: "view" | "edit" | "add" = "view", user_id?: number | string) => {
+	const handleOpen = async (type: "view" | "edit" | "add" = "view", user_id?: number | string) => {
 		setType(type);
 		setOpen(true);
 		setUserId(user_id as number);
-
-		if (type === "edit" || type === "view") {
-			setInitLoading(true);
-			Promise.all([fetchRole(), fetchUser(user_id!)]).finally(() => setInitLoading(false));
-		} else {
-			form.resetFields();
+		setInitLoading(true);
+		try {
+			if (type === "edit" || type === "view") {
+				await Promise.all([fetchRole(), fetchUser(user_id!)]);
+			} else {
+				form.resetFields();
+				await fetchRole();
+			}
+		} catch (error: any) {
+			message.error(error.message);
+		} finally {
+			setInitLoading(false);
 		}
 	};
 
@@ -149,6 +155,16 @@ const UserInfoDrawer = forwardRef<InfoDrawerRef, InfoDrawerProps>(({ onSave }, r
 
 				<Form.Item label="住址" name={["profile", "address"]}>
 					<Input prefix={<HomeOutlined />} disabled={type === "view"} />
+				</Form.Item>
+
+				<Form.Item label="状态" name="status">
+					<Select
+						defaultValue={1}
+						options={[
+							{ label: "启用", value: 1 },
+							{ label: "禁用", value: 0 }
+						]}
+					/>
 				</Form.Item>
 			</Form>
 		</Drawer>

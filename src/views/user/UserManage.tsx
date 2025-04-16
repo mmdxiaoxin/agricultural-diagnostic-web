@@ -1,5 +1,5 @@
 import { UserItem, UserListParams } from "@/api/interface";
-import { deleteUserById, getUserList, resetUserById } from "@/api/modules/user";
+import { deleteUserById, getUserList, resetUserById, updateUserStatus } from "@/api/modules/user";
 import { ROLE_COLOR } from "@/constants";
 import {
 	DeleteOutlined,
@@ -18,6 +18,8 @@ import {
 	Input,
 	message,
 	Popconfirm,
+	Popover,
+	Select,
 	Space,
 	Table,
 	TableProps,
@@ -96,6 +98,39 @@ const User = () => {
 						{role.alias}
 					</Tag>
 				));
+			},
+			align: "center"
+		},
+		{
+			title: "状态",
+			dataIndex: "status",
+			key: "status",
+			render: (_, { status, id }) => {
+				return (
+					<Popover
+						content={
+							<Select
+								defaultValue={status ? 1 : 0}
+								style={{ width: 120 }}
+								onChange={async value => {
+									try {
+										await updateUserStatus(id, value);
+										message.success("状态更新成功");
+										fetchData(queryParams);
+									} catch (error: any) {
+										message.error(error.message);
+									}
+								}}
+							>
+								<Select.Option value={1}>启用</Select.Option>
+								<Select.Option value={0}>禁用</Select.Option>
+							</Select>
+						}
+						trigger="hover"
+					>
+						{status ? <Tag color="success">启用</Tag> : <Tag color="error">禁用</Tag>}
+					</Popover>
+				);
 			},
 			align: "center"
 		},

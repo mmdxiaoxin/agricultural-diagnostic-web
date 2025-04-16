@@ -38,6 +38,9 @@ export const getUserById = (id: number | string) =>
 export const updateUserById = (id: number | string, data: UserUpdateParams) =>
 	http.put<null>(`/user/${id}`, data, { loading: false });
 
+export const updateUserStatus = (id: number | string, status: number) =>
+	http.put<null>(`/user/${id}/status`, { status }, { loading: false });
+
 export const deleteUserById = (id: number | string) => http.delete<null>(`/user/${id}`);
 
 export const resetUserById = (id: number | string) => http.put<null>(`/user/${id}/reset/password`);
