@@ -1,10 +1,11 @@
 import { DiskSpaceStatus } from "@/api/interface";
 import { formatSize } from "@/utils";
-import { Card, Divider } from "antd";
+import { Card, Tooltip } from "antd";
 import dayjs from "dayjs";
 import React from "react";
 import IconComponent, { Icons } from "../IconComponent";
-import styles from "./index.module.scss"; // 样式文件
+import { motion } from "framer-motion";
+import clsx from "clsx";
 
 // 组件属性接口
 interface FileCardProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -15,25 +16,89 @@ interface FileCardProps extends React.HTMLAttributes<HTMLDivElement> {
 }
 
 const FileCard: React.FC<FileCardProps> = ({ info, type, icon, color = "#655df0", ...props }) => {
+	const cardVariants = {
+		hover: {
+			scale: 1.02,
+			transition: {
+				duration: 0.2
+			}
+		}
+	};
+
 	return (
-		<div className={styles.container} {...props}>
-			<Card className={styles.card}>
-				<div className={styles.size}>{formatSize(info?.used ? Number(info?.used) : 0)}</div>
-				<div className={styles.type}>{type}</div>
-				<Divider className={styles.divider} />
-				<div className={styles.updated}>
-					<span>{`上次更新`}</span>
-					<span>
-						{info?.last_updated
-							? dayjs(info?.last_updated).format("YYYY-MM-DD HH:mm:ss")
-							: "当前暂无文件存储记录"}
-					</span>
+		<motion.div variants={cardVariants} whileHover="hover" className="relative h-full" {...props}>
+			<Card
+				className={clsx(
+					"h-full",
+					"rounded-2xl",
+					"bg-white",
+					"shadow-sm",
+					"border-0",
+					"transition-all duration-300",
+					"hover:shadow-md",
+					"flex flex-col"
+				)}
+			>
+				<div className="flex items-center justify-between mb-4">
+					<div className="flex items-center gap-3">
+						<div
+							className={clsx(
+								"w-10 h-10",
+								"rounded-xl",
+								"flex items-center justify-center",
+								"transition-all duration-300"
+							)}
+							style={{ backgroundColor: color }}
+						>
+							<IconComponent name={icon || "FileOutlined"} color="white" size={20} />
+						</div>
+						<div>
+							<h3 className="text-lg font-semibold text-gray-800">{type}</h3>
+							<p className="text-sm text-gray-500">文件类型</p>
+						</div>
+					</div>
+				</div>
+
+				<div className="flex-1 flex flex-col justify-between">
+					<div className="space-y-2">
+						<div className="flex items-center justify-between">
+							<span className="text-sm text-gray-500">存储空间</span>
+							<span className="text-base font-medium text-gray-900">
+								{formatSize(info?.used ? Number(info?.used) : 0)}
+							</span>
+						</div>
+						<div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+							<div
+								className="h-full rounded-full transition-all duration-500"
+								style={{
+									width: `${(Number(info?.used || 0) / 1000000000) * 100}%`,
+									backgroundColor: color
+								}}
+							/>
+						</div>
+					</div>
+
+					<div className="mt-4 pt-4 border-t border-gray-100">
+						<Tooltip
+							title={
+								info?.last_updated
+									? dayjs(info?.last_updated).format("YYYY-MM-DD HH:mm:ss")
+									: "暂无更新记录"
+							}
+						>
+							<div className="flex items-center justify-between text-sm">
+								<span className="text-gray-500">上次更新</span>
+								<span className="text-gray-700">
+									{info?.last_updated
+										? dayjs(info?.last_updated).format("MM-DD HH:mm")
+										: "暂无记录"}
+								</span>
+							</div>
+						</Tooltip>
+					</div>
 				</div>
 			</Card>
-			<div className={styles.icon} style={{ backgroundColor: color }}>
-				<IconComponent name={icon || "FileOutlined"} color="white" size={18} />
-			</div>
-		</div>
+		</motion.div>
 	);
 };
 

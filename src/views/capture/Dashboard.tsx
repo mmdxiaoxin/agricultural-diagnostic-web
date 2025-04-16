@@ -169,9 +169,9 @@ const Dashboard: React.FC = () => {
 			animate="visible"
 			className={clsx(
 				"min-h-screen",
-				"p-6",
+				"p-4 sm:p-6 lg:p-8",
 				"bg-gradient-to-br from-gray-50 to-white",
-				"space-y-6"
+				"space-y-4 sm:space-y-6 lg:space-y-8"
 			)}
 		>
 			{/* 顶部统计卡片 */}
@@ -186,7 +186,7 @@ const Dashboard: React.FC = () => {
 						"hover:shadow-md"
 					)}
 				>
-					<div className="flex items-center justify-between mb-6">
+					<div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
 						<div>
 							<Title level={3} className="!mb-2">
 								存储空间概览
@@ -204,7 +204,7 @@ const Dashboard: React.FC = () => {
 							/>
 						</Tooltip>
 					</div>
-					<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+					<div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
 						<div className="h-[300px]">
 							<DiskSpaceUsageChart usedSpace={totalUsage} />
 						</div>
@@ -248,7 +248,7 @@ const Dashboard: React.FC = () => {
 						"hover:shadow-md"
 					)}
 				>
-					<div className="flex justify-between items-center mb-6">
+					<div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
 						<Title level={3} className="!mb-0">
 							文件类型统计
 						</Title>
@@ -260,7 +260,7 @@ const Dashboard: React.FC = () => {
 							重置
 						</Button>
 					</div>
-					<div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+					<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xxl:grid-cols-6 gap-4 sm:gap-6">
 						<FileCard
 							info={diskReport?.application}
 							type="文档"
@@ -325,7 +325,7 @@ const Dashboard: React.FC = () => {
 						"hover:shadow-md"
 					)}
 				>
-					<div className="flex justify-between items-center mb-6">
+					<div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
 						<Title level={3} className="!mb-0">
 							文件列表
 						</Title>
@@ -357,6 +357,7 @@ const Dashboard: React.FC = () => {
 						}}
 						rowKey="id"
 						className={clsx("rounded-lg", "overflow-hidden")}
+						scroll={{ x: "max-content" }}
 					/>
 				</Card>
 			</motion.div>
