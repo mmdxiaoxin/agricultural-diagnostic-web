@@ -28,5 +28,4 @@ export const updateCrop = (cropId: number, params: ReqUpdateCrop) =>
 	http.patch(`/knowledge/crop/${cropId}`, params, { loading: false });
 
 // * 删除作物
-export const deleteCrop = (cropId: number) =>
-	http.delete(`/knowledge/crop/${cropId}`, {}, { cancel: false });
+export const deleteCrop = (cropId: number) => http.delete(`/knowledge/crop/${cropId}`);

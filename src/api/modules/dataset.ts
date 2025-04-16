@@ -28,5 +28,4 @@ export const updateDataset = (datasetId: number, params: ReqUpdateDataset) =>
 	http.put(`/dataset/${datasetId}`, params, { loading: false });
 
 // * 删除数据集
-export const deleteDataset = (datasetId: number) =>
-	http.delete(`/dataset/${datasetId}`, {}, { cancel: false });
+export const deleteDataset = (datasetId: number) => http.delete(`/dataset/${datasetId}`);

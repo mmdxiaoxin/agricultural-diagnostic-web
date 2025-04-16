@@ -11,13 +11,11 @@ import axios, {
 	AxiosResponse,
 	InternalAxiosRequestConfig
 } from "axios";
-import { AxiosCanceler } from "./helper/axiosCancel";
 import { checkStatus } from "./helper/checkStatus";
 import { ApiResponse } from "./interface";
 
 export interface CustomInternalAxiosRequestConfig extends InternalAxiosRequestConfig {
 	loading?: boolean;
-	cancel?: boolean;
 	toast?: boolean;
 }
 export interface CustomAxiosError extends AxiosError {
@@ -25,22 +23,18 @@ export interface CustomAxiosError extends AxiosError {
 }
 export type GetConfig = Omit<AxiosRequestConfig, "params"> & {
 	loading?: boolean;
-	cancel?: boolean;
 	toast?: boolean;
 };
 export type PostConfig = AxiosRequestConfig & {
 	loading?: boolean;
-	cancel?: boolean;
 	toast?: boolean;
 };
 export type PutConfig = AxiosRequestConfig & {
 	loading?: boolean;
-	cancel?: boolean;
 	toast?: boolean;
 };
 export type DeleteConfig = Omit<AxiosRequestConfig, "params"> & {
 	loading?: boolean;
-	cancel?: boolean;
 	toast?: boolean;
 };
 export type DownloadConfig = Omit<PostConfig, "responseType">;
@@ -52,8 +46,6 @@ const config = {
 	toast: true
 };
 
-const axiosCanceler = new AxiosCanceler();
-
 class RequestHttp {
 	service: AxiosInstance;
 	public constructor(config: AxiosRequestConfig) {
@@ -63,9 +55,6 @@ class RequestHttp {
 		this.service.interceptors.request.use(
 			(config: CustomInternalAxiosRequestConfig) => {
 				NProgress.start();
-				// 重复请求不需要取消，在 api 服务中通过指定的第三个参数: { cancel: false } 来控制
-				config.cancel ??= true;
-				config.cancel && axiosCanceler.addPending(config);
 
 				// 当前请求不需要显示 loading，在 api 服务中通过指定的第三个参数: { loading: false } 来控制
 				config.loading ??= true;
@@ -86,8 +75,6 @@ class RequestHttp {
 			(response: AxiosResponse & { config: CustomInternalAxiosRequestConfig }) => {
 				const { data, config } = response;
 				NProgress.done();
-				// * 在请求结束后，移除本次请求(关闭loading)
-				axiosCanceler.removePending(config);
 				config.loading && tryHideFullScreenLoading();
 
 				// * 全局错误信息拦截（防止下载文件得时候返回数据流，没有code，直接报错）
@@ -109,10 +96,6 @@ class RequestHttp {
 				NProgress.done();
 				tryHideFullScreenLoading();
 
-				// 请求取消单独判断，不需要提示错误信息
-				if (error.message === "canceled") {
-					return Promise.reject(error);
-				}
 				// 请求超时单独判断，请求超时没有 response
 				if (error.message.indexOf("timeout") !== -1) message.error("请求超时，请稍后再试");
 				if (error.message.indexOf("Network Error") !== -1) message.error("网络错误！请您稍后重试");

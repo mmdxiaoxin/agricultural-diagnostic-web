@@ -43,8 +43,7 @@ export const uploadSingleFile = async (file: File | RcFile) => {
 		headers: {
 			"Content-Type": "multipart/form-data"
 		},
-		loading: false,
-		cancel: false
+		loading: false
 	});
 };
 
@@ -153,7 +152,7 @@ const createUploadTask = async (
 			totalChunks,
 			fileMd5
 		},
-		{ loading: false, cancel: false }
+		{ loading: false }
 	);
 	if (taskResp.code !== 201 && taskResp.code !== 200 && taskResp.code !== 202) {
 		throw new TaskError(taskResp.message);
@@ -169,7 +168,6 @@ const uploadChunk = async (taskId: string, fileMd5: string, chunkIndex: number, 
 	formData.append("chunkIndex", chunkIndex.toString());
 	formData.append("chunk", chunk);
 	return http.post("/file/upload/chunk", formData, {
-		cancel: false,
 		loading: false
 	});
 };
@@ -229,11 +227,7 @@ const uploadFileChunks = async (
 
 // 3. 完成上传
 const completeUpload = async (taskId: string) => {
-	const response = await http.post(
-		"/file/upload/complete",
-		{ taskId },
-		{ loading: false, cancel: false }
-	);
+	const response = await http.post("/file/upload/complete", { taskId }, { loading: false });
 	if (response.code !== 200 && response.code !== 201) {
 		throw new CompleteError(response.message);
 	}
@@ -255,7 +249,7 @@ const retryUpload = async (
 		const taskStatusResp = await http.get<ResTaskStatus>(
 			`/file/upload/status/${taskId}`,
 			{},
-			{ loading: false, cancel: false }
+			{ loading: false }
 		);
 		if (taskStatusResp.code !== 200) {
 			throw new Error(taskStatusResp.message);
@@ -367,7 +361,6 @@ export const downloadMultipleFiles = async (
 			{ fileIds },
 			{
 				loading: false,
-				cancel: false,
 				onDownloadProgress(progressEvent) {
 					const progress = progressEvent.total
 						? Math.round((progressEvent.loaded / progressEvent.total) * 100)
@@ -419,8 +412,7 @@ export const updateFilesAccess = (fileIds: (string | number)[], access: string) 
 	http.put("/file/access", { fileIds, access }, { loading: false });
 
 // * 文件删除
-export const deleteFile = (fileId: string | number) =>
-	http.delete(`/file/delete/${fileId}`, {}, { cancel: false });
+export const deleteFile = (fileId: string | number) => http.delete(`/file/delete/${fileId}`);
 
 // * 批量文件删除
 export const deleteFiles = (fileIds: string) => http.delete(`/file/delete`, { fileIds });
