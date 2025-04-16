@@ -8,6 +8,7 @@ export interface DatasetsListProps {
 	onDelete?: (datasetId: number) => void;
 	onDownload?: (datasetId: number) => void;
 	onCopy?: (datasetId: number) => void;
+	onAccessChange?: (datasetId: number, access: "public" | "private") => void;
 	isPublic?: boolean;
 }
 
@@ -17,6 +18,7 @@ const DatasetsList: React.FC<DatasetsListProps> = ({
 	onDelete,
 	onDownload,
 	onCopy,
+	onAccessChange,
 	isPublic = false
 }) => {
 	return (
@@ -29,6 +31,7 @@ const DatasetsList: React.FC<DatasetsListProps> = ({
 					onDelete={onDelete}
 					onDownload={onDownload}
 					onCopy={onCopy}
+					onAccessChange={onAccessChange}
 					isPublic={isPublic}
 					index={index}
 				/>

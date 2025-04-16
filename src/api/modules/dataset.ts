@@ -27,5 +27,9 @@ export const createDataset = (params: ReqCreateDataset) =>
 export const updateDataset = (datasetId: number, params: ReqUpdateDataset) =>
 	http.put(`/dataset/${datasetId}`, params, { loading: false });
 
+// * 修改数据集访问权限
+export const updateDatasetAccess = (datasetId: number, access: "public" | "private") =>
+	http.put(`/dataset/${datasetId}/access`, { access }, { loading: false });
+
 // * 删除数据集
 export const deleteDataset = (datasetId: number) => http.delete(`/dataset/${datasetId}`);

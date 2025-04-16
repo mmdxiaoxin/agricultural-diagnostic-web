@@ -1,10 +1,17 @@
 import { DatasetMeta } from "@/api/interface";
 import { useAppSelector } from "@/hooks";
 import { formatSize } from "@/utils";
-import { CopyOutlined, DeleteOutlined, DownloadOutlined, EditOutlined } from "@ant-design/icons";
-import { Button, Popconfirm, Tag, Tooltip } from "antd";
+import {
+	CopyOutlined,
+	DeleteOutlined,
+	DownloadOutlined,
+	EditOutlined,
+	GlobalOutlined,
+	LockOutlined
+} from "@ant-design/icons";
+import { Button, Popconfirm, Popover, Switch, Tag, Tooltip } from "antd";
 import { motion } from "framer-motion";
-import React from "react";
+import React, { useState } from "react";
 import clsx from "clsx";
 
 export interface DatasetCardProps {
@@ -13,6 +20,7 @@ export interface DatasetCardProps {
 	onDelete?: (datasetId: number) => void;
 	onDownload?: (datasetId: number) => void;
 	onCopy?: (datasetId: number) => void;
+	onAccessChange?: (datasetId: number, access: "public" | "private") => void;
 	isPublic?: boolean;
 	index?: number;
 }
@@ -23,11 +31,23 @@ const DatasetCard: React.FC<DatasetCardProps> = ({
 	onDelete,
 	onDownload,
 	onCopy,
+	onAccessChange,
 	isPublic = false,
 	index = 0
 }) => {
 	const { user } = useAppSelector(state => state.user);
 	const isOwner = user.id === dataset.createdBy;
+	const [accessLoading, setAccessLoading] = useState(false);
+
+	const handleAccessChange = async (checked: boolean) => {
+		if (!onAccessChange) return;
+		setAccessLoading(true);
+		try {
+			await onAccessChange(dataset.id, checked ? "public" : "private");
+		} finally {
+			setAccessLoading(false);
+		}
+	};
 
 	return (
 		<motion.div
@@ -48,7 +68,11 @@ const DatasetCard: React.FC<DatasetCardProps> = ({
 				<div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-indigo-500/10" />
 				<div className="absolute inset-0 flex items-center justify-center">
 					<div className="w-16 h-16 rounded-full bg-white/90 shadow-lg flex items-center justify-center">
-						<DownloadOutlined className="text-2xl text-blue-500" />
+						{dataset.access === "public" ? (
+							<GlobalOutlined className="text-2xl text-blue-500" />
+						) : (
+							<LockOutlined className="text-2xl text-gray-500" />
+						)}
 					</div>
 				</div>
 			</div>
@@ -69,6 +93,42 @@ const DatasetCard: React.FC<DatasetCardProps> = ({
 									</Tag>
 								)}
 								{isOwner && !isPublic && <Tag color="green">我的</Tag>}
+								{isOwner && (
+									<Popover
+										content={
+											<div className="flex items-center gap-2 p-2">
+												<span className="text-sm text-gray-600">
+													{dataset.access === "public" ? "公开访问" : "私有访问"}
+												</span>
+												<Switch
+													checked={dataset.access === "public"}
+													onChange={handleAccessChange}
+													loading={accessLoading}
+													checkedChildren={<GlobalOutlined />}
+													unCheckedChildren={<LockOutlined />}
+												/>
+											</div>
+										}
+										trigger="click"
+									>
+										<Tag
+											color={dataset.access === "public" ? "blue" : "default"}
+											className="cursor-pointer hover:opacity-80 transition-opacity"
+										>
+											{dataset.access === "public" ? (
+												<>
+													<GlobalOutlined className="mr-1" />
+													公开
+												</>
+											) : (
+												<>
+													<LockOutlined className="mr-1" />
+													私有
+												</>
+											)}
+										</Tag>
+									</Popover>
+								)}
 							</div>
 						</div>
 					</div>

@@ -1,5 +1,10 @@
 import { DatasetMeta } from "@/api/interface";
-import { deleteDataset, getDatasetsList, getPublicDatasetsList } from "@/api/modules";
+import {
+	deleteDataset,
+	getDatasetsList,
+	getPublicDatasetsList,
+	updateDatasetAccess
+} from "@/api/modules";
 import DatasetsList from "@/components/List/DatasetsList";
 import {
 	DownloadOutlined,
@@ -112,6 +117,18 @@ const DatasetManage: React.FC<DatasetManageProps> = () => {
 		message.success("开始复制数据集");
 	};
 
+	const handleAccessChange = async (datasetId: number, access: "public" | "private") => {
+		try {
+			await updateDatasetAccess(datasetId, access);
+			setDatasets(
+				datasets.map(dataset => (dataset.id === datasetId ? { ...dataset, access } : dataset))
+			);
+			message.success(`数据集已${access === "public" ? "公开" : "设为私有"}`);
+		} catch (error) {
+			message.error("修改访问权限失败");
+		}
+	};
+
 	const filteredDatasets = datasets.filter(dataset =>
 		dataset.name.toLowerCase().includes(searchText.toLowerCase())
 	);
@@ -130,11 +147,12 @@ const DatasetManage: React.FC<DatasetManageProps> = () => {
 			children: (
 				<div className="flex-1">
 					<DatasetsList
-						datasets={filteredDatasets}
+						datasets={filteredDatasets.filter(dataset => dataset.access === "public")}
 						onEdit={handleEdit}
 						onDelete={handleDelete}
 						onDownload={handleDownload}
 						onCopy={handleCopy}
+						onAccessChange={handleAccessChange}
 						isPublic={true}
 					/>
 				</div>
@@ -151,6 +169,7 @@ const DatasetManage: React.FC<DatasetManageProps> = () => {
 						onDelete={handleDelete}
 						onDownload={handleDownload}
 						onCopy={handleCopy}
+						onAccessChange={handleAccessChange}
 						isPublic={false}
 					/>
 				</div>

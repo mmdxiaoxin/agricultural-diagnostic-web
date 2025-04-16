@@ -2,6 +2,7 @@ import { PageData } from ".";
 export interface DatasetMeta {
 	id: number;
 	name: string;
+	access: "public" | "private";
 	description: string;
 	createdAt: string;
 	updatedAt: string;
