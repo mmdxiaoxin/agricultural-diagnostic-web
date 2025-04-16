@@ -1,8 +1,8 @@
-import { Tag, Typography, Popover } from "antd";
 import { Prediction } from "@/api/interface/diagnosis";
-import React from "react";
-import Top5ProbabilityChart from "../ECharts/Top5ProbabilityChart";
+import { Popover, Tag, Typography } from "antd";
 import { motion } from "framer-motion";
+import React, { useState } from "react";
+import Top5ProbabilityChart from "../ECharts/Top5ProbabilityChart";
 
 const { Text, Paragraph } = Typography;
 
@@ -18,6 +18,16 @@ const DiagnosisResultCard = React.memo(({ prediction }: DiagnosisResultCardProps
 			</div>
 		) : null;
 
+	const [hovered, setHovered] = useState(false);
+
+	const handleHoverChange = (value: boolean) => {
+		if (prediction.type === "classify") {
+			setHovered(value);
+		} else {
+			setHovered(false);
+		}
+	};
+
 	return (
 		<motion.div
 			whileHover={{ scale: 1.02 }}
@@ -28,6 +38,8 @@ const DiagnosisResultCard = React.memo(({ prediction }: DiagnosisResultCardProps
 					{prediction.type === "classify" ? "分类" : "检测"}
 				</Text>
 				<Popover
+					open={hovered}
+					onOpenChange={handleHoverChange}
 					content={content}
 					title={
 						<div className="flex items-center gap-2">
