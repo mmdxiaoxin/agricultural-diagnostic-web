@@ -1,9 +1,11 @@
 export type DiagnosisRule = {
 	id: number;
 	diseaseId: number;
-	symptomIds: string;
-	probability: number;
-	recommendedAction: string;
-	createdAt: string;
-	updatedAt: string;
+	schema: string;
+};
+
+export type ReqDiagnosisRuleList = {
+	page: number;
+	pageSize: number;
+	keyword: string;
 };
