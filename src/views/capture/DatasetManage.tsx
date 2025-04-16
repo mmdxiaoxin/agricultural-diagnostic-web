@@ -1,5 +1,6 @@
 import { DatasetMeta } from "@/api/interface";
 import {
+	copyDataset,
 	deleteDataset,
 	getDatasetsList,
 	getPublicDatasetsList,
@@ -112,9 +113,19 @@ const DatasetManage: React.FC<DatasetManageProps> = () => {
 		message.success("开始下载数据集");
 	};
 
-	const handleCopy = (datasetId: number) => {
-		// TODO: 实现数据集复制功能
-		message.success("开始复制数据集");
+	const handleCopy = async (datasetId: number) => {
+		try {
+			const res = await copyDataset(datasetId);
+			if (res.code === 201 && res.data) {
+				// 将新数据集添加到列表开头，并确保类型正确
+				setDatasets(prevDatasets => [res.data as DatasetMeta, ...prevDatasets]);
+				message.success("数据集复制成功");
+			} else {
+				throw new Error(res.message);
+			}
+		} catch (error) {
+			message.error("数据集复制失败");
+		}
 	};
 
 	const handleAccessChange = async (datasetId: number, access: "public" | "private") => {

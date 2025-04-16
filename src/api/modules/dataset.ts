@@ -23,6 +23,10 @@ export const getDatasetDetail = async (datasetId: number) =>
 export const createDataset = (params: ReqCreateDataset) =>
 	http.post<null>("/dataset/create", params, { loading: false });
 
+// * 复制数据集
+export const copyDataset = (datasetId: number) =>
+	http.post<ResDatasetDetail>(`/dataset/${datasetId}/copy`, {}, { loading: false });
+
 // * 修改数据集
 export const updateDataset = (datasetId: number, params: ReqUpdateDataset) =>
 	http.put(`/dataset/${datasetId}`, params, { loading: false });
