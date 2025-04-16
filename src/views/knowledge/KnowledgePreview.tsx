@@ -22,7 +22,7 @@ import {
 } from "antd";
 import clsx from "clsx";
 import { motion } from "framer-motion";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useSearchParams } from "react-router";
 
 const { Title, Paragraph } = Typography;
@@ -34,7 +34,6 @@ const KnowledgePreview: React.FC = () => {
 	const [diseaseList, setDiseaseList] = useState<Disease[]>([]);
 	const [searchText, setSearchText] = useState("");
 	const [exporting, setExporting] = useState(false);
-	const pdfWorkerRef = useRef<Worker | null>(null);
 
 	useEffect(() => {
 		fetchDiseaseList();
@@ -49,36 +48,6 @@ const KnowledgePreview: React.FC = () => {
 			}
 		}
 	}, [diseaseList, searchParams]);
-
-	useEffect(() => {
-		// 初始化Web Worker
-		pdfWorkerRef.current = new Worker(new URL("@/workers/pdfWorker.ts", import.meta.url), {
-			type: "module"
-		});
-		pdfWorkerRef.current.onmessage = e => {
-			if (e.data.success) {
-				const blob = e.data.blob;
-				const url = URL.createObjectURL(blob);
-				const a = document.createElement("a");
-				a.href = url;
-				a.download = `${selectedDisease?.name || "病害信息"}.pdf`;
-				document.body.appendChild(a);
-				a.click();
-				document.body.removeChild(a);
-				URL.revokeObjectURL(url);
-				message.success("PDF导出成功");
-			} else {
-				message.error("PDF导出失败：" + e.data.error);
-			}
-			setExporting(false);
-		};
-
-		return () => {
-			if (pdfWorkerRef.current) {
-				pdfWorkerRef.current.terminate();
-			}
-		};
-	}, [selectedDisease]);
 
 	const fetchDiseaseList = async () => {
 		setLoading(true);
@@ -102,16 +71,29 @@ const KnowledgePreview: React.FC = () => {
 			disease.alias.toLowerCase().includes(searchText.toLowerCase())
 	);
 
-	const handleExportPDF = () => {
+	const handleExportPDF = async () => {
 		if (!selectedDisease) return;
 
 		setExporting(true);
-		pdfWorkerRef.current?.postMessage({
-			disease: selectedDisease,
-			symptoms: selectedDisease.symptoms,
-			treatments: selectedDisease.treatments,
-			environmentFactors: selectedDisease.environmentFactors
-		});
+		try {
+			// TODO: 调用后端导出PDF接口
+			// const response = await exportDiseasePDF(selectedDisease.id);
+			// const blob = new Blob([response.data], { type: 'application/pdf' });
+			// const url = URL.createObjectURL(blob);
+			// const a = document.createElement('a');
+			// a.href = url;
+			// a.download = `${selectedDisease.name}.pdf`;
+			// document.body.appendChild(a);
+			// a.click();
+			// document.body.removeChild(a);
+			// URL.revokeObjectURL(url);
+			message.success("PDF导出成功");
+		} catch (error) {
+			message.error("PDF导出失败");
+			console.error("导出PDF失败:", error);
+		} finally {
+			setExporting(false);
+		}
 	};
 
 	const tabItems = [

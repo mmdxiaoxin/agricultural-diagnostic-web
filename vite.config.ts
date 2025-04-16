@@ -81,7 +81,7 @@ export default defineConfig((mode: ConfigEnv): UserConfig => {
 			drop: viteEnv.VITE_DROP_CONSOLE ? ["debugger", "console"] : []
 		},
 		optimizeDeps: {
-			include: ["spark-md5", "jspdf"]
+			include: ["spark-md5"]
 		},
 		build: {
 			outDir: "dist",
