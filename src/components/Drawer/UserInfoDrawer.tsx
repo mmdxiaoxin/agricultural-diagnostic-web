@@ -156,16 +156,6 @@ const UserInfoDrawer = forwardRef<InfoDrawerRef, InfoDrawerProps>(({ onSave }, r
 				<Form.Item label="住址" name={["profile", "address"]}>
 					<Input prefix={<HomeOutlined />} disabled={type === "view"} />
 				</Form.Item>
-
-				<Form.Item label="状态" name="status">
-					<Select
-						defaultValue={1}
-						options={[
-							{ label: "启用", value: 1 },
-							{ label: "禁用", value: 0 }
-						]}
-					/>
-				</Form.Item>
 			</Form>
 		</Drawer>
 	);
