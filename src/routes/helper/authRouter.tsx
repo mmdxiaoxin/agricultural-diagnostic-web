@@ -1,4 +1,3 @@
-import { AxiosCanceler } from "@/api/helper/axiosCancel";
 import { HOME_URL } from "@/config/config";
 import { rootRoutes } from "@/routes/index";
 import { store } from "@/store";
@@ -6,8 +5,6 @@ import { searchRoute } from "@/utils";
 import { message } from "antd";
 import { PropsWithChildren } from "react";
 import { Navigate, useLocation } from "react-router";
-
-const axiosCanceler = new AxiosCanceler();
 
 export type AuthRouterProps = PropsWithChildren<{}>;
 
@@ -17,9 +14,6 @@ export type AuthRouterProps = PropsWithChildren<{}>;
 const AuthRouter: React.FC<AuthRouterProps> = props => {
 	const { pathname } = useLocation();
 	const route = searchRoute(pathname, rootRoutes);
-
-	// * 在跳转路由之前，清除所有的请求
-	axiosCanceler.removeAllPending();
 
 	// * 判断当前路由是否需要访问权限(不需要权限直接放行)
 	if (!route.meta?.requiresAuth) return props.children;
