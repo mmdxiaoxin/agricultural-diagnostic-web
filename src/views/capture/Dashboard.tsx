@@ -10,9 +10,8 @@ import { ReloadOutlined } from "@ant-design/icons";
 import {
 	Button,
 	Card,
-	Col,
 	message,
-	Row,
+	Progress,
 	Table,
 	TableColumnsType,
 	Tooltip,
@@ -20,6 +19,7 @@ import {
 } from "antd";
 import clsx from "clsx";
 import dayjs from "dayjs";
+import { motion } from "framer-motion";
 import { CSSProperties, useEffect, useMemo, useState } from "react";
 
 const { Title, Text } = Typography;
@@ -141,159 +141,191 @@ const Dashboard: React.FC = () => {
 		}
 	];
 
+	const containerVariants = {
+		hidden: { opacity: 0 },
+		visible: {
+			opacity: 1,
+			transition: {
+				staggerChildren: 0.1
+			}
+		}
+	};
+
+	const itemVariants = {
+		hidden: { y: 20, opacity: 0 },
+		visible: {
+			y: 0,
+			opacity: 1,
+			transition: {
+				duration: 0.5
+			}
+		}
+	};
+
 	return (
-		<div
+		<motion.div
+			variants={containerVariants}
+			initial="hidden"
+			animate="visible"
 			className={clsx(
-				"h-full w-full",
+				"min-h-screen",
 				"p-6",
-				"rounded-2xl",
-				"flex flex-col",
-				"bg-gradient-to-br from-white to-gray-50",
-				"overflow-y-auto"
+				"bg-gradient-to-br from-gray-50 to-white",
+				"space-y-6"
 			)}
 		>
-			<Row gutter={[24, 24]}>
-				<Col span={12}>
-					<Card
-						className={clsx(
-							"h-full",
-							"rounded-2xl",
-							"bg-white",
-							"shadow-sm",
-							"border border-gray-100",
-							"transition-all duration-300",
-							"hover:shadow-md"
-						)}
-					>
-						<div className="flex flex-col gap-6">
-							<div className="flex justify-between items-center">
-								<div>
-									<Title level={3} className="!mb-2">
-										存储空间概览
-									</Title>
-									<Text type="secondary">
-										已用 {formattedUsedSpace} / 总空间 {formattedTotalSpace}
-									</Text>
-								</div>
-								<Tooltip title="刷新数据">
-									<Button
-										type="text"
-										icon={<ReloadOutlined />}
-										onClick={initialize}
-										className="text-gray-400 hover:text-blue-500"
-									/>
-								</Tooltip>
-							</div>
-							<div className="h-[300px]">
-								<DiskSpaceUsageChart usedSpace={totalUsage} />
-							</div>
+			{/* 顶部统计卡片 */}
+			<motion.div variants={itemVariants}>
+				<Card
+					className={clsx(
+						"rounded-2xl",
+						"bg-white",
+						"shadow-sm",
+						"border-0",
+						"transition-all duration-300",
+						"hover:shadow-md"
+					)}
+				>
+					<div className="flex items-center justify-between mb-6">
+						<div>
+							<Title level={3} className="!mb-2">
+								存储空间概览
+							</Title>
+							<Text type="secondary">
+								已用 {formattedUsedSpace} / 总空间 {formattedTotalSpace}
+							</Text>
 						</div>
-					</Card>
-				</Col>
-				<Col span={12}>
-					<Card
-						className={clsx(
-							"h-full",
-							"rounded-2xl",
-							"bg-white",
-							"shadow-sm",
-							"border border-gray-100",
-							"transition-all duration-300",
-							"hover:shadow-md"
-						)}
-					>
-						<div className="flex flex-col gap-6">
-							<div className="flex justify-between items-center">
-								<Title level={3} className="!mb-0">
-									文件类型统计
-								</Title>
-								<Button
-									type="link"
-									onClick={() => handleSelect(undefined)}
-									className="text-blue-500 hover:text-blue-600"
-								>
-									重置
-								</Button>
-							</div>
-							<Row gutter={[16, 16]}>
-								<Col span={12}>
-									<FileCard
-										info={diskReport?.application}
-										type="文档"
-										icon={"FileOutlined"}
-										color="#ff4848"
-										onClick={() => handleSelect("application")}
-										style={fileCardStyle("application")}
-									/>
-								</Col>
-								<Col span={12}>
-									<FileCard
-										info={diskReport?.image}
-										type="图片"
-										icon={"FileImageOutlined"}
-										color="#4892ff"
-										onClick={() => handleSelect("image")}
-										style={fileCardStyle("image")}
-									/>
-								</Col>
-								<Col span={12}>
-									<FileCard
-										info={diskReport?.video}
-										type="视频"
-										icon={"VideoCameraOutlined"}
-										color="#aa48ff"
-										onClick={() => handleSelect("video")}
-										style={fileCardStyle("video")}
-									/>
-								</Col>
-								<Col span={12}>
-									<FileCard
-										info={diskReport?.audio}
-										type="音频"
-										icon={"AudioOutlined"}
-										onClick={() => handleSelect("audio")}
-										style={fileCardStyle("audio")}
-									/>
-								</Col>
-								<Col span={12}>
-									<FileCard
-										info={diskReport?.app}
-										type="压缩包"
-										icon={"FileZipOutlined"}
-										color="#ccc200"
-										onClick={() => handleSelect("archive")}
-										style={fileCardStyle("archive")}
-									/>
-								</Col>
-								<Col span={12}>
-									<FileCard
-										info={diskReport?.other}
-										type="其他"
-										icon={"AppstoreOutlined"}
-										color="#ffaa00"
-										onClick={() => handleSelect("other")}
-										style={fileCardStyle("other")}
-									/>
-								</Col>
-							</Row>
+						<Tooltip title="刷新数据">
+							<Button
+								type="text"
+								icon={<ReloadOutlined />}
+								onClick={initialize}
+								className="text-gray-400 hover:text-blue-500"
+							/>
+						</Tooltip>
+					</div>
+					<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+						<div className="h-[300px]">
+							<DiskSpaceUsageChart usedSpace={totalUsage} />
 						</div>
-					</Card>
-				</Col>
-			</Row>
+						<div className="space-y-4">
+							{Object.entries(diskReport || {}).map(([type, info]) => {
+								if (type === "total") return null;
+								const percentage = (parseInt(info?.used || "0") / totalSpace) * 100;
+								return (
+									<div key={type} className="space-y-2">
+										<div className="flex justify-between items-center">
+											<span className="text-gray-600">{type}</span>
+											<span className="text-gray-900 font-medium">
+												{formatSize(parseInt(info?.used || "0"))}
+											</span>
+										</div>
+										<Progress
+											percent={percentage}
+											strokeColor={{
+												"0%": "#108ee9",
+												"100%": "#87d068"
+											}}
+											showInfo={false}
+										/>
+									</div>
+								);
+							})}
+						</div>
+					</div>
+				</Card>
+			</motion.div>
 
-			<Card
-				className={clsx(
-					"mt-6",
-					"rounded-2xl",
-					"bg-white",
-					"shadow-sm",
-					"border border-gray-100",
-					"transition-all duration-300",
-					"hover:shadow-md"
-				)}
-			>
-				<div className="flex flex-col gap-6">
-					<div className="flex justify-between items-center">
+			{/* 文件类型卡片 */}
+			<motion.div variants={itemVariants}>
+				<Card
+					className={clsx(
+						"rounded-2xl",
+						"bg-white",
+						"shadow-sm",
+						"border-0",
+						"transition-all duration-300",
+						"hover:shadow-md"
+					)}
+				>
+					<div className="flex justify-between items-center mb-6">
+						<Title level={3} className="!mb-0">
+							文件类型统计
+						</Title>
+						<Button
+							type="link"
+							onClick={() => handleSelect(undefined)}
+							className="text-blue-500 hover:text-blue-600"
+						>
+							重置
+						</Button>
+					</div>
+					<div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+						<FileCard
+							info={diskReport?.application}
+							type="文档"
+							icon={"FileOutlined"}
+							color="#ff4848"
+							onClick={() => handleSelect("application")}
+							style={fileCardStyle("application")}
+						/>
+						<FileCard
+							info={diskReport?.image}
+							type="图片"
+							icon={"FileImageOutlined"}
+							color="#4892ff"
+							onClick={() => handleSelect("image")}
+							style={fileCardStyle("image")}
+						/>
+						<FileCard
+							info={diskReport?.video}
+							type="视频"
+							icon={"VideoCameraOutlined"}
+							color="#aa48ff"
+							onClick={() => handleSelect("video")}
+							style={fileCardStyle("video")}
+						/>
+						<FileCard
+							info={diskReport?.audio}
+							type="音频"
+							icon={"AudioOutlined"}
+							color="#ffaa00"
+							onClick={() => handleSelect("audio")}
+							style={fileCardStyle("audio")}
+						/>
+						<FileCard
+							info={diskReport?.app}
+							type="压缩包"
+							icon={"FileZipOutlined"}
+							color="#ccc200"
+							onClick={() => handleSelect("archive")}
+							style={fileCardStyle("archive")}
+						/>
+						<FileCard
+							info={diskReport?.other}
+							type="其他"
+							icon={"AppstoreOutlined"}
+							color="#ffaa00"
+							onClick={() => handleSelect("other")}
+							style={fileCardStyle("other")}
+						/>
+					</div>
+				</Card>
+			</motion.div>
+
+			{/* 文件列表 */}
+			<motion.div variants={itemVariants}>
+				<Card
+					className={clsx(
+						"rounded-2xl",
+						"bg-white",
+						"shadow-sm",
+						"border-0",
+						"transition-all duration-300",
+						"hover:shadow-md"
+					)}
+				>
+					<div className="flex justify-between items-center mb-6">
 						<Title level={3} className="!mb-0">
 							文件列表
 						</Title>
@@ -324,11 +356,11 @@ const Dashboard: React.FC = () => {
 							}
 						}}
 						rowKey="id"
-						className={clsx("rounded-lg", "overflow-hidden", "border border-gray-100")}
+						className={clsx("rounded-lg", "overflow-hidden")}
 					/>
-				</div>
-			</Card>
-		</div>
+				</Card>
+			</motion.div>
+		</motion.div>
 	);
 };
 
