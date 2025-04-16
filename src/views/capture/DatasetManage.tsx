@@ -1,9 +1,15 @@
 import { DatasetMeta } from "@/api/interface";
 import { deleteDataset, getDatasetsList, getPublicDatasetsList } from "@/api/modules";
 import DatasetsList from "@/components/List/DatasetsList";
-import { FolderAddOutlined, PlusOutlined, SearchOutlined } from "@ant-design/icons";
-import { Button, FloatButton, Input, message, Spin, Tabs } from "antd";
+import {
+	DownloadOutlined,
+	FolderAddOutlined,
+	PlusOutlined,
+	SearchOutlined
+} from "@ant-design/icons";
+import { Button, FloatButton, Input, message, Spin, Tabs, Tooltip } from "antd";
 import clsx from "clsx";
+import { motion } from "framer-motion";
 import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router";
 
@@ -96,6 +102,16 @@ const DatasetManage: React.FC<DatasetManageProps> = () => {
 		}
 	};
 
+	const handleDownload = (datasetId: number) => {
+		// TODO: 实现数据集下载功能
+		message.success("开始下载数据集");
+	};
+
+	const handleCopy = (datasetId: number) => {
+		// TODO: 实现数据集复制功能
+		message.success("开始复制数据集");
+	};
+
 	const filteredDatasets = datasets.filter(dataset =>
 		dataset.name.toLowerCase().includes(searchText.toLowerCase())
 	);
@@ -103,10 +119,24 @@ const DatasetManage: React.FC<DatasetManageProps> = () => {
 	const items = [
 		{
 			key: "1",
-			label: "公共数据集",
+			label: (
+				<div className="flex items-center gap-2">
+					<span>公共数据集</span>
+					<Tooltip title="可下载和复制公共数据集">
+						<DownloadOutlined className="text-blue-500" />
+					</Tooltip>
+				</div>
+			),
 			children: (
 				<div className="flex-1">
-					<DatasetsList datasets={filteredDatasets} onEdit={handleEdit} onDelete={handleDelete} />
+					<DatasetsList
+						datasets={filteredDatasets}
+						onEdit={handleEdit}
+						onDelete={handleDelete}
+						onDownload={handleDownload}
+						onCopy={handleCopy}
+						isPublic={true}
+					/>
 				</div>
 			)
 		},
@@ -115,14 +145,24 @@ const DatasetManage: React.FC<DatasetManageProps> = () => {
 			label: "我的数据集",
 			children: (
 				<div className="flex-1">
-					<DatasetsList datasets={filteredDatasets} onEdit={handleEdit} onDelete={handleDelete} />
+					<DatasetsList
+						datasets={filteredDatasets}
+						onEdit={handleEdit}
+						onDelete={handleDelete}
+						onDownload={handleDownload}
+						onCopy={handleCopy}
+						isPublic={false}
+					/>
 				</div>
 			)
 		}
 	];
 
 	return (
-		<div
+		<motion.div
+			initial={{ opacity: 0, y: 20 }}
+			animate={{ opacity: 1, y: 0 }}
+			transition={{ duration: 0.5 }}
 			className={clsx(
 				"h-full w-full",
 				"p-6",
@@ -226,7 +266,7 @@ const DatasetManage: React.FC<DatasetManageProps> = () => {
 					快速创建
 				</div>
 			</FloatButton>
-		</div>
+		</motion.div>
 	);
 };
 
