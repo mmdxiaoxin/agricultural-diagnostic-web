@@ -13,15 +13,6 @@ const diagnosisRoutes: RouteObjectEx[] = [
 		}
 	},
 	{
-		path: "/diagnosis/models",
-		element: lazyLoad(React.lazy(() => import("@/views/diagnosis/ModelsManage"))),
-		meta: {
-			requiresAuth: true,
-			title: "模型管理",
-			key: "diagnosis-models"
-		}
-	},
-	{
 		path: "/diagnosis/history",
 		element: lazyLoad(React.lazy(() => import("@/views/diagnosis/DiagnosisHistory"))),
 		meta: {

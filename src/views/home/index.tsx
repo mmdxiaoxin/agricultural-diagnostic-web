@@ -57,7 +57,7 @@ const HomeIndex: React.FC = () => {
 			title: "模型管理",
 			icon: <ToolOutlined className="text-2xl" />,
 			description: "管理AI模型，支持模型训练、评估和部署",
-			path: "/diagnosis/models",
+			path: "/service/models",
 			roles: ["expert", "admin"]
 		},
 		{

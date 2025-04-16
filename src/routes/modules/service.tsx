@@ -13,6 +13,15 @@ const serviceRoutes: RouteObjectEx[] = [
 		}
 	},
 	{
+		path: "/service/models",
+		element: lazyLoad(React.lazy(() => import("@/views/service/ModelsManage"))),
+		meta: {
+			requiresAuth: true,
+			title: "模型管理",
+			key: "diagnosis-models"
+		}
+	},
+	{
 		path: "/service/config",
 		element: lazyLoad(React.lazy(() => import("@/views/service/ServiceConfig"))),
 		meta: {
