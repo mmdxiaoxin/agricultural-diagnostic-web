@@ -109,7 +109,7 @@ const HomeIndex: React.FC = () => {
 					<Col xs={24} md={12}>
 						<Space direction="vertical" size="large" className="w-full">
 							<Title className={clsx("text-4xl md:text-5xl", "font-bold", "text-gray-800")}>
-								农业智能诊断系统
+								病害智能诊断系统
 							</Title>
 							<Paragraph className={clsx("text-lg", "text-gray-600")}>
 								基于人工智能的农业病害诊断平台，为农业生产提供智能化的解决方案。
