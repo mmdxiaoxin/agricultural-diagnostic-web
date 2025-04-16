@@ -37,3 +37,16 @@ export const updateDatasetAccess = (datasetId: number, access: "public" | "priva
 
 // * 删除数据集
 export const deleteDataset = (datasetId: number) => http.delete(`/dataset/${datasetId}`);
+
+// *下载数据集
+export const downloadDataset = (datasetId: number) =>
+	http.get(
+		`/dataset/${datasetId}/download`,
+		{
+			responseType: "blob",
+			headers: {
+				"Content-Type": "application/zip"
+			}
+		},
+		{ loading: false }
+	) as unknown as Promise<Blob>;

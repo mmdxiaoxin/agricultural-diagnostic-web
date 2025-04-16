@@ -2,6 +2,7 @@ import { DatasetMeta } from "@/api/interface";
 import {
 	copyDataset,
 	deleteDataset,
+	downloadDataset,
 	getDatasetsList,
 	getPublicDatasetsList,
 	updateDatasetAccess
@@ -108,9 +109,32 @@ const DatasetManage: React.FC<DatasetManageProps> = () => {
 		}
 	};
 
-	const handleDownload = (datasetId: number) => {
-		// TODO: 实现数据集下载功能
-		message.success("开始下载数据集");
+	const handleDownload = async (datasetId: number) => {
+		try {
+			const dataset = datasets.find(d => d.id === datasetId);
+			if (!dataset) {
+				throw new Error("数据集不存在");
+			}
+
+			const response = await downloadDataset(datasetId);
+			const blob = new Blob([response], { type: "application/zip" });
+			const url = window.URL.createObjectURL(blob);
+
+			const a = document.createElement("a");
+			a.href = url;
+			a.download = `${dataset.name}.zip`;
+			document.body.appendChild(a);
+			a.click();
+
+			// 清理资源
+			window.URL.revokeObjectURL(url);
+			document.body.removeChild(a);
+
+			message.success("数据集下载成功");
+		} catch (error) {
+			console.error("下载失败:", error);
+			message.error("下载数据集失败");
+		}
 	};
 
 	const handleCopy = async (datasetId: number) => {
