@@ -1,7 +1,7 @@
 import { DiskUsageReport, FileMeta } from "@/api/interface";
 import { getDiskUsage, getFileList } from "@/api/modules/file";
 import DiskSpaceUsageChart from "@/components/ECharts/DiskSpaceUsageChart";
-import FileCard from "@/components/FileCard";
+import FileStatisticCard from "@/components/Card/FileStatisticCard";
 import FilePreview from "@/components/Table/FilePreview";
 import FileTypeTag from "@/components/Table/FileTypeTag";
 import { MIMETypeValue } from "@/constants/mimeType";
@@ -261,7 +261,7 @@ const Dashboard: React.FC = () => {
 						</Button>
 					</div>
 					<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xxl:grid-cols-6 gap-4 sm:gap-6">
-						<FileCard
+						<FileStatisticCard
 							info={diskReport?.application}
 							type="文档"
 							icon={"FileOutlined"}
@@ -269,7 +269,7 @@ const Dashboard: React.FC = () => {
 							onClick={() => handleSelect("application")}
 							style={fileCardStyle("application")}
 						/>
-						<FileCard
+						<FileStatisticCard
 							info={diskReport?.image}
 							type="图片"
 							icon={"FileImageOutlined"}
@@ -277,7 +277,7 @@ const Dashboard: React.FC = () => {
 							onClick={() => handleSelect("image")}
 							style={fileCardStyle("image")}
 						/>
-						<FileCard
+						<FileStatisticCard
 							info={diskReport?.video}
 							type="视频"
 							icon={"VideoCameraOutlined"}
@@ -285,7 +285,7 @@ const Dashboard: React.FC = () => {
 							onClick={() => handleSelect("video")}
 							style={fileCardStyle("video")}
 						/>
-						<FileCard
+						<FileStatisticCard
 							info={diskReport?.audio}
 							type="音频"
 							icon={"AudioOutlined"}
@@ -293,7 +293,7 @@ const Dashboard: React.FC = () => {
 							onClick={() => handleSelect("audio")}
 							style={fileCardStyle("audio")}
 						/>
-						<FileCard
+						<FileStatisticCard
 							info={diskReport?.app}
 							type="压缩包"
 							icon={"FileZipOutlined"}
@@ -301,7 +301,7 @@ const Dashboard: React.FC = () => {
 							onClick={() => handleSelect("archive")}
 							style={fileCardStyle("archive")}
 						/>
-						<FileCard
+						<FileStatisticCard
 							info={diskReport?.other}
 							type="其他"
 							icon={"AppstoreOutlined"}

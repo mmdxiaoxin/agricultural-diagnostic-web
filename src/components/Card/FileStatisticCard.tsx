@@ -15,7 +15,13 @@ interface FileCardProps extends Omit<HTMLMotionProps<"div">, "onDrag"> {
 	color?: string; // 图标底色
 }
 
-const FileCard: React.FC<FileCardProps> = ({ info, type, icon, color = "#655df0", ...props }) => {
+const FileStatisticCard: React.FC<FileCardProps> = ({
+	info,
+	type,
+	icon,
+	color = "#655df0",
+	...props
+}) => {
 	const cardVariants = {
 		hover: {
 			scale: 1.02,
@@ -102,4 +108,4 @@ const FileCard: React.FC<FileCardProps> = ({ info, type, icon, color = "#655df0"
 	);
 };
 
-export default FileCard;
+export default FileStatisticCard;
