@@ -1,9 +1,10 @@
 import { RemoteConfig, RemoteInterface } from "@/api/interface";
 import { createRemoteConfig, updateRemoteConfig } from "@/api/modules";
-import MonacoEditor from "@/components/Editor";
-import { Button, Form, Input, Modal, Select, Space, message } from "antd";
-import { forwardRef, useImperativeHandle, useRef, useState } from "react";
+import { Button, Form, Input, message, Modal, Select, Space, Spin } from "antd";
+import React, { forwardRef, Suspense, useImperativeHandle, useRef, useState } from "react";
 import InterfaceListModal, { InterfaceListModalRef } from "./InterfaceListModal";
+
+const MonacoEditor = React.lazy(() => import("@/components/Editor"));
 
 export type ConfigModalProps = {
 	onSuccess?: () => void;
@@ -165,17 +166,13 @@ const ConfigModal = forwardRef<ConfigModalRef, ConfigModalProps>(
 							<div className="mb-4">
 								<h3 className="text-lg font-medium text-gray-800">配置内容</h3>
 							</div>
-							<MonacoEditor
-								language="json"
-								value={configContent}
-								onChange={value => setConfigContent(value)}
-								options={{
-									minimap: { enabled: true },
-									fontSize: 14,
-									wordWrap: "on",
-									scrollBeyondLastLine: false
-								}}
-							/>
+							<Suspense fallback={<Spin />}>
+								<MonacoEditor
+									language="json"
+									value={configContent}
+									onChange={value => setConfigContent(value)}
+								/>
+							</Suspense>
 						</div>
 					</div>
 				</Form>

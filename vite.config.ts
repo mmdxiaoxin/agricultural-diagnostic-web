@@ -81,7 +81,7 @@ export default defineConfig((mode: ConfigEnv): UserConfig => {
 			drop: viteEnv.VITE_DROP_CONSOLE ? ["debugger", "console"] : []
 		},
 		optimizeDeps: {
-			include: ["spark-md5"]
+			include: ["spark-md5", "monaco-editor"]
 		},
 		build: {
 			outDir: "dist",
@@ -90,12 +90,16 @@ export default defineConfig((mode: ConfigEnv): UserConfig => {
 				output: {
 					chunkFileNames: "assets/js/[name]-[hash].js",
 					entryFileNames: "assets/js/[name]-[hash].js",
-					assetFileNames: "assets/[ext]/[name]-[hash].[ext]"
+					assetFileNames: "assets/[ext]/[name]-[hash].[ext]",
+					manualChunks: {
+						monaco: ["monaco-editor"]
+					}
 				}
 			}
 		},
 		worker: {
-			format: "es"
+			format: "es",
+			plugins: () => []
 		}
 	};
 });
