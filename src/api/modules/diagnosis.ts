@@ -55,12 +55,12 @@ export const getDiagnosisLogList = async (id: number, params: ReqPage) => {
 
 // * 获取诊断支持信息
 export const getDiagnosisSupport = async () => {
-	return http.get<ResDiagnosisSupport>("/diagnosis/support");
+	return http.get<ResDiagnosisSupport>("/diagnosis/support", {}, { loading: false });
 };
 
 // * 获取诊断历史
 export const getDiagnosisHistory = async () => {
-	return http.get<any>("/diagnosis/history");
+	return http.get<any>("/diagnosis/history", {}, { loading: false });
 };
 
 // * 删除诊断历史
