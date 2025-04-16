@@ -216,11 +216,13 @@ const MonacoEditor: React.FC<MonacoEditorProps> = ({
 	const containerStyle = useMemo(
 		() => ({
 			position: "relative" as const,
+			width: "100%",
+			height: height,
 			minHeight: minHeight || "200px",
 			maxHeight: maxHeight || "800px",
 			...style
 		}),
-		[minHeight, maxHeight, style]
+		[height, minHeight, maxHeight, style]
 	);
 
 	const isMobile = useMemo(() => {
@@ -259,14 +261,17 @@ const MonacoEditor: React.FC<MonacoEditorProps> = ({
 	return (
 		<div className={`monaco-editor-container ${className || ""}`} style={containerStyle}>
 			<Editor
-				height={height}
+				height="100%"
 				defaultLanguage={language}
 				value={value}
 				theme={theme}
 				onChange={handleChange}
 				onMount={handleMount}
 				onValidate={handleValidate}
-				options={mergedOptions}
+				options={{
+					...mergedOptions,
+					automaticLayout: true
+				}}
 			/>
 		</div>
 	);

@@ -166,13 +166,21 @@ const ConfigModal = forwardRef<ConfigModalRef, ConfigModalProps>(
 							<div className="mb-4">
 								<h3 className="text-lg font-medium text-gray-800">配置内容</h3>
 							</div>
-							<Suspense fallback={<Spin />}>
-								<MonacoEditor
-									language="json"
-									value={configContent}
-									onChange={value => setConfigContent(value)}
-								/>
-							</Suspense>
+							<div className="h-[500px] w-full flex items-center justify-center">
+								<Suspense fallback={<Spin size="large" />}>
+									<MonacoEditor
+										language="json"
+										value={configContent}
+										onChange={value => setConfigContent(value)}
+										options={{
+											minimap: { enabled: true },
+											fontSize: 14,
+											wordWrap: "on",
+											scrollBeyondLastLine: false
+										}}
+									/>
+								</Suspense>
+							</div>
 						</div>
 					</div>
 				</Form>
