@@ -177,7 +177,10 @@ const ServiceDetail: React.FC<ServiceDetailProps> = ({ service }) => {
 			title: "接口地址",
 			dataIndex: "url",
 			key: "url",
-			render: text => <QuickCopy text={text} />
+			render: (_: string, record) => {
+				const fullUrl = `${record.url ?? ""}${record.config.prefix ?? ""}${record.config.path ?? ""}`;
+				return <QuickCopy text={fullUrl} />;
+			}
 		},
 		{
 			title: "操作",
