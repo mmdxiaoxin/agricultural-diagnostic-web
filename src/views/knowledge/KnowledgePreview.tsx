@@ -1,13 +1,14 @@
 import { Disease } from "@/api/interface/knowledge/disease";
-import { getKnowledge } from "@/api/modules/Knowledge/knowledge";
+import { getCrops } from "@/api/modules/Knowledge/crop";
+import { getKnowledgeList } from "@/api/modules/Knowledge/knowledge";
 import { getSymptomImage } from "@/api/modules/Knowledge/symptom";
 import { TREATMENT_METHOD } from "@/constants/knowledge";
 import {
 	BookOutlined,
 	EnvironmentOutlined,
+	ExclamationCircleOutlined,
 	MedicineBoxOutlined,
-	SearchOutlined,
-	ExclamationCircleOutlined
+	SearchOutlined
 } from "@ant-design/icons";
 import {
 	Button,
@@ -15,12 +16,14 @@ import {
 	Image,
 	Input,
 	List,
+	message,
+	Pagination,
+	Select,
 	Space,
 	Spin,
 	Tabs,
 	Tag,
-	Typography,
-	message
+	Typography
 } from "antd";
 import clsx from "clsx";
 import { motion } from "framer-motion";
@@ -38,10 +41,19 @@ const KnowledgePreview: React.FC = () => {
 	const [exporting, setExporting] = useState(false);
 	const [imageUrls, setImageUrls] = useState<Record<number, string>>({});
 	const [imageLoading, setImageLoading] = useState<Record<number, boolean>>({});
+	const [currentPage, setCurrentPage] = useState(1);
+	const [pageSize, setPageSize] = useState(10);
+	const [total, setTotal] = useState(0);
+	const [selectedCropId, setSelectedCropId] = useState<number | undefined>(undefined);
+	const [crops, setCrops] = useState<{ id: number; name: string }[]>([]);
+
+	useEffect(() => {
+		fetchCrops();
+	}, []);
 
 	useEffect(() => {
 		fetchDiseaseList();
-	}, []);
+	}, [currentPage, pageSize, searchText, selectedCropId]);
 
 	useEffect(() => {
 		const diseaseId = searchParams.get("id");
@@ -61,13 +73,43 @@ const KnowledgePreview: React.FC = () => {
 		}
 	}, [selectedDisease]);
 
+	const fetchCrops = async () => {
+		try {
+			const res = await getCrops();
+			if (res.data) {
+				setCrops(res.data);
+			}
+		} catch (error) {
+			console.error("获取作物列表失败:", error);
+			message.error("获取作物列表失败");
+		}
+	};
+
 	const fetchDiseaseList = async () => {
+		if (!searchText && !selectedCropId) {
+			setDiseaseList([]);
+			setTotal(0);
+			return;
+		}
+
 		setLoading(true);
 		try {
-			const res = await getKnowledge();
-			setDiseaseList(res.data || []);
+			const res = await getKnowledgeList({
+				page: currentPage,
+				pageSize,
+				keyword: searchText,
+				cropId: selectedCropId
+			});
+			if (res.data) {
+				setDiseaseList(res.data.list || []);
+				setTotal(res.data.total || 0);
+			} else {
+				setDiseaseList([]);
+				setTotal(0);
+			}
 		} catch (error) {
 			console.error("获取病害列表失败:", error);
+			message.error("获取病害列表失败");
 		} finally {
 			setLoading(false);
 		}
@@ -77,11 +119,15 @@ const KnowledgePreview: React.FC = () => {
 		setSelectedDisease(disease);
 	};
 
-	const filteredDiseaseList = diseaseList.filter(
-		disease =>
-			disease.name.toLowerCase().includes(searchText.toLowerCase()) ||
-			disease.alias.toLowerCase().includes(searchText.toLowerCase())
-	);
+	const handleSearch = () => {
+		setCurrentPage(1);
+		fetchDiseaseList();
+	};
+
+	const handlePageChange = (page: number, pageSize: number) => {
+		setCurrentPage(page);
+		setPageSize(pageSize);
+	};
 
 	const handleExportPDF = async () => {
 		if (!selectedDisease) return;
@@ -242,19 +288,37 @@ const KnowledgePreview: React.FC = () => {
 				<div className="flex flex-col gap-4">
 					<div className="flex justify-between items-center">
 						<h2 className="text-2xl font-semibold text-gray-800">病害列表</h2>
-						<p className="text-gray-500">共 {diseaseList.length} 个病害</p>
+						<p className="text-gray-500">共 {total} 个病害</p>
 					</div>
-					<Input
-						prefix={<SearchOutlined />}
-						placeholder="搜索病害名称"
-						value={searchText}
-						onChange={e => setSearchText(e.target.value)}
-						className="rounded-lg"
-					/>
+					<Space direction="vertical" className="w-full">
+						<Select
+							placeholder="选择作物类型"
+							className="w-full"
+							allowClear
+							onChange={value => setSelectedCropId(value)}
+						>
+							{crops.map(crop => (
+								<Select.Option key={crop.id} value={crop.id}>
+									{crop.name}
+								</Select.Option>
+							))}
+						</Select>
+						<Input
+							prefix={<SearchOutlined />}
+							placeholder="搜索病害名称"
+							value={searchText}
+							onChange={e => setSearchText(e.target.value)}
+							onPressEnter={handleSearch}
+							className="rounded-lg"
+						/>
+						<Button type="primary" onClick={handleSearch} className="w-full">
+							搜索
+						</Button>
+					</Space>
 				</div>
 				<List
 					className="flex-1 overflow-y-auto mt-4"
-					dataSource={filteredDiseaseList}
+					dataSource={diseaseList}
 					loading={loading}
 					renderItem={item => (
 						<List.Item
@@ -276,6 +340,16 @@ const KnowledgePreview: React.FC = () => {
 						</List.Item>
 					)}
 				/>
+				<div className="mt-4 flex justify-center">
+					<Pagination
+						current={currentPage}
+						pageSize={pageSize}
+						total={total}
+						onChange={handlePageChange}
+						showSizeChanger
+						showQuickJumper
+					/>
+				</div>
 			</motion.div>
 
 			{/* 预览区域 */}
