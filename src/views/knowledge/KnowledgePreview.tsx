@@ -33,7 +33,6 @@ import React, { useEffect, useState, useRef } from "react";
 import { useSearchParams } from "react-router";
 import qs from "qs";
 import html2canvas from "html2canvas";
-import jsPDF from "jspdf";
 
 const { Title, Paragraph } = Typography;
 
@@ -156,6 +155,9 @@ const KnowledgePreview: React.FC = () => {
 
 		setExporting(true);
 		try {
+			// 动态导入 jsPDF
+			const { default: jsPDF } = await import("jspdf");
+
 			// 创建一个临时的导出容器
 			const exportContainer = document.createElement("div");
 			exportContainer.style.width = "800px"; // 设置固定宽度
