@@ -101,7 +101,7 @@ const ServiceConfig: React.FC = () => {
 					</div>
 				)}
 				<Splitter className={clsx("h-full", isFullscreen && "pt-16")}>
-					<Splitter.Panel defaultSize="40%" min="20%" max="50%" collapsible>
+					<Splitter.Panel defaultSize="30%" min="20%" max="50%" collapsible>
 						<div className="h-full p-4 border-r border-gray-100">
 							<ServiceList selected={service} onSelect={service => setService(service)} />
 						</div>
