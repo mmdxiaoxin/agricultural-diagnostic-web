@@ -52,10 +52,6 @@ const KnowledgePreview: React.FC = () => {
 	}, []);
 
 	useEffect(() => {
-		fetchDiseaseList();
-	}, [currentPage, pageSize, searchText, selectedCropId]);
-
-	useEffect(() => {
 		const diseaseId = searchParams.get("id");
 		if (diseaseId && diseaseList.length > 0) {
 			const disease = diseaseList.find(d => d.id === parseInt(diseaseId));
@@ -127,6 +123,7 @@ const KnowledgePreview: React.FC = () => {
 	const handlePageChange = (page: number, pageSize: number) => {
 		setCurrentPage(page);
 		setPageSize(pageSize);
+		fetchDiseaseList();
 	};
 
 	const handleExportPDF = async () => {
