@@ -320,10 +320,15 @@ const KnowledgePreview: React.FC = () => {
 							placeholder="选择作物类型"
 							className="w-full"
 							allowClear
+							showSearch
+							optionFilterProp="children"
+							filterOption={(input, option) =>
+								(option?.label as string).toLowerCase().includes(input.toLowerCase())
+							}
 							onChange={value => setSelectedCropId(value)}
 						>
 							{crops.map(crop => (
-								<Select.Option key={crop.id} value={crop.id}>
+								<Select.Option key={crop.id} value={crop.id} label={crop.name}>
 									{crop.name}
 								</Select.Option>
 							))}
