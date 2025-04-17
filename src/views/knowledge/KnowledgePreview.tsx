@@ -1,6 +1,7 @@
 import { Disease } from "@/api/interface/knowledge/disease";
 import { getCrops } from "@/api/modules/Knowledge/crop";
 import { getKnowledgeList } from "@/api/modules/Knowledge/knowledge";
+import { getDiseaseDetail } from "@/api/modules/Knowledge/disease";
 import { getSymptomImage } from "@/api/modules/Knowledge/symptom";
 import { TREATMENT_METHOD } from "@/constants/knowledge";
 import {
@@ -47,19 +48,18 @@ const KnowledgePreview: React.FC = () => {
 	const [selectedCropId, setSelectedCropId] = useState<number | undefined>(undefined);
 	const [crops, setCrops] = useState<{ id: number; name: string }[]>([]);
 
+	// 处理URL参数
+	useEffect(() => {
+		const diseaseId = searchParams.get("id");
+		if (diseaseId) {
+			// 如果URL中有id参数，直接加载该病害数据
+			fetchDiseaseById(parseInt(diseaseId));
+		}
+	}, [searchParams]);
+
 	useEffect(() => {
 		fetchCrops();
 	}, []);
-
-	useEffect(() => {
-		const diseaseId = searchParams.get("id");
-		if (diseaseId && diseaseList.length > 0) {
-			const disease = diseaseList.find(d => d.id === parseInt(diseaseId));
-			if (disease) {
-				setSelectedDisease(disease);
-			}
-		}
-	}, [diseaseList, searchParams]);
 
 	useEffect(() => {
 		if (selectedDisease?.symptoms) {
@@ -78,6 +78,26 @@ const KnowledgePreview: React.FC = () => {
 		} catch (error) {
 			console.error("获取作物列表失败:", error);
 			message.error("获取作物列表失败");
+		}
+	};
+
+	const fetchDiseaseById = async (id: number) => {
+		setLoading(true);
+		try {
+			const res = await getDiseaseDetail(id);
+			if (res.data) {
+				setSelectedDisease(res.data);
+				// 设置搜索条件，以便显示在列表中
+				setSearchText(res.data.name);
+				setSelectedCropId(res.data.crop?.id);
+				// 加载列表数据
+				fetchDiseaseList();
+			}
+		} catch (error) {
+			console.error("获取病害详情失败:", error);
+			message.error("获取病害详情失败");
+		} finally {
+			setLoading(false);
 		}
 	};
 
