@@ -59,10 +59,11 @@ export default defineConfig((mode: ConfigEnv): UserConfig => {
 					optimizationLevel: 7
 				},
 				mozjpeg: {
-					quality: 20
+					quality: 75,
+					progressive: true
 				},
 				pngquant: {
-					quality: [0.8, 0.9],
+					quality: [0.65, 0.8],
 					speed: 4
 				},
 				svgo: {
@@ -90,8 +91,8 @@ export default defineConfig((mode: ConfigEnv): UserConfig => {
 			pure: ["console.log", "console.info", "console.debug", "console.warn"]
 		},
 		optimizeDeps: {
-			include: ["spark-md5", "monaco-editor"],
-			exclude: ["@ant-design/icons"],
+			include: ["spark-md5"],
+			exclude: ["@ant-design/icons", "monaco-editor"],
 			esbuildOptions: {
 				target: "esnext",
 				supported: {
