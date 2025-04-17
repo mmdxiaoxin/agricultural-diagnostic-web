@@ -29,9 +29,11 @@ import {
 } from "antd";
 import clsx from "clsx";
 import { motion } from "framer-motion";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useSearchParams } from "react-router";
 import qs from "qs";
+import html2canvas from "html2canvas";
+import jsPDF from "jspdf";
 
 const { Title, Paragraph } = Typography;
 
@@ -49,6 +51,7 @@ const KnowledgePreview: React.FC = () => {
 	const [total, setTotal] = useState(0);
 	const [selectedCropId, setSelectedCropId] = useState<number | undefined>(undefined);
 	const [crops, setCrops] = useState<{ id: number; name: string }[]>([]);
+	const previewRef = useRef<HTMLDivElement>(null);
 
 	// 处理URL参数
 	useEffect(() => {
@@ -149,25 +152,149 @@ const KnowledgePreview: React.FC = () => {
 	};
 
 	const handleExportPDF = async () => {
-		if (!selectedDisease) return;
+		if (!selectedDisease || !previewRef.current) return;
 
 		setExporting(true);
 		try {
-			// TODO: 调用后端导出PDF接口
-			// const response = await exportDiseasePDF(selectedDisease.id);
-			// const blob = new Blob([response.data], { type: 'application/pdf' });
-			// const url = URL.createObjectURL(blob);
-			// const a = document.createElement('a');
-			// a.href = url;
-			// a.download = `${selectedDisease.name}.pdf`;
-			// document.body.appendChild(a);
-			// a.click();
-			// document.body.removeChild(a);
-			// URL.revokeObjectURL(url);
+			// 创建一个临时的导出容器
+			const exportContainer = document.createElement("div");
+			exportContainer.style.width = "800px"; // 设置固定宽度
+			exportContainer.style.padding = "20px";
+			exportContainer.style.backgroundColor = "white";
+
+			// 添加标题和基本信息
+			const header = document.createElement("div");
+			header.innerHTML = `
+				<h1 style="font-size: 24px; margin-bottom: 10px;">${selectedDisease.name}</h1>
+				<div style="margin-bottom: 20px;">
+					<span style="background-color: #e6f7ff; padding: 4px 8px; border-radius: 4px; margin-right: 8px;">
+						${selectedDisease.crop?.name}
+					</span>
+					<span style="color: #666;">${selectedDisease.alias}</span>
+				</div>
+			`;
+			exportContainer.appendChild(header);
+
+			// 添加基本信息
+			const basicInfo = document.createElement("div");
+			basicInfo.innerHTML = `
+				<h2 style="font-size: 18px; margin: 20px 0 10px;">基本信息</h2>
+				<div style="margin-bottom: 15px;">
+					<h3 style="font-size: 16px; margin-bottom: 5px;">病因</h3>
+					<p style="margin: 0;">${selectedDisease.cause || "暂无数据"}</p>
+				</div>
+				<div style="margin-bottom: 15px;">
+					<h3 style="font-size: 16px; margin-bottom: 5px;">传播方式</h3>
+					<p style="margin: 0;">${selectedDisease.transmission || "暂无数据"}</p>
+				</div>
+			`;
+			exportContainer.appendChild(basicInfo);
+
+			// 添加症状特征
+			const symptoms = document.createElement("div");
+			symptoms.innerHTML = `
+				<h2 style="font-size: 18px; margin: 20px 0 10px;">症状特征</h2>
+				<div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px;">
+					${selectedDisease.symptoms
+						.map(
+							symptom => `
+						<div style="border: 1px solid #eee; padding: 15px; border-radius: 8px;">
+							<h3 style="font-size: 16px; margin-bottom: 10px;">${symptom.stage}</h3>
+							<p style="margin: 0; color: #666;">${symptom.description}</p>
+						</div>
+					`
+						)
+						.join("")}
+				</div>
+			`;
+			exportContainer.appendChild(symptoms);
+
+			// 添加防治措施
+			const treatments = document.createElement("div");
+			treatments.innerHTML = `
+				<h2 style="font-size: 18px; margin: 20px 0 10px;">防治措施</h2>
+				${selectedDisease.treatments
+					.map(
+						treatment => `
+					<div style="margin-bottom: 15px;">
+						<h3 style="font-size: 16px; margin-bottom: 5px;">${TREATMENT_METHOD[treatment.type]}</h3>
+						<p style="margin: 0;">${treatment.method}</p>
+						${
+							treatment.recommendedProducts
+								? `
+							<p style="margin: 5px 0 0; color: #666;">
+								推荐产品：${treatment.recommendedProducts}
+							</p>
+						`
+								: ""
+						}
+					</div>
+				`
+					)
+					.join("")}
+			`;
+			exportContainer.appendChild(treatments);
+
+			// 添加环境因素
+			const environment = document.createElement("div");
+			environment.innerHTML = `
+				<h2 style="font-size: 18px; margin: 20px 0 10px;">环境因素</h2>
+				<div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px;">
+					${selectedDisease.environmentFactors
+						.map(
+							factor => `
+						<div style="border: 1px solid #eee; padding: 15px; border-radius: 8px;">
+							<h3 style="font-size: 16px; margin-bottom: 5px;">${factor.factor}</h3>
+							<p style="margin: 0; color: #666;">适宜范围：${factor.optimalRange}</p>
+						</div>
+					`
+						)
+						.join("")}
+				</div>
+			`;
+			exportContainer.appendChild(environment);
+
+			// 将容器添加到文档中
+			document.body.appendChild(exportContainer);
+
+			// 使用 html2canvas 捕获内容
+			const canvas = await html2canvas(exportContainer, {
+				scale: 2,
+				useCORS: true,
+				allowTaint: true,
+				logging: false
+			});
+
+			// 从文档中移除临时容器
+			document.body.removeChild(exportContainer);
+
+			const imgData = canvas.toDataURL("image/jpeg", 1.0);
+			const pdf = new jsPDF({
+				orientation: "portrait",
+				unit: "mm",
+				format: "a4"
+			});
+
+			const imgWidth = 210; // A4纸宽度
+			const imgHeight = (canvas.height * imgWidth) / canvas.width;
+			let heightLeft = imgHeight;
+			let position = 0;
+
+			pdf.addImage(imgData, "JPEG", 0, position, imgWidth, imgHeight);
+			heightLeft -= 297; // A4纸高度
+
+			while (heightLeft >= 0) {
+				position = heightLeft - imgHeight;
+				pdf.addPage();
+				pdf.addImage(imgData, "JPEG", 0, position, imgWidth, imgHeight);
+				heightLeft -= 297;
+			}
+
+			pdf.save(`${selectedDisease.name}.pdf`);
 			message.success("PDF导出成功");
 		} catch (error) {
-			message.error("PDF导出失败");
 			console.error("导出PDF失败:", error);
+			message.error("PDF导出失败");
 		} finally {
 			setExporting(false);
 		}
@@ -414,6 +541,7 @@ const KnowledgePreview: React.FC = () => {
 					"bg-gradient-to-br from-white to-gray-50",
 					"overflow-y-auto"
 				)}
+				ref={previewRef}
 			>
 				{loading ? (
 					<div className="flex h-full items-center justify-center">
