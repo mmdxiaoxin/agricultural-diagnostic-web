@@ -175,7 +175,8 @@ const DiseaseModal = forwardRef<DiseaseModalRef, DiseaseModalProps>(({ onFinish 
 									label="症状图片URL"
 									rules={[
 										{
-											pattern: /^(https?:\/\/|oss:\/\/).*$/,
+											pattern:
+												/^(((ht|f)tps?):\/\/)?([^!@#$%^&*?.\s-]([^!@#$%^&*?.\s]{0,63}[^!@#$%^&*?.\s])?\.)+[a-z]{2,6}\/?|^oss:\/\//,
 											message: "请输入有效的图片URL（支持HTTP或OSS格式）"
 										}
 									]}
