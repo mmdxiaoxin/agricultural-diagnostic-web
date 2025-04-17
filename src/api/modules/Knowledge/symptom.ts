@@ -12,6 +12,15 @@ export const getSymptomList = async (params: ReqPage) => {
 	return http.get<PageData<Symptom>>("/knowledge/symptom/list", params, { loading: false });
 };
 
+// * 获取病害症状图片
+export const getSymptomImage = async (id: number) => {
+	return http.get<string>(
+		`/knowledge/symptom/${id}/image`,
+		{},
+		{ responseType: "blob", loading: false }
+	) as unknown as Promise<Blob>;
+};
+
 // * 创建病害症状
 export const createSymptom = async (data: Symptom) => {
 	return http.post<Symptom>("/knowledge/symptom", data, { loading: false });

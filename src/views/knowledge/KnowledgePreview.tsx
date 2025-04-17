@@ -1,11 +1,13 @@
 import { Disease } from "@/api/interface/knowledge/disease";
 import { getKnowledge } from "@/api/modules/Knowledge/knowledge";
+import { getSymptomImage } from "@/api/modules/Knowledge/symptom";
 import { TREATMENT_METHOD } from "@/constants/knowledge";
 import {
 	BookOutlined,
 	EnvironmentOutlined,
 	MedicineBoxOutlined,
-	SearchOutlined
+	SearchOutlined,
+	ExclamationCircleOutlined
 } from "@ant-design/icons";
 import {
 	Button,
@@ -34,6 +36,8 @@ const KnowledgePreview: React.FC = () => {
 	const [diseaseList, setDiseaseList] = useState<Disease[]>([]);
 	const [searchText, setSearchText] = useState("");
 	const [exporting, setExporting] = useState(false);
+	const [imageUrls, setImageUrls] = useState<Record<number, string>>({});
+	const [imageLoading, setImageLoading] = useState<Record<number, boolean>>({});
 
 	useEffect(() => {
 		fetchDiseaseList();
@@ -48,6 +52,14 @@ const KnowledgePreview: React.FC = () => {
 			}
 		}
 	}, [diseaseList, searchParams]);
+
+	useEffect(() => {
+		if (selectedDisease?.symptoms) {
+			selectedDisease.symptoms.forEach(symptom => {
+				loadSymptomImage(symptom.id);
+			});
+		}
+	}, [selectedDisease]);
 
 	const fetchDiseaseList = async () => {
 		setLoading(true);
@@ -96,6 +108,21 @@ const KnowledgePreview: React.FC = () => {
 		}
 	};
 
+	const loadSymptomImage = async (symptomId: number) => {
+		if (imageUrls[symptomId]) return;
+
+		setImageLoading(prev => ({ ...prev, [symptomId]: true }));
+		try {
+			const blob = await getSymptomImage(symptomId);
+			const url = URL.createObjectURL(blob);
+			setImageUrls(prev => ({ ...prev, [symptomId]: url }));
+		} catch (error) {
+			console.error("加载症状图片失败:", error);
+		} finally {
+			setImageLoading(prev => ({ ...prev, [symptomId]: false }));
+		}
+	};
+
 	const tabItems = [
 		{
 			key: "1",
@@ -117,16 +144,37 @@ const KnowledgePreview: React.FC = () => {
 			key: "2",
 			label: "症状特征",
 			children: (
-				<div className="grid grid-cols-2 gap-6">
+				<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
 					{selectedDisease?.symptoms.map(symptom => (
-						<Card key={symptom.id} className="hover:shadow-lg transition-shadow">
-							<Image
-								src={symptom.imageUrl}
-								alt="病害症状"
-								className="w-full h-48 object-cover rounded-lg mb-4"
-							/>
-							<Title level={5}>{symptom.stage}</Title>
-							<Paragraph>{symptom.description}</Paragraph>
+						<Card
+							key={symptom.id}
+							className="hover:shadow-lg transition-shadow h-full flex flex-col"
+						>
+							<div className="relative w-full aspect-[3/2] mb-4">
+								{imageLoading[symptom.id] ? (
+									<div className="w-full h-full flex items-center justify-center">
+										<Spin />
+									</div>
+								) : imageUrls[symptom.id] ? (
+									<Image
+										src={imageUrls[symptom.id]}
+										alt="病害症状"
+										className="w-full h-full object-contain rounded-lg bg-gray-50 p-2"
+									/>
+								) : (
+									<div className="w-full h-full flex items-center justify-center bg-gray-100 rounded-lg">
+										<ExclamationCircleOutlined className="text-2xl text-gray-400" />
+									</div>
+								)}
+							</div>
+							<div className="flex-1">
+								<Title level={5} className="mb-2">
+									{symptom.stage}
+								</Title>
+								<Paragraph className="text-sm text-gray-600 line-clamp-3">
+									{symptom.description}
+								</Paragraph>
+							</div>
 						</Card>
 					))}
 				</div>
