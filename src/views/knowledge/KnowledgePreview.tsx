@@ -24,12 +24,14 @@ import {
 	Spin,
 	Tabs,
 	Tag,
-	Typography
+	Typography,
+	Modal
 } from "antd";
 import clsx from "clsx";
 import { motion } from "framer-motion";
 import React, { useEffect, useState } from "react";
 import { useSearchParams } from "react-router";
+import qs from "qs";
 
 const { Title, Paragraph } = Typography;
 
@@ -169,6 +171,25 @@ const KnowledgePreview: React.FC = () => {
 		} finally {
 			setExporting(false);
 		}
+	};
+
+	const handleDiagnosis = () => {
+		if (!selectedDisease) return;
+
+		const searchUrl = `https://www.bing.com/search?${qs.stringify({
+			form: "QBLH",
+			q: selectedDisease.name
+		})}`;
+
+		Modal.confirm({
+			title: "诊断建议",
+			content: "是否要查看该病害的更多诊断建议？",
+			okText: "查看",
+			cancelText: "取消",
+			onOk: () => {
+				window.open(searchUrl, "_blank");
+			}
+		});
 	};
 
 	const loadSymptomImage = async (symptomId: number) => {
@@ -424,7 +445,12 @@ const KnowledgePreview: React.FC = () => {
 									<Button icon={<BookOutlined />} loading={exporting} onClick={handleExportPDF}>
 										导出PDF
 									</Button>
-									<Button type="primary" icon={<MedicineBoxOutlined />}>
+									<Button
+										type="primary"
+										icon={<MedicineBoxOutlined />}
+										onClick={handleDiagnosis}
+										disabled={!selectedDisease}
+									>
 										诊断建议
 									</Button>
 								</Space>
