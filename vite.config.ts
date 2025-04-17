@@ -6,7 +6,6 @@ import viteCompression from "vite-plugin-compression";
 import viteImagemin from "vite-plugin-imagemin";
 import { wrapperEnv } from "./src/build/getEnv";
 import svgr from "vite-plugin-svgr";
-import { visualizer } from "rollup-plugin-visualizer";
 
 // https://vite.dev/config/
 export default defineConfig((mode: ConfigEnv): UserConfig => {
@@ -40,8 +39,7 @@ export default defineConfig((mode: ConfigEnv): UserConfig => {
 					data: {
 						title: viteEnv.VITE_GLOB_APP_TITLE
 					}
-				},
-				minify: true
+				}
 			}),
 			viteCompression({
 				verbose: true,
@@ -77,53 +75,26 @@ export default defineConfig((mode: ConfigEnv): UserConfig => {
 						}
 					]
 				}
-			}),
-			visualizer({
-				open: true,
-				gzipSize: true,
-				brotliSize: true,
-				filename: "dist/stats.html"
 			})
 		],
 		esbuild: {
 			treeShaking: true,
-			drop: viteEnv.VITE_DROP_CONSOLE ? ["debugger", "console"] : [],
-			pure: ["console.log", "console.info", "console.debug", "console.warn"]
+			drop: viteEnv.VITE_DROP_CONSOLE ? ["debugger", "console"] : []
 		},
 		optimizeDeps: {
-			include: ["spark-md5"],
-			exclude: ["@ant-design/icons", "monaco-editor"],
-			esbuildOptions: {
-				target: "esnext",
-				supported: {
-					"top-level-await": true
-				}
-			}
+			include: ["spark-md5", "monaco-editor"]
 		},
 		build: {
 			outDir: "dist",
 			minify: "esbuild",
-			target: "esnext",
-			cssCodeSplit: true,
-			sourcemap: false,
-			chunkSizeWarningLimit: 1500,
 			rollupOptions: {
 				output: {
 					chunkFileNames: "assets/js/[name]-[hash].js",
 					entryFileNames: "assets/js/[name]-[hash].js",
 					assetFileNames: "assets/[ext]/[name]-[hash].[ext]",
 					manualChunks: {
-						"react-vendor": ["react", "react-dom", "react-router"],
-						"antd-vendor": ["antd", "@ant-design/icons"],
-						monaco: ["monaco-editor"],
-						utils: ["lodash-es", "dayjs", "axios"]
+						monaco: ["monaco-editor"]
 					}
-				}
-			},
-			terserOptions: {
-				compress: {
-					drop_console: viteEnv.VITE_DROP_CONSOLE,
-					drop_debugger: true
 				}
 			}
 		},
