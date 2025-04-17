@@ -1,7 +1,7 @@
 import { Crop, Disease } from "@/api/interface/knowledge";
 import { createKnowledge, updateKnowledge } from "@/api/modules/Knowledge/knowledge";
-import { MinusCircleOutlined, PlusOutlined, UploadOutlined } from "@ant-design/icons";
-import { Button, Card, Form, Input, Modal, Select, Space, Steps, Upload, message } from "antd";
+import { MinusCircleOutlined, PlusOutlined } from "@ant-design/icons";
+import { Button, Card, Form, Input, Modal, Select, Space, Steps, message } from "antd";
 import { forwardRef, useImperativeHandle, useState } from "react";
 
 const { Option } = Select;
@@ -169,10 +169,18 @@ const DiseaseModal = forwardRef<DiseaseModalRef, DiseaseModalProps>(({ onFinish 
 									<TextArea rows={3} placeholder="请输入症状描述" />
 								</Form.Item>
 
-								<Form.Item {...restField} name={[name, "imageUrl"]} label="症状图片">
-									<Upload>
-										<Button icon={<UploadOutlined />}>上传图片</Button>
-									</Upload>
+								<Form.Item
+									{...restField}
+									name={[name, "imageUrl"]}
+									label="症状图片URL"
+									rules={[
+										{
+											pattern: /^(https?:\/\/|oss:\/\/).*$/,
+											message: "请输入有效的图片URL（支持HTTP或OSS格式）"
+										}
+									]}
+								>
+									<Input placeholder="请输入症状图片URL" />
 								</Form.Item>
 							</div>
 						</Card>
