@@ -173,6 +173,14 @@ const KnowledgePreview: React.FC = () => {
 
 	const loadSymptomImage = async (symptomId: number) => {
 		if (imageUrls[symptomId]) return;
+		const imageUrl = selectedDisease?.symptoms.find(symptom => symptom.id === symptomId)?.imageUrl;
+		if (
+			!imageUrl ||
+			!imageUrl.match(
+				/^(((ht|f)tps?):\/\/)?([^!@#$%^&*?.\s-]([^!@#$%^&*?.\s]{0,63}[^!@#$%^&*?.\s])?\.)+[a-z]{2,6}\/?|^oss:\/\/[^/]+$/
+			)
+		)
+			return;
 
 		setImageLoading(prev => ({ ...prev, [symptomId]: true }));
 		try {
