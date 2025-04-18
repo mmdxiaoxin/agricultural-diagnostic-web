@@ -1,6 +1,7 @@
 import { RemoteConfig, RemoteInterface } from "@/api/interface";
 import { createRemoteConfig, updateRemoteConfig } from "@/api/modules";
 import { Button, Form, Input, message, Modal, Select, Space, Spin } from "antd";
+import clsx from "clsx";
 import React, { forwardRef, Suspense, useImperativeHandle, useRef, useState } from "react";
 import InterfaceListModal, { InterfaceListModalRef } from "./InterfaceListModal";
 
@@ -114,11 +115,18 @@ const ConfigModal = forwardRef<ConfigModalRef, ConfigModalProps>(
 				open={isModalVisible}
 				onCancel={handleClose}
 				footer={null}
-				width={1000}
+				width={{
+					xs: "95%",
+					sm: "90%",
+					md: "85%",
+					lg: "80%",
+					xl: "70%",
+					xxl: "60%"
+				}}
 				className="config-modal"
 			>
 				<Form form={form} onFinish={handleSave} layout="vertical">
-					<div className="flex gap-6">
+					<div className={clsx("flex flex-col lg:flex-row", "gap-4 lg:gap-6")}>
 						{/* 左侧基本信息 */}
 						<div className="flex-1">
 							<div className="mb-6">
@@ -173,11 +181,27 @@ const ConfigModal = forwardRef<ConfigModalRef, ConfigModalProps>(
 						</div>
 
 						{/* 右侧配置编辑器 */}
-						<div className="flex-1 border-l border-gray-100 pl-6">
+						<div
+							className={clsx(
+								"flex-1",
+								"border-t lg:border-t-0 lg:border-l",
+								"border-gray-100",
+								"pt-4 lg:pt-0 lg:pl-6",
+								"flex flex-col"
+							)}
+						>
 							<div className="mb-4">
 								<h3 className="text-lg font-medium text-gray-800">配置内容</h3>
 							</div>
-							<div className="h-[500px] w-full flex items-center justify-center">
+							<div
+								className={clsx(
+									"flex-1",
+									"min-h-[200px]",
+									"max-h-[calc(100vh-400px)] lg:max-h-[500px]",
+									"w-full",
+									"relative"
+								)}
+							>
 								<Suspense fallback={<Spin size="large" tip="加载编辑器中..." />}>
 									<MonacoEditor
 										language="json"
@@ -187,8 +211,17 @@ const ConfigModal = forwardRef<ConfigModalRef, ConfigModalProps>(
 											minimap: { enabled: true },
 											fontSize: 14,
 											wordWrap: "on",
-											scrollBeyondLastLine: false
+											scrollBeyondLastLine: false,
+											automaticLayout: true,
+											scrollbar: {
+												vertical: "auto",
+												horizontal: "auto",
+												useShadows: false,
+												verticalScrollbarSize: 8,
+												horizontalScrollbarSize: 8
+											}
 										}}
+										height="100%"
 									/>
 								</Suspense>
 							</div>
