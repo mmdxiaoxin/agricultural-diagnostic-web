@@ -1,7 +1,7 @@
 import { Prediction } from "@/api/interface/diagnosis";
 import { Popover, Tag, Typography } from "antd";
 import { motion } from "framer-motion";
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Top5ProbabilityChart from "../ECharts/Top5ProbabilityChart";
 
 const { Text, Paragraph } = Typography;
@@ -10,7 +10,7 @@ interface DiagnosisResultCardProps {
 	prediction: Prediction;
 }
 
-const DiagnosisResultCard = React.memo(({ prediction }: DiagnosisResultCardProps) => {
+const DiagnosisResultCardContent = React.memo(({ prediction }: DiagnosisResultCardProps) => {
 	const content =
 		prediction.type === "classify" && prediction.top5 ? (
 			<div className="w-[500px] h-[300px] p-2">
@@ -77,6 +77,47 @@ const DiagnosisResultCard = React.memo(({ prediction }: DiagnosisResultCardProps
 				{prediction.class_name}
 			</Paragraph>
 		</motion.div>
+	);
+});
+
+DiagnosisResultCardContent.displayName = "DiagnosisResultCardContent";
+
+const DiagnosisResultCard = React.memo(({ prediction }: DiagnosisResultCardProps) => {
+	const [isVisible, setIsVisible] = useState(false);
+	const containerRef = useRef<HTMLDivElement>(null);
+
+	useEffect(() => {
+		const observer = new IntersectionObserver(
+			entries => {
+				entries.forEach(entry => {
+					if (entry.isIntersecting) {
+						setIsVisible(true);
+						observer.unobserve(entry.target);
+					}
+				});
+			},
+			{
+				root: null,
+				rootMargin: "50px",
+				threshold: 0.1
+			}
+		);
+
+		if (containerRef.current) {
+			observer.observe(containerRef.current);
+		}
+
+		return () => {
+			if (containerRef.current) {
+				observer.unobserve(containerRef.current);
+			}
+		};
+	}, []);
+
+	return (
+		<div ref={containerRef}>
+			{isVisible && <DiagnosisResultCardContent prediction={prediction} />}
+		</div>
 	);
 });
 
