@@ -93,7 +93,6 @@ export default defineConfig((mode: ConfigEnv): UserConfig => {
 		optimizeDeps: {
 			include: [
 				"spark-md5",
-				"monaco-editor",
 				"react",
 				"react-dom",
 				"react-router",
@@ -103,13 +102,13 @@ export default defineConfig((mode: ConfigEnv): UserConfig => {
 				"react-redux",
 				"redux-persist",
 				"echarts",
-				"@monaco-editor/react",
 				"@dnd-kit/core",
 				"@dnd-kit/sortable",
 				"@dnd-kit/utilities",
 				"@dnd-kit/modifiers",
 				"@dnd-kit/accessibility"
-			]
+			],
+			exclude: ["monaco-editor", "@monaco-editor/react", "jspdf", "html2canvas"]
 		},
 		build: {
 			outDir: "dist",
@@ -130,8 +129,6 @@ export default defineConfig((mode: ConfigEnv): UserConfig => {
 						antd: ["antd", "@ant-design/icons"],
 						// Redux 相关
 						redux: ["@reduxjs/toolkit", "react-redux", "redux-persist"],
-						// Monaco Editor 相关
-						monaco: ["monaco-editor", "@monaco-editor/react"],
 						// DnD Kit 相关
 						dnd: [
 							"@dnd-kit/core",
@@ -142,8 +139,6 @@ export default defineConfig((mode: ConfigEnv): UserConfig => {
 						],
 						// 图表相关
 						charts: ["echarts"],
-						// PDF 相关
-						pdf: ["jspdf", "html2canvas"],
 						// 工具库
 						utils: ["lodash-es", "dayjs", "qs", "spark-md5"]
 					}

@@ -4,7 +4,18 @@ import { Button, Form, Input, message, Modal, Select, Space, Spin } from "antd";
 import React, { forwardRef, Suspense, useImperativeHandle, useRef, useState } from "react";
 import InterfaceListModal, { InterfaceListModalRef } from "./InterfaceListModal";
 
-const MonacoEditor = React.lazy(() => import("@/components/Editor"));
+// 使用 React.lazy 动态导入 Monaco Editor
+const MonacoEditor = React.lazy(() =>
+	import("@/components/Editor").then(module => {
+		// 预加载 monaco-editor
+		import("monaco-editor").then(monaco => {
+			// 配置 monaco loader
+			const loader = require("@monaco-editor/react").loader;
+			loader.config({ monaco });
+		});
+		return module;
+	})
+);
 
 export type ConfigModalProps = {
 	onSuccess?: () => void;
@@ -167,7 +178,7 @@ const ConfigModal = forwardRef<ConfigModalRef, ConfigModalProps>(
 								<h3 className="text-lg font-medium text-gray-800">配置内容</h3>
 							</div>
 							<div className="h-[500px] w-full flex items-center justify-center">
-								<Suspense fallback={<Spin size="large" />}>
+								<Suspense fallback={<Spin size="large" tip="加载编辑器中..." />}>
 									<MonacoEditor
 										language="json"
 										value={configContent}

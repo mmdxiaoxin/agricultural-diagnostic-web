@@ -1,7 +1,7 @@
 import { Disease } from "@/api/interface/knowledge/disease";
 import { getCrops } from "@/api/modules/Knowledge/crop";
-import { getKnowledgeList } from "@/api/modules/Knowledge/knowledge";
 import { getDiseaseDetail } from "@/api/modules/Knowledge/disease";
+import { getKnowledgeList } from "@/api/modules/Knowledge/knowledge";
 import { getSymptomImage } from "@/api/modules/Knowledge/symptom";
 import { TREATMENT_METHOD } from "@/constants/knowledge";
 import {
@@ -18,22 +18,20 @@ import {
 	Input,
 	List,
 	message,
+	Modal,
 	Pagination,
 	Select,
 	Space,
 	Spin,
 	Tabs,
 	Tag,
-	Typography,
-	Modal
+	Typography
 } from "antd";
 import clsx from "clsx";
 import { motion } from "framer-motion";
-import React, { useEffect, useState, useRef } from "react";
-import { useSearchParams } from "react-router";
 import qs from "qs";
-import html2canvas from "html2canvas";
-import jsPDF from "jspdf";
+import React, { useEffect, useRef, useState } from "react";
+import { useSearchParams } from "react-router";
 
 const { Title, Paragraph } = Typography;
 
@@ -156,9 +154,12 @@ const KnowledgePreview: React.FC = () => {
 
 		setExporting(true);
 		try {
+			// 动态导入 PDF 相关库
+			const [html2canvas, { jsPDF }] = await Promise.all([import("html2canvas"), import("jspdf")]);
+
 			// 创建一个临时的导出容器
 			const exportContainer = document.createElement("div");
-			exportContainer.style.width = "800px"; // 设置固定宽度
+			exportContainer.style.width = "800px";
 			exportContainer.style.padding = "20px";
 			exportContainer.style.backgroundColor = "white";
 
@@ -257,8 +258,8 @@ const KnowledgePreview: React.FC = () => {
 			// 将容器添加到文档中
 			document.body.appendChild(exportContainer);
 
-			// 使用 html2canvas 捕获内容
-			const canvas = await html2canvas(exportContainer, {
+			// 使用动态导入的库
+			const canvas = await html2canvas.default(exportContainer, {
 				scale: 2,
 				useCORS: true,
 				allowTaint: true,
