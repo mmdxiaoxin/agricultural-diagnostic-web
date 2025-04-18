@@ -1,20 +1,14 @@
 import { RemoteService } from "@/api/interface/service";
 import { callRemoteInterface, getRemotes } from "@/api/modules/service";
 import ModelManageModal, { ModelManageModalRef } from "@/components/Modal/ModelManageModal";
+import PageHeader from "@/components/PageHeader";
 import type { ModelConfig } from "@/typings/model";
-import {
-	DeleteOutlined,
-	DownloadOutlined,
-	EditOutlined,
-	PlusOutlined,
-	SearchOutlined
-} from "@ant-design/icons";
-import { Button, Input, message, Modal, Select, Space, Table, Tag, Typography } from "antd";
+import { DeleteOutlined, DownloadOutlined, EditOutlined, PlusOutlined } from "@ant-design/icons";
+import { Button, message, Modal, Select, Space, Table, Tag, Typography } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import clsx from "clsx";
 import dayjs from "dayjs";
 import { useEffect, useRef, useState } from "react";
-import PageHeader from "@/components/PageHeader";
 
 const { Text } = Typography;
 

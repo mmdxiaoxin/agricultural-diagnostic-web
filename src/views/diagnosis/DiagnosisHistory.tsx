@@ -10,12 +10,12 @@ import {
 import DiagnosisDetailModal, {
 	DiagnosisDetailModalRef
 } from "@/components/Modal/DiagnosisDetailModal";
+import PageHeader from "@/components/PageHeader";
 import { DIAGNOSIS_STATUS_COLOR, DIAGNOSIS_STATUS_TEXT } from "@/constants/status";
-import { DeleteOutlined, ReloadOutlined, SearchOutlined, SelectOutlined } from "@ant-design/icons";
+import { DeleteOutlined, ReloadOutlined } from "@ant-design/icons";
 import {
 	Button,
 	Cascader,
-	Input,
 	message,
 	Popconfirm,
 	Space,
@@ -323,87 +323,19 @@ const DiagnosisHistoryPage: React.FC = () => {
 				"overflow-y-auto"
 			)}
 		>
-			<div
-				className={clsx(
-					"flex flex-col gap-6",
-					"mb-6 p-6",
-					"rounded-2xl",
-					"bg-white",
-					"shadow-sm",
-					"border border-gray-100",
-					"transition-all duration-300",
-					"hover:shadow-md"
-				)}
-			>
-				<div className="flex justify-between items-center">
-					<div className="flex flex-col">
-						<h2 className="text-2xl font-semibold text-gray-800 mb-2">诊断历史</h2>
-						<p className="text-gray-500">共 {pagination.total} 条记录</p>
-					</div>
-					<div className="flex items-center gap-4">
-						<Input
-							placeholder="搜索诊断记录..."
-							prefix={<SearchOutlined className="text-gray-400" />}
-							value={searchText}
-							onChange={e => setSearchText(e.target.value)}
-							className={clsx(
-								"w-64",
-								"rounded-lg",
-								"border-gray-200",
-								"focus:border-blue-500",
-								"focus:ring-1 focus:ring-blue-500",
-								"transition-all duration-300"
-							)}
-						/>
-						<Button
-							type={isSelectMode ? "primary" : "default"}
-							icon={<SelectOutlined />}
-							onClick={toggleSelectMode}
-							className={clsx(
-								"px-6 h-10",
-								"rounded-lg",
-								"shadow-sm hover:shadow-md",
-								"transition-all duration-300",
-								"flex items-center gap-2",
-								isSelectMode && "bg-blue-500 hover:bg-blue-600 border-none"
-							)}
-						>
-							{isSelectMode ? "退出选择" : "批量选择"}
-						</Button>
-						{isSelectMode && (
-							<Popconfirm
-								title="确定要删除选中的记录吗？"
-								description={`已选择 ${selectedRowKeys.length} 条记录，删除后将无法恢复`}
-								onConfirm={handleBatchDelete}
-								okText="确定"
-								cancelText="取消"
-							>
-								<Button
-									danger
-									icon={<DeleteOutlined />}
-									disabled={selectedRowKeys.length === 0}
-									className={clsx(
-										"px-6 h-10",
-										"rounded-lg",
-										"shadow-sm hover:shadow-md",
-										"transition-all duration-300",
-										"flex items-center gap-2"
-									)}
-								>
-									批量删除
-								</Button>
-							</Popconfirm>
-						)}
-					</div>
-				</div>
-				{isSelectMode && (
-					<div className="flex items-center gap-2">
-						<Tag color="blue" className="px-3 py-1 rounded-full">
-							已选择 {selectedRowKeys.length} 条记录
-						</Tag>
-					</div>
-				)}
-			</div>
+			<PageHeader
+				title="诊断历史"
+				description={`共 ${pagination.total} 条记录`}
+				searchPlaceholder="搜索诊断记录..."
+				searchValue={searchText}
+				onSearchChange={setSearchText}
+				selectMode={{
+					enabled: isSelectMode,
+					selectedCount: selectedRowKeys.length,
+					onToggle: toggleSelectMode,
+					onBatchDelete: handleBatchDelete
+				}}
+			/>
 
 			<div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
 				<Table

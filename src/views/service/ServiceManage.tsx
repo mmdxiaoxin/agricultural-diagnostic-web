@@ -3,21 +3,20 @@ import { copyRemote, getRemotesList, remoteRemote } from "@/api/modules";
 import ConfigListModal, { ConfigListModalRef } from "@/components/Modal/ConfigListModal";
 import InterfaceListModal, { InterfaceListModalRef } from "@/components/Modal/InterfaceListModal";
 import ServiceModal, { ServiceModalRef } from "@/components/Modal/ServiceModal";
+import PageHeader from "@/components/PageHeader";
 import { StatusMapper } from "@/constants";
 import {
 	CodepenOutlined,
 	CopyOutlined,
 	DeleteOutlined,
 	PlusOutlined,
-	SearchOutlined,
 	SettingOutlined
 } from "@ant-design/icons/lib/icons";
-import { Button, Input, message, Popconfirm, Space, Table, Tag, Tooltip } from "antd";
+import { Button, message, Popconfirm, Space, Table, Tag, Tooltip } from "antd";
 import { ColumnsType } from "antd/es/table";
 import clsx from "clsx";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router";
-import PageHeader from "@/components/PageHeader";
 
 const ServiceManage: React.FC = () => {
 	const serviceModalRef = useRef<ServiceModalRef>(null);

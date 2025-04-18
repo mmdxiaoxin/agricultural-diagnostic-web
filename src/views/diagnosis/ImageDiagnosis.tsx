@@ -1,5 +1,6 @@
 import DiseaseDiagnose from "@/components/DiseaseDiagnose";
 import DiagnosisList, { DiagnosisListRef } from "@/components/List/DiagnosisList";
+import PageHeader from "@/components/PageHeader";
 import { Col, Row } from "antd";
 import clsx from "clsx";
 import { useRef } from "react";
@@ -22,25 +23,7 @@ const ImageDiagnosis = () => {
 				"overflow-y-auto"
 			)}
 		>
-			<div
-				className={clsx(
-					"flex flex-col gap-6",
-					"mb-6 p-6",
-					"rounded-2xl",
-					"bg-white",
-					"shadow-sm",
-					"border border-gray-100",
-					"transition-all duration-300",
-					"hover:shadow-md"
-				)}
-			>
-				<div className="flex justify-between items-center">
-					<div className="flex flex-col">
-						<h2 className="text-2xl font-semibold text-gray-800 mb-2">植物病害诊断</h2>
-						<p className="text-gray-500">上传植物图片进行智能诊断</p>
-					</div>
-				</div>
-			</div>
+			<PageHeader title="植物病害诊断" description="上传植物图片进行智能诊断" />
 
 			<Row gutter={12} className="flex-1 min-h-0">
 				<Col xs={24} sm={24} md={24} lg={12} xl={12} xxl={12} className="h-full">
