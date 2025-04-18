@@ -40,7 +40,8 @@ export type DeleteConfig = Omit<AxiosRequestConfig, "params"> & {
 export type DownloadConfig = Omit<PostConfig, "responseType">;
 
 const config = {
-	baseURL: import.meta.env.VITE_API_URL as string,
+	baseURL:
+		import.meta.env.VITE_API_URL || `${window.location.protocol}//${window.location.host}/api`,
 	timeout: 10000,
 	withCredentials: true,
 	toast: true
