@@ -41,7 +41,6 @@ const DiagnosisHistoryPage: React.FC = () => {
 	});
 	const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
 	const [isSelectMode, setIsSelectMode] = useState(false);
-	const [searchText, setSearchText] = useState("");
 	const [serviceList, setServiceList] = useState<RemoteService[]>([]);
 	const [selectedServiceId, setSelectedServiceId] = useState<number>();
 	const [selectedConfigId, setSelectedConfigId] = useState<number>();
@@ -298,16 +297,6 @@ const DiagnosisHistoryPage: React.FC = () => {
 		setSelectedRowKeys([]);
 	};
 
-	// 过滤数据
-	const filteredData = data.filter(item => {
-		const searchLower = searchText.toLowerCase();
-		return (
-			item.diagnosisResult?.predictions?.some(prediction =>
-				prediction.class_name.toLowerCase().includes(searchLower)
-			) || dayjs(item.createdAt).format("YYYY-MM-DD HH:mm:ss").includes(searchLower)
-		);
-	});
-
 	useEffect(() => {
 		fetchDiagnosisHistory();
 	}, []);
@@ -347,7 +336,7 @@ const DiagnosisHistoryPage: React.FC = () => {
 							: undefined
 					}
 					columns={columns}
-					dataSource={filteredData}
+					dataSource={data}
 					rowKey="id"
 					pagination={{
 						...pagination,
