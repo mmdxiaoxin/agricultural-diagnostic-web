@@ -30,7 +30,7 @@ const DiagnosisResultCard = React.memo(({ prediction }: DiagnosisResultCardProps
 
 	return (
 		<motion.div
-			whileHover={{ scale: 1.02 }}
+			whileHover={{ transform: "translateY(-2px)" }}
 			className="bg-white p-2 rounded-md border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300"
 		>
 			<div className="flex items-center justify-between gap-1">
