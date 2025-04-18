@@ -11,6 +11,7 @@ import DiagnosisDetailModal, {
 	DiagnosisDetailModalRef
 } from "@/components/Modal/DiagnosisDetailModal";
 import PageHeader from "@/components/PageHeader";
+import TextCell from "@/components/Table/TextCell";
 import { DIAGNOSIS_STATUS_COLOR, DIAGNOSIS_STATUS_TEXT } from "@/constants/status";
 import { DeleteOutlined, ReloadOutlined } from "@ant-design/icons";
 import {
@@ -173,16 +174,14 @@ const DiagnosisHistoryPage: React.FC = () => {
 		{
 			title: "创建时间",
 			dataIndex: "createdAt",
-			render: text => (
-				<Text className="text-gray-600">{dayjs(text).format("YYYY-MM-DD HH:mm:ss")}</Text>
-			)
+			render: text => <TextCell text={dayjs(text).format("YYYY-MM-DD HH:mm:ss")} />,
+			responsive: ["sm", "md", "lg", "xl", "xxl"]
 		},
 		{
 			title: "最近诊断",
 			dataIndex: "updatedAt",
-			render: text => (
-				<Text className="text-gray-600">{dayjs(text).format("YYYY-MM-DD HH:mm:ss")}</Text>
-			)
+			render: text => <TextCell text={dayjs(text).format("YYYY-MM-DD HH:mm:ss")} />,
+			responsive: ["lg", "xl", "xxl"]
 		},
 		{
 			title: "状态",
@@ -191,7 +190,8 @@ const DiagnosisHistoryPage: React.FC = () => {
 				<Tag color={DIAGNOSIS_STATUS_COLOR[status]} className="px-3 py-1 rounded-full">
 					{DIAGNOSIS_STATUS_TEXT[status]}
 				</Tag>
-			)
+			),
+			responsive: ["sm", "md", "lg", "xl", "xxl"]
 		},
 		{
 			title: "诊断结果",
@@ -225,14 +225,16 @@ const DiagnosisHistoryPage: React.FC = () => {
 						</Space>
 					</Tooltip>
 				);
-			}
+			},
+			responsive: ["xs", "sm", "md", "lg", "xl", "xxl"]
 		},
 		{
 			title: "操作",
 			key: "action",
+			align: "center",
 			fixed: "right",
 			render: (_, record) => (
-				<Space>
+				<Space wrap className="flex-col lg:flex-row">
 					<Button
 						type="link"
 						onClick={() => handleViewDetail(record)}
@@ -347,7 +349,7 @@ const DiagnosisHistoryPage: React.FC = () => {
 					}}
 					loading={loading}
 					onChange={handleTableChange}
-					scroll={{ x: true }}
+					scroll={{ x: "max-content" }}
 					className={clsx("transition-all duration-300", isSelectMode && "bg-gray-50")}
 				/>
 			</div>
