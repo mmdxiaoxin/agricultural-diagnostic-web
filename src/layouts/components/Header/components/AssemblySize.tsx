@@ -3,7 +3,6 @@ import { useAppSelector } from "@/hooks/useAppSelector";
 import { setComponentSize } from "@/store/modules/globalSlice";
 import { FontSizeOutlined } from "@ant-design/icons";
 import { Button, Dropdown, MenuProps } from "antd";
-import styles from "../index.module.scss";
 import clsx from "clsx";
 
 const AssemblySize = () => {
