@@ -7,13 +7,13 @@ import { ConfigProvider, Layout } from "antd";
 import { Locale } from "antd/es/locale";
 import enUS from "antd/locale/en_US";
 import zhCN from "antd/locale/zh_CN";
+import clsx from "clsx";
 import { useEffect, useState } from "react";
 import { Outlet } from "react-router";
 import LayoutFooter from "./components/Footer";
 import LayoutHeader from "./components/Header";
 import LayoutMenu from "./components/Menu";
 import LayoutTabs from "./components/Tabs";
-import clsx from "clsx";
 
 // 类型定义
 export interface LayoutIndexProps {
@@ -27,7 +27,6 @@ const LayoutIndex = () => {
 	const isCollapse = useAppSelector(state => state.menu.isCollapse);
 	const { componentSize, language } = useAppSelector(state => state.global);
 
-	const [screenWidth, setScreenWidth] = useState<number>(window.innerWidth);
 	const [locale, setLocal] = useState<Locale>(zhCN);
 	const [isMobile, setIsMobile] = useState<boolean>(false);
 
@@ -53,7 +52,6 @@ const LayoutIndex = () => {
 		// 监听窗口大小变化
 		const handleResize = () => {
 			const width = window.innerWidth;
-			setScreenWidth(width);
 			setIsMobile(width < 768);
 			// 在移动端自动折叠菜单
 			if (width < 768) {
@@ -93,7 +91,8 @@ const LayoutIndex = () => {
 							bodyBg: "#f0f2f5",
 							headerBg: "#ffffff",
 							footerBg: "#ffffff",
-							siderBg: "#ffffff"
+							siderBg: "#ffffff",
+							headerPadding: "0 40px 0 20px"
 						}
 					}
 				}}
