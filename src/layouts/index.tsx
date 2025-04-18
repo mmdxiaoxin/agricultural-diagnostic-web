@@ -13,7 +13,7 @@ import LayoutFooter from "./components/Footer";
 import LayoutHeader from "./components/Header";
 import LayoutMenu from "./components/Menu";
 import LayoutTabs from "./components/Tabs";
-import "./index.scss";
+import clsx from "clsx";
 
 // 类型定义
 export interface LayoutIndexProps {
@@ -71,7 +71,16 @@ const LayoutIndex = () => {
 	}, [screenWidth]);
 
 	return (
-		<section className="layout-container">
+		<section
+			className={clsx(
+				"min-w-[768px] min-h-[564px] w-screen h-screen flex",
+				"[&_.ant-layout-sider]:box-border [&_.ant-layout-sider]:border-r [&_.ant-layout-sider]:border-solid [&_.ant-layout-sider]:border-[#e4e7ed]",
+				"[&_.ant-layout]:overflow-x-hidden",
+				"[&_.ant-layout-content]:box-border [&_.ant-layout-content]:flex-1 [&_.ant-layout-content]:p-[10px_12px] [&_.ant-layout-content]:overflow-x-hidden",
+				"[&_.ant-layout-content::-webkit-scrollbar]:bg-[#f0f2f5]",
+				"[&_.ant-layout-content::-webkit-scrollbar-thumb]:bg-[#dddee0]"
+			)}
+		>
 			<ConfigProvider
 				componentSize={componentSize}
 				locale={locale}
