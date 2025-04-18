@@ -182,7 +182,7 @@ const DiseaseManage: React.FC = () => {
 					onClick: handleAddDisease
 				}}
 				extra={
-					<Select defaultValue={0} style={{ width: 120 }} onChange={handleCropChange}>
+					<Select defaultValue={0} style={{ width: 120, height: 36 }} onChange={handleCropChange}>
 						<Option value={0}>全部作物</Option>
 						{crops.map(crop => (
 							<Option key={crop.id} value={crop.id}>
