@@ -85,7 +85,7 @@ const errorHandler = (error: any) => {
 
 async function calculateOptimalChunkSize() {
 	const NETWORK_SPEED = await testSpeed();
-	const MAX_CHUNK = 20 * 1024 * 1024; // 20MB
+	const MAX_CHUNK = 5 * 1024 * 1024; // 5MB
 	const MIN_CHUNK = 1 * 1024 * 1024; // 1MB
 
 	// 根据网络速度计算最佳分片
