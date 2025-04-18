@@ -4,6 +4,7 @@ import ConfigListModal, { ConfigListModalRef } from "@/components/Modal/ConfigLi
 import InterfaceListModal, { InterfaceListModalRef } from "@/components/Modal/InterfaceListModal";
 import ServiceModal, { ServiceModalRef } from "@/components/Modal/ServiceModal";
 import PageHeader from "@/components/PageHeader";
+import TextCell from "@/components/Table/TextCell";
 import { StatusMapper } from "@/constants";
 import {
 	CodepenOutlined,
@@ -12,8 +13,7 @@ import {
 	PlusOutlined,
 	SettingOutlined
 } from "@ant-design/icons/lib/icons";
-import { Button, message, Popconfirm, Space, Table, Tag, Tooltip } from "antd";
-import { ColumnsType } from "antd/es/table";
+import { Button, message, Popconfirm, Space, Table, TableColumnType, Tag, Tooltip } from "antd";
 import clsx from "clsx";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router";
@@ -98,59 +98,51 @@ const ServiceManage: React.FC = () => {
 		configModalRef.current?.open();
 	};
 
-	const columns: ColumnsType<RemoteService> = [
+	const columns: TableColumnType<RemoteService>[] = [
 		{
 			title: "服务名称",
 			dataIndex: "serviceName",
 			key: "serviceName",
-			ellipsis: true,
-			render: text => (
-				<Tooltip title={text}>
-					<span className="font-medium text-gray-800">{text}</span>
-				</Tooltip>
-			)
+			render: (text: string) => <TextCell text={text} />,
+			responsive: ["xs", "sm", "md", "lg", "xl", "xxl"]
 		},
 		{
 			title: "服务类型",
 			dataIndex: "serviceType",
 			key: "serviceType",
-			render: text => (
+			render: (text: string) => (
 				<Tag color="blue" className="px-2 py-0.5 rounded-md">
 					{text}
 				</Tag>
-			)
+			),
+			responsive: ["sm", "md", "lg", "xl", "xxl"]
 		},
 		{
 			title: "服务描述",
 			dataIndex: "description",
 			key: "description",
-			ellipsis: true,
-			width: 200,
-			render: text => (
-				<Tooltip title={text?.length > 20 ? text : null}>
-					<span className="text-gray-600">
-						{text?.length > 20 ? text.slice(0, 20) + "..." : text || "-"}
-					</span>
-				</Tooltip>
-			)
+			render: (text: string) => <TextCell text={text || "-"} />,
+			responsive: ["md", "lg", "xl", "xxl"]
 		},
 		{
 			title: "服务状态",
 			dataIndex: "status",
 			key: "status",
-			render: text => (
+			render: (text: string) => (
 				<Tag
 					color={text === "active" ? "success" : text === "inactive" ? "error" : "warning"}
 					className="px-2 py-0.5 rounded-md"
 				>
 					{StatusMapper[text as RemoteService["status"]]}
 				</Tag>
-			)
+			),
+			responsive: ["sm", "md", "lg", "xl", "xxl"]
 		},
 		{
 			title: "配置数量",
 			key: "configCount",
-			render: (_, record) => (
+			dataIndex: "configCount",
+			render: (_: unknown, record: RemoteService) => (
 				<Tag
 					color="purple"
 					className={clsx(
@@ -162,12 +154,14 @@ const ServiceManage: React.FC = () => {
 				>
 					{record.configs?.length || 0} 个配置
 				</Tag>
-			)
+			),
+			responsive: ["lg", "xl", "xxl"]
 		},
 		{
 			title: "接口数量",
 			key: "interfaceCount",
-			render: (_, record) => (
+			dataIndex: "interfaceCount",
+			render: (_: unknown, record: RemoteService) => (
 				<Tag
 					color="cyan"
 					className={clsx(
@@ -179,20 +173,26 @@ const ServiceManage: React.FC = () => {
 				>
 					{record.interfaces?.length || 0} 个接口
 				</Tag>
-			)
+			),
+			responsive: ["lg", "xl", "xxl"]
 		},
 		{
 			title: "更新时间",
 			dataIndex: "updatedAt",
 			key: "updatedAt",
-			render: text => <span className="text-gray-500">{new Date(text).toLocaleString()}</span>
+			render: (text: string) => (
+				<span className="text-gray-500">{new Date(text).toLocaleString()}</span>
+			),
+			responsive: ["xl", "xxl"]
 		},
 		{
 			title: "操作",
 			key: "actions",
+			dataIndex: "actions",
 			align: "center",
-			render: (_, record) => (
-				<Space size="middle">
+			fixed: "right",
+			render: (_: unknown, record: RemoteService) => (
+				<Space wrap className={clsx("xs:w-40 lg:w-80")}>
 					<Tooltip title="快速配置">
 						<Button
 							onClick={() => handleQuickConfig(record)}
@@ -206,7 +206,9 @@ const ServiceManage: React.FC = () => {
 								"shadow-sm hover:shadow-md",
 								"transition-all duration-300"
 							)}
-						/>
+						>
+							配置
+						</Button>
 					</Tooltip>
 					<Button
 						onClick={() => {
@@ -297,7 +299,7 @@ const ServiceManage: React.FC = () => {
 					columns={columns}
 					dataSource={services}
 					rowKey="id"
-					scroll={{ x: true }}
+					scroll={{ x: "max-content" }}
 					pagination={{
 						current: pagination.page,
 						pageSize: pagination.pageSize,
