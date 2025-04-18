@@ -1,5 +1,5 @@
 import { useEcharts } from "@/hooks/useEcharts";
-import * as echarts from "echarts";
+import { EChartsCoreOption } from "echarts/core";
 import { BasePrediction } from "@/api/interface/diagnosis";
 
 export interface Top5ProbabilityChartProps {
@@ -16,7 +16,7 @@ const Top5ProbabilityChart: React.FC<Top5ProbabilityChartProps> = ({
 		name: prediction.class_name
 	}));
 
-	const option: echarts.EChartsOption = {
+	const option: EChartsCoreOption = {
 		tooltip: {
 			trigger: "item",
 			formatter: (params: any) => {

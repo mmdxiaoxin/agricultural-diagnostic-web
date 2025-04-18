@@ -1,5 +1,5 @@
 import { useEcharts } from "@/hooks/useEcharts";
-import * as echarts from "echarts";
+import { EChartsCoreOption } from "echarts/core";
 
 export interface DiskSpaceUsageChartProps {
 	usedSpace?: number; // 单位：字节（B）
@@ -15,7 +15,7 @@ const DiskSpaceUsageChart: React.FC<DiskSpaceUsageChartProps> = ({
 	const usedSpaceInMB = usedSpace / 1_000_000;
 	const remainingSpaceInMB = (totalSpace - usedSpace) / 1_000_000;
 
-	let option: echarts.EChartsOption = {
+	let option: EChartsCoreOption = {
 		tooltip: {
 			trigger: "item",
 			formatter: "{a} <br/>{b}: {c} MB ({d}%)",
