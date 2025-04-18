@@ -2,8 +2,8 @@ import { useAppDispatch } from "@/hooks/useAppDispatch";
 import { useAppSelector } from "@/hooks/useAppSelector";
 import { setCollapse } from "@/store/modules/menuSlice";
 import { MenuFoldOutlined, MenuUnfoldOutlined } from "@ant-design/icons";
-import styles from "../index.module.scss";
 import { Button } from "antd";
+import clsx from "clsx";
 
 const CollapseIcon = () => {
 	const isCollapse = useAppSelector(state => state.menu.isCollapse);
@@ -14,7 +14,7 @@ const CollapseIcon = () => {
 			icon={
 				isCollapse ? <MenuUnfoldOutlined id="isCollapse" /> : <MenuFoldOutlined id="isCollapse" />
 			}
-			className={styles["collapsed"]}
+			className={clsx("mr-[20px] text-[18px] cursor-pointer transition-colors")}
 			onClick={() => {
 				dispatch(setCollapse(!isCollapse));
 			}}

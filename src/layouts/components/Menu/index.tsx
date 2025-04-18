@@ -12,7 +12,7 @@ import { Menu, Spin } from "antd";
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router";
 import Logo from "./components/Logo";
-import styles from "./index.module.scss";
+import clsx from "clsx";
 
 // MenuItem 类型，明确菜单项结构
 type MenuItem = Required<MenuProps>["items"][number];
@@ -108,7 +108,18 @@ const LayoutMenu: React.FC = () => {
 	};
 
 	return (
-		<div className={styles.menu}>
+		<div
+			className={clsx(
+				"menu",
+				"flex flex-col justify-between h-full",
+				"[&_.logo-box]:flex [&_.logo-box]:flex-col [&_.logo-box]:items-center [&_.logo-box]:justify-center [&_.logo-box]:h-[93px]",
+				"[&_.logo-img]:w-[50px] [&_.logo-img]:m-0",
+				"[&_.logo-text]:m-0 [&_.logo-text]:text-[24px] [&_.logo-text]:font-bold [&_.logo-text]:whitespace-nowrap",
+				"[&_.ant-menu]:flex-1",
+				"[&_.ant-menu-item]:flex [&_.ant-menu-item]:items-center",
+				"[&_.ant-menu-submenu-title]:flex [&_.ant-menu-submenu-title]:items-center"
+			)}
+		>
 			<Spin spinning={loading} tip="加载中...">
 				<Logo />
 				<Menu
@@ -119,6 +130,7 @@ const LayoutMenu: React.FC = () => {
 					items={menuList}
 					onClick={clickMenu}
 					onOpenChange={onOpenChange}
+					className="flex-1 overflow-y-auto"
 				/>
 			</Spin>
 		</div>

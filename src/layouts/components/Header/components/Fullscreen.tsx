@@ -1,8 +1,8 @@
 import { FullscreenExitOutlined, FullscreenOutlined } from "@ant-design/icons";
 import { Button, message } from "antd";
+import clsx from "clsx";
 import { useEffect, useState } from "react";
 import screenfull from "screenfull";
-import styles from "../index.module.scss";
 
 const Fullscreen = () => {
 	const [fullScreen, setFullScreen] = useState<boolean>(screenfull.isFullscreen);
@@ -21,7 +21,9 @@ const Fullscreen = () => {
 	};
 	return (
 		<Button
-			className={styles["icon-style"]}
+			className={clsx(
+				"mr-[22px] text-[19px] leading-[19px] cursor-pointer text-[rgba(0,0,0,0.85)]"
+			)}
 			onClick={handleFullScreen}
 			icon={fullScreen ? <FullscreenExitOutlined /> : <FullscreenOutlined />}
 			type="text"

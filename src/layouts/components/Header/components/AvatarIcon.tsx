@@ -1,18 +1,17 @@
+import { User } from "@/api/interface";
 import { getAvatar, getUserProfile } from "@/api/modules/user";
 import defaultAvatar from "@/assets/images/avatar.png";
+import InfoModal, { InfoModalRef } from "@/components/Modal/InfoModal";
+import PasswordModal, { PasswordModalRef } from "@/components/Modal/PasswordModal";
 import { HOME_URL } from "@/config/config";
 import { useAppDispatch } from "@/hooks/useAppDispatch";
 import { removeAuthButtons, removeAuthRouter, removeToken } from "@/store/modules/authSlice";
 import { removeMenuList } from "@/store/modules/menuSlice";
+import { setUser } from "@/store/modules/userSlice";
 import { ExclamationCircleOutlined } from "@ant-design/icons";
 import { Avatar, Dropdown, MenuProps, message, Modal } from "antd";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router";
-import styles from "../index.module.scss";
-import InfoModal, { InfoModalRef } from "./InfoModal";
-import PasswordModal, { PasswordModalRef } from "./PasswordModal";
-import { User } from "@/api/interface";
-import { setUser } from "@/store/modules/userSlice";
 
 const AvatarIcon = () => {
 	const navigate = useNavigate();
@@ -88,17 +87,29 @@ const AvatarIcon = () => {
 	const items: MenuProps["items"] = [
 		{
 			key: "1",
-			label: <span className={styles["dropdown-item"]}>首页</span>,
+			label: (
+				<span className="text-[14px] no-underline tracking-[0.5px] whitespace-nowrap hover:text-blue-500 hover:transition-colors">
+					首页
+				</span>
+			),
 			onClick: () => navigate(HOME_URL)
 		},
 		{
 			key: "2",
-			label: <span className={styles["dropdown-item"]}>个人信息</span>,
+			label: (
+				<span className="text-[14px] no-underline tracking-[0.5px] whitespace-nowrap hover:text-blue-500 hover:transition-colors">
+					个人信息
+				</span>
+			),
 			onClick: () => infoRef.current?.open(userData, avatar)
 		},
 		{
 			key: "3",
-			label: <span className={styles["dropdown-item"]}>修改密码</span>,
+			label: (
+				<span className="text-[14px] no-underline tracking-[0.5px] whitespace-nowrap hover:text-blue-500 hover:transition-colors">
+					修改密码
+				</span>
+			),
 			onClick: () => passRef.current?.open()
 		},
 		{
@@ -106,16 +117,22 @@ const AvatarIcon = () => {
 		},
 		{
 			key: "4",
-			label: <span className={styles["dropdown-item"]}>退出登录</span>,
+			label: (
+				<span className="text-[14px] no-underline tracking-[0.5px] whitespace-nowrap hover:text-blue-500 hover:transition-colors">
+					退出登录
+				</span>
+			),
 			onClick: logout
 		}
 	];
 
 	return (
 		<>
-			<span className={styles["username"]}>{userData?.username}</span>
+			<span className="m-[0_20px_0_0] text-[15px] text-[rgba(0,0,0,0.85)]">
+				{userData?.username}
+			</span>
 			<Dropdown menu={{ items }} placement="bottom" arrow trigger={["click"]}>
-				<Avatar className={styles["avatar"]} size="large" src={avatar} />
+				<Avatar className="cursor-pointer" size="large" src={avatar} />
 			</Dropdown>
 			<InfoModal ref={infoRef} onSave={handleSave}></InfoModal>
 			<PasswordModal ref={passRef} onReset={handleReset}></PasswordModal>

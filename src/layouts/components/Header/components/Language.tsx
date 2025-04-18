@@ -3,7 +3,7 @@ import { useAppSelector } from "@/hooks/useAppSelector";
 import { setLanguage } from "@/store/modules/globalSlice";
 import { TranslationOutlined } from "@ant-design/icons";
 import { Button, Dropdown, MenuProps } from "antd";
-import styles from "../index.module.scss";
+import clsx from "clsx";
 
 const Language = () => {
 	const { language } = useAppSelector(state => state.global);
@@ -25,7 +25,13 @@ const Language = () => {
 	];
 	return (
 		<Dropdown menu={{ items }} placement="bottom" trigger={["click"]} arrow={true}>
-			<Button type="text" className={styles["icon-style"]} icon={<TranslationOutlined />} />
+			<Button
+				type="text"
+				className={clsx(
+					"mr-[22px] text-[19px] leading-[19px] cursor-pointer text-[rgba(0,0,0,0.85)]"
+				)}
+				icon={<TranslationOutlined />}
+			/>
 		</Dropdown>
 	);
 };

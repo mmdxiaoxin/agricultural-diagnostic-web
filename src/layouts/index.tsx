@@ -29,6 +29,7 @@ const LayoutIndex = () => {
 
 	const [screenWidth, setScreenWidth] = useState<number>(window.innerWidth);
 	const [locale, setLocal] = useState<Locale>(zhCN);
+	const [isMobile, setIsMobile] = useState<boolean>(false);
 
 	useEffect(() => {
 		// 设置语言
@@ -51,9 +52,20 @@ const LayoutIndex = () => {
 	useEffect(() => {
 		// 监听窗口大小变化
 		const handleResize = () => {
-			const screenWidth = window.innerWidth;
-			setScreenWidth(screenWidth);
+			const width = window.innerWidth;
+			setScreenWidth(width);
+			setIsMobile(width < 768);
+			// 在移动端自动折叠菜单
+			if (width < 768) {
+				dispatch(setCollapse(true));
+			} else if (width < 1200) {
+				dispatch(setCollapse(true));
+			} else {
+				dispatch(setCollapse(false));
+			}
 		};
+		// 初始化状态
+		handleResize();
 		// 绑定事件
 		window.addEventListener("resize", handleResize);
 		return () => {
@@ -61,19 +73,10 @@ const LayoutIndex = () => {
 		};
 	}, []);
 
-	// 根据屏幕宽度判断是否展开
-	useEffect(() => {
-		if (screenWidth < 1200) {
-			dispatch(setCollapse(true));
-		} else {
-			dispatch(setCollapse(false));
-		}
-	}, [screenWidth]);
-
 	return (
 		<section
 			className={clsx(
-				"min-w-[768px] min-h-[564px] w-screen h-screen flex",
+				"min-w-[320px] w-screen h-screen flex flex-col md:flex-row",
 				"[&_.ant-layout-sider]:box-border [&_.ant-layout-sider]:border-r [&_.ant-layout-sider]:border-solid [&_.ant-layout-sider]:border-[#e4e7ed]",
 				"[&_.ant-layout]:overflow-x-hidden",
 				"[&_.ant-layout-content]:box-border [&_.ant-layout-content]:flex-1 [&_.ant-layout-content]:p-[10px_12px] [&_.ant-layout-content]:overflow-x-hidden",
@@ -95,10 +98,19 @@ const LayoutIndex = () => {
 					}
 				}}
 			>
-				<Sider trigger={null} collapsed={isCollapse} width={220} theme="light">
-					<LayoutMenu />
-				</Sider>
-				<Layout>
+				{!isMobile && (
+					<Sider
+						trigger={null}
+						collapsed={isCollapse}
+						width={220}
+						theme="light"
+						collapsedWidth={isMobile ? 0 : 80}
+						breakpoint="md"
+					>
+						<LayoutMenu />
+					</Sider>
+				)}
+				<Layout className="flex-1 flex flex-col">
 					<LayoutHeader />
 					<LayoutTabs />
 					<Content>

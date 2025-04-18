@@ -16,6 +16,7 @@ import { Tabs, TabsProps } from "antd";
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router";
 import MoreButton from "./components/MoreButton";
+import clsx from "clsx";
 import "./index.scss";
 
 interface DraggableTabNodeProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -48,12 +49,21 @@ const LayoutTabs = () => {
 	const { pathname } = useLocation();
 	const navigate = useNavigate();
 	const dispatch = useAppDispatch();
+	const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
 
 	const [activeValue, setActiveValue] = useState<string>(pathname);
 
 	useEffect(() => {
 		addTabs();
 	}, [pathname]);
+
+	useEffect(() => {
+		const handleResize = () => {
+			setIsMobile(window.innerWidth < 768);
+		};
+		window.addEventListener("resize", handleResize);
+		return () => window.removeEventListener("resize", handleResize);
+	}, []);
 
 	// 点击tab
 	const clickTabs = (path: string) => {
@@ -125,8 +135,21 @@ const LayoutTabs = () => {
 					strategy={horizontalListSortingStrategy}
 				>
 					<Tabs
-						style={{ borderBottom: "1px solid #f0f0f0" }}
-						className={"tabs"}
+						className={clsx(
+							"tabs",
+							"pl-[13px] relative bg-white",
+							"border-b border-solid border-[#f6f6f6]",
+							"[&_.ant-tabs-nav]:m-0",
+							"[&_.ant-tabs-nav::before]:border-none",
+							"[&_.ant-tabs-ink-bar]:visible",
+							"[&_.ant-tabs-tab-with-remove.ant-tabs-tab-active_.ant-tabs-tab-remove]:text-blue-500 [&_.ant-tabs-tab-with-remove.ant-tabs-tab-active_.ant-tabs-tab-remove]:opacity-100",
+							"[&_.ant-tabs-tab-with-remove.ant-tabs-tab-active_.ant-tabs-tab-btn]:-translate-x-[9px]",
+							"[&_.ant-tabs-tab]:p-[8px_22px] [&_.ant-tabs-tab]:text-[#cccccc] [&_.ant-tabs-tab]:bg-transparent [&_.ant-tabs-tab]:border-none",
+							"[&_.ant-tabs-tab-remove]:absolute [&_.ant-tabs-tab-remove]:right-0 [&_.ant-tabs-tab-remove]:text-[#cccccc] [&_.ant-tabs-tab-remove]:opacity-0 [&_.ant-tabs-tab-remove]:transition-[0.1s_ease-in-out]",
+							"[&_.ant-tabs-tab-remove:hover]:text-blue-500",
+							"[&_.ant-tabs-tab.ant-tabs-tab-with-remove:hover_.ant-tabs-tab-remove]:opacity-100 [&_.ant-tabs-tab.ant-tabs-tab-with-remove:hover_.ant-tabs-tab-remove]:transition-[0.1s_ease-in-out]",
+							"[&_.ant-tabs-tab.ant-tabs-tab-with-remove:hover_.ant-tabs-tab-btn]:-translate-x-[9px]"
+						)}
 						animated
 						activeKey={activeValue}
 						onChange={clickTabs}
@@ -137,7 +160,7 @@ const LayoutTabs = () => {
 							delTabs(path as string);
 						}}
 						tabBarExtraContent={{
-							right: <MoreButton delTabs={delTabs} />
+							right: !isMobile && <MoreButton delTabs={delTabs} />
 						}}
 						renderTabBar={(tabBarProps, DefaultTabBar) => (
 							<DefaultTabBar {...tabBarProps}>
