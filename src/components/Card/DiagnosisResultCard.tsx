@@ -11,14 +11,28 @@ interface DiagnosisResultCardProps {
 }
 
 const DiagnosisResultCardContent = React.memo(({ prediction }: DiagnosisResultCardProps) => {
+	const [hovered, setHovered] = useState(false);
+	const [placement, setPlacement] = useState<"right" | "bottom">("right");
+
+	useEffect(() => {
+		const checkScreenSize = () => {
+			setPlacement(window.innerWidth < 564 ? "bottom" : "right");
+		};
+
+		checkScreenSize();
+		window.addEventListener("resize", checkScreenSize);
+
+		return () => {
+			window.removeEventListener("resize", checkScreenSize);
+		};
+	}, []);
+
 	const content =
 		prediction.type === "classify" && prediction.top5 ? (
-			<div className="w-[500px] h-[300px] p-2">
+			<div className="max-w-[100vw] aspect-[5/3] h-[200px] lg:h-[300px] xl:h-[400px] p-2">
 				<Top5ProbabilityChart predictions={prediction.top5} />
 			</div>
 		) : null;
-
-	const [hovered, setHovered] = useState(false);
 
 	const handleHoverChange = (value: boolean) => {
 		if (prediction.type === "classify") {
@@ -50,7 +64,7 @@ const DiagnosisResultCardContent = React.memo(({ prediction }: DiagnosisResultCa
 						</div>
 					}
 					trigger="hover"
-					placement="right"
+					placement={placement}
 					className="top5-probability-popover"
 					style={{
 						boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)"

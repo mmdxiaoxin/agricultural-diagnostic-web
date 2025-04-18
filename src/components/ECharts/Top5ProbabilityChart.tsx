@@ -1,6 +1,6 @@
+import { BasePrediction } from "@/api/interface/diagnosis";
 import { useEcharts } from "@/hooks/useEcharts";
 import { EChartsCoreOption } from "echarts/core";
-import { BasePrediction } from "@/api/interface/diagnosis";
 
 export interface Top5ProbabilityChartProps {
 	predictions?: BasePrediction[];
@@ -26,19 +26,24 @@ const Top5ProbabilityChart: React.FC<Top5ProbabilityChartProps> = ({
 		},
 		grid: {
 			left: "3%",
-			right: "25%",
+			right: "3%",
 			top: "3%",
 			bottom: "3%",
 			containLabel: true
 		},
 		legend: {
 			orient: "vertical",
-			right: "0",
-			top: "center",
-			width: "20%",
-			itemGap: 20,
+			right: "3%",
+			top: "middle",
+			width: "25%",
+			itemGap: 10,
 			textStyle: {
-				fontSize: 12
+				fontSize: 12,
+				overflow: "truncate",
+				width: 80
+			},
+			formatter: (name: string) => {
+				return name.length > 10 ? name.slice(0, 10) + "..." : name;
 			}
 		},
 		series: [
@@ -46,7 +51,7 @@ const Top5ProbabilityChart: React.FC<Top5ProbabilityChartProps> = ({
 				name: "预测概率",
 				type: "pie",
 				radius: ["40%", "70%"],
-				center: ["40%", "50%"],
+				center: ["35%", "50%"],
 				avoidLabelOverlap: false,
 				itemStyle: {
 					borderRadius: 10,
