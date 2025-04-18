@@ -98,7 +98,17 @@ export default defineConfig((mode: ConfigEnv): UserConfig => {
 				"react-dom",
 				"react-router",
 				"antd",
-				"@ant-design/icons"
+				"@ant-design/icons",
+				"@reduxjs/toolkit",
+				"react-redux",
+				"redux-persist",
+				"echarts",
+				"@monaco-editor/react",
+				"@dnd-kit/core",
+				"@dnd-kit/sortable",
+				"@dnd-kit/utilities",
+				"@dnd-kit/modifiers",
+				"@dnd-kit/accessibility"
 			]
 		},
 		build: {
@@ -114,9 +124,28 @@ export default defineConfig((mode: ConfigEnv): UserConfig => {
 					entryFileNames: "assets/js/[name]-[hash].js",
 					assetFileNames: "assets/[ext]/[name]-[hash].[ext]",
 					manualChunks: {
-						monaco: ["monaco-editor"],
+						// React 核心
 						vendor: ["react", "react-dom", "react-router"],
-						antd: ["antd", "@ant-design/icons"]
+						// Ant Design 相关
+						antd: ["antd", "@ant-design/icons"],
+						// Redux 相关
+						redux: ["@reduxjs/toolkit", "react-redux", "redux-persist"],
+						// Monaco Editor 相关
+						monaco: ["monaco-editor", "@monaco-editor/react"],
+						// DnD Kit 相关
+						dnd: [
+							"@dnd-kit/core",
+							"@dnd-kit/sortable",
+							"@dnd-kit/utilities",
+							"@dnd-kit/modifiers",
+							"@dnd-kit/accessibility"
+						],
+						// 图表相关
+						charts: ["echarts"],
+						// PDF 相关
+						pdf: ["jspdf", "html2canvas"],
+						// 工具库
+						utils: ["lodash-es", "dayjs", "qs", "spark-md5"]
 					}
 				}
 			}
