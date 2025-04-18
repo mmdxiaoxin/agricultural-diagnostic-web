@@ -12,7 +12,7 @@ import {
 	DeleteOutlined,
 	PlusOutlined,
 	SettingOutlined
-} from "@ant-design/icons/lib/icons";
+} from "@ant-design/icons";
 import { Button, message, Popconfirm, Space, Table, TableColumnType, Tag, Tooltip } from "antd";
 import clsx from "clsx";
 import { useEffect, useRef, useState } from "react";
