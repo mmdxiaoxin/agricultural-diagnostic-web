@@ -6,7 +6,6 @@ import { Button, Card, Drawer, Image, Modal, Space, Tag, Typography } from "antd
 import clsx from "clsx";
 import dayjs from "dayjs";
 import { forwardRef, useImperativeHandle, useMemo, useState } from "react";
-import { FixedSizeList as List } from "react-window";
 import DiagnosisResultCard from "../Card/DiagnosisResultCard";
 import DetectImage from "../DetectImage";
 import DiagnosisLogsList from "../List/DiagnosisLogsList";
@@ -17,9 +16,6 @@ export interface DiagnosisDetailModalRef {
 	open: (record: DiagnosisHistory) => void;
 	close: () => void;
 }
-
-const ITEM_HEIGHT = 100; // 每个卡片的高度
-const ITEM_WIDTH = 300; // 每个卡片的宽度
 
 const DiagnosisDetailModal = forwardRef<DiagnosisDetailModalRef>((_, ref) => {
 	const [open, setOpen] = useState(false);
@@ -65,15 +61,6 @@ const DiagnosisDetailModal = forwardRef<DiagnosisDetailModalRef>((_, ref) => {
 		return predictions.some(prediction => prediction.type === "detect");
 	}, [predictions]);
 
-	const Row = ({ index, style }: { index: number; style: React.CSSProperties }) => {
-		const prediction = predictions[index];
-		return (
-			<div style={style} className="px-2">
-				<DiagnosisResultCard prediction={prediction} />
-			</div>
-		);
-	};
-
 	if (!record) return null;
 
 	return (
@@ -102,9 +89,9 @@ const DiagnosisDetailModal = forwardRef<DiagnosisDetailModalRef>((_, ref) => {
 				xs: "90%",
 				sm: "90%",
 				md: "90%",
-				lg: "70%",
-				xl: "60%",
-				xxl: "60%"
+				lg: "80%",
+				xl: "70%",
+				xxl: "70%"
 			}}
 			className="top-8"
 		>
@@ -125,15 +112,12 @@ const DiagnosisDetailModal = forwardRef<DiagnosisDetailModalRef>((_, ref) => {
 								诊断结果
 							</Text>
 							{record.diagnosisResult ? (
-								<div className="h-[180px]">
-									<List
-										height={180}
-										itemCount={predictions.length}
-										itemSize={ITEM_HEIGHT}
-										width={ITEM_WIDTH}
-									>
-										{Row}
-									</List>
+								<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4 max-h-[280px] overflow-y-auto">
+									{predictions.map((prediction, index) => (
+										<div key={index}>
+											<DiagnosisResultCard prediction={prediction} />
+										</div>
+									))}
 								</div>
 							) : (
 								<Text type="secondary">无结果</Text>
