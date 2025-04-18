@@ -1,30 +1,37 @@
 import { Crop } from "@/api/interface/knowledge/crop"; // 假设您有一个 Crop 类型
 import { deleteCrop, getCropsList } from "@/api/modules/Knowledge";
 import CropModal, { CropModalRef } from "@/components/Modal/CropModal";
-import { DeleteOutlined, EditOutlined, PlusOutlined, SearchOutlined } from "@ant-design/icons";
-import { Button, Card, Input, message, Modal, Space, Table, Tooltip } from "antd";
+import PageHeader from "@/components/PageHeader";
+import { DeleteOutlined, EditOutlined, PlusOutlined } from "@ant-design/icons";
+import { Button, Card, message, Modal, Space, Table, Tooltip } from "antd";
 import clsx from "clsx";
 import React, { useEffect, useRef, useState } from "react";
 
-const { Search } = Input;
+interface QueryParams {
+	page: number;
+	pageSize: number;
+	keyword?: string;
+}
 
 const CropManage: React.FC = () => {
 	const [crops, setCrops] = useState<Crop[]>([]);
 	const [loading, setLoading] = useState(false);
 	const [total, setTotal] = useState(0);
-	const [currentPage, setCurrentPage] = useState(1);
-	const [pageSize, setPageSize] = useState(10);
-	const [keyword, setKeyword] = useState("");
+	const [params, setParams] = useState<QueryParams>({
+		page: 1,
+		pageSize: 10,
+		keyword: ""
+	});
 
 	const cropModalRef = useRef<CropModalRef>(null);
 
-	const fetchCrops = async () => {
+	const fetchCrops = async (params: QueryParams) => {
 		setLoading(true);
 		try {
 			const res = await getCropsList({
-				page: currentPage,
-				pageSize: pageSize,
-				keyword: keyword
+				page: params.page,
+				pageSize: params.pageSize,
+				keyword: params.keyword
 			});
 			if (!res.data) return;
 			setCrops(res?.data.list || []);
@@ -37,19 +44,20 @@ const CropManage: React.FC = () => {
 	};
 
 	const handleSearch = (value: string) => {
-		setKeyword(value);
-		setCurrentPage(1);
-		fetchCrops();
+		const newParams = { ...params, keyword: value, page: 1 };
+		setParams(newParams);
+		fetchCrops(newParams);
 	};
 
 	const handleTableChange = (pagination: any) => {
-		setCurrentPage(pagination.current);
-		setPageSize(pagination.pageSize);
+		const newParams = { ...params, page: pagination.current, pageSize: pagination.pageSize };
+		setParams(newParams);
+		fetchCrops(newParams);
 	};
 
 	useEffect(() => {
-		fetchCrops();
-	}, [currentPage, pageSize]);
+		fetchCrops(params);
+	}, [params.page, params.pageSize]);
 
 	const handleAddCrop = () => {
 		cropModalRef.current?.open("add");
@@ -66,7 +74,7 @@ const CropManage: React.FC = () => {
 			onOk: async () => {
 				await deleteCrop(crop.id);
 				message.success("删除成功");
-				fetchCrops();
+				fetchCrops(params);
 			}
 		});
 	};
@@ -120,39 +128,26 @@ const CropManage: React.FC = () => {
 				"overflow-y-auto"
 			)}
 		>
-			<div
-				className={clsx(
-					"flex flex-col gap-6",
-					"mb-6 p-6",
-					"rounded-2xl",
-					"bg-white",
-					"shadow-sm",
-					"border border-gray-100",
-					"transition-all duration-300",
-					"hover:shadow-md"
-				)}
-			>
-				<div className="flex flex-col gap-4">
-					<div className="flex justify-between items-center">
-						<h2 className="text-2xl font-semibold text-gray-800">作物管理</h2>
-						<p className="text-gray-500">共 {crops.length} 个作物</p>
-					</div>
-					<div className="flex justify-between items-center">
-						<div className="flex space-x-4">
-							<Search
-								placeholder="搜索关键词"
-								allowClear
-								onSearch={handleSearch}
-								className="w-64"
-								prefix={<SearchOutlined />}
-							/>
-						</div>
-						<Button type="primary" icon={<PlusOutlined />} onClick={handleAddCrop}>
-							添加作物
-						</Button>
-					</div>
-				</div>
-			</div>
+			<PageHeader
+				title="作物管理"
+				search={{
+					placeholder: "搜索关键词",
+					value: params.keyword,
+					onChange: value => {
+						setParams(prev => ({ ...prev, keyword: value }));
+					},
+					onSearch: handleSearch
+				}}
+				statistics={{
+					label: "共",
+					value: `${crops.length} 个作物`
+				}}
+				actionButton={{
+					text: "添加作物",
+					icon: <PlusOutlined />,
+					onClick: handleAddCrop
+				}}
+			/>
 
 			<Card>
 				<Table
@@ -161,8 +156,8 @@ const CropManage: React.FC = () => {
 					loading={loading}
 					rowKey="id"
 					pagination={{
-						current: currentPage,
-						pageSize: pageSize,
+						current: params.page,
+						pageSize: params.pageSize,
 						total: total,
 						showSizeChanger: true,
 						showQuickJumper: true,
@@ -171,7 +166,7 @@ const CropManage: React.FC = () => {
 					onChange={handleTableChange}
 				/>
 			</Card>
-			<CropModal ref={cropModalRef} onSubmit={() => fetchCrops()} />
+			<CropModal ref={cropModalRef} onSubmit={() => fetchCrops(params)} />
 		</div>
 	);
 };

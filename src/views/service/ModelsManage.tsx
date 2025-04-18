@@ -17,7 +17,6 @@ const ModelsManage = () => {
 	const [services, setServices] = useState<RemoteService[]>([]);
 	const [selectedService, setSelectedService] = useState<number>();
 	const [selectedInterface, setSelectedInterface] = useState<number>();
-	const [searchText, setSearchText] = useState("");
 	const [loading, setLoading] = useState(false);
 	const [pagination, setPagination] = useState({
 		current: 1,
@@ -197,16 +196,6 @@ const ModelsManage = () => {
 		}
 	};
 
-	// 过滤数据
-	const filteredData = models.filter(item => {
-		const searchLower = searchText.toLowerCase();
-		return (
-			item.name.toLowerCase().includes(searchLower) ||
-			item.type.toLowerCase().includes(searchLower) ||
-			item.version.toLowerCase().includes(searchLower)
-		);
-	});
-
 	return (
 		<div
 			className={clsx(
@@ -220,10 +209,10 @@ const ModelsManage = () => {
 		>
 			<PageHeader
 				title="模型管理"
-				description={`共 ${models.length} 个模型`}
-				searchPlaceholder="搜索模型..."
-				searchValue={searchText}
-				onSearchChange={setSearchText}
+				statistics={{
+					label: "共",
+					value: `${models.length} 个模型`
+				}}
 				actionButton={{
 					text: "添加模型",
 					icon: <PlusOutlined />,
@@ -288,7 +277,7 @@ const ModelsManage = () => {
 				<div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
 					<Table
 						columns={columns}
-						dataSource={filteredData}
+						dataSource={models}
 						rowKey="id"
 						pagination={{
 							...pagination,

@@ -1,19 +1,12 @@
-import { ReqPage } from "@/api/interface";
 import { Crop, Disease, ReqDiseaseList } from "@/api/interface/knowledge";
 import { getCrops } from "@/api/modules/Knowledge";
 import { deleteKnowledge, getKnowledgeList } from "@/api/modules/Knowledge/knowledge";
 import DiseaseModal, { DiseaseModalRef } from "@/components/Modal/DiseaseModal";
-import {
-	DeleteOutlined,
-	EditOutlined,
-	EyeOutlined,
-	PlusOutlined,
-	SearchOutlined
-} from "@ant-design/icons";
+import PageHeader from "@/components/PageHeader";
+import { DeleteOutlined, EditOutlined, EyeOutlined, PlusOutlined } from "@ant-design/icons";
 import {
 	Button,
 	Card,
-	Input,
 	message,
 	Popconfirm,
 	Select,
@@ -27,7 +20,6 @@ import clsx from "clsx";
 import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router";
 
-const { Search } = Input;
 const { Option } = Select;
 
 const DiseaseManage: React.FC = () => {
@@ -37,9 +29,11 @@ const DiseaseManage: React.FC = () => {
 	const [crops, setCrops] = useState<Crop[]>([]);
 	const [loading, setLoading] = useState(false);
 	const [total, setTotal] = useState(0);
-	const [params, setParams] = useState<ReqPage>({
+	const [params, setParams] = useState<ReqDiseaseList>({
 		page: 1,
-		pageSize: 10
+		pageSize: 10,
+		keyword: "",
+		cropId: undefined
 	});
 
 	const fetchDiseaseList = async (params: ReqDiseaseList) => {
@@ -85,6 +79,18 @@ const DiseaseManage: React.FC = () => {
 
 	const handlePreviewDisease = (record: Disease) => {
 		navigate(`/knowledge/preview?id=${record.id}`);
+	};
+
+	const handleSearch = (value: string) => {
+		const newParams = { ...params, keyword: value, page: 1 };
+		setParams(newParams);
+		fetchDiseaseList(newParams);
+	};
+
+	const handleCropChange = (value: number) => {
+		const newParams = { ...params, cropId: value === 0 ? undefined : value, page: 1 };
+		setParams(newParams);
+		fetchDiseaseList(newParams);
 	};
 
 	const columns: TableColumnType<Disease>[] = [
@@ -156,53 +162,36 @@ const DiseaseManage: React.FC = () => {
 				"overflow-y-auto"
 			)}
 		>
-			<div
-				className={clsx(
-					"flex flex-col gap-6",
-					"mb-6 p-6",
-					"rounded-2xl",
-					"bg-white",
-					"shadow-sm",
-					"border border-gray-100",
-					"transition-all duration-300",
-					"hover:shadow-md"
-				)}
-			>
-				<div className="flex flex-col gap-4">
-					<div className="flex justify-between items-center">
-						<h2 className="text-2xl font-semibold text-gray-800">病害管理</h2>
-						<p className="text-gray-500">共 {diseases.length} 个病害</p>
-					</div>
-					<div className="flex justify-between items-center">
-						<div className="flex space-x-4">
-							<Search
-								placeholder="搜索病害名称"
-								allowClear
-								onSearch={value => fetchDiseaseList({ ...params, keyword: value })}
-								className="w-64"
-								prefix={<SearchOutlined />}
-							/>
-							<Select
-								defaultValue={0}
-								style={{ width: 120 }}
-								onChange={value =>
-									fetchDiseaseList({ ...params, cropId: value === 0 ? undefined : value })
-								}
-							>
-								<Option value={0}>全部作物</Option>
-								{crops.map(crop => (
-									<Option key={crop.id} value={crop.id}>
-										{crop.name}
-									</Option>
-								))}
-							</Select>
-						</div>
-						<Button type="primary" icon={<PlusOutlined />} onClick={handleAddDisease}>
-							添加病害
-						</Button>
-					</div>
-				</div>
-			</div>
+			<PageHeader
+				title="病害管理"
+				search={{
+					placeholder: "搜索病害名称",
+					value: params.keyword,
+					onChange: value => {
+						setParams(prev => ({ ...prev, keyword: value }));
+					},
+					onSearch: handleSearch
+				}}
+				statistics={{
+					label: "共",
+					value: `${diseases.length} 个病害`
+				}}
+				actionButton={{
+					text: "添加病害",
+					icon: <PlusOutlined />,
+					onClick: handleAddDisease
+				}}
+				extra={
+					<Select defaultValue={0} style={{ width: 120 }} onChange={handleCropChange}>
+						<Option value={0}>全部作物</Option>
+						{crops.map(crop => (
+							<Option key={crop.id} value={crop.id}>
+								{crop.name}
+							</Option>
+						))}
+					</Select>
+				}
+			/>
 
 			<Card>
 				<Table<Disease>
@@ -213,12 +202,14 @@ const DiseaseManage: React.FC = () => {
 					pagination={{
 						total,
 						pageSize: params.pageSize,
+						current: params.page,
 						showSizeChanger: true,
 						showQuickJumper: true,
 						showTotal: total => `共 ${total} 项`,
 						onChange: (page, pageSize) => {
-							setParams({ ...params, page, pageSize });
-							fetchDiseaseList({ ...params, page, pageSize });
+							const newParams = { ...params, page, pageSize };
+							setParams(newParams);
+							fetchDiseaseList(newParams);
 						}
 					}}
 				/>

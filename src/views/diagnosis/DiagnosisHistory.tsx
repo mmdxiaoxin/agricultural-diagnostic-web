@@ -326,9 +326,6 @@ const DiagnosisHistoryPage: React.FC = () => {
 			<PageHeader
 				title="诊断历史"
 				description={`共 ${pagination.total} 条记录`}
-				searchPlaceholder="搜索诊断记录..."
-				searchValue={searchText}
-				onSearchChange={setSearchText}
 				selectMode={{
 					enabled: isSelectMode,
 					selectedCount: selectedRowKeys.length,

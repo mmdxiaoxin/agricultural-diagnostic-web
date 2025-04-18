@@ -1,41 +1,74 @@
-import { SearchOutlined } from "@ant-design/icons";
 import { Button, Input, Popconfirm, Space, Tag, Typography } from "antd";
 import clsx from "clsx";
 import { ReactNode } from "react";
 
+interface SearchConfig {
+	placeholder?: string;
+	value?: string;
+	onChange?: (value: string) => void;
+	onSearch: (value: string) => void;
+	className?: string;
+	style?: React.CSSProperties;
+}
+
+interface ActionButton {
+	text: string;
+	icon?: ReactNode;
+	onClick: () => void;
+	type?: "primary" | "default" | "dashed" | "link" | "text";
+	danger?: boolean;
+	disabled?: boolean;
+	className?: string;
+}
+
+interface SelectMode {
+	enabled: boolean;
+	selectedCount: number;
+	onToggle: () => void;
+	onBatchDelete?: () => void;
+}
+
+interface Statistics {
+	label: string;
+	value: number | string;
+	className?: string;
+}
+
 interface PageHeaderProps {
+	// 基础信息
 	title: string;
 	description?: string | ReactNode;
-	searchPlaceholder?: string;
-	searchValue?: string;
-	onSearchChange?: (value: string) => void;
-	actionButton?: {
-		text: string;
-		icon?: ReactNode;
-		onClick: () => void;
-		type?: "primary" | "default" | "dashed" | "link" | "text";
-		danger?: boolean;
-		disabled?: boolean;
-		className?: string;
-	};
-	selectMode?: {
-		enabled: boolean;
-		selectedCount: number;
-		onToggle: () => void;
-		onBatchDelete?: () => void;
-	};
 	className?: string;
+
+	// 搜索配置
+	search?: SearchConfig;
+
+	// 操作按钮
+	actionButton?: ActionButton;
+
+	// 批量选择模式
+	selectMode?: SelectMode;
+
+	// 统计信息
+	statistics?: Statistics;
+
+	// 额外内容
+	extra?: ReactNode;
+
+	// 自定义内容
+	children?: ReactNode;
 }
 
 const PageHeader = ({
 	title,
 	description,
-	searchPlaceholder = "搜索...",
-	searchValue,
-	onSearchChange,
+	className,
+	search,
 	actionButton,
 	selectMode,
-	className
+	statistics,
+	extra,
+	children
 }: PageHeaderProps) => {
 	return (
 		<div
@@ -71,14 +104,23 @@ const PageHeader = ({
 							{description}
 						</Typography.Text>
 					)}
+					{statistics && (
+						<Typography.Text
+							type="secondary"
+							className={clsx("text-xs sm:text-xs md:text-sm text-gray-500", statistics.className)}
+						>
+							{statistics.label} {statistics.value}
+						</Typography.Text>
+					)}
 				</div>
 				<Space direction="vertical" size="small" className="w-full sm:w-auto" split={null}>
-					{onSearchChange && (
-						<Input
-							placeholder={searchPlaceholder}
-							prefix={<SearchOutlined className="text-gray-400" />}
-							value={searchValue}
-							onChange={e => onSearchChange(e.target.value)}
+					{search && (
+						<Input.Search
+							placeholder={search.placeholder || "搜索..."}
+							value={search.value}
+							onChange={e => search.onChange?.(e.target.value)}
+							onSearch={search.onSearch}
+							allowClear
 							className={clsx(
 								"w-full sm:w-48 md:w-56 lg:w-64",
 								"h-7 sm:h-8 md:h-9",
@@ -87,8 +129,10 @@ const PageHeader = ({
 								"focus:border-blue-500",
 								"focus:ring-1 focus:ring-blue-500",
 								"transition-all duration-300",
-								"text-xs sm:text-sm"
+								"text-xs sm:text-sm",
+								search.className
 							)}
+							style={search.style}
 						/>
 					)}
 					<Space className="w-full sm:w-auto justify-end sm:justify-start" size="small">
@@ -161,6 +205,7 @@ const PageHeader = ({
 								{actionButton.text}
 							</Button>
 						)}
+						{extra}
 					</Space>
 				</Space>
 			</div>
@@ -174,6 +219,7 @@ const PageHeader = ({
 					</Tag>
 				</div>
 			)}
+			{children}
 		</div>
 	);
 };

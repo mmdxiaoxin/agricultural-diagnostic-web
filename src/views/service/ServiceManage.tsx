@@ -26,7 +26,6 @@ const ServiceManage: React.FC = () => {
 	const [services, setServices] = useState<RemoteService[]>([]);
 	const [pagination, setPagination] = useState({ page: 1, pageSize: 10 });
 	const [total, setTotal] = useState(0);
-	const [searchText, setSearchText] = useState("");
 	const [selectedService, setSelectedService] = useState<RemoteService | null>(null);
 	const [initLoading, setInitLoading] = useState(false);
 
@@ -98,10 +97,6 @@ const ServiceManage: React.FC = () => {
 		setSelectedService(service);
 		configModalRef.current?.open();
 	};
-
-	const filteredServices = services.filter(service =>
-		service.serviceName.toLowerCase().includes(searchText.toLowerCase())
-	);
 
 	const columns: ColumnsType<RemoteService> = [
 		{
@@ -285,10 +280,10 @@ const ServiceManage: React.FC = () => {
 		>
 			<PageHeader
 				title="服务管理"
-				description={`共 ${total} 个服务`}
-				searchPlaceholder="搜索服务..."
-				searchValue={searchText}
-				onSearchChange={setSearchText}
+				statistics={{
+					label: "共",
+					value: `${total} 个服务`
+				}}
 				actionButton={{
 					text: "新增服务",
 					icon: <PlusOutlined />,
@@ -300,7 +295,7 @@ const ServiceManage: React.FC = () => {
 				<Table<RemoteService>
 					loading={initLoading}
 					columns={columns}
-					dataSource={filteredServices}
+					dataSource={services}
 					rowKey="id"
 					scroll={{ x: true }}
 					pagination={{
