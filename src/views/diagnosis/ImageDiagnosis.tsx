@@ -29,7 +29,7 @@ const ImageDiagnosis = () => {
 				<Col xs={24} sm={24} md={24} lg={12} xl={12} xxl={12} className="h-full">
 					<div
 						className={clsx(
-							"h-full bg-white rounded-2xl shadow-sm border border-gray-100 p-6",
+							"h-full bg-white rounded-2xl shadow-sm border border-gray-100",
 							"overflow-y-auto",
 							"[&::-webkit-scrollbar]:hidden",
 							"[-ms-overflow-style:none]",
