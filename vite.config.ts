@@ -1,16 +1,18 @@
 import react from "@vitejs/plugin-react-swc";
 import { resolve } from "path";
+import { visualizer } from "rollup-plugin-visualizer";
 import { ConfigEnv, defineConfig, loadEnv, UserConfig } from "vite";
-import { createHtmlPlugin } from "vite-plugin-html";
 import viteCompression from "vite-plugin-compression";
+import { createHtmlPlugin } from "vite-plugin-html";
 import viteImagemin from "vite-plugin-imagemin";
-import { wrapperEnv } from "./src/build/getEnv";
 import svgr from "vite-plugin-svgr";
+import { wrapperEnv } from "./src/build/getEnv";
 
 // https://vite.dev/config/
 export default defineConfig((mode: ConfigEnv): UserConfig => {
 	const env = loadEnv(mode.mode, process.cwd());
 	const viteEnv = wrapperEnv(env);
+	const isDev = mode.mode === "development";
 
 	return {
 		resolve: {
@@ -75,25 +77,46 @@ export default defineConfig((mode: ConfigEnv): UserConfig => {
 						}
 					]
 				}
-			})
-		],
+			}),
+			!isDev &&
+				visualizer({
+					open: true,
+					gzipSize: true,
+					brotliSize: true,
+					filename: "dist/stats.html"
+				})
+		].filter(Boolean),
 		esbuild: {
 			treeShaking: true,
 			drop: viteEnv.VITE_DROP_CONSOLE ? ["debugger", "console"] : []
 		},
 		optimizeDeps: {
-			include: ["spark-md5", "monaco-editor"]
+			include: [
+				"spark-md5",
+				"monaco-editor",
+				"react",
+				"react-dom",
+				"react-router",
+				"antd",
+				"@ant-design/icons"
+			]
 		},
 		build: {
 			outDir: "dist",
 			minify: "esbuild",
+			sourcemap: false,
+			cssCodeSplit: true,
+			reportCompressedSize: true,
+			chunkSizeWarningLimit: 1500,
 			rollupOptions: {
 				output: {
 					chunkFileNames: "assets/js/[name]-[hash].js",
 					entryFileNames: "assets/js/[name]-[hash].js",
 					assetFileNames: "assets/[ext]/[name]-[hash].[ext]",
 					manualChunks: {
-						monaco: ["monaco-editor"]
+						monaco: ["monaco-editor"],
+						vendor: ["react", "react-dom", "react-router"],
+						antd: ["antd", "@ant-design/icons"]
 					}
 				}
 			}
