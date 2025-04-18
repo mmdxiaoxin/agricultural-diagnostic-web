@@ -112,14 +112,13 @@ const DiagnosisResultCard = React.memo(({ prediction }: DiagnosisResultCardProps
 		};
 
 		const handleIntersection = throttle((entries: IntersectionObserverEntry[]) => {
-			entries.forEach(entry => {
-				if (entry.isIntersecting) {
-					setIsVisible(true);
-					if (observerRef.current) {
-						observerRef.current.unobserve(entry.target);
-					}
+			const entry = entries[0];
+			if (entry.isIntersecting) {
+				setIsVisible(true);
+				if (observerRef.current) {
+					observerRef.current.unobserve(entry.target);
 				}
-			});
+			}
 		}, 100);
 
 		observerRef.current = new IntersectionObserver(handleIntersection, options);
