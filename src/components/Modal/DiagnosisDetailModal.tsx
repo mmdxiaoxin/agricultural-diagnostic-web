@@ -5,7 +5,7 @@ import { CheckCircleOutlined, ClockCircleOutlined } from "@ant-design/icons";
 import { Button, Card, Drawer, Image, Modal, Space, Tag, Typography } from "antd";
 import clsx from "clsx";
 import dayjs from "dayjs";
-import { forwardRef, useImperativeHandle, useMemo, useRef, useState } from "react";
+import { forwardRef, useImperativeHandle, useMemo, useState } from "react";
 import DiagnosisResultCard from "../Card/DiagnosisResultCard";
 import DetectImage from "../DetectImage";
 import DiagnosisLogsList from "../List/DiagnosisLogsList";

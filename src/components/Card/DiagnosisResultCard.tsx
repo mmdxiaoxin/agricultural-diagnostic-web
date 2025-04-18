@@ -9,7 +9,6 @@ const { Text, Paragraph } = Typography;
 
 interface DiagnosisResultCardProps {
 	prediction: Prediction;
-	containerRef?: React.RefObject<HTMLDivElement>;
 }
 
 const DiagnosisResultCardContent = React.memo(({ prediction }: DiagnosisResultCardProps) => {
@@ -98,15 +97,18 @@ const DiagnosisResultCardContent = React.memo(({ prediction }: DiagnosisResultCa
 
 DiagnosisResultCardContent.displayName = "DiagnosisResultCardContent";
 
-const DiagnosisResultCard = React.memo(({ prediction, containerRef }: DiagnosisResultCardProps) => {
+const DiagnosisResultCard = React.memo(({ prediction }: DiagnosisResultCardProps) => {
 	const [isVisible, setIsVisible] = useState(false);
+	const cardRef = useRef<HTMLDivElement>(null);
 	const observerRef = useRef<IntersectionObserver | null>(null);
 
 	useEffect(() => {
+		if (!cardRef.current) return;
+
 		const options = {
 			root: null,
 			rootMargin: "200px",
-			threshold: 0.01
+			threshold: 0.1
 		};
 
 		const handleIntersection = throttle((entries: IntersectionObserverEntry[]) => {
@@ -121,19 +123,20 @@ const DiagnosisResultCard = React.memo(({ prediction, containerRef }: DiagnosisR
 		}, 100);
 
 		observerRef.current = new IntersectionObserver(handleIntersection, options);
-
-		if (containerRef?.current) {
-			observerRef.current.observe(containerRef.current);
-		}
+		observerRef.current.observe(cardRef.current);
 
 		return () => {
-			if (observerRef.current && containerRef?.current) {
-				observerRef.current.unobserve(containerRef.current);
+			if (observerRef.current && cardRef.current) {
+				observerRef.current.unobserve(cardRef.current);
 			}
 		};
-	}, [containerRef]);
+	}, []);
 
-	return <div>{isVisible && <DiagnosisResultCardContent prediction={prediction} />}</div>;
+	return (
+		<div ref={cardRef} style={{ minHeight: "80px" }}>
+			{isVisible && <DiagnosisResultCardContent prediction={prediction} />}
+		</div>
+	);
 });
 
 DiagnosisResultCard.displayName = "DiagnosisResultCard";
