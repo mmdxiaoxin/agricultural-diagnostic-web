@@ -26,6 +26,7 @@ import {
 import { ColumnsType } from "antd/es/table";
 import React, { useEffect, useRef, useState } from "react";
 import QuickCopy from "../Table/QuickCopy";
+import TextCell from "../Table/TextCell";
 
 export type ServiceDetailProps = {
 	service?: RemoteService;
@@ -94,12 +95,16 @@ const ServiceDetail: React.FC<ServiceDetailProps> = ({ service }) => {
 		{
 			title: "配置名称",
 			dataIndex: "name",
-			key: "name"
+			key: "name",
+			render: (text: string) => <TextCell text={text} />,
+			responsive: ["xs", "sm", "md", "lg", "xl", "xxl"]
 		},
 		{
 			title: "配置描述",
 			dataIndex: "description",
-			key: "description"
+			key: "description",
+			render: (text: string) => <TextCell text={text} />,
+			responsive: ["lg", "xl", "xxl"]
 		},
 		{
 			title: "状态",
@@ -109,13 +114,14 @@ const ServiceDetail: React.FC<ServiceDetailProps> = ({ service }) => {
 				<Tag color={status === "active" ? "success" : "error"}>
 					{status === "active" ? "启用" : "禁用"}
 				</Tag>
-			)
+			),
+			responsive: ["sm", "md", "lg", "xl", "xxl"]
 		},
 		{
 			title: "操作",
 			key: "action",
 			render: (_, record) => (
-				<Space>
+				<Space wrap className="xs:w-21 lg:w-42">
 					<Button type="link" onClick={() => handleEditConfig(record)}>
 						编辑
 					</Button>
@@ -166,12 +172,16 @@ const ServiceDetail: React.FC<ServiceDetailProps> = ({ service }) => {
 		{
 			title: "接口名称",
 			dataIndex: "name",
-			key: "name"
+			key: "name",
+			render: (text: string) => <TextCell text={text} />,
+			responsive: ["xs", "sm", "md", "lg", "xl", "xxl"]
 		},
 		{
 			title: "接口类型",
 			dataIndex: "type",
-			key: "type"
+			key: "type",
+			render: (text: string) => <TextCell text={text} />,
+			responsive: ["sm", "md", "lg", "xl", "xxl"]
 		},
 		{
 			title: "接口地址",
@@ -180,13 +190,14 @@ const ServiceDetail: React.FC<ServiceDetailProps> = ({ service }) => {
 			render: (_: string, record) => {
 				const fullUrl = `${record.url ?? ""}${record.config.prefix ?? ""}${record.config.path ?? ""}`;
 				return <QuickCopy text={fullUrl} />;
-			}
+			},
+			responsive: ["lg", "xl", "xxl"]
 		},
 		{
 			title: "操作",
 			key: "action",
 			render: (_, record) => (
-				<Space>
+				<Space wrap className="xs:w-21 lg:w-42">
 					<Button type="link" onClick={() => handleEditInterface(record)}>
 						编辑
 					</Button>
@@ -231,6 +242,7 @@ const ServiceDetail: React.FC<ServiceDetailProps> = ({ service }) => {
 						columns={configColumns}
 						dataSource={configs}
 						rowKey="id"
+						scroll={{ x: "max-content" }}
 						pagination={{
 							total: configs.length,
 							pageSize: 5,
@@ -270,6 +282,7 @@ const ServiceDetail: React.FC<ServiceDetailProps> = ({ service }) => {
 						columns={interfaceColumns}
 						dataSource={interfaces}
 						rowKey="id"
+						scroll={{ x: "max-content" }}
 						pagination={{
 							total: interfaces.length,
 							pageSize: 5,
@@ -286,7 +299,7 @@ const ServiceDetail: React.FC<ServiceDetailProps> = ({ service }) => {
 
 	return (
 		<>
-			<div className="h-full flex flex-col p-6">
+			<div className="h-full flex flex-col">
 				<Card
 					className="mb-6"
 					title={
