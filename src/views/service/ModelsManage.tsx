@@ -14,6 +14,7 @@ import type { ColumnsType } from "antd/es/table";
 import clsx from "clsx";
 import dayjs from "dayjs";
 import { useEffect, useRef, useState } from "react";
+import PageHeader from "@/components/PageHeader";
 
 const { Text } = Typography;
 
@@ -223,55 +224,18 @@ const ModelsManage = () => {
 				"overflow-y-auto"
 			)}
 		>
-			<div
-				className={clsx(
-					"flex flex-col gap-6",
-					"mb-6 p-6",
-					"rounded-2xl",
-					"bg-white",
-					"shadow-sm",
-					"border border-gray-100",
-					"transition-all duration-300",
-					"hover:shadow-md"
-				)}
-			>
-				<div className="flex justify-between items-center">
-					<div className="flex flex-col">
-						<h2 className="text-2xl font-semibold text-gray-800 mb-2">模型管理</h2>
-						<p className="text-gray-500">共 {models.length} 个模型</p>
-					</div>
-					<div className="flex items-center gap-4">
-						<Input
-							placeholder="搜索模型..."
-							prefix={<SearchOutlined className="text-gray-400" />}
-							value={searchText}
-							onChange={e => setSearchText(e.target.value)}
-							className={clsx(
-								"w-64",
-								"rounded-lg",
-								"border-gray-200",
-								"focus:border-blue-500",
-								"focus:ring-1 focus:ring-blue-500",
-								"transition-all duration-300"
-							)}
-						/>
-						<Button
-							type="primary"
-							icon={<PlusOutlined />}
-							onClick={() => modalRef.current?.open()}
-							className={clsx(
-								"px-6 h-10",
-								"rounded-lg",
-								"shadow-sm hover:shadow-md",
-								"transition-all duration-300",
-								"flex items-center gap-2"
-							)}
-						>
-							添加模型
-						</Button>
-					</div>
-				</div>
-			</div>
+			<PageHeader
+				title="模型管理"
+				description={`共 ${models.length} 个模型`}
+				searchPlaceholder="搜索模型..."
+				searchValue={searchText}
+				onSearchChange={setSearchText}
+				actionButton={{
+					text: "添加模型",
+					icon: <PlusOutlined />,
+					onClick: () => modalRef.current?.open()
+				}}
+			/>
 
 			<div className="flex flex-col gap-4">
 				<Space className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">

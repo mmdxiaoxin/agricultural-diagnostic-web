@@ -5,6 +5,7 @@ import { CaretDownOutlined, CaretUpOutlined } from "@ant-design/icons";
 import { Button, Empty, Splitter, Tooltip } from "antd";
 import clsx from "clsx";
 import React, { useEffect, useRef, useState } from "react";
+import PageHeader from "@/components/PageHeader";
 
 const ServiceConfig: React.FC = () => {
 	const [service, setService] = useState<RemoteService>();
@@ -42,37 +43,19 @@ const ServiceConfig: React.FC = () => {
 			)}
 		>
 			{!isFullscreen && (
-				<div
-					className={clsx(
-						"flex flex-col gap-6",
-						"mb-6 p-6",
-						"rounded-2xl",
-						"bg-white",
-						"shadow-sm",
-						"border border-gray-100",
-						"transition-all duration-300",
-						"hover:shadow-md"
-					)}
-				>
-					<div className="flex justify-between items-center">
-						<div className="flex flex-col">
-							<h2 className="text-2xl font-semibold text-gray-800 mb-2">服务配置</h2>
-							<p className="text-gray-500">
-								{service ? `当前选择: ${service.serviceName}` : "请选择一个服务进行配置"}
-							</p>
-						</div>
-						{service && (
-							<Tooltip title={isFullscreen ? "展开" : "折叠"}>
-								<Button
-									type="text"
-									icon={isFullscreen ? <CaretDownOutlined /> : <CaretUpOutlined />}
-									onClick={toggleFullscreen}
-									className="hover:bg-gray-100"
-								/>
-							</Tooltip>
-						)}
-					</div>
-				</div>
+				<PageHeader
+					title="服务配置"
+					description={service ? `当前选择: ${service.serviceName}` : "请选择一个服务进行配置"}
+					actionButton={
+						service
+							? {
+									text: isFullscreen ? "展开" : "折叠",
+									icon: isFullscreen ? <CaretDownOutlined /> : <CaretUpOutlined />,
+									onClick: toggleFullscreen
+								}
+							: undefined
+					}
+				/>
 			)}
 
 			<div
