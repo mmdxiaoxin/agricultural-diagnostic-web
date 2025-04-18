@@ -5,7 +5,7 @@ import { CheckCircleOutlined, ClockCircleOutlined } from "@ant-design/icons";
 import { Button, Card, Drawer, Image, Modal, Space, Tag, Typography } from "antd";
 import clsx from "clsx";
 import dayjs from "dayjs";
-import { forwardRef, useImperativeHandle, useMemo, useState } from "react";
+import { forwardRef, useImperativeHandle, useMemo, useRef, useState } from "react";
 import DiagnosisResultCard from "../Card/DiagnosisResultCard";
 import DetectImage from "../DetectImage";
 import DiagnosisLogsList from "../List/DiagnosisLogsList";
@@ -114,9 +114,7 @@ const DiagnosisDetailModal = forwardRef<DiagnosisDetailModalRef>((_, ref) => {
 							{record.diagnosisResult ? (
 								<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4 max-h-[280px] overflow-y-auto">
 									{predictions.map((prediction, index) => (
-										<div key={index}>
-											<DiagnosisResultCard prediction={prediction} />
-										</div>
+										<DiagnosisResultCard key={index} prediction={prediction} />
 									))}
 								</div>
 							) : (

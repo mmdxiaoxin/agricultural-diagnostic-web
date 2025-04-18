@@ -1,6 +1,7 @@
 import { Prediction } from "@/api/interface/diagnosis";
 import { Popover, Tag, Typography } from "antd";
 import { motion } from "framer-motion";
+import { throttle } from "lodash-es";
 import React, { useEffect, useRef, useState } from "react";
 import Top5ProbabilityChart from "../ECharts/Top5ProbabilityChart";
 
@@ -8,6 +9,7 @@ const { Text, Paragraph } = Typography;
 
 interface DiagnosisResultCardProps {
 	prediction: Prediction;
+	containerRef?: React.RefObject<HTMLDivElement>;
 }
 
 const DiagnosisResultCardContent = React.memo(({ prediction }: DiagnosisResultCardProps) => {
@@ -96,43 +98,42 @@ const DiagnosisResultCardContent = React.memo(({ prediction }: DiagnosisResultCa
 
 DiagnosisResultCardContent.displayName = "DiagnosisResultCardContent";
 
-const DiagnosisResultCard = React.memo(({ prediction }: DiagnosisResultCardProps) => {
+const DiagnosisResultCard = React.memo(({ prediction, containerRef }: DiagnosisResultCardProps) => {
 	const [isVisible, setIsVisible] = useState(false);
-	const containerRef = useRef<HTMLDivElement>(null);
+	const observerRef = useRef<IntersectionObserver | null>(null);
 
 	useEffect(() => {
-		const observer = new IntersectionObserver(
-			entries => {
-				entries.forEach(entry => {
-					if (entry.isIntersecting) {
-						setIsVisible(true);
-						observer.unobserve(entry.target);
-					}
-				});
-			},
-			{
-				root: null,
-				rootMargin: "50px",
-				threshold: 0.1
-			}
-		);
+		const options = {
+			root: null,
+			rootMargin: "200px",
+			threshold: 0.01
+		};
 
-		if (containerRef.current) {
-			observer.observe(containerRef.current);
+		const handleIntersection = throttle((entries: IntersectionObserverEntry[]) => {
+			entries.forEach(entry => {
+				if (entry.isIntersecting) {
+					setIsVisible(true);
+					if (observerRef.current) {
+						observerRef.current.unobserve(entry.target);
+					}
+				}
+			});
+		}, 100);
+
+		observerRef.current = new IntersectionObserver(handleIntersection, options);
+
+		if (containerRef?.current) {
+			observerRef.current.observe(containerRef.current);
 		}
 
 		return () => {
-			if (containerRef.current) {
-				observer.unobserve(containerRef.current);
+			if (observerRef.current && containerRef?.current) {
+				observerRef.current.unobserve(containerRef.current);
 			}
 		};
-	}, []);
+	}, [containerRef]);
 
-	return (
-		<div ref={containerRef}>
-			{isVisible && <DiagnosisResultCardContent prediction={prediction} />}
-		</div>
-	);
+	return <div>{isVisible && <DiagnosisResultCardContent prediction={prediction} />}</div>;
 });
 
 DiagnosisResultCard.displayName = "DiagnosisResultCard";
