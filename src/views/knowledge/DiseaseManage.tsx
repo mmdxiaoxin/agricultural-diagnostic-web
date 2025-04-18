@@ -3,6 +3,7 @@ import { getCrops } from "@/api/modules/Knowledge";
 import { deleteKnowledge, getKnowledgeList } from "@/api/modules/Knowledge/knowledge";
 import DiseaseModal, { DiseaseModalRef } from "@/components/Modal/DiseaseModal";
 import PageHeader from "@/components/PageHeader";
+import TextCell from "@/components/Table/TextCell";
 import { DeleteOutlined, EditOutlined, EyeOutlined, PlusOutlined } from "@ant-design/icons";
 import {
 	Button,
@@ -98,30 +99,38 @@ const DiseaseManage: React.FC = () => {
 			title: "病害名称",
 			dataIndex: "name",
 			key: "name",
-			render: text => <span className="font-medium">{text}</span>
+			render: text => <TextCell text={text} />,
+			responsive: ["xs", "sm", "md", "lg", "xl", "xxl"]
 		},
 		{
 			title: "别名",
 			dataIndex: "alias",
-			key: "alias"
+			key: "alias",
+			render: (text: string) => <TextCell text={text} />,
+			responsive: ["sm", "md", "lg", "xl", "xxl"]
 		},
 		{
 			title: "作物",
 			dataIndex: ["crop", "name"],
 			key: "crop",
-			render: text => <Tag color="blue">{text}</Tag>
+			render: text => <Tag color="blue">{text}</Tag>,
+			responsive: ["lg", "xl", "xxl"]
 		},
 		{
 			title: "病因",
 			dataIndex: "cause",
 			key: "cause",
-			ellipsis: true
+			ellipsis: true,
+			responsive: ["lg", "xl", "xxl"],
+			render: (text: string) => <TextCell text={text} />
 		},
 		{
 			title: "传播方式",
 			dataIndex: "transmission",
 			key: "transmission",
-			ellipsis: true
+			ellipsis: true,
+			responsive: ["xl", "xxl"],
+			render: (text: string) => <TextCell text={text} />
 		},
 		{
 			title: "操作",
@@ -147,7 +156,8 @@ const DiseaseManage: React.FC = () => {
 						<Button type="link" icon={<DeleteOutlined />} danger />
 					</Popconfirm>
 				</Space>
-			)
+			),
+			fixed: "right"
 		}
 	];
 
@@ -199,6 +209,7 @@ const DiseaseManage: React.FC = () => {
 					dataSource={diseases}
 					loading={loading}
 					rowKey="id"
+					scroll={{ x: "max-content" }}
 					pagination={{
 						total,
 						pageSize: params.pageSize,
