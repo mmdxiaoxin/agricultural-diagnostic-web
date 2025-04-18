@@ -11,14 +11,16 @@ const LayoutFooter = () => {
 			{!themeConfig.footer && (
 				<Footer
 					className={clsx(
-						"footer",
 						"flex items-center justify-center py-[10px]",
-						"border-t border-solid border-[#e4e7ed]",
-						"[&_a]:text-[14px] [&_a]:text-[#858585] [&_a]:no-underline [&_a]:tracking-[0.5px] [&_a]:whitespace-nowrap",
-						"[&_a:hover]:text-blue-500 [&_a:hover]:transition-colors"
+						"border-t border-solid border-[#e4e7ed]"
 					)}
 				>
-					<a href="http://www.spicyboy.cn/" target="_blank" rel="noreferrer">
+					<a
+						href="http://www.spicyboy.cn/"
+						target="_blank"
+						rel="noreferrer"
+						className="text-[14px] text-[#858585] no-underline tracking-[0.5px] whitespace-nowrap hover:text-blue-500 hover:transition-colors"
+					>
 						2025 © mmdxiaoxin By NWAFU.
 					</a>
 				</Footer>
