@@ -1,4 +1,5 @@
 import { Prediction } from "@/api/interface/diagnosis";
+import { DIAGNOSIS_CLASS_NAME_ZH_CN } from "@/constants/diagnosis";
 import { Popover, Tag, Typography } from "antd";
 import { motion } from "framer-motion";
 import { throttle } from "lodash-es";
@@ -89,7 +90,9 @@ const DiagnosisResultCardContent = React.memo(({ prediction }: DiagnosisResultCa
 				}}
 				className="mt-0.5 text-gray-700 text-sm"
 			>
-				{prediction.class_name}
+				{DIAGNOSIS_CLASS_NAME_ZH_CN[
+					prediction.class_name as keyof typeof DIAGNOSIS_CLASS_NAME_ZH_CN
+				] || prediction.class_name}
 			</Paragraph>
 		</motion.div>
 	);

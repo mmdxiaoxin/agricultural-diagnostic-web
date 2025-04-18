@@ -1,4 +1,5 @@
 import { BasePrediction } from "@/api/interface/diagnosis";
+import { DIAGNOSIS_CLASS_NAME_ZH_CN } from "@/constants/diagnosis";
 import { useEcharts } from "@/hooks/useEcharts";
 import { EChartsCoreOption } from "echarts/core";
 
@@ -13,7 +14,10 @@ const Top5ProbabilityChart: React.FC<Top5ProbabilityChartProps> = ({
 	// 将预测结果转换为饼图数据格式
 	const chartData = predictions.map(prediction => ({
 		value: prediction.confidence,
-		name: prediction.class_name
+		name:
+			DIAGNOSIS_CLASS_NAME_ZH_CN[
+				prediction.class_name as keyof typeof DIAGNOSIS_CLASS_NAME_ZH_CN
+			] || prediction.class_name
 	}));
 
 	const option: EChartsCoreOption = {

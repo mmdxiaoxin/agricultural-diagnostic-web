@@ -12,6 +12,7 @@ import DiagnosisDetailModal, {
 } from "@/components/Modal/DiagnosisDetailModal";
 import PageHeader from "@/components/PageHeader";
 import TextCell from "@/components/Table/TextCell";
+import { DIAGNOSIS_CLASS_NAME_ZH_CN } from "@/constants/diagnosis";
 import { DIAGNOSIS_STATUS_COLOR, DIAGNOSIS_STATUS_TEXT } from "@/constants/status";
 import { DeleteOutlined, ReloadOutlined } from "@ant-design/icons";
 import {
@@ -203,7 +204,11 @@ const DiagnosisHistoryPage: React.FC = () => {
 				// 生成完整的结果文本
 				const fullResult = (predictions || []).map(
 					prediction =>
-						`${prediction.type === "classify" ? "分类" : "检测"}: ${prediction.class_name} (${(prediction.confidence * 100).toFixed(2)}%)`
+						`${prediction.type === "classify" ? "分类" : "检测"}: ${
+							DIAGNOSIS_CLASS_NAME_ZH_CN[
+								prediction.class_name as keyof typeof DIAGNOSIS_CLASS_NAME_ZH_CN
+							] || prediction.class_name
+						} (${(prediction.confidence * 100).toFixed(2)}%)`
 				);
 				const displayPredictions = (predictions || []).slice(0, 2);
 				const hasMore = (predictions || []).length > 2;
@@ -213,8 +218,11 @@ const DiagnosisHistoryPage: React.FC = () => {
 						<Space direction="vertical" size={0}>
 							{displayPredictions.map((prediction, index) => (
 								<Text key={index} className="text-gray-700">
-									{prediction.type === "classify" ? "分类" : "检测"}: {prediction.class_name} (
-									{(prediction.confidence * 100).toFixed(2)}%)
+									{prediction.type === "classify" ? "分类" : "检测"}:
+									{DIAGNOSIS_CLASS_NAME_ZH_CN[
+										prediction.class_name as keyof typeof DIAGNOSIS_CLASS_NAME_ZH_CN
+									] || prediction.class_name}
+									({(prediction.confidence * 100).toFixed(2)}%)
 								</Text>
 							))}
 							{hasMore && (

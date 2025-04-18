@@ -1,4 +1,5 @@
 import { DetectPrediction } from "@/api/interface";
+import { DIAGNOSIS_CLASS_NAME_ZH_CN } from "@/constants/diagnosis";
 
 interface WorkerMessage {
 	imageUrl: string;
@@ -108,7 +109,11 @@ self.onmessage = async (e: MessageEvent<WorkerMessage>) => {
 			ctx.strokeRect(x, y, w, h);
 
 			// 绘制标签（放在框内左上角）
-			const label = `${prediction.class_name} ${(prediction.confidence * 100).toFixed(1)}%`;
+			const label = `${
+				DIAGNOSIS_CLASS_NAME_ZH_CN[
+					prediction.class_name as keyof typeof DIAGNOSIS_CLASS_NAME_ZH_CN
+				] || prediction.class_name
+			} ${(prediction.confidence * 100).toFixed(1)}%`;
 			drawLabel(ctx, x + 5, y + 5, label, color, scale);
 		}
 

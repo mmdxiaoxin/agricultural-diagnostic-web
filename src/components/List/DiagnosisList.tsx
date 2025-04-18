@@ -1,5 +1,6 @@
 import { DiagnosisHistory } from "@/api/interface/diagnosis";
 import { deleteDiagnosisHistory, downloadFile, getDiagnosisHistoryList } from "@/api/modules";
+import { DIAGNOSIS_CLASS_NAME_ZH_CN } from "@/constants/diagnosis";
 import { DeleteOutlined } from "@ant-design/icons";
 import {
 	Button,
@@ -154,8 +155,11 @@ const DiagnosisList = forwardRef<DiagnosisListRef, DiagnosisListProps>((_, ref) 
 			};
 		}
 		const prediction = item.diagnosisResult?.predictions?.[0];
+		const className = prediction?.class_name || "未知";
 		return {
-			className: prediction?.class_name || "未知",
+			className:
+				DIAGNOSIS_CLASS_NAME_ZH_CN[className as keyof typeof DIAGNOSIS_CLASS_NAME_ZH_CN] ||
+				className,
 			confidence: prediction?.confidence || 0
 		};
 	};

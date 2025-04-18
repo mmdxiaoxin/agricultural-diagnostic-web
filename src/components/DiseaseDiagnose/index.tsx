@@ -19,6 +19,7 @@ import {
 import clsx from "clsx";
 import React, { useEffect, useState } from "react";
 import DetectImage from "../DetectImage";
+import { DIAGNOSIS_CLASS_NAME_ZH_CN } from "@/constants/diagnosis";
 
 const { Text } = Typography;
 
@@ -124,7 +125,11 @@ const DiseaseDiagnose: React.FC<DiseaseDiagnoseProps> = ({ onPredict }) => {
 				<Space direction="vertical" className="w-full">
 					<Space>
 						<Tag color="blue">分类结果</Tag>
-						<Text strong>{prediction.class_name}</Text>
+						<Text strong>
+							{DIAGNOSIS_CLASS_NAME_ZH_CN[
+								prediction.class_name as keyof typeof DIAGNOSIS_CLASS_NAME_ZH_CN
+							] || prediction.class_name}
+						</Text>
 					</Space>
 					<Space>
 						<Text type="secondary">置信度：</Text>
@@ -145,7 +150,11 @@ const DiseaseDiagnose: React.FC<DiseaseDiagnoseProps> = ({ onPredict }) => {
 				<Space direction="vertical" className="w-full">
 					<Space>
 						<Tag color="green">检测结果</Tag>
-						<Text strong>{prediction.class_name}</Text>
+						<Text strong>
+							{DIAGNOSIS_CLASS_NAME_ZH_CN[
+								prediction.class_name as keyof typeof DIAGNOSIS_CLASS_NAME_ZH_CN
+							] || prediction.class_name}
+						</Text>
 					</Space>
 					<Space>
 						<Text type="secondary">置信度：</Text>
