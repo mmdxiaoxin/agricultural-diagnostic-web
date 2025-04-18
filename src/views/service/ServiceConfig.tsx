@@ -1,15 +1,16 @@
 import { RemoteService } from "@/api/interface";
+import ServiceListDrawer, { ServiceListDrawerRef } from "@/components/Drawer/ServiceListDrawer";
 import ServiceList from "@/components/List/ServiceList";
+import PageHeader from "@/components/PageHeader";
 import ServiceDetail from "@/components/ServiceDetail";
-import { CaretDownOutlined, CaretUpOutlined } from "@ant-design/icons";
-import { Button, Empty, Splitter, Tooltip } from "antd";
+import { MenuOutlined } from "@ant-design/icons";
+import { Button, Empty, Splitter } from "antd";
 import clsx from "clsx";
 import React, { useEffect, useRef, useState } from "react";
-import PageHeader from "@/components/PageHeader";
 
 const ServiceConfig: React.FC = () => {
 	const [service, setService] = useState<RemoteService>();
-	const [isFullscreen, setIsFullscreen] = useState(false);
+	const serviceListDrawerRef = useRef<ServiceListDrawerRef>(null);
 	const containerRef = useRef<HTMLDivElement>(null);
 
 	useEffect(() => {
@@ -27,80 +28,84 @@ const ServiceConfig: React.FC = () => {
 		}
 	}, []);
 
-	const toggleFullscreen = () => {
-		setIsFullscreen(!isFullscreen);
+	const handleServiceSelect = (selectedService: RemoteService) => {
+		setService(selectedService);
+		serviceListDrawerRef.current?.close();
 	};
 
 	return (
 		<div
 			className={clsx(
 				"h-full w-full",
-				"p-6",
+				"p-0 lg:p-6",
 				"rounded-2xl",
 				"flex flex-col",
 				"bg-gradient-to-br from-white to-gray-50",
 				"overflow-hidden"
 			)}
 		>
-			{!isFullscreen && (
-				<PageHeader
-					title="服务配置"
-					description={service ? `当前选择: ${service.serviceName}` : "请选择一个服务进行配置"}
-					actionButton={
-						service
-							? {
-									text: isFullscreen ? "展开" : "折叠",
-									icon: isFullscreen ? <CaretDownOutlined /> : <CaretUpOutlined />,
-									onClick: toggleFullscreen
-								}
-							: undefined
-					}
-				/>
-			)}
-
+			<PageHeader
+				title="服务配置"
+				description={service ? `当前选择: ${service.serviceName}` : "请选择一个服务进行配置"}
+			/>
 			<div
 				ref={containerRef}
 				className={clsx(
-					"flex-1 bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden relative",
-					isFullscreen && "fixed inset-0 z-50 m-0 rounded-none transform scale-100"
+					"flex-1 bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden relative"
 				)}
 			>
-				{isFullscreen && (
-					<div className="absolute top-0 left-0 right-0 h-16 bg-white border-b border-gray-100 flex items-center justify-between px-6 z-10">
-						<div className="flex items-center gap-4">
-							<h3 className="text-lg font-medium text-gray-800">服务配置</h3>
-							<p className="text-gray-500">
-								{service ? `当前选择: ${service.serviceName}` : "请选择一个服务进行配置"}
-							</p>
-						</div>
-						<Tooltip title="展开">
-							<Button
-								type="text"
-								icon={<CaretDownOutlined />}
-								onClick={toggleFullscreen}
-								className="hover:bg-gray-100"
-							/>
-						</Tooltip>
-					</div>
-				)}
-				<Splitter className={clsx("h-full", isFullscreen && "pt-16")}>
-					<Splitter.Panel defaultSize="30%" min="20%" max="50%" collapsible>
+				{/* 移动端服务选择按钮 */}
+				<div className="lg:hidden absolute top-4 left-4 z-10">
+					<Button
+						type="primary"
+						icon={<MenuOutlined />}
+						onClick={() => serviceListDrawerRef.current?.open()}
+					>
+						选择服务
+					</Button>
+				</div>
+
+				{/* 移动端抽屉 */}
+				<ServiceListDrawer
+					ref={serviceListDrawerRef}
+					selected={service}
+					onSelect={handleServiceSelect}
+				/>
+
+				{/* 主内容区域 */}
+				<Splitter className="h-full">
+					{/* 左侧服务列表 - PC端显示 */}
+					<Splitter.Panel
+						defaultSize="30%"
+						min="20%"
+						max="50%"
+						collapsible
+						className="hidden lg:block"
+					>
 						<div className="h-full p-4 border-r border-gray-100">
-							<ServiceList selected={service} onSelect={service => setService(service)} />
+							<ServiceList selected={service} onSelect={handleServiceSelect} />
 						</div>
 					</Splitter.Panel>
+
+					{/* 右侧服务详情 */}
 					<Splitter.Panel>
-						{service ? (
-							<ServiceDetail service={service} />
-						) : (
-							<div className="h-full flex items-center justify-center bg-gray-50">
-								<Empty
-									description="请从左侧选择一个服务进行配置"
-									image={Empty.PRESENTED_IMAGE_SIMPLE}
-									className="text-gray-400"
-								/>
-							</div>
-						)}
+						<div className="h-full w-full">
+							{service ? (
+								<ServiceDetail service={service} />
+							) : (
+								<div className="h-full w-full flex items-center justify-center bg-gray-50">
+									<Empty
+										description={
+											window.innerWidth >= 1024
+												? "请从左侧选择一个服务进行配置"
+												: "请点击左上角按钮选择服务"
+										}
+										image={Empty.PRESENTED_IMAGE_SIMPLE}
+										className="text-gray-400"
+									/>
+								</div>
+							)}
+						</div>
 					</Splitter.Panel>
 				</Splitter>
 			</div>
