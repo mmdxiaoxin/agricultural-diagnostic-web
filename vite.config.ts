@@ -216,7 +216,7 @@ export default defineConfig((mode: ConfigEnv): UserConfig => {
 						// 图表相关
 						charts: ["echarts"],
 						// 工具库
-						utils: ["lodash-es", "dayjs", "qs", "spark-md5"]
+						utils: ["dayjs", "qs", "spark-md5"]
 					},
 					// 自动分包配置
 					chunkFileNames: chunkInfo => {
