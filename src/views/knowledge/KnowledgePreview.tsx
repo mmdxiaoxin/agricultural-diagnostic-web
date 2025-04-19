@@ -431,7 +431,7 @@ const KnowledgePreview: React.FC = () => {
 			key: "4",
 			label: "环境因素",
 			children: (
-				<div className="grid grid-cols-1 sm:grid-cols-2 gap-3 lg:gap-6">
+				<div className="grid grid-cols-1 sm:grid-cols-2 gap-3 lg:gap-6 min-h-[80px]">
 					{selectedDisease?.environmentFactors.map(factor => (
 						<Card key={factor.id} className="hover:shadow-lg transition-shadow" size="small">
 							<Space direction="vertical" className="w-full">
@@ -451,7 +451,7 @@ const KnowledgePreview: React.FC = () => {
 	];
 
 	return (
-		<div className="flex flex-col lg:flex-row h-full w-full gap-2">
+		<div className="flex flex-col lg:flex-row lg:h-full w-full gap-2 overflow-y-auto">
 			{/* 病害列表区域 */}
 			<motion.div
 				initial={{ x: -100, opacity: 0 }}
@@ -466,7 +466,8 @@ const KnowledgePreview: React.FC = () => {
 					"h-auto lg:h-full",
 					"overflow-hidden",
 					"flex flex-col",
-					"mb-4 lg:mb-0"
+					"mb-4 lg:mb-0",
+					"min-h-[400px]"
 				)}
 			>
 				<div className="flex flex-col gap-4">
@@ -506,7 +507,7 @@ const KnowledgePreview: React.FC = () => {
 					</Space>
 				</div>
 				<List
-					className="flex-1 overflow-y-auto mt-4"
+					className="flex-1 overflow-y-auto mt-4 min-h-[200px]"
 					dataSource={diseaseList}
 					loading={loading}
 					renderItem={item => (
@@ -551,11 +552,10 @@ const KnowledgePreview: React.FC = () => {
 				initial={{ opacity: 0, y: 20 }}
 				animate={{ opacity: 1, y: 0 }}
 				className={clsx(
-					"flex-1",
+					"lg:flex-1",
 					"rounded-2xl",
 					"bg-gradient-to-br from-white to-gray-50",
-					"overflow-y-auto",
-					"h-[calc(100vh-2rem)] lg:h-auto"
+					"overflow-y-auto"
 				)}
 				ref={previewRef}
 			>
@@ -632,7 +632,7 @@ const KnowledgePreview: React.FC = () => {
 					<div className="flex h-full items-center justify-center">
 						<div className="text-center">
 							<BookOutlined className="text-4xl lg:text-6xl text-gray-300 mb-4" />
-							<p className="text-sm lg:text-base text-gray-500">请从左侧选择病害进行预览</p>
+							<p className="text-sm lg:text-base text-gray-500">请先选择病害然后进行预览</p>
 						</div>
 					</div>
 				)}

@@ -174,7 +174,7 @@ const DiseaseDiagnose: React.FC<DiseaseDiagnoseProps> = ({ onPredict }) => {
 	};
 
 	return (
-		<Card title="植物病害诊断" className="max-w-3xl">
+		<Card title="图片诊断" className="max-w-3xl" variant="borderless">
 			<Space direction="vertical" className="w-full" size="large">
 				<Cascader
 					options={cascaderOptions}

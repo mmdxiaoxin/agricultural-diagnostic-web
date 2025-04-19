@@ -66,7 +66,7 @@ const DiagnosisDetailModal = forwardRef<DiagnosisDetailModalRef>((_, ref) => {
 	return (
 		<Modal
 			title={
-				<div className="flex items-center gap-2">
+				<Space align="center" size="large">
 					<Title level={4} className="!mb-0">
 						诊断详情
 					</Title>
@@ -76,7 +76,7 @@ const DiagnosisDetailModal = forwardRef<DiagnosisDetailModalRef>((_, ref) => {
 					>
 						{DIAGNOSIS_STATUS_TEXT[record.status]}
 					</Tag>
-				</div>
+				</Space>
 			}
 			open={open}
 			onCancel={() => {
@@ -98,7 +98,7 @@ const DiagnosisDetailModal = forwardRef<DiagnosisDetailModalRef>((_, ref) => {
 			<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 				{/* 左侧信息 */}
 				<Card className="h-full">
-					<Space direction="vertical" size="large" className="w-full">
+					<Space direction="vertical" className="w-full">
 						<div className="bg-gray-50 p-4 rounded-lg">
 							<Text type="secondary" className="block mb-2">
 								诊断时间

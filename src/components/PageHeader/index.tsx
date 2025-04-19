@@ -78,8 +78,8 @@ const PageHeader = ({
 				"p-3 sm:p-4 md:p-5 lg:p-6",
 				"rounded-xl sm:rounded-2xl",
 				"bg-white",
-				"shadow-sm hover:shadow-md",
-				"border border-gray-100",
+				"md:shadow-sm hover:shadow-md",
+				"md:border border-gray-100",
 				"transition-all duration-300",
 				className
 			)}
