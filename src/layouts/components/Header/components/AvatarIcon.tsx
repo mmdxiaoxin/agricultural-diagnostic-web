@@ -25,14 +25,14 @@ const AvatarIcon = () => {
 
 	const fetchUser = async () => {
 		try {
-			const res = await getUserProfile();
-			if (res.code !== 200 || !res.data) {
-				throw new Error(res.message);
+			const response = await getUserProfile();
+			if (response.code !== 200 || !response.data) {
+				throw new Error(response.message);
 			}
-			dispatch(setUser(res.data));
-			setUserData(res.data);
+			dispatch(setUser(response.data));
+			setUserData(response.data);
 		} catch (error: any) {
-			message.error(error.message);
+			message.error(error.message || "获取用户信息失败");
 		}
 	};
 
@@ -43,7 +43,7 @@ const AvatarIcon = () => {
 			const url = URL.createObjectURL(res);
 			setAvatar(url);
 		} catch (error: any) {
-			message.error(error.message);
+			message.error(error.message || "获取头像失败");
 		}
 	};
 
