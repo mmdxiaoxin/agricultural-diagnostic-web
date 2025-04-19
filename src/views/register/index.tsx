@@ -2,9 +2,9 @@ import { registerApi } from "@/api/modules/auth";
 import { store } from "@/store";
 import { LockOutlined, UserOutlined } from "@ant-design/icons";
 import { Button, Col, Form, Input, message, Row, Space } from "antd";
+import clsx from "clsx";
 import React, { useState } from "react";
 import { Navigate, useNavigate } from "react-router";
-import "./index.scss";
 
 type FormData = {
 	email: string;
@@ -39,11 +39,16 @@ const Register: React.FC = () => {
 	}
 
 	return (
-		<div className="register-container">
-			<Row justify="center" align="middle" style={{ height: "100vh" }}>
+		<div
+			className={clsx(
+				"bg-gray-100 bg-cover bg-center min-h-screen",
+				"bg-[url('@/assets/images/login_bg.svg')]"
+			)}
+		>
+			<Row justify="center" align="middle" className="h-screen">
 				<Col xs={20} sm={16} md={12} lg={8}>
-					<div className="register-form-container">
-						<h2 className="register-title">创建账号</h2>
+					<div className="bg-white p-8 shadow-lg rounded-lg">
+						<h2 className="text-center text-2xl font-bold mb-8">创建账号</h2>
 						<Form
 							name="register"
 							labelCol={{ span: 5 }}
@@ -57,14 +62,25 @@ const Register: React.FC = () => {
 									{ required: true, message: "邮箱不能为空" },
 									{ type: "email", message: "请输入有效的邮箱" }
 								]}
+								className="h-[70px] mb-0"
 							>
-								<Input prefix={<UserOutlined />} placeholder="请输入邮箱" autoComplete="off" />
+								<Input
+									prefix={<UserOutlined className="mr-2.5" />}
+									placeholder="请输入邮箱"
+									autoComplete="off"
+									className="text-sm"
+								/>
 							</Form.Item>
-							<Form.Item name="password" rules={[{ required: true, message: "请输入密码" }]}>
+							<Form.Item
+								name="password"
+								rules={[{ required: true, message: "请输入密码" }]}
+								className="h-[70px] mb-0"
+							>
 								<Input.Password
-									prefix={<LockOutlined />}
+									prefix={<LockOutlined className="mr-2.5" />}
 									placeholder="请输入密码"
 									autoComplete="new-password"
+									className="text-sm"
 								/>
 							</Form.Item>
 							<Form.Item
@@ -80,15 +96,17 @@ const Register: React.FC = () => {
 										}
 									})
 								]}
+								className="h-[70px] mb-0"
 							>
 								<Input.Password
-									prefix={<LockOutlined />}
+									prefix={<LockOutlined className="mr-2.5" />}
 									placeholder="请确认密码"
 									autoComplete="new-password"
+									className="text-sm"
 								/>
 							</Form.Item>
 							<Form.Item>
-								<Space direction="vertical" style={{ width: "100%" }}>
+								<Space direction="vertical" className="w-full">
 									<Button type="primary" htmlType="submit" block loading={loading}>
 										注册
 									</Button>
