@@ -629,7 +629,7 @@ const KnowledgePreview: React.FC = () => {
 						</div>
 					</div>
 				) : (
-					<div className="flex h-full items-center justify-center">
+					<div className="flex h-64 lg:h-full items-center justify-center">
 						<div className="text-center">
 							<BookOutlined className="text-4xl lg:text-6xl text-gray-300 mb-4" />
 							<p className="text-sm lg:text-base text-gray-500">请先选择病害然后进行预览</p>
