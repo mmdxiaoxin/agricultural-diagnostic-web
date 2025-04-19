@@ -1,3 +1,4 @@
+import legacy from "@vitejs/plugin-legacy";
 import react from "@vitejs/plugin-react-swc";
 import { resolve } from "path";
 import { visualizer } from "rollup-plugin-visualizer";
@@ -37,31 +38,79 @@ export default defineConfig((mode: ConfigEnv): UserConfig => {
 			react(),
 			svgr({ svgrOptions: { icon: true } }),
 			createHtmlPlugin({
+				minify: true,
+				template: "index.html",
 				inject: {
 					data: {
-						title: viteEnv.VITE_GLOB_APP_TITLE,
-						meta: {
-							viewport:
-								"width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no",
-							"http-equiv": {
-								"http-equiv": "X-UA-Compatible",
-								content: "IE=edge"
-							},
-							description: "农业诊断系统",
-							keywords: "农业,诊断,系统",
-							author: "mmdxiaoxin",
-							"apple-mobile-web-app-capable": "yes",
-							"apple-mobile-web-app-status-bar-style": "black",
-							"format-detection": "telephone=no",
-							"Content-Language": "zh-CN",
-							"Content-Type": {
+						title: viteEnv.VITE_GLOB_APP_TITLE
+					},
+					tags: [
+						{
+							injectTo: "head",
+							tag: "meta",
+							attrs: {
+								name: "description",
+								content: "农业诊断系统"
+							}
+						},
+						{
+							injectTo: "head",
+							tag: "meta",
+							attrs: {
+								name: "keywords",
+								content: "农业,诊断,系统"
+							}
+						},
+						{
+							injectTo: "head",
+							tag: "meta",
+							attrs: {
+								name: "author",
+								content: "mmdxiaoxin"
+							}
+						},
+						{
+							injectTo: "head",
+							tag: "meta",
+							attrs: {
+								name: "apple-mobile-web-app-capable",
+								content: "yes"
+							}
+						},
+						{
+							injectTo: "head",
+							tag: "meta",
+							attrs: {
+								name: "apple-mobile-web-app-status-bar-style",
+								content: "black"
+							}
+						},
+						{
+							injectTo: "head",
+							tag: "meta",
+							attrs: {
+								name: "format-detection",
+								content: "telephone=no"
+							}
+						},
+						{
+							injectTo: "head",
+							tag: "meta",
+							attrs: {
+								"http-equiv": "Content-Language",
+								content: "zh-CN"
+							}
+						},
+						{
+							injectTo: "head",
+							tag: "meta",
+							attrs: {
 								"http-equiv": "Content-Type",
 								content: "text/html; charset=utf-8"
 							}
 						}
-					}
-				},
-				minify: true
+					]
+				}
 			}),
 			viteCompression({
 				verbose: true,
@@ -98,6 +147,18 @@ export default defineConfig((mode: ConfigEnv): UserConfig => {
 					]
 				}
 			}),
+			!isDev &&
+				legacy({
+					targets: [
+						"> 1%", // 全球使用率超过1%的浏览器
+						"last 2 versions", // 所有浏览器的最后两个版本
+						"not dead", // 排除已停止更新的浏览器
+						"not ie 11", // 排除 IE 11
+						"not op_mini all" // 排除 Opera Mini
+					],
+					modernPolyfills: true, // 为现代浏览器提供必要的 polyfills
+					renderLegacyChunks: true // 为旧版浏览器生成单独的 chunk
+				}),
 			!isDev &&
 				visualizer({
 					open: true,
