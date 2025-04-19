@@ -73,7 +73,7 @@ export default defineConfig((mode: ConfigEnv): UserConfig => {
 							injectTo: "head",
 							tag: "meta",
 							attrs: {
-								name: "apple-mobile-web-app-capable",
+								name: "mobile-web-app-capable",
 								content: "yes"
 							}
 						},
