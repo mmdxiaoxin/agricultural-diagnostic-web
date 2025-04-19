@@ -96,8 +96,6 @@ export default defineConfig((mode: ConfigEnv): UserConfig => {
 				"react",
 				"react-dom",
 				"react-router",
-				"antd",
-				"@ant-design/icons",
 				"@reduxjs/toolkit",
 				"react-redux",
 				"redux-persist",
@@ -119,14 +117,11 @@ export default defineConfig((mode: ConfigEnv): UserConfig => {
 			chunkSizeWarningLimit: 1500,
 			rollupOptions: {
 				output: {
-					chunkFileNames: "assets/js/[name]-[hash].js",
 					entryFileNames: "assets/js/[name]-[hash].js",
 					assetFileNames: "assets/[ext]/[name]-[hash].[ext]",
 					manualChunks: {
 						// React 核心
 						vendor: ["react", "react-dom", "react-router"],
-						// Ant Design 相关
-						antd: ["antd", "@ant-design/icons"],
 						// Redux 相关
 						redux: ["@reduxjs/toolkit", "react-redux", "redux-persist"],
 						// DnD Kit 相关
@@ -141,6 +136,17 @@ export default defineConfig((mode: ConfigEnv): UserConfig => {
 						charts: ["echarts"],
 						// 工具库
 						utils: ["lodash-es", "dayjs", "qs", "spark-md5"]
+					},
+					// 自动分包配置
+					chunkFileNames: chunkInfo => {
+						const id = chunkInfo.name;
+						if (id?.includes("node_modules")) {
+							return "assets/js/vendor/[name]-[hash].js";
+						} else if (id?.includes("src/components")) {
+							return "assets/js/components/[name]-[hash].js";
+						} else {
+							return "assets/js/[name]-[hash].js";
+						}
 					}
 				}
 			}
