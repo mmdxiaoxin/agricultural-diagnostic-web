@@ -5,6 +5,14 @@
 		<link rel="icon" type="image/svg+xml" href="./src/assets/favicon.ico" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<title><%- title %></title>
+		<!-- 预加载关键资源 -->
+		<link rel="preload" href="/src/main.tsx" as="script" />
+		<link rel="preload" href="/src/assets/favicon.ico" as="image" />
+		<link rel="preload" href="/src/assets/images/avatar.png" as="image" />
+		<link rel="preload" href="/src/assets/images/logo.svg" as="image" />
+		<link rel="preload" href="/src/assets/images/login.svg" as="image" />
+		<link rel="preload" href="/src/assets/images/login_bg.svg" as="image" />
+		<link rel="preload" href="/src/assets/images/welcome01.png" as="image" />
 	</head>
 	<body>
 		<div id="root">
