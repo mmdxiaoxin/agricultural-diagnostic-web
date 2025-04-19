@@ -14,7 +14,7 @@ import {
 import { Button, Col, Flex, FloatButton, Form, Input, message, Row } from "antd";
 import { useState } from "react";
 import { Navigate, useNavigate } from "react-router";
-import "./index.scss";
+import clsx from "clsx";
 
 interface FormData {
 	login: string;
@@ -64,19 +64,52 @@ const Login: React.FC = () => {
 	}
 
 	return (
-		<div className="login-container">
-			<Row className="login-box">
+		<div
+			className={clsx(
+				"relative flex h-screen bg-cover bg-center bg-no-repeat",
+				"bg-[url('@/assets/images/login_bg.svg')]"
+			)}
+		>
+			<Row className="flex flex-1 rounded-lg items-center justify-center">
 				{/* 左侧图片部分 */}
-				<Col xs={0} sm={0} md={12} lg={12} xl={14} className="login-left">
-					<img src={loginLeft} alt="login" />
+				<Col xs={0} sm={0} md={12} lg={12} xl={14} className="flex-1">
+					<img src={loginLeft} alt="login" className="object-cover object-center w-full h-full" />
 				</Col>
 
 				{/* 右侧登录表单 */}
-				<Col xs={24} sm={24} md={12} lg={12} xl={10} className="login-form-container">
-					<div className="login-form">
-						<div className="login-logo">
-							<img className="login-icon" src={logo} alt="logo" />
-							<span className="logo-text">病害智能诊断系统</span>
+				<Col xs={24} sm={24} md={12} lg={12} xl={10}>
+					<div
+						className={clsx(
+							"p-6 mx-6 rounded-lg bg-white shadow-lg",
+							"md:py-10 md:px-10 md:mr-6",
+							"lg:py-10 lg:px-10 lg:mr-10",
+							"xl:py-12 xl:px-12 xl:mr-12",
+							"2xl:py-12 2xl:px-12 2xl:mr-12"
+						)}
+					>
+						<div className="flex items-center justify-center mb-10">
+							<img
+								className={clsx(
+									"w-auto h-10 object-contain",
+									"md:h-12",
+									"lg:h-14",
+									"xl:h-16",
+									"2xl:h-16"
+								)}
+								src={logo}
+								alt="logo"
+							/>
+							<span
+								className={clsx(
+									"font-bold whitespace-nowrap pl-6 text-2xl",
+									"md:text-3xl",
+									"lg:text-4xl",
+									"xl:text-5xl",
+									"2xl:text-5xl"
+								)}
+							>
+								病害智能诊断系统
+							</span>
 						</div>
 						<Form
 							form={form}
@@ -117,13 +150,14 @@ const Login: React.FC = () => {
 								/>
 							</Form.Item>
 
-							<Form.Item className="login-btn">
+							<Form.Item className="w-full mt-2.5 whitespace-nowrap">
 								<Flex justify={"space-between"} align={"center"}>
 									<Button
 										onClick={() => {
 											form.resetFields();
 										}}
 										icon={<CloseCircleOutlined />}
+										className="text-sm w-[120px] md:w-[140px] lg:w-[180px]"
 									>
 										重置
 									</Button>
@@ -132,6 +166,7 @@ const Login: React.FC = () => {
 										htmlType="submit"
 										loading={loading}
 										icon={<UserOutlined />}
+										className="text-sm w-[120px] md:w-[140px] lg:w-[180px]"
 									>
 										登录
 									</Button>
