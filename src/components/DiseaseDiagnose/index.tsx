@@ -178,6 +178,7 @@ const DiseaseDiagnose: React.FC<DiseaseDiagnoseProps> = ({ onPredict }) => {
 			<Space direction="vertical" className="w-full" size="large">
 				<Cascader
 					options={cascaderOptions}
+					allowClear={false}
 					onChange={handleCascaderChange}
 					placeholder="请选择诊断服务和配置"
 					className="w-full"
@@ -191,6 +192,32 @@ const DiseaseDiagnose: React.FC<DiseaseDiagnoseProps> = ({ onPredict }) => {
 									(option.label as string).toLowerCase().indexOf(inputValue.toLowerCase()) > -1
 							)
 					}}
+					displayRender={labels => (
+						<div className="flex items-center gap-1">
+							{labels.map((label, index) => (
+								<React.Fragment key={index}>
+									<Text
+										ellipsis={{ tooltip: label }}
+										className={index === 0 ? "text-blue-500" : "text-gray-600"}
+										style={{ maxWidth: 150 }}
+									>
+										{label}
+									</Text>
+									{index < labels.length - 1 && <span className="mx-1">/</span>}
+								</React.Fragment>
+							))}
+						</div>
+					)}
+					dropdownRender={menu => <div className="max-h-[300px] overflow-y-auto">{menu}</div>}
+					popupClassName={clsx(
+						"[&_.ant-cascader-menu]:min-w-[120px]",
+						"[&_.ant-cascader-menu]:max-w-[200px]",
+						"[&_.ant-cascader-menu-item]:px-2",
+						"[&_.ant-cascader-menu-item]:py-1",
+						"[&_.ant-typography]:block",
+						"[&_.ant-typography]:max-w-full",
+						"[&_.ant-cascader-picker-label]:max-w-full"
+					)}
 				/>
 				{/* 图片选择与预览 */}
 				<Card size="small" className="bg-gray-50">
