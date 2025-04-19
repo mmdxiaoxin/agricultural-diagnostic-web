@@ -15,7 +15,7 @@ const ImageDiagnosis = () => {
 	return (
 		<div
 			className={clsx(
-				"h-full w-full",
+				"md:h-full w-full",
 				"md:p-6",
 				"rounded-2xl",
 				"flex flex-col",
