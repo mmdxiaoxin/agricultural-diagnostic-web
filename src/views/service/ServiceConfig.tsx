@@ -1,33 +1,40 @@
 import { RemoteService } from "@/api/interface";
+import { getRemote } from "@/api/modules/service";
 import ServiceListDrawer, { ServiceListDrawerRef } from "@/components/Drawer/ServiceListDrawer";
 import ServiceList from "@/components/List/ServiceList";
 import PageHeader from "@/components/PageHeader";
 import ServiceDetail from "@/components/ServiceDetail";
 import { MenuOutlined } from "@ant-design/icons";
-import { Button, Empty, Splitter } from "antd";
+import { Button, Empty, Splitter, message } from "antd";
 import clsx from "clsx";
 import React, { useEffect, useRef, useState } from "react";
+import { useNavigate, useSearchParams } from "react-router";
 
 const ServiceConfig: React.FC = () => {
 	const [service, setService] = useState<RemoteService>();
 	const [isMobile, setIsMobile] = useState(false);
 	const serviceListDrawerRef = useRef<ServiceListDrawerRef>(null);
 	const containerRef = useRef<HTMLDivElement>(null);
+	const [searchParams] = useSearchParams();
+	const navigate = useNavigate();
 
 	useEffect(() => {
-		// 从 sessionStorage 读取选中的服务
-		const selectedServiceStr = sessionStorage.getItem("selectedService");
-		if (selectedServiceStr) {
-			try {
-				const selectedService = JSON.parse(selectedServiceStr);
-				setService(selectedService);
-				// 读取后清除 sessionStorage
-				sessionStorage.removeItem("selectedService");
-			} catch (error) {
-				console.error("解析选中的服务信息失败:", error);
-			}
+		const serviceId = searchParams.get("id");
+		if (serviceId) {
+			fetchServiceDetail(parseInt(serviceId));
 		}
-	}, []);
+	}, [searchParams]);
+
+	const fetchServiceDetail = async (id: number) => {
+		try {
+			const response = await getRemote(id);
+			if (response.code === 200 && response.data) {
+				setService(response.data);
+			}
+		} catch (error) {
+			message.error("获取服务详情失败");
+		}
+	};
 
 	useEffect(() => {
 		if (!containerRef.current) return;
@@ -49,6 +56,7 @@ const ServiceConfig: React.FC = () => {
 	const handleServiceSelect = (selectedService: RemoteService) => {
 		setService(selectedService);
 		serviceListDrawerRef.current?.close();
+		navigate(`/service/config?id=${selectedService.id}`);
 	};
 
 	return (
@@ -92,7 +100,7 @@ const ServiceConfig: React.FC = () => {
 							selected={service}
 							onSelect={handleServiceSelect}
 						/>
-						<div className="h-full w-full">
+						<div className="h-full w-full overflow-y-auto">
 							{service ? (
 								<ServiceDetail service={service} />
 							) : (

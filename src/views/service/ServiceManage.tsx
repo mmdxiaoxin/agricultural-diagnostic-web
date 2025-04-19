@@ -82,10 +82,8 @@ const ServiceManage: React.FC = () => {
 	};
 
 	const handleQuickConfig = (service: RemoteService) => {
-		// 将服务信息存储到 sessionStorage
-		sessionStorage.setItem("selectedService", JSON.stringify(service));
-		// 导航到配置页面
-		navigate("/service/config");
+		// 使用 URL 参数导航到配置页面
+		navigate(`/service/config?id=${service.id}`);
 	};
 
 	const handleShowInterfaces = (service: RemoteService) => {

@@ -1,18 +1,18 @@
 import { RemoteInterface } from "@/api/interface";
+import { createRemoteInterface, updateRemoteInterface } from "@/api/modules/service";
 import {
 	Button,
+	Divider,
 	Form,
 	Input,
+	message,
 	Modal,
-	Table,
-	Space,
 	Popconfirm,
-	TableProps,
-	Divider,
-	message
+	Space,
+	Table,
+	TableProps
 } from "antd";
 import { forwardRef, useImperativeHandle, useState } from "react";
-import { createRemoteInterface, updateRemoteInterface } from "@/api/modules/service";
 
 export type InterfaceModalProps = {
 	onSave?: (values: any) => void;
@@ -267,11 +267,18 @@ const InterfaceModal = forwardRef<InterfaceModalRef, InterfaceModalProps>(
 				open={isModalVisible}
 				onCancel={handleClose}
 				footer={null}
-				width={1000}
+				width={{
+					xs: "95%",
+					sm: "90%",
+					md: "85%",
+					lg: "80%",
+					xl: "75%",
+					xxl: "70%"
+				}}
 				className="interface-modal"
 			>
 				<Form form={form} onFinish={handleSave} layout="vertical">
-					<div className="flex gap-6">
+					<div className="flex flex-col lg:flex-row gap-6">
 						{/* 左侧基本信息 */}
 						<div className="flex-1">
 							<div className="mb-6">
@@ -298,7 +305,7 @@ const InterfaceModal = forwardRef<InterfaceModalRef, InterfaceModalProps>(
 								</Form.Item>
 							</div>
 
-							<Divider />
+							<Divider className="lg:hidden" />
 
 							<div className="flex justify-end">
 								<Button type="primary" htmlType="submit">
@@ -308,7 +315,7 @@ const InterfaceModal = forwardRef<InterfaceModalRef, InterfaceModalProps>(
 						</div>
 
 						{/* 右侧配置表格 */}
-						<div className="flex-1 border-l border-gray-100 pl-6">
+						<div className="flex-1 lg:border-l lg:border-gray-100 lg:pl-6">
 							<div className="flex items-center justify-between mb-4">
 								<h3 className="text-lg font-medium text-gray-800">接口配置</h3>
 								<Button
@@ -320,17 +327,20 @@ const InterfaceModal = forwardRef<InterfaceModalRef, InterfaceModalProps>(
 									添加配置项
 								</Button>
 							</div>
-							<Table
-								components={{
-									body: { cell: EditableCell }
-								}}
-								bordered
-								dataSource={configs}
-								columns={mergedColumns}
-								rowClassName="editable-row"
-								pagination={false}
-								className="rounded-lg"
-							/>
+							<div className="overflow-x-auto">
+								<Table
+									components={{
+										body: { cell: EditableCell }
+									}}
+									bordered
+									dataSource={configs}
+									columns={mergedColumns}
+									rowClassName="editable-row"
+									pagination={false}
+									className="rounded-lg"
+									scroll={{ x: "max-content" }}
+								/>
+							</div>
 						</div>
 					</div>
 				</Form>
