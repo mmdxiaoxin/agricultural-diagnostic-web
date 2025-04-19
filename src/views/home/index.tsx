@@ -37,7 +37,7 @@ const HomeIndex: React.FC = () => {
 			icon: <AppstoreOutlined className="text-2xl" />,
 			description: "高效管理您的农业数据，支持数据分类、标签和搜索",
 			path: "/capture/manage",
-			roles: ["user", "expert", "admin"]
+			roles: ["expert", "admin"]
 		},
 		{
 			title: "病害诊断",
