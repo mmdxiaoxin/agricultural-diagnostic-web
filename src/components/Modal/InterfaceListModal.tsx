@@ -57,13 +57,23 @@ const InterfaceListModal = forwardRef<InterfaceListModalRef, InterfaceListModalP
 			<Draggable handle=".drag-handle" bounds="body">
 				<div
 					className="fixed z-50 bg-white rounded-lg shadow-lg border border-gray-200"
-					style={{ width: "600px", top: "100px", left: "50%" }}
+					style={{ width: "600px", top: "100px", left: "50%", touchAction: "none" }}
 				>
-					<div className="drag-handle flex items-center justify-between p-4 border-b border-gray-200 cursor-move">
-						<h3 className="text-lg font-medium text-gray-800">接口列表</h3>
+					<div className="drag-handle flex items-center justify-between p-4 border-b border-gray-200">
+						<h3 className="text-lg font-medium text-gray-800 cursor-move select-none">接口列表</h3>
 						<button
-							onClick={() => setVisible(false)}
-							className="text-gray-400 hover:text-gray-600 transition-colors"
+							onClick={e => {
+								e.preventDefault();
+								e.stopPropagation();
+								setVisible(false);
+							}}
+							onTouchStart={e => {
+								e.preventDefault();
+								e.stopPropagation();
+								setVisible(false);
+							}}
+							className="text-gray-400 hover:text-gray-600 transition-colors touch-manipulation"
+							style={{ touchAction: "manipulation" }}
 						>
 							<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 								<path
