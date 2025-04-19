@@ -71,7 +71,7 @@ const Login: React.FC = () => {
 			)}
 		>
 			<Row className="flex flex-1 rounded-lg items-center justify-center">
-				{/* 左侧图片部分 */}
+				{/* 左侧图片部分 - 只在非移动端显示 */}
 				<Col xs={0} sm={0} md={12} lg={12} xl={14} className="flex-1">
 					<img src={loginLeft} alt="login" className="object-cover object-center w-full h-full" />
 				</Col>
@@ -80,6 +80,7 @@ const Login: React.FC = () => {
 				<Col xs={24} sm={24} md={12} lg={12} xl={10}>
 					<div
 						className={clsx(
+							"flex flex-col items-center",
 							"p-6 mx-6 rounded-lg bg-white shadow-lg",
 							"md:py-10 md:px-10 md:mr-6",
 							"lg:py-10 lg:px-10 lg:mr-10",
@@ -87,22 +88,22 @@ const Login: React.FC = () => {
 							"2xl:py-12 2xl:px-12 2xl:mr-12"
 						)}
 					>
-						<div className="flex items-center justify-center mb-10">
+						{/* 移动端logo - 只在移动端显示 */}
+						<div className="flex flex-col items-center mb-6 md:hidden">
+							<img className="w-auto h-12 object-contain" src={logo} alt="logo" />
+							<span className="font-bold text-2xl mt-2">病害智能诊断系统</span>
+						</div>
+
+						{/* 非移动端logo */}
+						<div className="hidden md:flex items-center justify-center mb-10">
 							<img
-								className={clsx(
-									"w-auto h-10 object-contain",
-									"md:h-12",
-									"lg:h-14",
-									"xl:h-16",
-									"2xl:h-16"
-								)}
+								className={clsx("w-auto h-12 object-contain", "lg:h-14", "xl:h-16", "2xl:h-16")}
 								src={logo}
 								alt="logo"
 							/>
 							<span
 								className={clsx(
-									"font-bold whitespace-nowrap pl-6 text-2xl",
-									"md:text-3xl",
+									"font-bold whitespace-nowrap pl-6 text-3xl",
 									"lg:text-4xl",
 									"xl:text-5xl",
 									"2xl:text-5xl"
@@ -111,6 +112,7 @@ const Login: React.FC = () => {
 								病害智能诊断系统
 							</span>
 						</div>
+
 						<Form
 							form={form}
 							name="basic"
@@ -119,6 +121,7 @@ const Login: React.FC = () => {
 							onFinish={onFinish}
 							size="large"
 							autoComplete="off"
+							className="w-full"
 						>
 							<Form.Item
 								name="login"
