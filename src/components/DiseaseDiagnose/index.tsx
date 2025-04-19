@@ -182,6 +182,15 @@ const DiseaseDiagnose: React.FC<DiseaseDiagnoseProps> = ({ onPredict }) => {
 					placeholder="请选择诊断服务和配置"
 					className="w-full"
 					value={serviceId && configId ? [serviceId, configId] : undefined}
+					maxTagCount={1}
+					maxTagPlaceholder={omittedValues => `+ ${omittedValues.length} 项`}
+					showSearch={{
+						filter: (inputValue, path) =>
+							path.some(
+								option =>
+									(option.label as string).toLowerCase().indexOf(inputValue.toLowerCase()) > -1
+							)
+					}}
 				/>
 				{/* 图片选择与预览 */}
 				<Card size="small" className="bg-gray-50">
