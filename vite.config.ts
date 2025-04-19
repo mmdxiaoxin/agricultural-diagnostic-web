@@ -49,7 +49,7 @@ export default defineConfig((mode: ConfigEnv): UserConfig => {
 							},
 							description: "农业诊断系统",
 							keywords: "农业,诊断,系统",
-							author: "Your Name",
+							author: "mmdxiaoxin",
 							"apple-mobile-web-app-capable": "yes",
 							"apple-mobile-web-app-status-bar-style": "black",
 							"format-detection": "telephone=no",
