@@ -39,9 +39,29 @@ export default defineConfig((mode: ConfigEnv): UserConfig => {
 			createHtmlPlugin({
 				inject: {
 					data: {
-						title: viteEnv.VITE_GLOB_APP_TITLE
+						title: viteEnv.VITE_GLOB_APP_TITLE,
+						meta: {
+							viewport:
+								"width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no",
+							"http-equiv": {
+								"http-equiv": "X-UA-Compatible",
+								content: "IE=edge"
+							},
+							description: "农业诊断系统",
+							keywords: "农业,诊断,系统",
+							author: "Your Name",
+							"apple-mobile-web-app-capable": "yes",
+							"apple-mobile-web-app-status-bar-style": "black",
+							"format-detection": "telephone=no",
+							"Content-Language": "zh-CN",
+							"Content-Type": {
+								"http-equiv": "Content-Type",
+								content: "text/html; charset=utf-8"
+							}
+						}
 					}
-				}
+				},
+				minify: true
 			}),
 			viteCompression({
 				verbose: true,
