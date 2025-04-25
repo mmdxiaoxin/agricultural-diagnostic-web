@@ -5,9 +5,11 @@ import {
 	BugOutlined,
 	ExclamationCircleOutlined,
 	InfoCircleOutlined,
-	WarningOutlined
+	WarningOutlined,
+	CheckCircleOutlined,
+	PlayCircleOutlined
 } from "@ant-design/icons";
-import { Button, List, Skeleton, Spin, Tag, Typography } from "antd";
+import { Button, List, Skeleton, Spin, Tag, Typography, Divider } from "antd";
 import dayjs from "dayjs";
 import React, { useEffect, useState } from "react";
 
@@ -26,6 +28,25 @@ const LOG_LEVEL_ICON = {
 	[LogLevel.WARN]: <WarningOutlined />,
 	[LogLevel.ERROR]: <ExclamationCircleOutlined />
 };
+
+// 特殊日志配置
+const SPECIAL_LOGS = [
+	{
+		message: "诊断任务完成",
+		icon: <CheckCircleOutlined style={{ color: "#52c41a" }} />,
+		className: "bg-green-50 border-l-4 border-green-500"
+	},
+	{
+		message: "开始诊断任务",
+		icon: <PlayCircleOutlined style={{ color: "#1890ff" }} />,
+		className: "bg-blue-50 border-l-4 border-blue-500"
+	},
+	{
+		message: "开始诊断失败",
+		icon: <ExclamationCircleOutlined style={{ color: "#ff4d4f" }} />,
+		className: "bg-red-50 border-l-4 border-red-500"
+	}
+];
 
 export type DiagnosisLogsListProps = {
 	diagnosisId: number;
@@ -89,32 +110,57 @@ const DiagnosisLogsList: React.FC<DiagnosisLogsListProps> = ({ diagnosisId }) =>
 			</Button>
 		) : null;
 
+	const isSpecialLog = (message: string) => {
+		return SPECIAL_LOGS.some(log => log.message === message);
+	};
+
+	const getSpecialLogConfig = (message: string) => {
+		return SPECIAL_LOGS.find(log => log.message === message);
+	};
+
 	return (
 		<List
 			className="diagnosis-logs-list"
 			bordered
 			dataSource={logs}
-			renderItem={log => (
-				<List.Item className="!px-4 !py-3">
-					<Skeleton loading={log.loading} active>
-						<List.Item.Meta
-							avatar={
-								<Tag
-									color={LOG_LEVEL_COLOR[log.level]}
-									icon={LOG_LEVEL_ICON[log.level]}
-									className="!m-0 w-20"
-								>
-									{log.level.toUpperCase()}
-								</Tag>
-							}
-							title={<Text className="text-sm">{log.message}</Text>}
-							description={
-								<Text type="secondary">{dayjs(log.createdAt).format("YYYY-MM-DD HH:mm:ss")}</Text>
-							}
-						/>
-					</Skeleton>
-				</List.Item>
-			)}
+			renderItem={log => {
+				const specialConfig = isSpecialLog(log.message) ? getSpecialLogConfig(log.message) : null;
+
+				return (
+					<>
+						<List.Item className={`!px-4 !py-3 ${specialConfig?.className || ""}`}>
+							<Skeleton loading={log.loading} active>
+								<List.Item.Meta
+									avatar={
+										specialConfig ? (
+											<div className="text-xl">{specialConfig.icon}</div>
+										) : (
+											<Tag
+												color={LOG_LEVEL_COLOR[log.level]}
+												icon={LOG_LEVEL_ICON[log.level]}
+												className="!m-0 w-20"
+											>
+												{log.level.toUpperCase()}
+											</Tag>
+										)
+									}
+									title={
+										<Text className={`text-sm ${specialConfig ? "font-semibold" : ""}`}>
+											{log.message}
+										</Text>
+									}
+									description={
+										<Text type="secondary">
+											{dayjs(log.createdAt).format("YYYY-MM-DD HH:mm:ss")}
+										</Text>
+									}
+								/>
+							</Skeleton>
+						</List.Item>
+						{specialConfig && <Divider className="!my-2" />}
+					</>
+				);
+			}}
 			loadMore={loadMore}
 		/>
 	);
