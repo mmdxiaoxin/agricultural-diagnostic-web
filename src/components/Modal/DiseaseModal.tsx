@@ -294,11 +294,43 @@ const DiseaseModal = forwardRef<DiseaseModalRef, DiseaseModalProps>(({ onFinish 
 							<div className="space-y-4">
 								<Form.Item
 									{...restField}
-									name={[name, "schema"]}
-									label="规则内容"
-									rules={[{ required: true, message: "请输入规则内容" }]}
+									name={[name, "config", "type"]}
+									label="规则类型"
+									rules={[{ required: true, message: "请选择规则类型" }]}
 								>
-									<TextArea rows={4} placeholder="请输入诊断规则内容" />
+									<Select placeholder="请选择规则类型">
+										<Option value="exact">精确匹配</Option>
+										<Option value="fuzzy">模糊匹配</Option>
+										<Option value="regex">正则表达式</Option>
+										<Option value="contains">包含匹配</Option>
+									</Select>
+								</Form.Item>
+
+								<Form.Item
+									{...restField}
+									name={[name, "config", "field"]}
+									label="匹配字段"
+									rules={[{ required: true, message: "请输入匹配字段" }]}
+								>
+									<Input placeholder="请输入匹配字段，如 class_name" />
+								</Form.Item>
+
+								<Form.Item
+									{...restField}
+									name={[name, "config", "value"]}
+									label="匹配值"
+									rules={[{ required: true, message: "请输入匹配值" }]}
+								>
+									<Input placeholder="请输入匹配值" />
+								</Form.Item>
+
+								<Form.Item
+									{...restField}
+									name={[name, "config", "weight"]}
+									label="权重"
+									initialValue={1}
+								>
+									<Input type="number" min={0} max={10} placeholder="请输入权重（0-10）" />
 								</Form.Item>
 							</div>
 						</Card>
