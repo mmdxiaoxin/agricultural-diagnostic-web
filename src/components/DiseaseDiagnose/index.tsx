@@ -1,7 +1,6 @@
 import { RemoteService } from "@/api/interface";
-import type { DiagnoseResult, Prediction } from "@/api/interface/diagnosis";
+import type { DiagnoseResult } from "@/api/interface/diagnosis";
 import { getDiagnosisSupport, startDiagnosis, uploadDiagnosisImage } from "@/api/modules";
-import { DIAGNOSIS_CLASS_NAME_ZH_CN } from "@/constants/diagnosis";
 import { LoadingOutlined, UploadOutlined } from "@ant-design/icons";
 import {
 	Alert,
@@ -11,7 +10,6 @@ import {
 	Image,
 	message,
 	Space,
-	Tag,
 	Typography,
 	Upload,
 	UploadFile,
@@ -19,9 +17,9 @@ import {
 } from "antd";
 import clsx from "clsx";
 import React, { useEffect, useState } from "react";
-import DetectImage from "../DetectImage";
-import DiagnosisResultCard from "../Card/DiagnosisResultCard";
 import DiagnosisMatchResultCard from "../Card/DiagnosisMatchResultCard";
+import DiagnosisResultCard from "../Card/DiagnosisResultCard";
+import DetectImage from "../DetectImage";
 
 const { Text } = Typography;
 
@@ -117,62 +115,6 @@ const DiseaseDiagnose: React.FC<DiseaseDiagnoseProps> = ({ onPredict }) => {
 		if (info.file.status === "done" || info.file.status === "error") {
 			setFileList([]);
 		}
-	};
-
-	// 渲染分类结果
-	const renderClassifyResult = (prediction: Prediction) => {
-		if (prediction.type !== "classify") return null;
-		return (
-			<Card key={prediction.class_name} className="mb-4">
-				<Space direction="vertical" className="w-full">
-					<Space>
-						<Tag color="blue">分类结果</Tag>
-						<Text strong>
-							{DIAGNOSIS_CLASS_NAME_ZH_CN[
-								prediction.class_name as keyof typeof DIAGNOSIS_CLASS_NAME_ZH_CN
-							] || prediction.class_name}
-						</Text>
-					</Space>
-					<Space>
-						<Text type="secondary">置信度：</Text>
-						<Text strong className="text-blue-500">
-							{(prediction.confidence * 100).toFixed(2)}%
-						</Text>
-					</Space>
-				</Space>
-			</Card>
-		);
-	};
-
-	// 渲染检测结果
-	const renderDetectResult = (prediction: Prediction) => {
-		if (prediction.type !== "detect") return null;
-		return (
-			<Card key={prediction.class_id} className="mb-4">
-				<Space direction="vertical" className="w-full">
-					<Space>
-						<Tag color="green">检测结果</Tag>
-						<Text strong>
-							{DIAGNOSIS_CLASS_NAME_ZH_CN[
-								prediction.class_name as keyof typeof DIAGNOSIS_CLASS_NAME_ZH_CN
-							] || prediction.class_name}
-						</Text>
-					</Space>
-					<Space>
-						<Text type="secondary">置信度：</Text>
-						<Text strong className="text-blue-500">
-							{(prediction.confidence * 100).toFixed(2)}%
-						</Text>
-					</Space>
-					<Space>
-						<Text type="secondary">位置：</Text>
-						<Text>
-							X: {prediction.bbox.x.toFixed(2)}, Y: {prediction.bbox.y.toFixed(2)}
-						</Text>
-					</Space>
-				</Space>
-			</Card>
-		);
 	};
 
 	return (
