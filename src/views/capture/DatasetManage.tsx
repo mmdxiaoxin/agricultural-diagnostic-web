@@ -117,7 +117,7 @@ const DatasetManage: React.FC<DatasetManageProps> = () => {
 			}
 
 			const response = await downloadDataset(datasetId);
-			const blob = new Blob([response], { type: "application/zip" });
+			const blob = new Blob([response]);
 			const url = window.URL.createObjectURL(blob);
 
 			const a = document.createElement("a");

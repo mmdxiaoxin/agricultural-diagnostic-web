@@ -73,7 +73,7 @@ export const downloadMultipleFiles = async (
 	options: DownloadOptions = {}
 ) => {
 	if (options.compressMode) {
-		const response = await http.download(
+		const response = await http.post_blob(
 			"/file/download",
 			{ fileIds },
 			{
@@ -91,10 +91,15 @@ export const downloadMultipleFiles = async (
 		const fileBlob = new Blob([response]);
 		// 创建下载链接
 		if (options.createLink) {
+			const url = URL.createObjectURL(fileBlob);
 			const downloadLink = document.createElement("a");
-			downloadLink.href = URL.createObjectURL(fileBlob);
+			downloadLink.href = url;
 			downloadLink.download = `download-${Date.now()}.zip`;
 			downloadLink.click();
+
+			// 清理资源
+			window.URL.revokeObjectURL(url);
+			document.body.removeChild(downloadLink);
 		}
 	} else {
 		// 通过并发队列来控制文件下载的并发数

@@ -40,13 +40,4 @@ export const deleteDataset = (datasetId: number) => http.delete(`/dataset/${data
 
 // *下载数据集
 export const downloadDataset = (datasetId: number) =>
-	http.get(
-		`/dataset/${datasetId}/download`,
-		{
-			responseType: "blob",
-			headers: {
-				"Content-Type": "application/zip"
-			}
-		},
-		{ loading: false }
-	) as unknown as Promise<Blob>;
+	http.get_blob(`/dataset/${datasetId}/download`, {}, { loading: false });

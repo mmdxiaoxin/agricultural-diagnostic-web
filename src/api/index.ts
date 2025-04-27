@@ -141,7 +141,10 @@ class RequestHttp {
 	delete<T>(url: string, params?: any, _object: DeleteConfig = {}): Promise<ApiResponse<T>> {
 		return this.service.delete(url, { params, ..._object });
 	}
-	download(url: string, params?: object, _object: DownloadConfig = {}): Promise<BlobPart> {
+	get_blob(url: string, params?: object, _object: DownloadConfig = {}): Promise<BlobPart> {
+		return this.service.get(url, { params, ..._object, responseType: "blob" });
+	}
+	post_blob(url: string, params?: object, _object: DownloadConfig = {}): Promise<BlobPart> {
 		return this.service.post(url, params, { ..._object, responseType: "blob" });
 	}
 }
