@@ -5,7 +5,7 @@ import {
 	ReqStartDiagnoseDisease,
 	ResDiagnosisHistoryList,
 	ResDiagnosisSupport,
-	ResStartDiagnoseDisease,
+	DiagnoseResult,
 	ResUploadDiagnosisImage
 } from "../interface/diagnosis";
 import { PageData, ReqPage } from "../interface";
@@ -24,7 +24,7 @@ export const uploadDiagnosisImage = async (file: File) => {
 // * 开始诊断
 export const startDiagnosis = async (params: ReqStartDiagnoseDisease) => {
 	const { diagnosisId, ...data } = params;
-	return http.post<ResStartDiagnoseDisease>(`/diagnosis/${diagnosisId}/start`, data, {
+	return http.post<DiagnoseResult>(`/diagnosis/${diagnosisId}/start`, data, {
 		loading: false,
 		timeout: 100000
 	});
@@ -33,7 +33,7 @@ export const startDiagnosis = async (params: ReqStartDiagnoseDisease) => {
 // * 开始诊断（异步）
 export const startDiagnosisAsync = async (params: ReqStartDiagnoseDisease) => {
 	const { diagnosisId, ...data } = params;
-	return http.post<ResStartDiagnoseDisease>(`/diagnosis/${diagnosisId}/start/async`, data, {
+	return http.post<DiagnoseResult>(`/diagnosis/${diagnosisId}/start/async`, data, {
 		loading: false
 	});
 };

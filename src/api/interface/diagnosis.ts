@@ -1,5 +1,6 @@
 import { LogLevel } from "@/enums";
 import { PageData, RemoteService, ReqPage } from ".";
+import { MatchResult } from "./knowledge";
 
 // 基础预测类型
 export type BasePrediction = {
@@ -38,7 +39,7 @@ export type DiagnosisHistory = {
 	fileId: number;
 	createdAt: string;
 	updatedAt: string;
-	diagnosisResult: ResStartDiagnoseDisease;
+	diagnosisResult: DiagnoseResult;
 	status: "pending" | "success" | "failed" | "processing";
 	createdBy: number;
 	updatedBy: number;
@@ -64,7 +65,8 @@ export type ReqStartDiagnoseDisease = {
 };
 
 // 响应类型
-export type ResStartDiagnoseDisease = {
+export type DiagnoseResult = {
+	matchResult: MatchResult[];
 	predictions?: Prediction[];
 	status: "success" | "failed";
 	task_id: string;
