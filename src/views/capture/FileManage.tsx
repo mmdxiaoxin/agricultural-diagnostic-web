@@ -223,6 +223,13 @@ const FileManage: React.FC<FileManageProps> = () => {
 							[fileId]: progressValue
 						}));
 					},
+					fileNameMapping: newFiles.reduce(
+						(acc, file) => {
+							acc[file.id] = file.originalFileName;
+							return acc;
+						},
+						{} as Record<number, string>
+					),
 					createLink: true,
 					concurrency: 3
 				});
@@ -267,6 +274,9 @@ const FileManage: React.FC<FileManageProps> = () => {
 						...prevProgress,
 						[fileId]: progressValue
 					}));
+				},
+				fileNameMapping: {
+					[file.id]: file.originalFileName
 				},
 				createLink: true
 			});
