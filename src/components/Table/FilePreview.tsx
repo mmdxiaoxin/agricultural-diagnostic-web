@@ -22,35 +22,37 @@ const FilePreview: React.FC<FilePreviewProps> = ({ meta, text, children }) => {
 		}
 	};
 
-	// 获取文件预览，当前支持图片类型
+	// 判断是否为可预览的图片类型
+	const isPreviewableImage = (fileType: string) => {
+		return ["image/png", "image/jpeg", "image/gif"].includes(fileType);
+	};
+
+	// 获取文件预览
 	const PreviewImage: React.FC<FileMeta> = meta => {
-		switch (meta.fileType) {
-			case "image/png":
-			case "image/jpeg":
-			case "image/gif":
-				return (
-					<>
-						{fileUrl ? (
-							<Image
-								src={fileUrl}
-								alt="file preview"
-								style={{ maxWidth: "100%", borderRadius: "8px" }}
-							/>
-						) : (
-							<Spin />
-						)}
-					</>
-				);
-			default:
-				return <p>无法预览该文件类型</p>;
+		if (!isPreviewableImage(meta.fileType)) {
+			return <p>无法预览该文件类型</p>;
 		}
+
+		return (
+			<>
+				{fileUrl ? (
+					<Image
+						src={fileUrl}
+						alt="file preview"
+						style={{ maxWidth: "100%", borderRadius: "8px" }}
+					/>
+				) : (
+					<Spin />
+				)}
+			</>
+		);
 	};
 
 	return (
 		<>
 			<Tooltip
 				onOpenChange={async visible => {
-					if (visible && !fileUrl) {
+					if (visible && !fileUrl && isPreviewableImage(meta.fileType)) {
 						await fetchData();
 					}
 				}}
