@@ -1,5 +1,6 @@
 import { Crop, Disease } from "@/api/interface/knowledge";
 import { createKnowledge, updateKnowledge } from "@/api/modules/Knowledge/knowledge";
+import { MATCH_RULE_TYPE } from "@/constants/knowledge";
 import { MinusCircleOutlined, PlusOutlined } from "@ant-design/icons";
 import { Button, Card, Form, Input, Modal, Select, Space, Steps, message } from "antd";
 import { forwardRef, useImperativeHandle, useState } from "react";
@@ -299,10 +300,11 @@ const DiseaseModal = forwardRef<DiseaseModalRef, DiseaseModalProps>(({ onFinish 
 									rules={[{ required: true, message: "请选择规则类型" }]}
 								>
 									<Select placeholder="请选择规则类型">
-										<Option value="exact">精确匹配</Option>
-										<Option value="fuzzy">模糊匹配</Option>
-										<Option value="regex">正则表达式</Option>
-										<Option value="contains">包含匹配</Option>
+										{Object.entries(MATCH_RULE_TYPE).map(([value, label]) => (
+											<Option key={value} value={value}>
+												{label}
+											</Option>
+										))}
 									</Select>
 								</Form.Item>
 

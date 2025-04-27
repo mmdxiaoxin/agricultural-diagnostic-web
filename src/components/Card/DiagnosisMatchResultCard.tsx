@@ -1,5 +1,6 @@
 import { MatchResult } from "@/api/interface/knowledge";
-import { EnvironmentOutlined, MedicineBoxOutlined, BookOutlined } from "@ant-design/icons";
+import { MATCH_RULE_TYPE } from "@/constants/knowledge";
+import { BookOutlined, EnvironmentOutlined, MedicineBoxOutlined } from "@ant-design/icons";
 import { Button, Card, Space, Tag, Typography } from "antd";
 import clsx from "clsx";
 import { motion } from "framer-motion";
@@ -68,7 +69,7 @@ const DiagnosisMatchResultCard: React.FC<DiagnosisMatchResultCardProps> = ({ mat
 								<div key={index} className="bg-white p-2 rounded-md border border-gray-100">
 									<div className="flex items-center gap-1">
 										<Tag color="purple" className="text-xs">
-											{rule.type}
+											{MATCH_RULE_TYPE[rule.type]}
 										</Tag>
 										<span className="text-xs font-medium">{rule.field}</span>
 									</div>
