@@ -34,6 +34,8 @@ export const DIAGNOSIS_CLASS_NAME_ZH_CN = {
 	"Grape___Esca(Black_Measles)": "葡萄Esca病（黑斑病）",
 	Raspberry___healthy: "健康覆盆子",
 	Tomato___Leaf_Mold: "番茄叶霉病",
+	Soybean___Rust: "大豆锈病",
+	Soybean__Anthracnose: "大豆炭疽病",
 	"Tomato___Spider_mites Two-spotted_spider_mite": "番茄蜘蛛螨（两点蜘蛛螨）",
 	"Pepper,bell___Bacterial_spot": "甜椒细菌性斑点病",
 	"Corn(maize)___healthy": "健康玉米",
