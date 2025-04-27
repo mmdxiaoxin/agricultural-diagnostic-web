@@ -6,6 +6,7 @@ export interface ModelVersion {
 	file_size: number;
 	model_id: number;
 	model_type: "yolo" | "resnet";
+	model_version: string;
 	parameters: {
 		conf?: number;
 		iou?: number;
@@ -34,7 +35,8 @@ export interface ModelResponse {
 export interface ModelConfig {
 	id: string;
 	name: string;
-	type: "yolo" | "resnet";
+	model_type: "yolo" | "resnet";
+	model_version: string;
 	version: string;
 	description: string;
 	weightPath: string;

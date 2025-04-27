@@ -59,7 +59,8 @@ const ModelsManage = () => {
 					modelList.push({
 						id: version.version_id.toString(),
 						name: modelName,
-						type: version.model_type,
+						model_type: version.model_type,
+						model_version: version.model_version,
 						version: version.version,
 						description: version.description,
 						weightPath: version.file_path,
@@ -108,15 +109,15 @@ const ModelsManage = () => {
 			render: (text: string) => <Text className="text-gray-800 font-medium">{text}</Text>
 		},
 		{
-			title: "类型",
-			dataIndex: "type",
-			key: "type",
-			render: (type: string) => (
+			title: "模型类型",
+			dataIndex: "model_type",
+			key: "model_type",
+			render: (type, record) => (
 				<Tag
 					color={type === "yolo" ? "blue" : type === "resnet" ? "green" : "purple"}
 					className="px-3 py-1 rounded-full"
 				>
-					{type.toUpperCase()}
+					{`${type.toUpperCase()}${record.model_version.toUpperCase()}`}
 				</Tag>
 			)
 		},
