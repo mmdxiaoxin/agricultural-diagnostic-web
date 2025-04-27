@@ -120,21 +120,6 @@ export default defineConfig((mode: ConfigEnv): UserConfig => {
 				ext: ".gz"
 			}),
 			viteImagemin({
-				gifsicle: {
-					optimizationLevel: 7,
-					interlaced: false
-				},
-				optipng: {
-					optimizationLevel: 7
-				},
-				mozjpeg: {
-					quality: 75,
-					progressive: true
-				},
-				pngquant: {
-					quality: [0.65, 0.8],
-					speed: 4
-				},
 				svgo: {
 					plugins: [
 						{
@@ -143,6 +128,132 @@ export default defineConfig((mode: ConfigEnv): UserConfig => {
 						{
 							name: "removeEmptyAttrs",
 							active: false
+						},
+						{
+							name: "removeComments"
+						},
+						{
+							name: "removeDesc"
+						},
+						{
+							name: "removeTitle"
+						},
+						{
+							name: "removeDoctype"
+						},
+						{
+							name: "removeXMLProcInst"
+						},
+						{
+							name: "removeMetadata"
+						},
+						{
+							name: "removeEditorsNSData"
+						},
+						{
+							name: "cleanupAttrs"
+						},
+						{
+							name: "mergeStyles"
+						},
+						{
+							name: "inlineStyles"
+						},
+						{
+							name: "minifyStyles"
+						},
+						{
+							name: "cleanupIDs"
+						},
+						{
+							name: "removeUselessDefs"
+						},
+						{
+							name: "cleanupNumericValues"
+						},
+						{
+							name: "convertColors"
+						},
+						{
+							name: "removeUnknownsAndDefaults"
+						},
+						{
+							name: "removeNonInheritableGroupAttrs"
+						},
+						{
+							name: "removeUselessStrokeAndFill"
+						},
+						{
+							name: "removeViewBox"
+						},
+						{
+							name: "cleanupEnableBackground"
+						},
+						{
+							name: "removeHiddenElems"
+						},
+						{
+							name: "removeEmptyText"
+						},
+						{
+							name: "convertShapeToPath"
+						},
+						{
+							name: "convertEllipseToCircle"
+						},
+						{
+							name: "moveElemsAttrsToGroup"
+						},
+						{
+							name: "moveGroupAttrsToElems"
+						},
+						{
+							name: "collapseGroups"
+						},
+						{
+							name: "convertPathData"
+						},
+						{
+							name: "convertTransform"
+						},
+						{
+							name: "removeEmptyAttrs"
+						},
+						{
+							name: "removeEmptyContainers"
+						},
+						{
+							name: "mergePaths"
+						},
+						{
+							name: "removeUnusedNS"
+						},
+						{
+							name: "sortAttrs"
+						},
+						{
+							name: "removeTitle"
+						},
+						{
+							name: "removeDesc"
+						},
+						{
+							name: "removeDimensions"
+						},
+						{
+							name: "removeAttrs"
+						},
+						{
+							name: "removeElementsByAttr"
+						},
+						{
+							name: "addClassesToSVGElement"
+						},
+						{
+							name: "removeStyleElement"
+						},
+						{
+							name: "removeScriptElement"
 						}
 					]
 				}
