@@ -1,12 +1,14 @@
 import DiseaseDiagnose from "@/components/DiseaseDiagnose";
-import DiagnosisList, { DiagnosisListRef } from "@/components/List/DiagnosisList";
+import DiagnosisHistoryList, {
+	DiagnosisHistoryListRef
+} from "@/components/List/DiagnosisHistoryList";
 import PageHeader from "@/components/PageHeader";
 import { Col, Row } from "antd";
 import clsx from "clsx";
 import { useRef } from "react";
 
 const ImageDiagnosis = () => {
-	const diagnosisListRef = useRef<DiagnosisListRef>(null);
+	const diagnosisListRef = useRef<DiagnosisHistoryListRef>(null);
 
 	const handlePredict = (_: File) => {
 		diagnosisListRef.current?.init();
@@ -49,7 +51,7 @@ const ImageDiagnosis = () => {
 							"[scrollbar-width:none]"
 						)}
 					>
-						<DiagnosisList ref={diagnosisListRef} />
+						<DiagnosisHistoryList ref={diagnosisListRef} />
 					</div>
 				</Col>
 			</Row>
