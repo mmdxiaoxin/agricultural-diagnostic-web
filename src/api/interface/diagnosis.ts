@@ -66,7 +66,7 @@ export type ReqStartDiagnoseDisease = {
 
 // 响应类型
 export type DiagnoseResult = {
-	matchResult: MatchResult[];
+	matchResults: MatchResult[];
 	predictions?: Prediction[];
 	status: "success" | "failed";
 	task_id: string;

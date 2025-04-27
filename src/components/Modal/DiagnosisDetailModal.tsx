@@ -1,11 +1,12 @@
 import { DiagnosisHistory } from "@/api/interface/diagnosis";
 import { downloadFile } from "@/api/modules";
 import { DIAGNOSIS_STATUS_COLOR, DIAGNOSIS_STATUS_TEXT } from "@/constants/status";
-import { CheckCircleOutlined, ClockCircleOutlined } from "@ant-design/icons";
+import { BookOutlined, CheckCircleOutlined, ClockCircleOutlined } from "@ant-design/icons";
 import { Button, Card, Drawer, Image, Modal, Space, Tag, Typography } from "antd";
 import clsx from "clsx";
 import dayjs from "dayjs";
 import { forwardRef, useImperativeHandle, useMemo, useState } from "react";
+import DiagnosisMatchResultCard from "../Card/DiagnosisMatchResultCard";
 import DiagnosisResultCard from "../Card/DiagnosisResultCard";
 import DetectImage from "../DetectImage";
 import DiagnosisLogsList from "../List/DiagnosisLogsList";
@@ -22,6 +23,7 @@ const DiagnosisDetailModal = forwardRef<DiagnosisDetailModalRef>((_, ref) => {
 	const [record, setRecord] = useState<DiagnosisHistory | null>(null);
 	const [imageUrl, setImageUrl] = useState<string>("");
 	const [drawerVisible, setDrawerVisible] = useState(false);
+	const [matchResultDrawerVisible, setMatchResultDrawerVisible] = useState(false);
 
 	useImperativeHandle(ref, () => ({
 		open: (record: DiagnosisHistory) => {
@@ -60,6 +62,13 @@ const DiagnosisDetailModal = forwardRef<DiagnosisDetailModalRef>((_, ref) => {
 		if (!predictions.length) return false;
 		return predictions.some(prediction => prediction.type === "detect");
 	}, [predictions]);
+
+	const matchResults = useMemo(() => {
+		if (!record?.diagnosisResult?.matchResults) return [];
+		return record.diagnosisResult.matchResults;
+	}, [record]);
+
+	console.log(matchResults);
 
 	if (!record) return null;
 
@@ -108,9 +117,19 @@ const DiagnosisDetailModal = forwardRef<DiagnosisDetailModalRef>((_, ref) => {
 							</Text>
 						</div>
 						<div className="bg-gray-50 p-4 rounded-lg">
-							<Text type="secondary" className="block mb-2">
-								诊断结果
-							</Text>
+							<div className="flex justify-between items-center mb-2">
+								<Text type="secondary">诊断结果</Text>
+								{matchResults.length > 0 && (
+									<Button
+										type="primary"
+										icon={<BookOutlined />}
+										onClick={() => setMatchResultDrawerVisible(true)}
+										size="small"
+									>
+										查看病害匹配
+									</Button>
+								)}
+							</div>
 							{record.diagnosisResult ? (
 								<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4 max-h-[280px] overflow-y-auto">
 									{predictions.map((prediction, index) => (
@@ -159,6 +178,19 @@ const DiagnosisDetailModal = forwardRef<DiagnosisDetailModalRef>((_, ref) => {
 				width={600}
 			>
 				<DiagnosisLogsList diagnosisId={record.id} />
+			</Drawer>
+			<Drawer
+				title="病害匹配结果"
+				placement="right"
+				onClose={() => setMatchResultDrawerVisible(false)}
+				open={matchResultDrawerVisible}
+				width={800}
+			>
+				<div className="space-y-4">
+					{matchResults.map((matchResult, index) => (
+						<DiagnosisMatchResultCard key={index} matchResult={matchResult} />
+					))}
+				</div>
 			</Drawer>
 		</Modal>
 	);
