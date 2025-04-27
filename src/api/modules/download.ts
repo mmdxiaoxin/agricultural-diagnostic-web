@@ -1,7 +1,6 @@
 import http from "@/api";
-import { store } from "@/store";
 import { concurrencyQueue } from "@/utils";
-import axios, { AxiosProgressEvent } from "axios";
+import { AxiosProgressEvent } from "axios";
 
 export interface DownloadProgress {
 	[fileId: string]: number; // 每个文件的下载进度
@@ -25,39 +24,39 @@ export interface DownloadOptions {
 // * 文件下载接口
 export const downloadFile = async (
 	fileId: string | number,
-	options: DownloadOptions = {},
-	url: string = `/api/file/download/${fileId}`
+	options: DownloadOptions = {}
 ): Promise<Blob> => {
-	const token = localStorage.getItem("token") || store.getState().auth.token;
-
 	try {
-		const response = await axios.get(url, {
-			headers: { Authorization: `Bearer ${token}` },
-			responseType: "blob",
-			onDownloadProgress: (progressEvent: AxiosProgressEvent) => {
-				const progress = progressEvent.total
-					? Math.round((progressEvent.loaded / progressEvent.total) * 100)
-					: 0;
-				if (options.onProgress) {
-					options.onProgress(fileId, progress);
+		const response = await http.get_blob(
+			`/file/download/${fileId}`,
+			{},
+			{
+				loading: false,
+				onDownloadProgress: (progressEvent: AxiosProgressEvent) => {
+					const progress = progressEvent.total
+						? Math.round((progressEvent.loaded / progressEvent.total) * 100)
+						: 0;
+					if (options.onProgress) {
+						options.onProgress(fileId, progress);
+					}
 				}
 			}
-		});
+		);
 
-		const fileBlob = response.data;
-
-		// 获取文件名
-		const contentDisposition = response.headers["content-disposition"];
-		const fileName = contentDisposition
-			? decodeURIComponent(contentDisposition.split("filename=")[1].replace(/"/g, ""))
-			: `file_${fileId}`;
+		// 将 BlobPart 转换为 Blob
+		const fileBlob = new Blob([response]);
 
 		// 创建下载链接
 		if (options.createLink) {
+			const url = URL.createObjectURL(fileBlob);
 			const downloadLink = document.createElement("a");
-			downloadLink.href = URL.createObjectURL(fileBlob);
-			downloadLink.download = options.fileNameMapping?.[fileId] || fileName;
+			downloadLink.href = url;
+			downloadLink.download = options.fileNameMapping?.[fileId] || `file_${fileId}`;
 			downloadLink.click();
+
+			// 清理资源
+			window.URL.revokeObjectURL(url);
+			document.body.removeChild(downloadLink);
 		}
 
 		return fileBlob;
