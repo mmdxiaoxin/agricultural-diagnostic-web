@@ -20,6 +20,8 @@ import {
 import clsx from "clsx";
 import React, { useEffect, useState } from "react";
 import DetectImage from "../DetectImage";
+import DiagnosisResultCard from "../Card/DiagnosisResultCard";
+import DiagnosisMatchResultCard from "../Card/DiagnosisMatchResultCard";
 
 const { Text } = Typography;
 
@@ -307,14 +309,22 @@ const DiseaseDiagnose: React.FC<DiseaseDiagnoseProps> = ({ onPredict }) => {
 				{/* 检测结果 */}
 				{detectionResults && (
 					<Card title="检测结果" size="small" className="bg-gray-50">
-						<Space direction="vertical" className="w-full" size="middle">
+						<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4 max-h-[280px] overflow-y-auto">
 							{detectionResults?.predictions?.map((prediction, index) => (
-								<React.Fragment key={index}>
-									{prediction.type === "classify" && renderClassifyResult(prediction)}
-									{prediction.type === "detect" && renderDetectResult(prediction)}
-								</React.Fragment>
+								<DiagnosisResultCard key={index} prediction={prediction} />
 							))}
-						</Space>
+						</div>
+					</Card>
+				)}
+
+				{/* 匹配结果 */}
+				{detectionResults?.matchResults && detectionResults.matchResults.length > 0 && (
+					<Card title="病害匹配结果" size="small" className="bg-gray-50">
+						<div className="space-y-4">
+							{detectionResults.matchResults.map((matchResult, index) => (
+								<DiagnosisMatchResultCard key={index} matchResult={matchResult} />
+							))}
+						</div>
 					</Card>
 				)}
 			</Space>
