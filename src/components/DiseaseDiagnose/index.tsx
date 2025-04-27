@@ -1,6 +1,7 @@
-import { RemoteService, ResStartDiagnoseDisease } from "@/api/interface";
-import type { Prediction } from "@/api/interface/diagnosis";
+import { RemoteService } from "@/api/interface";
+import type { DiagnoseResult, Prediction } from "@/api/interface/diagnosis";
 import { getDiagnosisSupport, startDiagnosis, uploadDiagnosisImage } from "@/api/modules";
+import { DIAGNOSIS_CLASS_NAME_ZH_CN } from "@/constants/diagnosis";
 import { LoadingOutlined, UploadOutlined } from "@ant-design/icons";
 import {
 	Alert,
@@ -19,7 +20,6 @@ import {
 import clsx from "clsx";
 import React, { useEffect, useState } from "react";
 import DetectImage from "../DetectImage";
-import { DIAGNOSIS_CLASS_NAME_ZH_CN } from "@/constants/diagnosis";
 
 const { Text } = Typography;
 
@@ -30,7 +30,7 @@ export interface DiseaseDiagnoseProps {
 const DiseaseDiagnose: React.FC<DiseaseDiagnoseProps> = ({ onPredict }) => {
 	const [selectedImage, setSelectedImage] = useState<File | null>(null);
 	const [fileList, setFileList] = useState<UploadFile[]>([]);
-	const [detectionResults, setDetectionResults] = useState<ResStartDiagnoseDisease>();
+	const [detectionResults, setDetectionResults] = useState<DiagnoseResult>();
 	const [loading, setLoading] = useState<boolean>(false);
 	const [error, setError] = useState<string | null>(null);
 	const [previewUrl, setPreviewUrl] = useState<string>("");
