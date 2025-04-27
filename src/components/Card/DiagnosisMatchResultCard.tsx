@@ -1,8 +1,9 @@
 import { MatchResult } from "@/api/interface/knowledge";
-import { EnvironmentOutlined, MedicineBoxOutlined } from "@ant-design/icons";
-import { Card, Space, Tag, Typography } from "antd";
+import { EnvironmentOutlined, MedicineBoxOutlined, BookOutlined } from "@ant-design/icons";
+import { Button, Card, Space, Tag, Typography } from "antd";
 import clsx from "clsx";
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router";
 
 const { Title, Paragraph } = Typography;
 
@@ -11,7 +12,12 @@ interface DiagnosisMatchResultCardProps {
 }
 
 const DiagnosisMatchResultCard: React.FC<DiagnosisMatchResultCardProps> = ({ matchResult }) => {
+	const navigate = useNavigate();
 	const { disease } = matchResult;
+
+	const handleNavigate = () => {
+		navigate(`/knowledge/preview?id=${disease.id}`);
+	};
 
 	return (
 		<motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="w-full">
@@ -28,9 +34,20 @@ const DiagnosisMatchResultCard: React.FC<DiagnosisMatchResultCardProps> = ({ mat
 						<Title level={4} className="!mb-0">
 							{disease.name}
 						</Title>
-						<Tag color="blue" className="text-sm">
-							匹配度: {(matchResult.score * 100).toFixed(1)}%
-						</Tag>
+						<Space>
+							<Tag color="blue" className="text-sm">
+								匹配度: {(matchResult.score * 100).toFixed(1)}%
+							</Tag>
+							<Button
+								type="primary"
+								icon={<BookOutlined />}
+								onClick={handleNavigate}
+								size="small"
+								className="!flex items-center gap-1"
+							>
+								查看详情
+							</Button>
+						</Space>
 					</div>
 
 					{/* 别名和作物信息 */}
