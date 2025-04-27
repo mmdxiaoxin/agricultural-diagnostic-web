@@ -1,5 +1,5 @@
 import { FileMeta } from "@/api/interface";
-import { DownloadProgress } from "@/api/modules/file";
+import { DownloadProgress } from "@/api/modules";
 import FileFilter from "@/components/FileFilter";
 import FileUpload from "@/components/FileUpload";
 import DownloadList from "@/components/List/DownloadList";

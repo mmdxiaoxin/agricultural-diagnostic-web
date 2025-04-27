@@ -1,5 +1,5 @@
 import { FileMeta } from "@/api/interface";
-import { DownloadProgress } from "@/api/modules/file";
+import { DownloadProgress } from "@/api/modules";
 import { formatSize } from "@/utils";
 import {
 	AudioOutlined,
