@@ -7,7 +7,7 @@ import {
 	getFileList,
 	updateFile,
 	updateFilesAccess
-} from "@/api/modules/file";
+} from "@/api/modules";
 import FileManagePanel from "@/components/FileManagePanel";
 import RenameFileModal, { RenameFileModalRef } from "@/components/Modal/RenameFileModal";
 import FileAccess from "@/components/Table/FileAccess";

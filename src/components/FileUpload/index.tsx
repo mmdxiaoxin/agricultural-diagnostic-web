@@ -1,4 +1,4 @@
-import { uploadChunksFile, uploadSingleFile } from "@/api/modules/file";
+import { uploadChunksFile, uploadSingleFile } from "@/api/modules";
 import { DeleteFilled, FileOutlined, FolderOutlined, UploadOutlined } from "@ant-design/icons";
 import { Button, Empty, Space, Switch, Upload, message, notification } from "antd";
 import { RcFile, UploadChangeParam, UploadFile } from "antd/lib/upload";

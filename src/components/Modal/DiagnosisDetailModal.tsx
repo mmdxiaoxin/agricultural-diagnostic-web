@@ -1,5 +1,5 @@
 import { DiagnosisHistory } from "@/api/interface/diagnosis";
-import { downloadFile } from "@/api/modules/file";
+import { downloadFile } from "@/api/modules";
 import { DIAGNOSIS_STATUS_COLOR, DIAGNOSIS_STATUS_TEXT } from "@/constants/status";
 import { CheckCircleOutlined, ClockCircleOutlined } from "@ant-design/icons";
 import { Button, Card, Drawer, Image, Modal, Space, Tag, Typography } from "antd";

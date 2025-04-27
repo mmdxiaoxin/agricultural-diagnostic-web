@@ -6,6 +6,8 @@ export * from "./file";
 export * from "./diagnosis";
 export * from "./dataset";
 export * from "./service";
+export * from "./upload";
+export * from "./download";
 
 import http from "@/api";
 
