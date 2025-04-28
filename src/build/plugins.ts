@@ -141,7 +141,10 @@ export function createVitePlugins(viteEnv: ViteEnv, isDev: boolean) {
 					{ name: "removeStyleElement" },
 					{ name: "removeScriptElement" }
 				]
-			}
+			},
+			gifsicle: { interlaced: true },
+			mozjpeg: { quality: 75 },
+			optipng: { optimizationLevel: 7 }
 		}),
 		// 浏览器兼容性支持
 		!isDev &&
