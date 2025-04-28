@@ -9,10 +9,10 @@ import {
 	GlobalOutlined,
 	LockOutlined
 } from "@ant-design/icons";
-import { Button, Popconfirm, Popover, Switch, Tag, Tooltip } from "antd";
+import { Button, message, Popconfirm, Popover, Switch, Tag, Tooltip } from "antd";
+import clsx from "clsx";
 import { motion } from "framer-motion";
 import React, { useState } from "react";
-import clsx from "clsx";
 
 export interface DatasetCardProps {
 	dataset: DatasetMeta;
@@ -47,6 +47,14 @@ const DatasetCard: React.FC<DatasetCardProps> = ({
 		} finally {
 			setAccessLoading(false);
 		}
+	};
+
+	const handleDownload = async () => {
+		if (Number(dataset?.fileCount) === 0) {
+			message.info("数据集为空，无法下载");
+			return;
+		}
+		onDownload?.(dataset.id);
 	};
 
 	return (
@@ -183,7 +191,7 @@ const DatasetCard: React.FC<DatasetCardProps> = ({
 							<Button
 								type="text"
 								icon={<DownloadOutlined />}
-								onClick={() => onDownload?.(dataset.id)}
+								onClick={handleDownload}
 								className="text-green-500 hover:text-green-700"
 							/>
 						</Tooltip>
