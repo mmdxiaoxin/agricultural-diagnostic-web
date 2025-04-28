@@ -1,14 +1,13 @@
 import { RemoteService } from "@/api/interface/service";
 import { callRemoteInterface, getRemotes } from "@/api/modules/service";
-import ModelManageModal, { ModelManageModalRef } from "@/components/Modal/ModelManageModal";
 import PageHeader from "@/components/PageHeader";
 import type { ModelConfig } from "@/typings/model";
-import { DeleteOutlined, DownloadOutlined, EditOutlined, PlusOutlined } from "@ant-design/icons";
-import { Button, message, Modal, Select, Space, Table, Tag, Typography } from "antd";
+import { DownloadOutlined } from "@ant-design/icons";
+import { Button, Form, message, Select, Space, Table, Tag, Typography } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import clsx from "clsx";
 import dayjs from "dayjs";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 
 const { Text } = Typography;
 
@@ -18,12 +17,12 @@ const ModelsManage = () => {
 	const [selectedService, setSelectedService] = useState<number>();
 	const [selectedInterface, setSelectedInterface] = useState<number>();
 	const [loading, setLoading] = useState(false);
+	const [form] = Form.useForm();
 	const [pagination, setPagination] = useState({
 		current: 1,
 		pageSize: 10,
 		total: 0
 	});
-	const modalRef = useRef<ModelManageModalRef>(null);
 
 	// 获取服务列表
 	const fetchServices = async () => {
@@ -106,12 +105,15 @@ const ModelsManage = () => {
 			title: "模型名称",
 			dataIndex: "name",
 			key: "name",
+			width: 150,
+			fixed: "left",
 			render: (text: string) => <Text className="text-gray-800 font-medium">{text}</Text>
 		},
 		{
 			title: "模型类型",
 			dataIndex: "model_type",
 			key: "model_type",
+			width: 120,
 			render: (type, record) => (
 				<Tag
 					color={type === "yolo" ? "blue" : type === "resnet" ? "green" : "purple"}
@@ -125,12 +127,31 @@ const ModelsManage = () => {
 			title: "版本",
 			dataIndex: "version",
 			key: "version",
+			width: 100,
 			render: (text: string) => <Text className="text-gray-600">v{text}</Text>
+		},
+		{
+			title: "描述",
+			dataIndex: "description",
+			key: "description",
+			width: 200,
+			ellipsis: true,
+			render: (text: string) => <Text className="text-gray-600">{text || "-"}</Text>
 		},
 		{
 			title: "创建时间",
 			dataIndex: "createdAt",
 			key: "createdAt",
+			width: 160,
+			render: (text: string) => (
+				<Text className="text-gray-600">{dayjs(text).format("YYYY-MM-DD HH:mm:ss")}</Text>
+			)
+		},
+		{
+			title: "更新时间",
+			dataIndex: "updatedAt",
+			key: "updatedAt",
+			width: 160,
 			render: (text: string) => (
 				<Text className="text-gray-600">{dayjs(text).format("YYYY-MM-DD HH:mm:ss")}</Text>
 			)
@@ -139,63 +160,15 @@ const ModelsManage = () => {
 			title: "状态",
 			dataIndex: "status",
 			key: "status",
+			width: 100,
+			fixed: "right",
 			render: (status: string) => (
 				<Tag color={status === "active" ? "green" : "red"} className="px-3 py-1 rounded-full">
 					{status === "active" ? "已激活" : "未激活"}
 				</Tag>
 			)
-		},
-		{
-			title: "操作",
-			key: "action",
-			fixed: "right" as const,
-			render: (_: any, record: ModelConfig) => (
-				<Space>
-					<Button
-						type="link"
-						icon={<EditOutlined />}
-						onClick={() => modalRef.current?.open(record)}
-						className="text-blue-500 hover:text-blue-600"
-					>
-						编辑
-					</Button>
-					<Button
-						type="link"
-						danger
-						icon={<DeleteOutlined />}
-						onClick={() => handleDelete(record)}
-						className="text-red-500 hover:text-red-600"
-					>
-						删除
-					</Button>
-				</Space>
-			)
 		}
 	];
-
-	const handleDelete = (model: ModelConfig) => {
-		Modal.confirm({
-			title: "确认删除",
-			content: `确定要删除模型 ${model.name} 吗？`,
-			onOk: () => {
-				setModels(models.filter(m => m.id !== model.id));
-				message.success("删除成功");
-			}
-		});
-	};
-
-	const handleModalOk = (values: any) => {
-		if (values.id) {
-			setModels(models.map(m => (m.id === values.id ? { ...m, ...values } : m)));
-			message.success("更新成功");
-		} else {
-			setModels([
-				...models,
-				{ ...values, id: Date.now().toString(), createdAt: new Date().toISOString() }
-			]);
-			message.success("添加成功");
-		}
-	};
 
 	return (
 		<div
@@ -209,71 +182,77 @@ const ModelsManage = () => {
 			)}
 		>
 			<PageHeader
-				title="模型管理"
+				title="模型预览"
 				statistics={{
 					label: "共",
 					value: `${models.length} 个模型`
 				}}
-				actionButton={{
-					text: "添加模型",
-					icon: <PlusOutlined />,
-					onClick: () => modalRef.current?.open()
-				}}
 			/>
 
 			<div className="flex flex-col gap-4">
-				<Space className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-					<Text>诊断服务选择：</Text>
-					<Select
-						className="w-64"
-						value={selectedService}
-						onChange={value => {
-							setSelectedService(value);
-							setSelectedInterface(undefined);
-						}}
-						placeholder="请选择服务"
-					>
-						{services.map(service => (
-							<Select.Option key={service.id} value={service.id}>
-								{service.serviceName}
-							</Select.Option>
-						))}
-					</Select>
-					{selectedService && (
-						<>
-							<Text>接口选择：</Text>
+				<Form
+					form={form}
+					className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6"
+					layout="vertical"
+				>
+					<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+						<Form.Item
+							label="诊断服务"
+							name="service"
+							rules={[{ required: true, message: "请选择诊断服务" }]}
+						>
 							<Select
-								className="w-64"
-								value={selectedInterface}
-								onChange={setSelectedInterface}
+								placeholder="请选择服务"
+								onChange={value => {
+									setSelectedService(value);
+									setSelectedInterface(undefined);
+									form.setFieldValue("interface", undefined);
+								}}
+								options={services.map(service => ({
+									label: service.serviceName,
+									value: service.id
+								}))}
+							/>
+						</Form.Item>
+
+						<Form.Item
+							label="接口"
+							name="interface"
+							rules={[{ required: true, message: "请选择接口" }]}
+						>
+							<Select
 								placeholder="请选择接口"
-							>
-								{services
+								disabled={!selectedService}
+								onChange={value => setSelectedInterface(value)}
+								options={services
 									.find(service => service.id === selectedService)
-									?.interfaces.map(inter => (
-										<Select.Option key={inter.id} value={inter.id}>
-											{inter.name}
-										</Select.Option>
-									))}
-							</Select>
+									?.interfaces.map(inter => ({
+										label: inter.name,
+										value: inter.id
+									}))}
+							/>
+						</Form.Item>
+
+						<Form.Item label=" ">
 							<Button
 								type="primary"
 								icon={<DownloadOutlined />}
 								onClick={handleFetchModels}
 								loading={loading}
 								className={clsx(
-									"px-6 h-10",
+									"w-full md:w-auto",
+									"h-10",
 									"rounded-lg",
 									"shadow-sm hover:shadow-md",
 									"transition-all duration-300",
-									"flex items-center gap-2"
+									"flex items-center justify-center gap-2"
 								)}
 							>
 								获取模型
 							</Button>
-						</>
-					)}
-				</Space>
+						</Form.Item>
+					</div>
+				</Form>
 
 				<div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
 					<Table
@@ -291,13 +270,11 @@ const ModelsManage = () => {
 							}
 						}}
 						loading={loading}
-						scroll={{ x: true }}
+						scroll={{ x: "max-content" }}
 						className="transition-all duration-300"
 					/>
 				</div>
 			</div>
-
-			<ModelManageModal ref={modalRef} onOk={handleModalOk} />
 		</div>
 	);
 };

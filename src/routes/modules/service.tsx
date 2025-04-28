@@ -17,7 +17,7 @@ const serviceRoutes: RouteObjectEx[] = [
 		element: lazyLoad(React.lazy(() => import("@/views/service/ModelsManage"))),
 		meta: {
 			requiresAuth: true,
-			title: "模型管理",
+			title: "模型预览",
 			key: "diagnosis-models"
 		}
 	},
