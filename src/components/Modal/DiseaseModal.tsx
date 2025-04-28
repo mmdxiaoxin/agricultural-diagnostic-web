@@ -382,9 +382,15 @@ const DiseaseModal = forwardRef<DiseaseModalRef, DiseaseModalProps>(({ onFinish 
 				<Steps
 					current={currentStep}
 					items={steps}
-					onChange={current => {
+					onChange={async current => {
 						if (mode === "edit") {
-							setCurrentStep(current);
+							try {
+								const values = await form.validateFields();
+								setFormData(prev => ({ ...prev, ...values }));
+								setCurrentStep(current);
+							} catch (error) {
+								message.error("请检查表单需求！");
+							}
 						}
 					}}
 				/>
