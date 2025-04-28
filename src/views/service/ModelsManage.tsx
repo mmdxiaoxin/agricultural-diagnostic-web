@@ -104,7 +104,6 @@ const ModelsManage = () => {
 			title: "模型名称",
 			dataIndex: "name",
 			key: "name",
-			width: 150,
 			fixed: "left",
 			render: (text: string) => (
 				<TextCell className="text-gray-800 font-medium" text={text} maxLength={10} />
@@ -114,7 +113,6 @@ const ModelsManage = () => {
 			title: "模型类型",
 			dataIndex: "model_type",
 			key: "model_type",
-			width: 120,
 			render: (type, record) => (
 				<Tag
 					color={type === "yolo" ? "blue" : type === "resnet" ? "green" : "purple"}
@@ -128,14 +126,12 @@ const ModelsManage = () => {
 			title: "版本",
 			dataIndex: "version",
 			key: "version",
-			width: 100,
 			render: (text: string) => <TextCell text={`v${text}`} className="text-gray-600" />
 		},
 		{
 			title: "描述",
 			dataIndex: "description",
 			key: "description",
-			width: 200,
 			ellipsis: true,
 			render: (text: string) => <TextCell text={text || "-"} className="text-gray-600" />
 		},
@@ -143,21 +139,18 @@ const ModelsManage = () => {
 			title: "创建时间",
 			dataIndex: "createdAt",
 			key: "createdAt",
-			width: 160,
 			render: (text: string) => <TextCell text={dayjs(text).format("YYYY-MM-DD HH:mm:ss")} />
 		},
 		{
 			title: "更新时间",
 			dataIndex: "updatedAt",
 			key: "updatedAt",
-			width: 160,
 			render: (text: string) => <TextCell text={dayjs(text).format("YYYY-MM-DD HH:mm:ss")} />
 		},
 		{
 			title: "状态",
 			dataIndex: "status",
 			key: "status",
-			width: 100,
 			render: (status: string) => (
 				<Tag color={status === "active" ? "green" : "red"} className="px-3 py-1 rounded-full">
 					{status === "active" ? "已激活" : "未激活"}
@@ -165,6 +158,39 @@ const ModelsManage = () => {
 			)
 		}
 	];
+
+	const expandable = {
+		expandedRowRender: (record: ModelConfig) => (
+			<div className="p-4 bg-gray-50 rounded-lg">
+				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+					{Object.entries(record.parameters).map(([key, value]) => (
+						<div key={key} className="bg-white p-3 rounded-lg shadow-sm border border-gray-100">
+							<div className="text-sm font-medium text-gray-500 mb-1">{key}</div>
+							<div className="text-base font-mono text-gray-800">
+								{typeof value === "boolean" ? (
+									<Tag color={value ? "green" : "red"}>{value ? "true" : "false"}</Tag>
+								) : (
+									value?.toString() || "-"
+								)}
+							</div>
+						</div>
+					))}
+				</div>
+			</div>
+		),
+		expandIcon: (props: any) => (
+			<Button
+				type="text"
+				onClick={e => props.onExpand(props.record, e)}
+				className={clsx(
+					"transition-all duration-300",
+					props.expanded ? "text-blue-500" : "text-gray-400"
+				)}
+			>
+				{props.expanded ? "收起" : "展开"}
+			</Button>
+		)
+	};
 
 	return (
 		<div
@@ -268,6 +294,7 @@ const ModelsManage = () => {
 						loading={loading}
 						scroll={{ x: "max-content" }}
 						className="transition-all duration-300"
+						expandable={expandable}
 					/>
 				</div>
 			</div>
