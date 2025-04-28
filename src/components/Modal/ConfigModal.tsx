@@ -183,25 +183,17 @@ const ConfigModal = forwardRef<ConfigModalRef, ConfigModalProps>(
 						{/* 右侧配置编辑器 */}
 						<div
 							className={clsx(
-								"flex-1",
+								"lg:flex-1",
 								"border-t lg:border-t-0 lg:border-l",
 								"border-gray-100",
-								"pt-4 lg:pt-0 lg:pl-6",
-								"flex flex-col"
+								"flex flex-col",
+								"h-[500px] lg:h-auto"
 							)}
 						>
 							<div className="mb-4">
 								<h3 className="text-lg font-medium text-gray-800">配置内容</h3>
 							</div>
-							<div
-								className={clsx(
-									"flex-1",
-									"min-h-[200px]",
-									"max-h-[calc(100vh-400px)] lg:max-h-[500px]",
-									"w-full",
-									"relative"
-								)}
-							>
+							<div className={clsx("flex-1", "w-full")}>
 								<Suspense fallback={<Spin size="large" tip="加载编辑器中..." />}>
 									<MonacoEditor
 										language="json"
