@@ -1,15 +1,14 @@
 import { RemoteService } from "@/api/interface/service";
 import { callRemoteInterface, getRemotes } from "@/api/modules/service";
 import PageHeader from "@/components/PageHeader";
+import TextCell from "@/components/Table/TextCell";
 import type { ModelConfig } from "@/typings/model";
 import { DownloadOutlined } from "@ant-design/icons";
-import { Button, Form, message, Select, Space, Table, Tag, Typography } from "antd";
+import { Button, Form, message, Select, Table, Tag } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import clsx from "clsx";
 import dayjs from "dayjs";
 import { useEffect, useState } from "react";
-
-const { Text } = Typography;
 
 const ModelsManage = () => {
 	const [models, setModels] = useState<ModelConfig[]>([]);
@@ -107,7 +106,9 @@ const ModelsManage = () => {
 			key: "name",
 			width: 150,
 			fixed: "left",
-			render: (text: string) => <Text className="text-gray-800 font-medium">{text}</Text>
+			render: (text: string) => (
+				<TextCell className="text-gray-800 font-medium" text={text} maxLength={10} />
+			)
 		},
 		{
 			title: "模型类型",
@@ -128,7 +129,7 @@ const ModelsManage = () => {
 			dataIndex: "version",
 			key: "version",
 			width: 100,
-			render: (text: string) => <Text className="text-gray-600">v{text}</Text>
+			render: (text: string) => <TextCell text={`v${text}`} className="text-gray-600" />
 		},
 		{
 			title: "描述",
@@ -136,32 +137,27 @@ const ModelsManage = () => {
 			key: "description",
 			width: 200,
 			ellipsis: true,
-			render: (text: string) => <Text className="text-gray-600">{text || "-"}</Text>
+			render: (text: string) => <TextCell text={text || "-"} className="text-gray-600" />
 		},
 		{
 			title: "创建时间",
 			dataIndex: "createdAt",
 			key: "createdAt",
 			width: 160,
-			render: (text: string) => (
-				<Text className="text-gray-600">{dayjs(text).format("YYYY-MM-DD HH:mm:ss")}</Text>
-			)
+			render: (text: string) => <TextCell text={dayjs(text).format("YYYY-MM-DD HH:mm:ss")} />
 		},
 		{
 			title: "更新时间",
 			dataIndex: "updatedAt",
 			key: "updatedAt",
 			width: 160,
-			render: (text: string) => (
-				<Text className="text-gray-600">{dayjs(text).format("YYYY-MM-DD HH:mm:ss")}</Text>
-			)
+			render: (text: string) => <TextCell text={dayjs(text).format("YYYY-MM-DD HH:mm:ss")} />
 		},
 		{
 			title: "状态",
 			dataIndex: "status",
 			key: "status",
 			width: 100,
-			fixed: "right",
 			render: (status: string) => (
 				<Tag color={status === "active" ? "green" : "red"} className="px-3 py-1 rounded-full">
 					{status === "active" ? "已激活" : "未激活"}
