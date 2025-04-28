@@ -5,6 +5,7 @@ import viteCompression from "vite-plugin-compression";
 import { createHtmlPlugin } from "vite-plugin-html";
 import viteImagemin from "vite-plugin-imagemin";
 import svgr from "vite-plugin-svgr";
+import type { ViteEnv } from "./types";
 
 export function createVitePlugins(viteEnv: ViteEnv, isDev: boolean) {
 	const { VITE_GLOB_APP_TITLE } = viteEnv;
