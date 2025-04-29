@@ -6,7 +6,7 @@ import DiagnosisSupportModal, {
 import PageHeader from "@/components/PageHeader";
 import TextCell from "@/components/Table/TextCell";
 import { DeleteOutlined, EditOutlined, PlusOutlined } from "@ant-design/icons";
-import { Button, message, Popconfirm, Space, Table, TableColumnType, Tag, Tooltip } from "antd";
+import { Button, message, Popconfirm, Space, Table, TableColumnType, Tooltip } from "antd";
 import clsx from "clsx";
 import dayjs from "dayjs";
 import React, { useEffect, useRef, useState } from "react";
@@ -66,20 +66,6 @@ const DiagnosisSetting: React.FC = () => {
 			key: "key",
 			render: (text: string) => <TextCell text={text} />,
 			responsive: ["xs", "sm", "md", "lg", "xl", "xxl"]
-		},
-		{
-			title: "服务ID",
-			dataIndex: ["value", "serviceId"],
-			key: "serviceId",
-			render: (text: number) => <Tag color="blue">{text}</Tag>,
-			responsive: ["sm", "md", "lg", "xl", "xxl"]
-		},
-		{
-			title: "配置ID",
-			dataIndex: ["value", "configId"],
-			key: "configId",
-			render: (text: number) => <Tag color="green">{text}</Tag>,
-			responsive: ["sm", "md", "lg", "xl", "xxl"]
 		},
 		{
 			title: "描述",
