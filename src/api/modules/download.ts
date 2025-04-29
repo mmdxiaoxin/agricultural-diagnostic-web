@@ -83,21 +83,53 @@ export const downloadFile = async (
 	options: DownloadOptions = {}
 ): Promise<Blob> => {
 	try {
+		console.log("开始下载文件:", fileId);
+		let lastLoaded = 0;
 		const response = await http.get_blob(
 			`/file/download/${fileId}`,
 			{},
 			{
 				loading: false,
 				onDownloadProgress: (progressEvent: AxiosProgressEvent) => {
-					const progress = progressEvent.total
-						? Math.round((progressEvent.loaded / progressEvent.total) * 100)
-						: 0;
+					console.log("下载进度事件:", progressEvent);
+					let progress = 0;
+
+					if (progressEvent.total) {
+						// 如果有 total 值，使用精确计算
+						progress = Math.round((progressEvent.loaded / progressEvent.total) * 100);
+					} else {
+						// 如果没有 total 值，使用增量估算
+						const increment = progressEvent.loaded - lastLoaded;
+						if (increment > 0) {
+							// 假设每次增量是总大小的 1%
+							progress = Math.min(
+								99,
+								Math.round((progressEvent.loaded / (progressEvent.loaded + increment * 100)) * 100)
+							);
+						}
+					}
+
+					lastLoaded = progressEvent.loaded;
+					console.log(
+						"单个文件下载进度:",
+						fileId,
+						progress,
+						progressEvent.loaded,
+						progressEvent.total
+					);
+
 					if (options.onProgress) {
 						options.onProgress(fileId, progress);
 					}
 				}
 			}
 		);
+		console.log("文件下载完成:", fileId);
+
+		// 下载完成后强制设置为 100%
+		if (options.onProgress) {
+			options.onProgress(fileId, 100);
+		}
 
 		// 将 BlobPart 转换为 Blob
 		const fileBlob = new Blob([response]);
@@ -108,11 +140,20 @@ export const downloadFile = async (
 			const downloadLink = document.createElement("a");
 			downloadLink.href = url;
 			downloadLink.download = options.fileNameMapping?.[fileId] || `file_${fileId}`;
+
+			// 将链接添加到文档中
+			document.body.appendChild(downloadLink);
+
+			// 触发下载
 			downloadLink.click();
 
 			// 清理资源
-			window.URL.revokeObjectURL(url);
-			document.body.removeChild(downloadLink);
+			setTimeout(() => {
+				window.URL.revokeObjectURL(url);
+				if (downloadLink.parentNode) {
+					downloadLink.parentNode.removeChild(downloadLink);
+				}
+			}, 100);
 		}
 
 		return fileBlob;
@@ -159,7 +200,13 @@ export const downloadMultipleFiles = async (
 	} else {
 		// 通过并发队列来控制文件下载的并发数
 		const downloadPromises = fileIds.map(fileId => () => {
-			return downloadFile(fileId, options);
+			return downloadFile(fileId, {
+				...options,
+				onProgress: (id, progress) => {
+					console.log("批量下载进度更新:", id, progress);
+					options.onProgress?.(id, progress);
+				}
+			});
 		});
 
 		try {

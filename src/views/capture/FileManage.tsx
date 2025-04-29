@@ -217,12 +217,25 @@ const FileManage: React.FC<FileManageProps> = () => {
 					file => selectedRowKeys.includes(file.id) && !downloadList.some(d => d.id === file.id)
 				);
 				setDownloadList(prev => [...prev, ...newFiles]);
+
+				// 初始化进度为0
+				const initialProgress = newFiles.reduce((acc, file) => {
+					acc[file.id] = 0;
+					return acc;
+				}, {} as DownloadProgress);
+				setProgress(initialProgress);
+
 				await downloadMultipleFiles(selectedRowKeys, {
 					onProgress: (fileId, progressValue) => {
-						setProgress(prevProgress => ({
-							...prevProgress,
-							[fileId]: progressValue
-						}));
+						console.log("FileManage 进度更新:", fileId, progressValue);
+						setProgress(prevProgress => {
+							const newProgress = {
+								...prevProgress,
+								[fileId]: progressValue
+							};
+							console.log("FileManage 更新后的进度:", newProgress);
+							return newProgress;
+						});
 					},
 					fileNameMapping: newFiles.reduce(
 						(acc, file) => {
