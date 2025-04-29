@@ -118,82 +118,83 @@ const FileManagePanel: React.FC<FileManagePanelProps> = ({
 				"transition-all duration-300",
 				"hover:shadow-md"
 			)}
-		>
-			<Collapse.Panel
-				key="1"
-				header={
-					<div className="flex items-center justify-between w-full pr-4">
-						<div className="flex items-center gap-2">
-							<SettingOutlined className="text-lg text-gray-500" />
-							<span className="text-base font-medium">文件管理功能区</span>
-						</div>
-						{!isExpanded && (
-							<div className="flex items-center gap-4">
-								{tabItems.map(item => (
-									<button
-										key={item.key}
-										onClick={e => {
-											e.stopPropagation();
-											handleTabChange(item.key);
-										}}
-										className={clsx(
-											"px-3 py-1 rounded-md text-sm transition-colors",
-											activeKey === item.key
-												? "bg-blue-50 text-blue-600"
-												: "text-gray-500 hover:text-gray-700 hover:bg-gray-50"
-										)}
-									>
-										{item.label}
-									</button>
-								))}
+			items={[
+				{
+					key: "1",
+					label: (
+						<div className="flex items-center justify-between w-full pr-4">
+							<div className="flex items-center gap-2">
+								<SettingOutlined className="text-lg text-gray-500" />
+								<span className="text-base font-medium">文件管理功能区</span>
 							</div>
-						)}
-					</div>
-				}
-				className="border-none"
-			>
-				<div className="flex flex-col gap-6">
-					<div className="flex justify-between items-center">
-						<div className="flex flex-col">
-							<h2 className="text-2xl font-semibold text-gray-800 mb-2">文件管理</h2>
-							<p className="text-gray-500">共 {fileList.length} 个文件</p>
+							{!isExpanded && (
+								<div className="flex items-center gap-4">
+									{tabItems.map(item => (
+										<button
+											key={item.key}
+											onClick={e => {
+												e.stopPropagation();
+												handleTabChange(item.key);
+											}}
+											className={clsx(
+												"px-3 py-1 rounded-md text-sm transition-colors",
+												activeKey === item.key
+													? "bg-blue-50 text-blue-600"
+													: "text-gray-500 hover:text-gray-700 hover:bg-gray-50"
+											)}
+										>
+											{item.label}
+										</button>
+									))}
+								</div>
+							)}
 						</div>
-						{activeKey !== "1" && (
-							<div className="flex items-center gap-4">
-								<Input
-									placeholder="搜索文件..."
-									prefix={<SearchOutlined className="text-gray-400" />}
-									value={filterParams.fileName}
-									onChange={e =>
-										onFilterParamsChange({ ...filterParams, fileName: e.target.value })
-									}
-									onPressEnter={() => onSearch({ ...filterParams, page: 1, pageSize: 10 })}
-									className={clsx(
-										"w-64",
-										"rounded-lg",
-										"border-gray-200",
-										"focus:border-blue-500",
-										"focus:ring-1 focus:ring-blue-500",
-										"transition-all duration-300"
-									)}
-								/>
+					),
+					children: (
+						<div className="flex flex-col gap-6">
+							<div className="flex justify-between items-center">
+								<div className="flex flex-col">
+									<h2 className="text-2xl font-semibold text-gray-800 mb-2">文件管理</h2>
+									<p className="text-gray-500">共 {fileList.length} 个文件</p>
+								</div>
+								{activeKey !== "1" && (
+									<div className="flex items-center gap-4">
+										<Input
+											placeholder="搜索文件..."
+											prefix={<SearchOutlined className="text-gray-400" />}
+											value={filterParams.fileName}
+											onChange={e =>
+												onFilterParamsChange({ ...filterParams, fileName: e.target.value })
+											}
+											onPressEnter={() => onSearch({ ...filterParams, page: 1, pageSize: 10 })}
+											className={clsx(
+												"w-64",
+												"rounded-lg",
+												"border-gray-200",
+												"focus:border-blue-500",
+												"focus:ring-1 focus:ring-blue-500",
+												"transition-all duration-300"
+											)}
+										/>
+									</div>
+								)}
 							</div>
-						)}
-					</div>
 
-					<Tabs
-						activeKey={activeKey}
-						onChange={onActiveKeyChange}
-						items={items}
-						className="mt-4"
-						tabBarStyle={{
-							marginBottom: 16,
-							borderBottom: "1px solid #f0f0f0"
-						}}
-					/>
-				</div>
-			</Collapse.Panel>
-		</Collapse>
+							<Tabs
+								activeKey={activeKey}
+								onChange={onActiveKeyChange}
+								items={items}
+								className="mt-4"
+								tabBarStyle={{
+									marginBottom: 16,
+									borderBottom: "1px solid #f0f0f0"
+								}}
+							/>
+						</div>
+					)
+				}
+			]}
+		/>
 	);
 };
 
