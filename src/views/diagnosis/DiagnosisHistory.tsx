@@ -11,21 +11,12 @@ import DiagnosisDetailModal, {
 	DiagnosisDetailModalRef
 } from "@/components/Modal/DiagnosisDetailModal";
 import PageHeader from "@/components/PageHeader";
+import ServiceCascader from "@/components/ServiceCascader";
 import TextCell from "@/components/Table/TextCell";
 import { DIAGNOSIS_CLASS_NAME_ZH_CN } from "@/constants/diagnosis";
 import { DIAGNOSIS_STATUS_COLOR, DIAGNOSIS_STATUS_TEXT } from "@/constants/status";
 import { DeleteOutlined, ReloadOutlined } from "@ant-design/icons";
-import {
-	Button,
-	Cascader,
-	message,
-	Popconfirm,
-	Space,
-	Table,
-	Tag,
-	Tooltip,
-	Typography
-} from "antd";
+import { Button, message, Popconfirm, Space, Table, Tag, Tooltip, Typography } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import clsx from "clsx";
 import dayjs from "dayjs";
@@ -143,27 +134,15 @@ const DiagnosisHistoryPage: React.FC = () => {
 	};
 
 	// 处理级联选择器的变化
-	const handleCascaderChange = (value: (number | string)[]) => {
-		if (value.length === 2) {
-			setSelectedServiceId(value[0] as number);
-			setSelectedConfigId(value[1] as number);
+	const handleServiceChange = (value: [number, number] | undefined) => {
+		if (value) {
+			setSelectedServiceId(value[0]);
+			setSelectedConfigId(value[1]);
 		} else {
 			setSelectedServiceId(undefined);
 			setSelectedConfigId(undefined);
 		}
 	};
-
-	// 构建级联选择器的选项
-	const cascaderOptions = serviceList.map(service => ({
-		value: service.id,
-		label: service.serviceName,
-		disabled: service.status !== "active",
-		children: service.configs.map(config => ({
-			value: config.id,
-			label: config.name,
-			disabled: config.status !== "active"
-		}))
-	}));
 
 	// 处理服务选择确认
 	const handleServiceSelectOk = async () => {
@@ -256,16 +235,14 @@ const DiagnosisHistoryPage: React.FC = () => {
 						title="选择诊断服务"
 						description={
 							<div className="py-2">
-								<Cascader
-									options={cascaderOptions}
-									onChange={handleCascaderChange}
-									placeholder="请选择诊断服务和配置"
-									className="w-full"
+								<ServiceCascader
+									serviceList={serviceList}
 									value={
 										selectedServiceId && selectedConfigId
 											? [selectedServiceId, selectedConfigId]
 											: undefined
 									}
+									onChange={handleServiceChange}
 								/>
 							</div>
 						}

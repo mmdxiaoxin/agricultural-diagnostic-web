@@ -2,26 +2,13 @@ import { RemoteService } from "@/api/interface";
 import type { DiagnoseResult } from "@/api/interface/diagnosis";
 import { getRemotes, startDiagnosis, uploadDiagnosisImage } from "@/api/modules";
 import { LoadingOutlined, UploadOutlined } from "@ant-design/icons";
-import {
-	Alert,
-	Button,
-	Card,
-	Cascader,
-	Image,
-	message,
-	Space,
-	Typography,
-	Upload,
-	UploadFile,
-	UploadProps
-} from "antd";
+import { Alert, Button, Card, Image, message, Space, Upload, UploadFile, UploadProps } from "antd";
 import clsx from "clsx";
 import React, { useEffect, useState } from "react";
 import DiagnosisMatchResultCard from "../Card/DiagnosisMatchResultCard";
 import DiagnosisResultCard from "../Card/DiagnosisResultCard";
 import DetectImage from "../DetectImage";
-
-const { Text } = Typography;
+import ServiceCascader from "../ServiceCascader";
 
 export interface DiseaseDiagnoseProps {
 	onPredict?: (image: File) => void;
@@ -49,23 +36,11 @@ const DiseaseDiagnose: React.FC<DiseaseDiagnoseProps> = ({ onPredict }) => {
 		fetchServiceList();
 	}, []);
 
-	// 构建级联选择器的选项
-	const cascaderOptions = serviceList.map(service => ({
-		value: service.id,
-		label: service.serviceName,
-		disabled: service.status !== "active",
-		children: service.configs.map(config => ({
-			value: config.id,
-			label: config.name,
-			disabled: config.status !== "active"
-		}))
-	}));
-
 	// 处理级联选择器的变化
-	const handleCascaderChange = (value: (number | string)[]) => {
-		if (value.length === 2) {
-			setServiceId(value[0] as number);
-			setConfigId(value[1] as number);
+	const handleServiceChange = (value: [number, number] | undefined) => {
+		if (value) {
+			setServiceId(value[0]);
+			setConfigId(value[1]);
 		} else {
 			setServiceId(undefined);
 			setConfigId(undefined);
@@ -122,48 +97,10 @@ const DiseaseDiagnose: React.FC<DiseaseDiagnoseProps> = ({ onPredict }) => {
 	return (
 		<Card title="图片诊断" className="max-w-3xl" variant="borderless">
 			<Space direction="vertical" className="w-full" size="large">
-				<Cascader
-					options={cascaderOptions}
-					allowClear={false}
-					onChange={handleCascaderChange}
-					placeholder="请选择诊断服务和配置"
-					className="w-full"
+				<ServiceCascader
+					serviceList={serviceList}
 					value={serviceId && configId ? [serviceId, configId] : undefined}
-					maxTagCount={1}
-					maxTagPlaceholder={omittedValues => `+ ${omittedValues.length} 项`}
-					showSearch={{
-						filter: (inputValue, path) =>
-							path.some(
-								option =>
-									(option.label as string).toLowerCase().indexOf(inputValue.toLowerCase()) > -1
-							)
-					}}
-					displayRender={labels => (
-						<div className="flex items-center gap-1">
-							{labels.map((label, index) => (
-								<React.Fragment key={index}>
-									<Text
-										ellipsis={{ tooltip: label }}
-										className={index === 0 ? "text-blue-500" : "text-gray-600"}
-										style={{ maxWidth: 150 }}
-									>
-										{label}
-									</Text>
-									{index < labels.length - 1 && <span className="mx-1">/</span>}
-								</React.Fragment>
-							))}
-						</div>
-					)}
-					dropdownRender={menu => <div className="max-h-[300px] overflow-y-auto">{menu}</div>}
-					popupClassName={clsx(
-						"[&_.ant-cascader-menu]:min-w-[120px]",
-						"[&_.ant-cascader-menu]:max-w-[200px]",
-						"[&_.ant-cascader-menu-item]:px-2",
-						"[&_.ant-cascader-menu-item]:py-1",
-						"[&_.ant-typography]:block",
-						"[&_.ant-typography]:max-w-full",
-						"[&_.ant-cascader-picker-label]:max-w-full"
-					)}
+					onChange={handleServiceChange}
 				/>
 				{/* 图片选择与预览 */}
 				<Card size="small" className="bg-gray-50">
