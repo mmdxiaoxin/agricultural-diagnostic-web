@@ -1,6 +1,6 @@
 import { RemoteService } from "@/api/interface";
 import type { DiagnoseResult } from "@/api/interface/diagnosis";
-import { getDiagnosisSupport, startDiagnosis, uploadDiagnosisImage } from "@/api/modules";
+import { getRemotes, startDiagnosis, uploadDiagnosisImage } from "@/api/modules";
 import { LoadingOutlined, UploadOutlined } from "@ant-design/icons";
 import {
 	Alert,
@@ -39,7 +39,7 @@ const DiseaseDiagnose: React.FC<DiseaseDiagnoseProps> = ({ onPredict }) => {
 	const [serviceList, setServiceList] = useState<RemoteService[]>([]);
 
 	const fetchServiceList = async () => {
-		const res = await getDiagnosisSupport();
+		const res = await getRemotes();
 		if (res.code !== 200 && res.code !== 201) throw new Error("获取服务列表失败，请重试！");
 		if (!res.data) throw new Error("获取服务列表失败，请重试！");
 		setServiceList(res.data);
@@ -53,9 +53,11 @@ const DiseaseDiagnose: React.FC<DiseaseDiagnoseProps> = ({ onPredict }) => {
 	const cascaderOptions = serviceList.map(service => ({
 		value: service.id,
 		label: service.serviceName,
+		disabled: service.status !== "active",
 		children: service.configs.map(config => ({
 			value: config.id,
-			label: config.name
+			label: config.name,
+			disabled: config.status !== "active"
 		}))
 	}));
 

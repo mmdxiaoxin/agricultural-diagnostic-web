@@ -4,7 +4,7 @@ import {
 	deleteDiagnosisHistories,
 	deleteDiagnosisHistory,
 	getDiagnosisHistoryList,
-	getDiagnosisSupport,
+	getRemotes,
 	startDiagnosis
 } from "@/api/modules";
 import DiagnosisDetailModal, {
@@ -52,7 +52,7 @@ const DiagnosisHistoryPage: React.FC = () => {
 	// 获取诊断支持信息
 	const fetchDiagnosisSupport = async () => {
 		try {
-			const response = await getDiagnosisSupport();
+			const response = await getRemotes();
 			if (response.code === 200 && response.data) {
 				setServiceList(response.data);
 				// 默认使用第一个服务和配置
@@ -157,9 +157,11 @@ const DiagnosisHistoryPage: React.FC = () => {
 	const cascaderOptions = serviceList.map(service => ({
 		value: service.id,
 		label: service.serviceName,
+		disabled: service.status !== "active",
 		children: service.configs.map(config => ({
 			value: config.id,
-			label: config.name
+			label: config.name,
+			disabled: config.status !== "active"
 		}))
 	}));
 

@@ -1,14 +1,14 @@
 import http from "@/api";
+import { PageData, ReqPage } from "../interface";
 import {
+	DiagnoseResult,
 	DiagnosisLog,
+	DiagnosisSupport,
 	ReqDiagnosisHistoryList,
 	ReqStartDiagnoseDisease,
 	ResDiagnosisHistoryList,
-	ResDiagnosisSupport,
-	DiagnoseResult,
 	ResUploadDiagnosisImage
 } from "../interface/diagnosis";
-import { PageData, ReqPage } from "../interface";
 
 // * 上传诊断图片
 export const uploadDiagnosisImage = async (file: File) => {
@@ -55,7 +55,7 @@ export const getDiagnosisLogList = async (id: number, params: ReqPage) => {
 
 // * 获取诊断支持信息
 export const getDiagnosisSupport = async () => {
-	return http.get<ResDiagnosisSupport>("/diagnosis/support", {}, { loading: false });
+	return http.get<DiagnosisSupport[]>("/diagnosis/support", {}, { loading: false });
 };
 
 // * 获取诊断历史

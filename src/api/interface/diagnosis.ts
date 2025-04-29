@@ -1,5 +1,5 @@
 import { LogLevel } from "@/enums";
-import { PageData, RemoteService, ReqPage } from ".";
+import { PageData, ReqPage } from ".";
 import { MatchResult } from "./knowledge";
 
 // 基础预测类型
@@ -32,6 +32,16 @@ export type DetectPrediction = BasePrediction & {
 
 // 预测结果联合类型
 export type Prediction = ClassifyPrediction | DetectPrediction;
+
+// 诊断支持
+export type DiagnosisSupport = {
+	id: number;
+	key: string;
+	value: { serviceId: number; configId: number };
+	description: string;
+	createdAt: string;
+	updatedAt: string;
+};
 
 // 诊断历史记录
 export type DiagnosisHistory = {
@@ -73,4 +83,3 @@ export type DiagnoseResult = {
 };
 export type ResUploadDiagnosisImage = DiagnosisHistory;
 export type ResDiagnosisHistoryList = PageData<DiagnosisHistory>;
-export type ResDiagnosisSupport = RemoteService[];
