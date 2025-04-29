@@ -7,7 +7,7 @@ import { Col, Row } from "antd";
 import clsx from "clsx";
 import { useRef } from "react";
 
-const ImageDiagnosis = () => {
+const DiagnosisTest = () => {
 	const diagnosisListRef = useRef<DiagnosisHistoryListRef>(null);
 
 	const handlePredict = (_: File) => {
@@ -59,4 +59,4 @@ const ImageDiagnosis = () => {
 	);
 };
 
-export default ImageDiagnosis;
+export default DiagnosisTest;

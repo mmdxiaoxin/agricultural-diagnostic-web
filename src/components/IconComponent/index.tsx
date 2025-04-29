@@ -30,7 +30,8 @@ export const Icons = {
 	HistoryOutlined: React.lazy(() => import("@ant-design/icons/HistoryOutlined")),
 	AudioOutlined: React.lazy(() => import("@ant-design/icons/AudioOutlined")),
 	PlantIcon: React.lazy(() => import("@/components/icons/PlantIcon")),
-	DiseaseIcon: React.lazy(() => import("@/components/icons/DiseaseIcon"))
+	DiseaseIcon: React.lazy(() => import("@/components/icons/DiseaseIcon")),
+	BugOutlined: React.lazy(() => import("@ant-design/icons/BugOutlined"))
 } as const;
 
 export type IconComponentProps = {

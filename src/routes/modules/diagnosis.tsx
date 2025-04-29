@@ -5,11 +5,20 @@ import { RouteObjectEx } from "../interface";
 const diagnosisRoutes: RouteObjectEx[] = [
 	{
 		path: "/diagnosis/image",
-		element: lazyLoad(React.lazy(() => import("@/views/diagnosis/ImageDiagnosis"))),
+		element: lazyLoad(React.lazy(() => import("@/views/diagnosis/DiagnosisImage"))),
 		meta: {
 			requiresAuth: true,
-			title: "病害图片分析",
+			title: "病害诊断",
 			key: "diagnosis-image"
+		}
+	},
+	{
+		path: "/diagnosis/test",
+		element: lazyLoad(React.lazy(() => import("@/views/diagnosis/DiagnosisTest"))),
+		meta: {
+			requiresAuth: true,
+			title: "诊断测试",
+			key: "diagnosis-test"
 		}
 	},
 	{
