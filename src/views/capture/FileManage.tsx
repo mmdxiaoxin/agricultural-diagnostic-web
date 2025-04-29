@@ -2,6 +2,7 @@ import { FileMeta } from "@/api/interface";
 import {
 	deleteFile,
 	deleteFiles,
+	downloadFileByUrl,
 	downloadMultipleFiles,
 	DownloadProgress,
 	getFileList,
@@ -260,32 +261,8 @@ const FileManage: React.FC<FileManageProps> = () => {
 		}
 	};
 
-	const handleSingleDownload = async (file: FileMeta) => {
-		try {
-			setActiveKey("3");
-			setDownloadLoading(true);
-			// 检查文件是否已经在下载列表中
-			if (!downloadList.some(d => d.id === file.id)) {
-				setDownloadList(prev => [...prev, file]);
-			}
-			await downloadMultipleFiles([file.id], {
-				onProgress: (fileId, progressValue) => {
-					setProgress(prevProgress => ({
-						...prevProgress,
-						[fileId]: progressValue
-					}));
-				},
-				fileNameMapping: {
-					[file.id]: file.originalFileName
-				},
-				createLink: true
-			});
-			message.success("文件下载成功！");
-		} catch (error: any) {
-			message.error("文件下载失败！");
-		} finally {
-			setDownloadLoading(false);
-		}
+	const handleSingleDownload = (file: FileMeta) => {
+		downloadFileByUrl(file.id, file.originalFileName);
 	};
 
 	const columns: TableColumnsType<FileMeta> = [

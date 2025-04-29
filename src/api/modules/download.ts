@@ -21,6 +21,62 @@ export interface DownloadOptions {
 	compressMode?: boolean;
 }
 
+/**
+ * @description: 通过浏览器下载文件
+ * @param {string | number} fileId
+ * @param {string} [fileName] 可选的文件名
+ * @return {Promise<void>}
+ */
+export const downloadFileByUrl = async (
+	fileId: string | number,
+	fileName?: string
+): Promise<void> => {
+	try {
+		const response = await http.get<{ token: string }>(
+			`/file/download-token/${fileId}`,
+			{},
+			{ loading: false }
+		);
+		if (!response.data) throw new Error("下载失败，服务器未返回内容");
+
+		// 构建下载链接
+		const baseUrl = import.meta.env.VITE_API_URL || window.location.origin;
+		let downloadUrl = `${baseUrl}/file/access-link/${response.data.token}`;
+		if (fileName) {
+			downloadUrl += `?filename=${encodeURIComponent(fileName)}`;
+		}
+
+		console.log("下载链接:", downloadUrl);
+
+		// 尝试不同的下载方式
+		try {
+			// 方式1：使用 window.location.href
+			window.location.href = downloadUrl;
+		} catch (error) {
+			console.error("方式1失败:", error);
+			try {
+				// 方式2：使用 window.open
+				const downloadWindow = window.open(downloadUrl, "_blank");
+				if (!downloadWindow) {
+					throw new Error("浏览器阻止了下载窗口的打开");
+				}
+			} catch (error) {
+				console.error("方式2失败:", error);
+				// 方式3：创建临时链接
+				const link = document.createElement("a");
+				link.href = downloadUrl;
+				link.target = "_blank";
+				document.body.appendChild(link);
+				link.click();
+				document.body.removeChild(link);
+			}
+		}
+	} catch (error) {
+		console.error("文件下载失败", error);
+		throw new Error("文件下载失败");
+	}
+};
+
 // * 文件下载接口
 export const downloadFile = async (
 	fileId: string | number,
