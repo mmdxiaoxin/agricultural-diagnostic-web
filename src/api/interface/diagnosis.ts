@@ -73,6 +73,11 @@ export type ReqStartDiagnoseDisease = {
 	serviceId: number;
 	configId: number;
 };
+export type ReqDiagnosisSupport = {
+	key: string;
+	value: { serviceId: number; configId: number };
+	description: string;
+};
 
 // 响应类型
 export type DiagnoseResult = {

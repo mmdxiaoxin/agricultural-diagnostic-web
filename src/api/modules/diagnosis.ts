@@ -5,6 +5,7 @@ import {
 	DiagnosisLog,
 	DiagnosisSupport,
 	ReqDiagnosisHistoryList,
+	ReqDiagnosisSupport,
 	ReqStartDiagnoseDisease,
 	ResDiagnosisHistoryList,
 	ResUploadDiagnosisImage
@@ -53,11 +54,6 @@ export const getDiagnosisLogList = async (id: number, params: ReqPage) => {
 	return http.get<PageData<DiagnosisLog>>(`/diagnosis/${id}/log/list`, params, { loading: false });
 };
 
-// * 获取诊断支持信息
-export const getDiagnosisSupport = async () => {
-	return http.get<DiagnosisSupport[]>("/diagnosis/support", {}, { loading: false });
-};
-
 // * 获取诊断历史
 export const getDiagnosisHistory = async () => {
 	return http.get<any>("/diagnosis/history", {}, { loading: false });
@@ -76,4 +72,29 @@ export const deleteDiagnosisHistories = async (params: { diagnosisIds: string })
 // * 获取诊断历史列表
 export const getDiagnosisHistoryList = async (params: ReqDiagnosisHistoryList) => {
 	return http.get<ResDiagnosisHistoryList>("/diagnosis/history/list", params, { loading: false });
+};
+
+// * 获取诊断支持信息
+export const getDiagnosisSupport = async () => {
+	return http.get<DiagnosisSupport[]>("/diagnosis/support", {}, { loading: false });
+};
+
+// * 获取诊断支持信息详情
+export const getDiagnosisSupportDetail = async (id: number | string) => {
+	return http.get<DiagnosisSupport>(`/diagnosis/support/${id}`, {}, { loading: false });
+};
+
+// * 创建诊断支持
+export const createDiagnosisSupport = async (params: ReqDiagnosisSupport) => {
+	return http.post<DiagnosisSupport>("/diagnosis/support", params, { loading: false });
+};
+
+// * 更新诊断支持
+export const updateDiagnosisSupport = async (id: number | string, params: ReqDiagnosisSupport) => {
+	return http.put<DiagnosisSupport>(`/diagnosis/support/${id}`, params, { loading: false });
+};
+
+// * 删除诊断支持
+export const deleteDiagnosisSupport = async (id: number | string) => {
+	return http.delete<null>(`/diagnosis/support/${id}`);
 };
