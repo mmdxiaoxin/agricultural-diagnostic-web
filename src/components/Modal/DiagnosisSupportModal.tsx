@@ -1,8 +1,11 @@
-import React, { forwardRef, useImperativeHandle, useState } from "react";
 import { DiagnosisSupport, ReqDiagnosisSupport } from "@/api/interface/diagnosis";
+import { RemoteService } from "@/api/interface/service";
 import { createDiagnosisSupport, updateDiagnosisSupport } from "@/api/modules/diagnosis";
+import { getRemotes } from "@/api/modules/service";
+import ServiceCascader from "@/components/ServiceCascader";
 import { Form, Input, Modal, message } from "antd";
 import { ModalProps } from "antd/es/modal";
+import { forwardRef, useImperativeHandle, useState } from "react";
 
 export interface DiagnosisSupportModalRef {
 	open: (type: "add" | "edit", record?: DiagnosisSupport) => void;
@@ -19,16 +22,29 @@ const DiagnosisSupportModal = forwardRef<DiagnosisSupportModalRef, DiagnosisSupp
 		const [form] = Form.useForm();
 		const [type, setType] = useState<"add" | "edit">("add");
 		const [currentRecord, setCurrentRecord] = useState<DiagnosisSupport>();
+		const [serviceList, setServiceList] = useState<RemoteService[]>([]);
+
+		// 获取服务列表
+		const fetchServices = async () => {
+			try {
+				const res = await getRemotes();
+				if (res.code === 200) {
+					setServiceList(res.data || []);
+				}
+			} catch (error: any) {
+				message.error("获取服务列表失败: " + error.message);
+			}
+		};
 
 		useImperativeHandle(ref, () => ({
-			open: (type, record) => {
+			open: async (type, record) => {
 				setType(type);
 				setCurrentRecord(record);
+				await fetchServices();
 				if (type === "edit" && record) {
 					form.setFieldsValue({
 						key: record.key,
-						serviceId: record.value.serviceId,
-						configId: record.value.configId,
+						value: [record.value.serviceId, record.value.configId],
 						description: record.description
 					});
 				} else {
@@ -46,8 +62,8 @@ const DiagnosisSupportModal = forwardRef<DiagnosisSupportModalRef, DiagnosisSupp
 				const params: ReqDiagnosisSupport = {
 					key: values.key,
 					value: {
-						serviceId: values.serviceId,
-						configId: values.configId
+						serviceId: values.value[0],
+						configId: values.value[1]
 					},
 					description: values.description
 				};
@@ -91,8 +107,7 @@ const DiagnosisSupportModal = forwardRef<DiagnosisSupportModalRef, DiagnosisSupp
 					layout="vertical"
 					initialValues={{
 						key: "",
-						serviceId: undefined,
-						configId: undefined,
+						value: undefined,
 						description: ""
 					}}
 				>
@@ -104,18 +119,11 @@ const DiagnosisSupportModal = forwardRef<DiagnosisSupportModalRef, DiagnosisSupp
 						<Input placeholder="请输入配置名称" />
 					</Form.Item>
 					<Form.Item
-						name="serviceId"
-						label="服务ID"
-						rules={[{ required: true, message: "请输入服务ID" }]}
+						name="value"
+						label="服务配置"
+						rules={[{ required: true, message: "请选择服务配置" }]}
 					>
-						<Input type="number" placeholder="请输入服务ID" />
-					</Form.Item>
-					<Form.Item
-						name="configId"
-						label="配置ID"
-						rules={[{ required: true, message: "请输入配置ID" }]}
-					>
-						<Input type="number" placeholder="请输入配置ID" />
+						<ServiceCascader serviceList={serviceList} />
 					</Form.Item>
 					<Form.Item name="description" label="描述">
 						<Input.TextArea rows={4} placeholder="请输入描述信息" />
