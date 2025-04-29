@@ -1,5 +1,7 @@
 import { DiagnosisSupport } from "@/api/interface/diagnosis";
+import { RemoteService } from "@/api/interface/service";
 import { deleteDiagnosisSupport, getDiagnosisSupport } from "@/api/modules/diagnosis";
+import { getRemotes } from "@/api/modules/service";
 import DiagnosisSupportModal, {
 	DiagnosisSupportModalRef
 } from "@/components/Modal/DiagnosisSupportModal";
@@ -14,12 +16,20 @@ import React, { useEffect, useRef, useState } from "react";
 const DiagnosisSetting: React.FC = () => {
 	const [loading, setLoading] = useState(false);
 	const [diagnosisSupports, setDiagnosisSupports] = useState<DiagnosisSupport[]>([]);
-	const [pagination, setPagination] = useState({
-		page: 1,
-		pageSize: 10,
-		total: 0
-	});
+	const [serviceList, setServiceList] = useState<RemoteService[]>([]);
 	const modalRef = useRef<DiagnosisSupportModalRef>(null);
+
+	// 获取服务列表
+	const fetchServices = async () => {
+		try {
+			const res = await getRemotes();
+			if (res.code === 200) {
+				setServiceList(res.data || []);
+			}
+		} catch (error: any) {
+			message.error("获取服务列表失败: " + error.message);
+		}
+	};
 
 	// 获取诊断支持列表
 	const fetchDiagnosisSupports = async () => {
@@ -28,7 +38,6 @@ const DiagnosisSetting: React.FC = () => {
 			const res = await getDiagnosisSupport();
 			if (res.code === 200) {
 				setDiagnosisSupports(res.data || []);
-				setPagination(prev => ({ ...prev, total: res.data?.length || 0 }));
 			}
 		} catch (error: any) {
 			message.error("获取诊断支持列表失败: " + error.message);
@@ -117,6 +126,7 @@ const DiagnosisSetting: React.FC = () => {
 	];
 
 	useEffect(() => {
+		fetchServices();
 		fetchDiagnosisSupports();
 	}, []);
 
@@ -136,7 +146,7 @@ const DiagnosisSetting: React.FC = () => {
 				description="管理诊断支持配置信息"
 				statistics={{
 					label: "共",
-					value: `${pagination.total} 个配置`
+					value: `${diagnosisSupports.length} 个配置`
 				}}
 				actionButton={{
 					text: "添加配置",
@@ -151,15 +161,6 @@ const DiagnosisSetting: React.FC = () => {
 					columns={columns}
 					dataSource={diagnosisSupports}
 					rowKey="id"
-					pagination={{
-						...pagination,
-						showSizeChanger: true,
-						showQuickJumper: true,
-						showTotal: total => `共 ${total} 项`,
-						onChange: (page, pageSize) => {
-							setPagination({ ...pagination, page, pageSize });
-						}
-					}}
 					scroll={{ x: "max-content" }}
 					className="transition-all duration-300"
 				/>
@@ -167,6 +168,7 @@ const DiagnosisSetting: React.FC = () => {
 
 			<DiagnosisSupportModal
 				ref={modalRef}
+				serviceList={serviceList}
 				onSave={() => {
 					fetchDiagnosisSupports();
 				}}

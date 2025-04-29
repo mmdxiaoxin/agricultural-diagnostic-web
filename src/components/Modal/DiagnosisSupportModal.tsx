@@ -1,7 +1,6 @@
 import { DiagnosisSupport, ReqDiagnosisSupport } from "@/api/interface/diagnosis";
 import { RemoteService } from "@/api/interface/service";
 import { createDiagnosisSupport, updateDiagnosisSupport } from "@/api/modules/diagnosis";
-import { getRemotes } from "@/api/modules/service";
 import ServiceCascader from "@/components/ServiceCascader";
 import { Form, Input, Modal, message } from "antd";
 import { ModalProps } from "antd/es/modal";
@@ -12,35 +11,22 @@ export interface DiagnosisSupportModalRef {
 }
 
 interface DiagnosisSupportModalProps {
+	serviceList: RemoteService[];
 	onSave?: () => void;
 }
 
 const DiagnosisSupportModal = forwardRef<DiagnosisSupportModalRef, DiagnosisSupportModalProps>(
-	({ onSave }, ref) => {
+	({ serviceList, onSave }, ref) => {
 		const [visible, setVisible] = useState(false);
 		const [loading, setLoading] = useState(false);
 		const [form] = Form.useForm();
 		const [type, setType] = useState<"add" | "edit">("add");
 		const [currentRecord, setCurrentRecord] = useState<DiagnosisSupport>();
-		const [serviceList, setServiceList] = useState<RemoteService[]>([]);
-
-		// 获取服务列表
-		const fetchServices = async () => {
-			try {
-				const res = await getRemotes();
-				if (res.code === 200) {
-					setServiceList(res.data || []);
-				}
-			} catch (error: any) {
-				message.error("获取服务列表失败: " + error.message);
-			}
-		};
 
 		useImperativeHandle(ref, () => ({
-			open: async (type, record) => {
+			open: (type, record) => {
 				setType(type);
 				setCurrentRecord(record);
-				await fetchServices();
 				if (type === "edit" && record) {
 					form.setFieldsValue({
 						key: record.key,
