@@ -5,8 +5,8 @@ import {
 	BookOutlined,
 	CloudOutlined,
 	DatabaseOutlined,
-	ExperimentOutlined,
 	FileSearchOutlined,
+	HistoryOutlined,
 	SettingOutlined,
 	TeamOutlined,
 	ToolOutlined
@@ -40,23 +40,23 @@ const HomeIndex: React.FC = () => {
 			roles: ["expert", "admin"]
 		},
 		{
-			title: "病害诊断",
-			icon: <ExperimentOutlined className="text-2xl" />,
+			title: "图片诊断",
+			icon: <FileSearchOutlined className="text-2xl" />,
+			description: "专业的图像识别工具，支持多种病害诊断",
+			path: "/diagnosis/image",
+			roles: ["user", "expert", "admin"]
+		},
+		{
+			title: "诊断历史",
+			icon: <HistoryOutlined className="text-2xl" />,
 			description: "基于AI的病害诊断系统，快速识别作物病害",
 			path: "/diagnosis/history",
 			roles: ["user", "expert", "admin"]
 		},
 		{
-			title: "图片分析",
-			icon: <FileSearchOutlined className="text-2xl" />,
-			description: "专业的图像分析工具，支持多种图像处理功能",
-			path: "/diagnosis/image",
-			roles: ["user", "expert", "admin"]
-		},
-		{
-			title: "模型管理",
+			title: "模型预览",
 			icon: <ToolOutlined className="text-2xl" />,
-			description: "管理AI模型，支持模型训练、评估和部署",
+			description: "查看模型详情，支持模型预览",
 			path: "/service/models",
 			roles: ["expert", "admin"]
 		},
