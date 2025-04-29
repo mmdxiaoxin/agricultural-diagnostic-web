@@ -25,7 +25,7 @@ const DiagnosisTest = () => {
 				"overflow-y-auto"
 			)}
 		>
-			<PageHeader title="植物病害诊断" description="上传植物图片进行智能诊断" />
+			<PageHeader title="诊断服务测试" description="上传图片测试诊断服务" />
 
 			<Row gutter={12} className="flex-1 min-h-0">
 				<Col xs={24} sm={24} md={24} lg={12} xl={12} xxl={12} className="h-full">
@@ -38,7 +38,7 @@ const DiagnosisTest = () => {
 							"[scrollbar-width:none]"
 						)}
 					>
-						<DiseaseDiagnose onPredict={handlePredict} />
+						<DiseaseDiagnose onPredict={handlePredict} type="test" />
 					</div>
 				</Col>
 				<Col xs={24} sm={24} md={24} lg={12} xl={12} xxl={12} className="h-full">

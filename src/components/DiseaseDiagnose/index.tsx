@@ -1,8 +1,24 @@
 import { RemoteService } from "@/api/interface";
-import type { DiagnoseResult } from "@/api/interface/diagnosis";
-import { getRemotes, startDiagnosis, uploadDiagnosisImage } from "@/api/modules";
+import type { DiagnoseResult, DiagnosisSupport } from "@/api/interface/diagnosis";
+import {
+	getDiagnosisSupport,
+	getRemotes,
+	startDiagnosis,
+	uploadDiagnosisImage
+} from "@/api/modules";
 import { LoadingOutlined, UploadOutlined } from "@ant-design/icons";
-import { Alert, Button, Card, Image, message, Space, Upload, UploadFile, UploadProps } from "antd";
+import {
+	Alert,
+	Button,
+	Card,
+	Image,
+	message,
+	Select,
+	Space,
+	Upload,
+	UploadFile,
+	UploadProps
+} from "antd";
 import clsx from "clsx";
 import React, { useEffect, useState } from "react";
 import DiagnosisMatchResultCard from "../Card/DiagnosisMatchResultCard";
@@ -11,10 +27,11 @@ import DetectImage from "../DetectImage";
 import ServiceCascader from "../ServiceCascader";
 
 export interface DiseaseDiagnoseProps {
+	type?: "image" | "test";
 	onPredict?: (image: File) => void;
 }
 
-const DiseaseDiagnose: React.FC<DiseaseDiagnoseProps> = ({ onPredict }) => {
+const DiseaseDiagnose: React.FC<DiseaseDiagnoseProps> = ({ onPredict, type = "image" }) => {
 	const [selectedImage, setSelectedImage] = useState<File | null>(null);
 	const [fileList, setFileList] = useState<UploadFile[]>([]);
 	const [detectionResults, setDetectionResults] = useState<DiagnoseResult>();
@@ -24,6 +41,7 @@ const DiseaseDiagnose: React.FC<DiseaseDiagnoseProps> = ({ onPredict }) => {
 	const [serviceId, setServiceId] = useState<number>();
 	const [configId, setConfigId] = useState<number>();
 	const [serviceList, setServiceList] = useState<RemoteService[]>([]);
+	const [supportList, setSupportList] = useState<DiagnosisSupport[]>([]);
 
 	const fetchServiceList = async () => {
 		const res = await getRemotes();
@@ -32,15 +50,38 @@ const DiseaseDiagnose: React.FC<DiseaseDiagnoseProps> = ({ onPredict }) => {
 		setServiceList(res.data);
 	};
 
+	const fetchSupportList = async () => {
+		const res = await getDiagnosisSupport();
+		if (res.code !== 200 && res.code !== 201) throw new Error("获取诊断支持列表失败，请重试！");
+		if (!res.data) throw new Error("获取诊断支持列表失败，请重试！");
+		setSupportList(res.data);
+	};
+
 	useEffect(() => {
-		fetchServiceList();
-	}, []);
+		if (type === "test") {
+			fetchServiceList();
+		} else {
+			fetchSupportList();
+		}
+	}, [type]);
 
 	// 处理级联选择器的变化
 	const handleServiceChange = (value: [number, number] | undefined) => {
 		if (value) {
 			setServiceId(value[0]);
 			setConfigId(value[1]);
+		} else {
+			setServiceId(undefined);
+			setConfigId(undefined);
+		}
+	};
+
+	// 处理 Select 选择器的变化
+	const handleSupportChange = (value: string) => {
+		const support = supportList.find(item => item.key === value);
+		if (support) {
+			setServiceId(support.value.serviceId);
+			setConfigId(support.value.configId);
 		} else {
 			setServiceId(undefined);
 			setConfigId(undefined);
@@ -97,11 +138,30 @@ const DiseaseDiagnose: React.FC<DiseaseDiagnoseProps> = ({ onPredict }) => {
 	return (
 		<Card title="图片诊断" className="max-w-3xl" variant="borderless">
 			<Space direction="vertical" className="w-full" size="large">
-				<ServiceCascader
-					serviceList={serviceList}
-					value={serviceId && configId ? [serviceId, configId] : undefined}
-					onChange={handleServiceChange}
-				/>
+				{type === "test" ? (
+					<ServiceCascader
+						serviceList={serviceList}
+						value={serviceId && configId ? [serviceId, configId] : undefined}
+						onChange={handleServiceChange}
+					/>
+				) : (
+					<Select
+						placeholder="请选择诊断支持"
+						className="w-full"
+						onChange={handleSupportChange}
+						value={
+							supportList.find(
+								item => item.value.serviceId === serviceId && item.value.configId === configId
+							)?.key
+						}
+					>
+						{supportList.map(item => (
+							<Select.Option key={item.key} value={item.key}>
+								{item.key}
+							</Select.Option>
+						))}
+					</Select>
+				)}
 				{/* 图片选择与预览 */}
 				<Card size="small" className="bg-gray-50">
 					<Upload
