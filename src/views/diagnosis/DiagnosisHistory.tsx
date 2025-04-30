@@ -1,9 +1,10 @@
-import { DiagnosisHistory } from "@/api/interface/diagnosis";
+import { DiagnosisHistory, DiagnosisSupport } from "@/api/interface/diagnosis";
 import { RemoteService } from "@/api/interface/service";
 import {
 	deleteDiagnosisHistories,
 	deleteDiagnosisHistory,
 	getDiagnosisHistoryList,
+	getDiagnosisSupport,
 	getRemotes,
 	startDiagnosis
 } from "@/api/modules";
@@ -15,8 +16,9 @@ import ServiceCascader from "@/components/ServiceCascader";
 import TextCell from "@/components/Table/TextCell";
 import { DIAGNOSIS_CLASS_NAME_ZH_CN } from "@/constants/diagnosis";
 import { DIAGNOSIS_STATUS_COLOR, DIAGNOSIS_STATUS_TEXT } from "@/constants/status";
+import { useAppSelector } from "@/hooks";
 import { DeleteOutlined, ReloadOutlined } from "@ant-design/icons";
-import { Button, message, Popconfirm, Space, Table, Tag, Tooltip, Typography } from "antd";
+import { Button, message, Popconfirm, Select, Space, Table, Tag, Tooltip, Typography } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import clsx from "clsx";
 import dayjs from "dayjs";
@@ -38,10 +40,13 @@ const DiagnosisHistoryPage: React.FC = () => {
 	const [selectedServiceId, setSelectedServiceId] = useState<number>();
 	const [selectedConfigId, setSelectedConfigId] = useState<number>();
 	const [selectedRecord, setSelectedRecord] = useState<DiagnosisHistory | null>(null);
+	const [supportList, setSupportList] = useState<DiagnosisSupport[]>([]);
 	const modalRef = useRef<DiagnosisDetailModalRef>(null);
+	const { user } = useAppSelector(state => state.user);
+	const isAdminOrExpert = user.roles?.some(role => role.name === "admin" || role.name === "expert");
 
-	// 获取诊断支持信息
-	const fetchDiagnosisSupport = async () => {
+	// 获取服务列表
+	const fetchService = async () => {
 		try {
 			const response = await getRemotes();
 			if (response.code === 200 && response.data) {
@@ -55,13 +60,28 @@ const DiagnosisHistoryPage: React.FC = () => {
 				}
 			}
 		} catch (error) {
-			console.error("获取诊断支持信息失败", error);
+			console.error("获取服务列表失败", error);
+		}
+	};
+
+	const fetchSupportList = async () => {
+		try {
+			const res = await getDiagnosisSupport();
+			if (res.code !== 200 && res.code !== 201) throw new Error("获取诊断支持列表失败，请重试！");
+			if (!res.data) throw new Error("获取诊断支持列表失败，请重试！");
+			setSupportList(res.data);
+		} catch (error) {
+			console.error("获取诊断支持列表失败", error);
 		}
 	};
 
 	useEffect(() => {
-		fetchDiagnosisSupport();
-	}, []);
+		if (isAdminOrExpert) {
+			fetchService();
+		} else {
+			fetchSupportList();
+		}
+	}, [isAdminOrExpert]);
 
 	// 获取诊断历史列表
 	const fetchDiagnosisHistory = async (page: number = 1, pageSize: number = 10) => {
@@ -138,6 +158,18 @@ const DiagnosisHistoryPage: React.FC = () => {
 		if (value) {
 			setSelectedServiceId(value[0]);
 			setSelectedConfigId(value[1]);
+		} else {
+			setSelectedServiceId(undefined);
+			setSelectedConfigId(undefined);
+		}
+	};
+
+	// 处理 Select 选择器的变化
+	const handleSupportChange = (value: string) => {
+		const support = supportList.find(item => item.key === value);
+		if (support) {
+			setSelectedServiceId(support.value.serviceId);
+			setSelectedConfigId(support.value.configId);
 		} else {
 			setSelectedServiceId(undefined);
 			setSelectedConfigId(undefined);
@@ -232,18 +264,39 @@ const DiagnosisHistoryPage: React.FC = () => {
 						查看
 					</Button>
 					<Popconfirm
-						title="选择诊断服务"
+						title={isAdminOrExpert ? "选择诊断服务" : "选择诊断支持"}
 						description={
 							<div className="py-2">
-								<ServiceCascader
-									serviceList={serviceList}
-									value={
-										selectedServiceId && selectedConfigId
-											? [selectedServiceId, selectedConfigId]
-											: undefined
-									}
-									onChange={handleServiceChange}
-								/>
+								{isAdminOrExpert ? (
+									<ServiceCascader
+										serviceList={serviceList}
+										value={
+											selectedServiceId && selectedConfigId
+												? [selectedServiceId, selectedConfigId]
+												: undefined
+										}
+										onChange={handleServiceChange}
+									/>
+								) : (
+									<Select
+										placeholder="请选择诊断支持"
+										className="w-full min-w-40"
+										onChange={handleSupportChange}
+										value={
+											supportList.find(
+												item =>
+													item.value.serviceId === selectedServiceId &&
+													item.value.configId === selectedConfigId
+											)?.key
+										}
+									>
+										{supportList.map(item => (
+											<Select.Option key={item.key} value={item.key}>
+												{item.key}
+											</Select.Option>
+										))}
+									</Select>
+								)}
 							</div>
 						}
 						onConfirm={handleServiceSelectOk}
