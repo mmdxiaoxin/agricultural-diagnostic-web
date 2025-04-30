@@ -99,6 +99,14 @@ export function createVitePlugins(viteEnv: ViteEnv, isDev: boolean) {
 			algorithm: "gzip",
 			ext: ".gz"
 		}),
+		// Brotli 压缩
+		viteCompression({
+			verbose: true,
+			disable: false,
+			threshold: 10240,
+			algorithm: "brotliCompress",
+			ext: ".br"
+		}),
 		// SVG 优化
 		viteImagemin({
 			svgo: {
