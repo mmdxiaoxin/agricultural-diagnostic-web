@@ -11,7 +11,7 @@ import React, { useEffect, useState } from "react";
 import { useSearchParams } from "react-router";
 
 const KnowledgePreview: React.FC = () => {
-	const [searchParams] = useSearchParams();
+	const [searchParams, setSearchParams] = useSearchParams();
 	const [selectedDisease, setSelectedDisease] = useState<Disease | null>(null);
 	const [loading, setLoading] = useState(false);
 	const [diseaseList, setDiseaseList] = useState<Disease[]>([]);
@@ -99,6 +99,10 @@ const KnowledgePreview: React.FC = () => {
 
 	const handleDiseaseSelect = (disease: Disease) => {
 		setSelectedDisease(disease);
+		// 更新URL参数
+		const newSearchParams = new URLSearchParams(searchParams);
+		newSearchParams.set("id", disease.id.toString());
+		setSearchParams(newSearchParams);
 	};
 
 	const handleSearch = () => {
