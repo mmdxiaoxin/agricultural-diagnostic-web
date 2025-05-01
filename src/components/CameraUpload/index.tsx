@@ -1,5 +1,5 @@
 import { CameraOutlined, LoadingOutlined } from "@ant-design/icons";
-import { Button, Image, message } from "antd";
+import { Button, Image, message, Select } from "antd";
 import clsx from "clsx";
 import { motion } from "framer-motion";
 import React, { useEffect, useRef, useState } from "react";
@@ -9,6 +9,12 @@ interface CameraUploadProps {
 	loading?: boolean;
 }
 
+interface CameraDevice {
+	deviceId: string;
+	label: string;
+	kind: string;
+}
+
 const CameraUpload: React.FC<CameraUploadProps> = ({ onCapture, loading = false }) => {
 	const videoRef = useRef<HTMLVideoElement>(null);
 	const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -16,7 +22,33 @@ const CameraUpload: React.FC<CameraUploadProps> = ({ onCapture, loading = false 
 	const [previewUrl, setPreviewUrl] = useState<string>("");
 	const [isCapturing, setIsCapturing] = useState(false);
 	const [isCompressing, setIsCompressing] = useState(false);
+	const [cameras, setCameras] = useState<CameraDevice[]>([]);
+	const [currentCamera, setCurrentCamera] = useState<string>("");
 	const workerRef = useRef<Worker | null>(null);
+
+	// 获取所有摄像头设备
+	const getCameras = async () => {
+		try {
+			const devices = await navigator.mediaDevices.enumerateDevices();
+			const videoDevices = devices
+				.filter(device => device.kind === "videoinput")
+				.map(device => ({
+					deviceId: device.deviceId,
+					label: device.label || `摄像头 ${device.deviceId.slice(0, 5)}`,
+					kind: device.kind
+				}));
+			setCameras(videoDevices);
+			if (videoDevices.length > 0) {
+				setCurrentCamera(videoDevices[0].deviceId);
+			}
+		} catch (error) {
+			message.error("获取摄像头列表失败");
+		}
+	};
+
+	useEffect(() => {
+		getCameras();
+	}, []);
 
 	useEffect(() => {
 		// 初始化 Worker
@@ -51,9 +83,13 @@ const CameraUpload: React.FC<CameraUploadProps> = ({ onCapture, loading = false 
 		};
 	}, [onCapture]);
 
-	const startCamera = async () => {
+	const startCamera = async (deviceId?: string) => {
 		try {
-			const mediaStream = await navigator.mediaDevices.getUserMedia({ video: true });
+			stopCamera(); // 先停止当前摄像头
+			const constraints = {
+				video: deviceId ? { deviceId: { exact: deviceId } } : true
+			};
+			const mediaStream = await navigator.mediaDevices.getUserMedia(constraints);
 			if (videoRef.current) {
 				videoRef.current.srcObject = mediaStream;
 				setStream(mediaStream);
@@ -68,6 +104,11 @@ const CameraUpload: React.FC<CameraUploadProps> = ({ onCapture, loading = false 
 			stream.getTracks().forEach(track => track.stop());
 			setStream(null);
 		}
+	};
+
+	const handleCameraChange = (deviceId: string) => {
+		setCurrentCamera(deviceId);
+		startCamera(deviceId);
 	};
 
 	const captureImage = async () => {
@@ -165,30 +206,31 @@ const CameraUpload: React.FC<CameraUploadProps> = ({ onCapture, loading = false 
 					</div>
 				)}
 
-				<div className="flex gap-4">
-					{!isCapturing ? (
-						<>
-							{!stream ? (
-								<Button
-									type="primary"
-									icon={<CameraOutlined />}
-									onClick={startCamera}
-									className={clsx(
-										"h-10",
-										"rounded-lg",
-										"shadow-sm hover:shadow-md",
-										"transition-all duration-300"
-									)}
-								>
-									开启摄像头
-								</Button>
-							) : (
-								<>
+				<div className="flex flex-col gap-4 w-full">
+					{!isCapturing && cameras.length > 1 && (
+						<Select
+							value={currentCamera}
+							onChange={handleCameraChange}
+							className="w-full"
+							placeholder="选择摄像头"
+							disabled={isCompressing || loading}
+						>
+							{cameras.map(camera => (
+								<Select.Option key={camera.deviceId} value={camera.deviceId}>
+									{camera.label}
+								</Select.Option>
+							))}
+						</Select>
+					)}
+
+					<div className="flex gap-4">
+						{!isCapturing ? (
+							<>
+								{!stream ? (
 									<Button
 										type="primary"
 										icon={<CameraOutlined />}
-										onClick={captureImage}
-										disabled={isCompressing || loading}
+										onClick={() => startCamera(currentCamera)}
 										className={clsx(
 											"h-10",
 											"rounded-lg",
@@ -196,47 +238,64 @@ const CameraUpload: React.FC<CameraUploadProps> = ({ onCapture, loading = false 
 											"transition-all duration-300"
 										)}
 									>
-										{isCompressing ? (
-											<>
-												<LoadingOutlined /> 压缩中...
-											</>
-										) : (
-											"拍照"
-										)}
+										开启摄像头
 									</Button>
-									<Button
-										onClick={stopCamera}
-										disabled={isCompressing || loading}
-										className={clsx(
-											"h-10",
-											"rounded-lg",
-											"shadow-sm hover:shadow-md",
-											"transition-all duration-300"
-										)}
-									>
-										关闭摄像头
-									</Button>
-								</>
-							)}
-						</>
-					) : (
-						<Button
-							onClick={() => {
-								setPreviewUrl("");
-								setIsCapturing(false);
-								startCamera();
-							}}
-							disabled={loading}
-							className={clsx(
-								"h-10",
-								"rounded-lg",
-								"shadow-sm hover:shadow-md",
-								"transition-all duration-300"
-							)}
-						>
-							重新拍照
-						</Button>
-					)}
+								) : (
+									<>
+										<Button
+											type="primary"
+											icon={<CameraOutlined />}
+											onClick={captureImage}
+											disabled={isCompressing || loading}
+											className={clsx(
+												"h-10",
+												"rounded-lg",
+												"shadow-sm hover:shadow-md",
+												"transition-all duration-300"
+											)}
+										>
+											{isCompressing ? (
+												<>
+													<LoadingOutlined /> 压缩中...
+												</>
+											) : (
+												"拍照"
+											)}
+										</Button>
+										<Button
+											onClick={stopCamera}
+											disabled={isCompressing || loading}
+											className={clsx(
+												"h-10",
+												"rounded-lg",
+												"shadow-sm hover:shadow-md",
+												"transition-all duration-300"
+											)}
+										>
+											关闭摄像头
+										</Button>
+									</>
+								)}
+							</>
+						) : (
+							<Button
+								onClick={() => {
+									setPreviewUrl("");
+									setIsCapturing(false);
+									startCamera(currentCamera);
+								}}
+								disabled={loading}
+								className={clsx(
+									"h-10",
+									"rounded-lg",
+									"shadow-sm hover:shadow-md",
+									"transition-all duration-300"
+								)}
+							>
+								重新拍照
+							</Button>
+						)}
+					</div>
 				</div>
 			</motion.div>
 		</div>
