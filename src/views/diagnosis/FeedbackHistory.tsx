@@ -222,7 +222,10 @@ const FeedbackHistory: React.FC = () => {
 									selectedRowKeys,
 									onChange: newSelectedRowKeys => {
 										setSelectedRowKeys(newSelectedRowKeys);
-									}
+									},
+									getCheckboxProps: (record: DiagnosisFeedback) => ({
+										disabled: record.status !== "pending"
+									})
 								}
 							: undefined
 					}
