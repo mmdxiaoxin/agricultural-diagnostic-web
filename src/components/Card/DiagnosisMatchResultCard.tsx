@@ -31,7 +31,7 @@ const DiagnosisMatchResultCard: React.FC<DiagnosisMatchResultCardProps> = ({ mat
 			>
 				<Space direction="vertical" className="w-full">
 					{/* 标题和匹配分数 */}
-					<div className="flex justify-between items-center">
+					<div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
 						<Title level={4} className="!mb-0">
 							{disease.name}
 						</Title>
