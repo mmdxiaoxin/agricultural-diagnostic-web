@@ -24,7 +24,7 @@ const DetectImage: React.FC<DetectImageProps> = ({ src: imageUrl, predictions, .
 		if (!imageSize.width || !imageSize.height) return;
 
 		// 创建 Worker
-		const worker = new Worker(new URL("@/workers/imageWorker.ts", import.meta.url), {
+		const worker = new Worker(new URL("@/workers/imageDetection.worker.ts", import.meta.url), {
 			type: "module"
 		});
 

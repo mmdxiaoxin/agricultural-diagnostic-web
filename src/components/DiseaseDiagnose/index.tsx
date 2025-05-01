@@ -6,7 +6,7 @@ import {
 	startDiagnosis,
 	uploadDiagnosisImage
 } from "@/api/modules";
-import { LoadingOutlined, UploadOutlined } from "@ant-design/icons";
+import { LoadingOutlined, UploadOutlined, CameraOutlined } from "@ant-design/icons";
 import {
 	Alert,
 	Button,
@@ -17,7 +17,8 @@ import {
 	Space,
 	Upload,
 	UploadFile,
-	UploadProps
+	UploadProps,
+	Tabs
 } from "antd";
 import clsx from "clsx";
 import React, { useEffect, useState } from "react";
@@ -25,6 +26,7 @@ import DiagnosisMatchResultCard from "../Card/DiagnosisMatchResultCard";
 import DiagnosisResultCard from "../Card/DiagnosisResultCard";
 import DetectImage from "../DetectImage";
 import ServiceCascader from "../ServiceCascader";
+import CameraUpload from "../CameraUpload";
 
 export interface DiseaseDiagnoseProps {
 	type?: "image" | "test";
@@ -135,6 +137,14 @@ const DiseaseDiagnose: React.FC<DiseaseDiagnoseProps> = ({ onPredict, type = "im
 		}
 	};
 
+	const handleCameraCapture = (file: File) => {
+		setSelectedImage(file);
+		setDetectionResults(undefined); // 清空上一次的检测结果
+		const reader = new FileReader();
+		reader.onload = e => setPreviewUrl(e.target?.result as string);
+		reader.readAsDataURL(file);
+	};
+
 	return (
 		<Card title="图片诊断" className="max-w-3xl" variant="borderless">
 			<Space direction="vertical" className="w-full" size="large">
@@ -164,35 +174,61 @@ const DiseaseDiagnose: React.FC<DiseaseDiagnoseProps> = ({ onPredict, type = "im
 				)}
 				{/* 图片选择与预览 */}
 				<Card size="small" className="bg-gray-50">
-					<Upload
-						accept="image/*"
-						beforeUpload={file => {
-							setSelectedImage(file);
-							setDetectionResults(undefined); // 清空上一次的检测结果
-							const reader = new FileReader();
-							reader.onload = e => setPreviewUrl(e.target?.result as string);
-							reader.readAsDataURL(file);
-							return false;
-						}}
-						showUploadList={false}
-						fileList={fileList}
-						onChange={handleChange}
-						listType="picture"
-						className="text-center"
-					>
-						<Button
-							icon={<UploadOutlined />}
-							className={clsx(
-								"px-6 h-10",
-								"rounded-lg",
-								"shadow-sm hover:shadow-md",
-								"transition-all duration-300",
-								"flex items-center gap-2"
-							)}
-						>
-							选择图片
-						</Button>
-					</Upload>
+					<Tabs
+						defaultActiveKey="upload"
+						items={[
+							{
+								key: "upload",
+								label: (
+									<span>
+										<UploadOutlined />
+										文件上传
+									</span>
+								),
+								children: (
+									<Upload
+										accept="image/*"
+										beforeUpload={file => {
+											setSelectedImage(file);
+											setDetectionResults(undefined); // 清空上一次的检测结果
+											const reader = new FileReader();
+											reader.onload = e => setPreviewUrl(e.target?.result as string);
+											reader.readAsDataURL(file);
+											return false;
+										}}
+										showUploadList={false}
+										fileList={fileList}
+										onChange={handleChange}
+										listType="picture"
+										className="text-center"
+									>
+										<Button
+											icon={<UploadOutlined />}
+											className={clsx(
+												"px-6 h-10",
+												"rounded-lg",
+												"shadow-sm hover:shadow-md",
+												"transition-all duration-300",
+												"flex items-center gap-2"
+											)}
+										>
+											选择图片
+										</Button>
+									</Upload>
+								)
+							},
+							{
+								key: "camera",
+								label: (
+									<span>
+										<CameraOutlined />
+										拍照上传
+									</span>
+								),
+								children: <CameraUpload onCapture={handleCameraCapture} loading={loading} />
+							}
+						]}
+					/>
 					{previewUrl && (
 						<div className="mt-4 text-center">
 							{detectionResults ? (

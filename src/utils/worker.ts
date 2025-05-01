@@ -5,7 +5,7 @@
  */
 export const calculateFileMd5 = (file: File) => {
 	return new Promise<string>((resolve, reject) => {
-		const worker = new Worker(new URL("@/workers/md5Worker.ts", import.meta.url), {
+		const worker = new Worker(new URL("@/workers/md5Computed.worker.ts", import.meta.url), {
 			type: "module"
 		});
 
