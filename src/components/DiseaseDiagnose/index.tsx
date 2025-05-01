@@ -6,7 +6,7 @@ import {
 	startDiagnosis,
 	uploadDiagnosisImage
 } from "@/api/modules";
-import { LoadingOutlined, UploadOutlined, CameraOutlined } from "@ant-design/icons";
+import { CameraOutlined, LoadingOutlined, UploadOutlined } from "@ant-design/icons";
 import {
 	Alert,
 	Button,
@@ -15,18 +15,19 @@ import {
 	message,
 	Select,
 	Space,
+	Tabs,
 	Upload,
 	UploadFile,
-	UploadProps,
-	Tabs
+	UploadProps
 } from "antd";
 import clsx from "clsx";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
+import CameraUpload from "../CameraUpload";
 import DiagnosisMatchResultCard from "../Card/DiagnosisMatchResultCard";
 import DiagnosisResultCard from "../Card/DiagnosisResultCard";
 import DetectImage from "../DetectImage";
+import FeedbackSubmitModal, { DiagnosisFeedbackModalRef } from "../Modal/FeedbackSubmitModal";
 import ServiceCascader from "../ServiceCascader";
-import CameraUpload from "../CameraUpload";
 
 export interface DiseaseDiagnoseProps {
 	type?: "image" | "test";
@@ -44,6 +45,8 @@ const DiseaseDiagnose: React.FC<DiseaseDiagnoseProps> = ({ onPredict, type = "im
 	const [configId, setConfigId] = useState<number>();
 	const [serviceList, setServiceList] = useState<RemoteService[]>([]);
 	const [supportList, setSupportList] = useState<DiagnosisSupport[]>([]);
+	const [diagnosisId, setDiagnosisId] = useState<number>();
+	const feedbackSubmitModalRef = useRef<DiagnosisFeedbackModalRef>(null);
 
 	const fetchServiceList = async () => {
 		const res = await getRemotes();
@@ -111,6 +114,7 @@ const DiseaseDiagnose: React.FC<DiseaseDiagnoseProps> = ({ onPredict, type = "im
 			if (uploadRes.code !== 200 && uploadRes.code !== 201) throw new Error("上传失败，请重试！");
 			if (!uploadRes.data) throw new Error("上传失败，请重试！");
 			const diagnosisId = uploadRes.data.id;
+			setDiagnosisId(diagnosisId);
 
 			// * 开始诊断
 			const diagnoseRes = await startDiagnosis({ diagnosisId, serviceId, configId });
@@ -304,6 +308,18 @@ const DiseaseDiagnose: React.FC<DiseaseDiagnoseProps> = ({ onPredict, type = "im
 						</div>
 					</Card>
 				)}
+
+				{/* 反馈 */}
+				{diagnosisId && !loading && (
+					<Button
+						type="primary"
+						onClick={() => feedbackSubmitModalRef.current?.open(diagnosisId)}
+						className="mt-4"
+					>
+						有疑问？点击进行反馈
+					</Button>
+				)}
+				<FeedbackSubmitModal ref={feedbackSubmitModalRef} />
 			</Space>
 		</Card>
 	);

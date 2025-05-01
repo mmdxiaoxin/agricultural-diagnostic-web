@@ -1,7 +1,7 @@
 import { DiagnosisHistory } from "@/api/interface/diagnosis";
 import { deleteDiagnosisHistory, downloadFile, getDiagnosisHistoryList } from "@/api/modules";
 import { DIAGNOSIS_CLASS_NAME_ZH_CN } from "@/constants/diagnosis";
-import { DeleteOutlined } from "@ant-design/icons";
+import { DeleteOutlined, MessageOutlined } from "@ant-design/icons";
 import {
 	Button,
 	Flex,
@@ -16,6 +16,7 @@ import {
 import dayjs from "dayjs";
 import { forwardRef, useEffect, useImperativeHandle, useMemo, useRef, useState } from "react";
 import DiagnosisDetailModal, { DiagnosisDetailModalRef } from "../Modal/DiagnosisDetailModal";
+import FeedbackSubmitModal, { DiagnosisFeedbackModalRef } from "../Modal/FeedbackSubmitModal";
 
 const pageSize = 5;
 
@@ -33,7 +34,8 @@ const DiagnosisHistoryList = forwardRef<DiagnosisHistoryListRef, DiagnosisHistor
 		const [loading, setLoading] = useState(false);
 		const [currentPage, setCurrentPage] = useState(1);
 		const [total, setTotal] = useState(0);
-		const modalRef = useRef<DiagnosisDetailModalRef>(null);
+		const diagnosisDetailModalRef = useRef<DiagnosisDetailModalRef>(null);
+		const feedbackSubmitModalRef = useRef<DiagnosisFeedbackModalRef>(null);
 
 		const hasMore = useMemo(() => currentPage < Math.ceil(total / pageSize), [currentPage, total]);
 
@@ -167,7 +169,8 @@ const DiagnosisHistoryList = forwardRef<DiagnosisHistoryListRef, DiagnosisHistor
 
 		return (
 			<>
-				<DiagnosisDetailModal ref={modalRef} />
+				<DiagnosisDetailModal ref={diagnosisDetailModalRef} />
+				<FeedbackSubmitModal ref={feedbackSubmitModalRef} />
 				<List
 					rowKey="id"
 					className="px-4"
@@ -185,8 +188,17 @@ const DiagnosisHistoryList = forwardRef<DiagnosisHistoryListRef, DiagnosisHistor
 						return (
 							<List.Item
 								className="hover:bg-gray-100 rounded-lg cursor-pointer group"
-								onClick={() => modalRef.current?.open(item)}
+								onClick={() => diagnosisDetailModalRef.current?.open(item)}
 								actions={[
+									<Button
+										type="text"
+										icon={<MessageOutlined />}
+										onClick={e => {
+											e.stopPropagation();
+											feedbackSubmitModalRef.current?.open(item.id);
+										}}
+										className="opacity-0 group-hover:opacity-100 transition-opacity"
+									/>,
 									<Popconfirm
 										key="delete"
 										title="确定要删除这条诊断记录吗？"

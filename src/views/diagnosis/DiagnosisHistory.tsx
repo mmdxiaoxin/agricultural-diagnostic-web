@@ -11,9 +11,9 @@ import {
 import DiagnosisDetailModal, {
 	DiagnosisDetailModalRef
 } from "@/components/Modal/DiagnosisDetailModal";
-import DiagnosisFeedbackModal, {
+import FeedbackSubmitModal, {
 	DiagnosisFeedbackModalRef
-} from "@/components/Modal/DiagnosisFeedbackModal";
+} from "@/components/Modal/FeedbackSubmitModal";
 import PageHeader from "@/components/PageHeader";
 import ServiceCascader from "@/components/ServiceCascader";
 import TextCell from "@/components/Table/TextCell";
@@ -407,7 +407,7 @@ const DiagnosisHistoryPage: React.FC = () => {
 				/>
 			</div>
 			<DiagnosisDetailModal ref={detailModalRef} />
-			<DiagnosisFeedbackModal ref={feedbackModalRef} />
+			<FeedbackSubmitModal ref={feedbackModalRef} />
 		</div>
 	);
 };

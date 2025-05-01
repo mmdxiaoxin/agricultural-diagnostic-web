@@ -8,7 +8,7 @@ export type DiagnosisFeedbackModalRef = {
 	close: () => void;
 };
 
-const DiagnosisFeedbackModal = forwardRef<DiagnosisFeedbackModalRef, DiagnosisFeedbackModalProps>(
+const FeedbackSubmitModal = forwardRef<DiagnosisFeedbackModalRef, DiagnosisFeedbackModalProps>(
 	(_, ref) => {
 		const [form] = Form.useForm();
 		const [loading, setLoading] = useState(false);
@@ -87,4 +87,6 @@ const DiagnosisFeedbackModal = forwardRef<DiagnosisFeedbackModalRef, DiagnosisFe
 	}
 );
 
-export default DiagnosisFeedbackModal;
+FeedbackSubmitModal.displayName = "FeedbackSubmitModal";
+
+export default FeedbackSubmitModal;

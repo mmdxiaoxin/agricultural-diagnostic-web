@@ -1,8 +1,8 @@
 import { DiagnosisFeedback } from "@/api/interface/diagnosis";
 import { FEEDBACK_STATUS_COLOR, FEEDBACK_STATUS_TEXT } from "@/constants/status";
-import { Modal, Descriptions, Tag } from "antd";
+import { Descriptions, Modal, Tag } from "antd";
 import dayjs from "dayjs";
-import React, { forwardRef, useImperativeHandle, useState } from "react";
+import { forwardRef, useImperativeHandle, useState } from "react";
 
 export interface FeedbackDetailModalRef {
 	open: (feedback: DiagnosisFeedback) => void;
