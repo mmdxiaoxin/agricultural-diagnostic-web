@@ -1,17 +1,27 @@
 import { getAuthRoutes } from "@/api/modules";
 import IconComponent, { Icons } from "@/components/IconComponent";
 import { useAppDispatch, useAppSelector } from "@/hooks";
-import { setThemeConfig } from "@/store/modules/globalSlice";
+import { setComponentSize, setLanguage, setThemeConfig } from "@/store/modules/globalSlice";
 import { setCollapse } from "@/store/modules/menuSlice";
-import { MenuOutlined, SettingOutlined } from "@ant-design/icons";
-import { Divider, Space, Switch, Table, TableColumnsType } from "antd";
+import { AppstoreOutlined, MenuOutlined, SettingOutlined } from "@ant-design/icons";
+import {
+	Divider,
+	message,
+	Radio,
+	RadioChangeEvent,
+	Space,
+	Switch,
+	Table,
+	TableColumnsType
+} from "antd";
 import { useEffect, useState } from "react";
+import screenfull from "screenfull";
 
 const SystemConfig: React.FC = () => {
 	const [menuList, setMenuList] = useState<Menu.MenuOptions[]>([]);
 
 	const { isCollapse } = useAppSelector(state => state.menu);
-	const { themeConfig } = useAppSelector(state => state.global);
+	const { themeConfig, componentSize, language } = useAppSelector(state => state.global);
 	const { breadcrumb, tabs, footer } = themeConfig;
 
 	const dispatch = useAppDispatch();
@@ -60,6 +70,21 @@ const SystemConfig: React.FC = () => {
 		dispatch(setCollapse(checked));
 	};
 
+	const [fullScreen, setFullScreen] = useState<boolean>(screenfull.isFullscreen);
+
+	useEffect(() => {
+		screenfull.on("change", () => {
+			if (screenfull.isFullscreen) setFullScreen(true);
+			else setFullScreen(false);
+			return () => screenfull.off("change", () => {});
+		});
+	}, []);
+
+	const handleFullScreen = () => {
+		if (!screenfull.isEnabled) message.warning("当前您的浏览器不支持全屏 ❌");
+		screenfull.toggle();
+	};
+
 	// 表格列配置
 	const columns: TableColumnsType<Menu.MenuOptions> = [
 		{
@@ -84,21 +109,6 @@ const SystemConfig: React.FC = () => {
 		<div className="w-full h-full bg-white p-4 rounded-lg overflow-y-auto">
 			<Divider>
 				<Space>
-					<MenuOutlined />
-					菜单设置
-				</Space>
-			</Divider>
-
-			{/* 树形表格展示菜单 */}
-			<Table<Menu.MenuOptions>
-				columns={columns}
-				dataSource={menuList}
-				pagination={false}
-				rowKey="path"
-			/>
-
-			<Divider>
-				<Space>
 					<SettingOutlined />
 					界面设置
 				</Space>
@@ -120,6 +130,56 @@ const SystemConfig: React.FC = () => {
 				<div className="flex justify-between items-center">
 					<span>页脚</span>
 					<Switch checked={!footer} onChange={e => onChange(e, "footer")} />
+				</div>
+				<div className="flex justify-between items-center">
+					<span>全屏</span>
+					<Switch checked={fullScreen} onChange={handleFullScreen} />
+				</div>
+			</div>
+
+			<Divider>
+				<Space>
+					<MenuOutlined />
+					菜单设置
+				</Space>
+			</Divider>
+
+			{/* 树形表格展示菜单 */}
+			<Table<Menu.MenuOptions>
+				columns={columns}
+				dataSource={menuList}
+				pagination={false}
+				rowKey="path"
+			/>
+
+			<Divider>
+				<Space>
+					<AppstoreOutlined />
+					组件设置
+				</Space>
+			</Divider>
+
+			<div className="space-y-4">
+				<div className="flex justify-between items-center">
+					<span>组件大小</span>
+					<Radio.Group
+						value={componentSize}
+						onChange={(e: RadioChangeEvent) => dispatch(setComponentSize(e.target.value))}
+					>
+						<Radio.Button value="small">小型</Radio.Button>
+						<Radio.Button value="middle">默认</Radio.Button>
+						<Radio.Button value="large">大型</Radio.Button>
+					</Radio.Group>
+				</div>
+				<div className="flex justify-between items-center">
+					<span>语言</span>
+					<Radio.Group
+						value={language}
+						onChange={(e: RadioChangeEvent) => dispatch(setLanguage(e.target.value))}
+					>
+						<Radio.Button value="zhCN">简体中文</Radio.Button>
+						<Radio.Button value="enUS">English</Radio.Button>
+					</Radio.Group>
 				</div>
 			</div>
 		</div>
