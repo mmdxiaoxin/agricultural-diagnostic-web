@@ -1,3 +1,5 @@
+import Compressor from "compressorjs";
+
 interface CompressMessage {
 	type: "compress";
 	data: {
@@ -13,7 +15,20 @@ self.onmessage = async (e: MessageEvent<CompressMessage>) => {
 		const { blob, maxWidth, maxHeight, quality } = e.data.data;
 
 		try {
-			const compressedBlob = await compressImage(blob, maxWidth, maxHeight, quality);
+			const compressedBlob = await new Promise<Blob>((resolve, reject) => {
+				new Compressor(blob, {
+					quality,
+					maxWidth,
+					maxHeight,
+					success: result => {
+						resolve(result);
+					},
+					error: err => {
+						reject(err);
+					}
+				});
+			});
+
 			self.postMessage({ type: "success", data: compressedBlob });
 		} catch (error) {
 			self.postMessage({
@@ -23,48 +38,3 @@ self.onmessage = async (e: MessageEvent<CompressMessage>) => {
 		}
 	}
 };
-
-async function compressImage(
-	blob: Blob,
-	maxWidth: number,
-	maxHeight: number,
-	quality: number
-): Promise<Blob> {
-	return new Promise((resolve, reject) => {
-		const img = new Image();
-		img.onload = () => {
-			const canvas = new OffscreenCanvas(maxWidth, maxHeight);
-			const ctx = canvas.getContext("2d");
-
-			if (!ctx) {
-				reject(new Error("无法创建画布上下文"));
-				return;
-			}
-
-			// 计算缩放比例
-			const scale = Math.min(maxWidth / img.width, maxHeight / img.height);
-
-			// 计算新的尺寸
-			const newWidth = img.width * scale;
-			const newHeight = img.height * scale;
-
-			// 绘制图像
-			ctx.drawImage(img, 0, 0, newWidth, newHeight);
-
-			// 转换为Blob
-			canvas
-				.convertToBlob({ type: "image/jpeg", quality })
-				.then(compressedBlob => {
-					if (compressedBlob) {
-						resolve(compressedBlob);
-					} else {
-						reject(new Error("压缩失败"));
-					}
-				})
-				.catch(reject);
-		};
-
-		img.onerror = () => reject(new Error("图片加载失败"));
-		img.src = URL.createObjectURL(blob);
-	});
-}
