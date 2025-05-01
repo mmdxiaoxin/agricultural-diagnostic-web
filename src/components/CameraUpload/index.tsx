@@ -1,4 +1,4 @@
-import { CameraOutlined } from "@ant-design/icons";
+import { CameraOutlined, LoadingOutlined } from "@ant-design/icons";
 import { Button, Image, message } from "antd";
 import clsx from "clsx";
 import { motion } from "framer-motion";
@@ -15,6 +15,7 @@ const CameraUpload: React.FC<CameraUploadProps> = ({ onCapture, loading = false 
 	const [stream, setStream] = useState<MediaStream | null>(null);
 	const [previewUrl, setPreviewUrl] = useState<string>("");
 	const [isCapturing, setIsCapturing] = useState(false);
+	const [isCompressing, setIsCompressing] = useState(false);
 	const workerRef = useRef<Worker | null>(null);
 
 	useEffect(() => {
@@ -34,9 +35,11 @@ const CameraUpload: React.FC<CameraUploadProps> = ({ onCapture, loading = false 
 				const url = URL.createObjectURL(compressedBlob);
 				setPreviewUrl(url);
 				setIsCapturing(true);
+				setIsCompressing(false);
 				stopCamera();
 			} else if (e.data.type === "error") {
 				message.error(e.data.error);
+				setIsCompressing(false);
 			}
 		};
 
@@ -105,6 +108,7 @@ const CameraUpload: React.FC<CameraUploadProps> = ({ onCapture, loading = false 
 
 				// 如果图片大于1MB，进行压缩
 				if (blob.size > 1024 * 1024) {
+					setIsCompressing(true);
 					workerRef.current?.postMessage({
 						type: "compress",
 						data: {
@@ -184,6 +188,7 @@ const CameraUpload: React.FC<CameraUploadProps> = ({ onCapture, loading = false 
 										type="primary"
 										icon={<CameraOutlined />}
 										onClick={captureImage}
+										disabled={isCompressing || loading}
 										className={clsx(
 											"h-10",
 											"rounded-lg",
@@ -191,10 +196,17 @@ const CameraUpload: React.FC<CameraUploadProps> = ({ onCapture, loading = false 
 											"transition-all duration-300"
 										)}
 									>
-										拍照
+										{isCompressing ? (
+											<>
+												<LoadingOutlined /> 压缩中...
+											</>
+										) : (
+											"拍照"
+										)}
 									</Button>
 									<Button
 										onClick={stopCamera}
+										disabled={isCompressing || loading}
 										className={clsx(
 											"h-10",
 											"rounded-lg",
@@ -214,6 +226,7 @@ const CameraUpload: React.FC<CameraUploadProps> = ({ onCapture, loading = false 
 								setIsCapturing(false);
 								startCamera();
 							}}
+							disabled={loading}
 							className={clsx(
 								"h-10",
 								"rounded-lg",
