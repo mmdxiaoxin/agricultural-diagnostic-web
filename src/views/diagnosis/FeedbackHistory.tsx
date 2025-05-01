@@ -1,9 +1,12 @@
 import { DiagnosisFeedback } from "@/api/interface/diagnosis";
 import {
 	deleteDiagnosisFeedback,
-	getDiagnosisFeedbackList,
-	deleteDiagnosisFeedbacks
+	deleteDiagnosisFeedbacks,
+	getDiagnosisFeedbackList
 } from "@/api/modules/diagnosis";
+import FeedbackDetailModal, {
+	FeedbackDetailModalRef
+} from "@/components/Modal/FeedbackDetailModal";
 import PageHeader from "@/components/PageHeader";
 import TextCell from "@/components/Table/TextCell";
 import { FEEDBACK_STATUS_COLOR, FEEDBACK_STATUS_TEXT } from "@/constants/status";
@@ -12,7 +15,7 @@ import { Button, message, Popconfirm, Space, Table, Tag } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import clsx from "clsx";
 import dayjs from "dayjs";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 const FeedbackHistory: React.FC = () => {
 	const [loading, setLoading] = useState(false);
@@ -24,6 +27,7 @@ const FeedbackHistory: React.FC = () => {
 	});
 	const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
 	const [isSelectMode, setIsSelectMode] = useState(false);
+	const detailModalRef = useRef<FeedbackDetailModalRef>(null);
 
 	// 获取反馈历史列表
 	const fetchFeedbackHistory = async (page: number = 1, pageSize: number = 10) => {
@@ -74,8 +78,7 @@ const FeedbackHistory: React.FC = () => {
 
 	// 查看详情
 	const handleViewDetail = (record: DiagnosisFeedback) => {
-		// TODO: 实现查看详情功能
-		console.log("查看详情", record);
+		detailModalRef.current?.open(record);
 	};
 
 	// 表格列定义
@@ -212,6 +215,8 @@ const FeedbackHistory: React.FC = () => {
 					className={clsx("transition-all duration-300", isSelectMode && "bg-gray-50")}
 				/>
 			</div>
+
+			<FeedbackDetailModal ref={detailModalRef} />
 		</div>
 	);
 };
