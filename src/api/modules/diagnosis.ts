@@ -2,11 +2,14 @@ import http from "@/api";
 import { PageData, ReqPage } from "../interface";
 import {
 	DiagnoseResult,
+	DiagnosisFeedback,
 	DiagnosisLog,
 	DiagnosisSupport,
+	ReqCreateDiagnosisFeedback,
 	ReqDiagnosisHistoryList,
 	ReqDiagnosisSupport,
 	ReqStartDiagnoseDisease,
+	ReqUpdateDiagnosisFeedback,
 	ResDiagnosisHistoryList,
 	ResUploadDiagnosisImage
 } from "../interface/diagnosis";
@@ -97,4 +100,39 @@ export const updateDiagnosisSupport = async (id: number | string, params: ReqDia
 // * 删除诊断支持
 export const deleteDiagnosisSupport = async (id: number | string) => {
 	return http.delete<null>(`/diagnosis/support/${id}`);
+};
+
+// * 获取诊断反馈列表
+export const getDiagnosisFeedbackList = async (params: ReqPage & { status?: string }) => {
+	return http.get<PageData<DiagnosisFeedback>>("/diagnosis/feedback/list", params, {
+		loading: false
+	});
+};
+
+// * 获取诊断反馈详情
+export const getDiagnosisFeedbackDetail = async (id: number | string) => {
+	return http.get<DiagnosisFeedback>(`/diagnosis/feedback/${id}`, {}, { loading: false });
+};
+
+// * 创建诊断反馈
+export const createDiagnosisFeedback = async (
+	diagnosisId: number | string,
+	params: ReqCreateDiagnosisFeedback
+) => {
+	return http.post<DiagnosisFeedback>(`/diagnosis/history/${diagnosisId}/feedback`, params, {
+		loading: false
+	});
+};
+
+// * 更新诊断反馈
+export const updateDiagnosisFeedback = async (
+	id: number | string,
+	params: ReqUpdateDiagnosisFeedback
+) => {
+	return http.put<DiagnosisFeedback>(`/diagnosis/feedback/${id}`, params, { loading: false });
+};
+
+// * 删除诊断反馈
+export const deleteDiagnosisFeedback = async (id: number | string) => {
+	return http.delete<null>(`/diagnosis/feedback/${id}`);
 };

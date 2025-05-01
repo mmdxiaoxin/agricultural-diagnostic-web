@@ -11,6 +11,9 @@ import {
 import DiagnosisDetailModal, {
 	DiagnosisDetailModalRef
 } from "@/components/Modal/DiagnosisDetailModal";
+import DiagnosisFeedbackModal, {
+	DiagnosisFeedbackModalRef
+} from "@/components/Modal/DiagnosisFeedbackModal";
 import PageHeader from "@/components/PageHeader";
 import ServiceCascader from "@/components/ServiceCascader";
 import TextCell from "@/components/Table/TextCell";
@@ -41,7 +44,8 @@ const DiagnosisHistoryPage: React.FC = () => {
 	const [selectedConfigId, setSelectedConfigId] = useState<number>();
 	const [selectedRecord, setSelectedRecord] = useState<DiagnosisHistory | null>(null);
 	const [supportList, setSupportList] = useState<DiagnosisSupport[]>([]);
-	const modalRef = useRef<DiagnosisDetailModalRef>(null);
+	const detailModalRef = useRef<DiagnosisDetailModalRef>(null);
+	const feedbackModalRef = useRef<DiagnosisFeedbackModalRef>(null);
 	const { user } = useAppSelector(state => state.user);
 	const isAdminOrExpert = user.roles?.some(role => role.name === "admin" || role.name === "expert");
 
@@ -132,7 +136,7 @@ const DiagnosisHistoryPage: React.FC = () => {
 
 	// 查看详情
 	const handleViewDetail = (record: DiagnosisHistory) => {
-		modalRef.current?.open(record);
+		detailModalRef.current?.open(record);
 	};
 
 	// 重新诊断
@@ -262,6 +266,13 @@ const DiagnosisHistoryPage: React.FC = () => {
 						className="text-blue-500 hover:text-blue-600"
 					>
 						查看
+					</Button>
+					<Button
+						type="link"
+						onClick={() => feedbackModalRef.current?.open(record.id)}
+						className="text-blue-500 hover:text-blue-600"
+					>
+						反馈
 					</Button>
 					<Popconfirm
 						title={isAdminOrExpert ? "选择诊断服务" : "选择诊断支持"}
@@ -393,7 +404,8 @@ const DiagnosisHistoryPage: React.FC = () => {
 					className={clsx("transition-all duration-300", isSelectMode && "bg-gray-50")}
 				/>
 			</div>
-			<DiagnosisDetailModal ref={modalRef} />
+			<DiagnosisDetailModal ref={detailModalRef} />
+			<DiagnosisFeedbackModal ref={feedbackModalRef} />
 		</div>
 	);
 };
