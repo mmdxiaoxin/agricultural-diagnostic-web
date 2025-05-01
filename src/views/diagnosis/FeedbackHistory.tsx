@@ -11,7 +11,7 @@ import PageHeader from "@/components/PageHeader";
 import TextCell from "@/components/Table/TextCell";
 import { FEEDBACK_STATUS_COLOR, FEEDBACK_STATUS_TEXT } from "@/constants/status";
 import { DeleteOutlined, EyeOutlined } from "@ant-design/icons";
-import { Button, message, Popconfirm, Space, Table, Tag } from "antd";
+import { Button, message, Popconfirm, Select, Space, Table, Tag } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import clsx from "clsx";
 import dayjs from "dayjs";
@@ -30,10 +30,18 @@ const FeedbackHistory: React.FC = () => {
 	const detailModalRef = useRef<FeedbackDetailModalRef>(null);
 
 	// 获取反馈历史列表
-	const fetchFeedbackHistory = async (page: number = 1, pageSize: number = 10) => {
+	const fetchFeedbackHistory = async (
+		page: number = 1,
+		pageSize: number = 10,
+		status: string = "all"
+	) => {
 		setLoading(true);
 		try {
-			const response = await getDiagnosisFeedbackList({ page, pageSize });
+			const response = await getDiagnosisFeedbackList({
+				page,
+				pageSize,
+				status: status === "all" ? undefined : status
+			});
 			if (response.code === 200 && response.data) {
 				setData(response.data.list);
 				setPagination({
@@ -155,6 +163,11 @@ const FeedbackHistory: React.FC = () => {
 		fetchFeedbackHistory(newPagination.current, newPagination.pageSize);
 	};
 
+	// 状态变化
+	const handleStatusChange = (value: string) => {
+		fetchFeedbackHistory(pagination.current, pagination.pageSize, value);
+	};
+
 	// 选择模式切换
 	const toggleSelectMode = () => {
 		setIsSelectMode(!isSelectMode);
@@ -185,6 +198,20 @@ const FeedbackHistory: React.FC = () => {
 					onToggle: toggleSelectMode,
 					onBatchDelete: handleBatchDelete
 				}}
+				extra={
+					<Select
+						defaultValue={"all"}
+						style={{ width: 120, height: 36 }}
+						onChange={handleStatusChange}
+					>
+						<Select.Option value={"all"}>全部</Select.Option>
+						{Object.entries(FEEDBACK_STATUS_TEXT).map(([key, value]) => (
+							<Select.Option key={key} value={key}>
+								{value}
+							</Select.Option>
+						))}
+					</Select>
+				}
 			/>
 
 			<div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
