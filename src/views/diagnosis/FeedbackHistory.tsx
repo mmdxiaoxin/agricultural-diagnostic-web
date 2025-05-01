@@ -1,5 +1,9 @@
 import { DiagnosisFeedback } from "@/api/interface/diagnosis";
-import { deleteDiagnosisFeedback, getDiagnosisFeedbackList } from "@/api/modules/diagnosis";
+import {
+	deleteDiagnosisFeedback,
+	getDiagnosisFeedbackList,
+	deleteDiagnosisFeedbacks
+} from "@/api/modules/diagnosis";
 import PageHeader from "@/components/PageHeader";
 import TextCell from "@/components/Table/TextCell";
 import { FEEDBACK_STATUS_COLOR, FEEDBACK_STATUS_TEXT } from "@/constants/status";
@@ -57,7 +61,7 @@ const FeedbackHistory: React.FC = () => {
 	// 批量删除
 	const handleBatchDelete = async () => {
 		try {
-			await Promise.all(selectedRowKeys.map(id => deleteDiagnosisFeedback(id as number)));
+			await deleteDiagnosisFeedbacks({ feedbackIds: selectedRowKeys.join(",") });
 			message.success("批量删除成功");
 			setSelectedRowKeys([]);
 			setIsSelectMode(false);

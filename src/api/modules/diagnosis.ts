@@ -109,6 +109,13 @@ export const getDiagnosisFeedbackList = async (params: ReqPage & { status?: stri
 	});
 };
 
+// * 获取诊断反馈列表(管理员、专家)
+export const getDiagnosisFeedbackListForAdmin = async (params: ReqPage & { status?: string }) => {
+	return http.get<PageData<DiagnosisFeedback>>("/diagnosis/feedback/list/all", params, {
+		loading: false
+	});
+};
+
 // * 获取诊断反馈详情
 export const getDiagnosisFeedbackDetail = async (id: number | string) => {
 	return http.get<DiagnosisFeedback>(`/diagnosis/feedback/${id}`, {}, { loading: false });
@@ -135,4 +142,9 @@ export const updateDiagnosisFeedback = async (
 // * 删除诊断反馈
 export const deleteDiagnosisFeedback = async (id: number | string) => {
 	return http.delete<null>(`/diagnosis/feedback/${id}`);
+};
+
+// * 批量删除诊断反馈
+export const deleteDiagnosisFeedbacks = async (params: { feedbackIds: string }) => {
+	return http.delete<null>(`/diagnosis/feedback`, params);
 };
