@@ -282,12 +282,14 @@ const FileManage: React.FC<FileManageProps> = () => {
 		{
 			title: "文件名",
 			dataIndex: "originalFileName",
-			render: (text: string, record: FileMeta) => <FilePreview meta={record} text={text} />
+			render: (text: string, record: FileMeta) => <FilePreview meta={record} text={text} />,
+			responsive: ["xs", "sm", "md", "lg", "xl", "xxl"]
 		},
 		{
 			title: "文件类型",
 			dataIndex: "fileType",
-			render: (type: MIMETypeValue) => <FileTypeTag type={type} />
+			render: (type: MIMETypeValue) => <FileTypeTag type={type} />,
+			responsive: ["md", "lg", "xl", "xxl"]
 		},
 		{
 			title: "权限",
@@ -299,27 +301,32 @@ const FileManage: React.FC<FileManageProps> = () => {
 						handleFileAccessChange(record.id, newAccess);
 					}}
 				/>
-			)
+			),
+			responsive: ["xs", "sm", "md", "lg", "xl", "xxl"]
 		},
 		{
 			title: "大小",
 			dataIndex: "fileSize",
-			render: (size: number) => formatSize(size)
+			render: (size: number) => formatSize(size),
+			responsive: ["lg", "xl", "xxl"]
 		},
 		{
 			title: "创建时间",
 			dataIndex: "createdAt",
-			render: (date: string) => dayjs(date).format("YYYY-MM-DD HH:mm")
+			render: (date: string) => dayjs(date).format("YYYY-MM-DD HH:mm"),
+			responsive: ["lg", "xl", "xxl"]
 		},
 		{
 			title: "更新时间",
 			dataIndex: "updatedAt",
-			render: (date: string) => dayjs(date).format("YYYY-MM-DD HH:mm")
+			render: (date: string) => dayjs(date).format("YYYY-MM-DD HH:mm"),
+			responsive: ["lg", "xl", "xxl"]
 		},
 		{
 			title: "操作",
+			responsive: ["xs", "sm", "md", "lg", "xl", "xxl"],
 			render: (_: any, record: FileMeta) => (
-				<Space>
+				<Space wrap className="flex-col lg:flex-row">
 					<Popconfirm
 						title="确认下载"
 						icon={<DownloadOutlined style={{ color: "green" }} />}
@@ -557,6 +564,7 @@ const FileManage: React.FC<FileManageProps> = () => {
 					dataSource={fileList}
 					rowKey="id"
 					loading={loading}
+					scroll={{ x: "max-content" }}
 					pagination={{
 						current: pagination.page,
 						pageSize: pagination.pageSize,

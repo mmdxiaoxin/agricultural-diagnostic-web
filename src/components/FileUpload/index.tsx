@@ -212,7 +212,7 @@ const FileUpload: React.FC<FileUploadProps> = ({ onUpload }) => {
 				{/* 控制开关 */}
 				<div
 					className={clsx(
-						"flex justify-between items-center",
+						"flex justify-between items-center flex-wrap",
 						"p-4",
 						"rounded-xl",
 						"bg-white",
@@ -220,8 +220,8 @@ const FileUpload: React.FC<FileUploadProps> = ({ onUpload }) => {
 						"border border-gray-100"
 					)}
 				>
-					<div className="flex items-center gap-4">
-						<div className="flex items-center gap-2">
+					<div className="flex items-center gap-4 flex-wrap mb-4 lg:mb-0">
+						<div className="flex items-center gap-2 flex-wrap">
 							<span className="text-gray-600">目录模式：</span>
 							<Switch
 								checkedChildren="开启"
