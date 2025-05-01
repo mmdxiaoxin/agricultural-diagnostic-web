@@ -129,17 +129,19 @@ const FeedbackHistory: React.FC = () => {
 					>
 						查看
 					</Button>
-					<Popconfirm
-						title="确定要删除这条反馈记录吗？"
-						description="删除后将无法恢复"
-						onConfirm={() => handleDelete(record.id)}
-						okText="确定"
-						cancelText="取消"
-					>
-						<Button type="link" danger icon={<DeleteOutlined />}>
-							删除
-						</Button>
-					</Popconfirm>
+					{record.status === "pending" && (
+						<Popconfirm
+							title="确定要删除这条反馈记录吗？"
+							description="删除后将无法恢复"
+							onConfirm={() => handleDelete(record.id)}
+							okText="确定"
+							cancelText="取消"
+						>
+							<Button type="link" danger icon={<DeleteOutlined />}>
+								删除
+							</Button>
+						</Popconfirm>
+					)}
 				</Space>
 			)
 		}
