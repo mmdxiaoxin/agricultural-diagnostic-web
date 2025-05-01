@@ -26,7 +26,7 @@ const AvatarIcon = () => {
 	const fetchUser = async () => {
 		try {
 			const response = await getUserProfile();
-			if (response.code !== 200 || !response.data) {
+			if (!response.data) {
 				throw new Error(response.message);
 			}
 			dispatch(setUser(response.data));

@@ -38,6 +38,15 @@ const diagnosisRoutes: RouteObjectEx[] = [
 			title: "诊断历史",
 			key: "diagnosis-history"
 		}
+	},
+	{
+		path: "/diagnosis/feedback",
+		element: lazyLoad(React.lazy(() => import("@/views/diagnosis/FeedbackHistory"))),
+		meta: {
+			requiresAuth: true,
+			title: "反馈历史",
+			key: "diagnosis-feedback"
+		}
 	}
 ];
 
