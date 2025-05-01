@@ -1,7 +1,7 @@
-import { Button, Input, Popconfirm, Space, Tag, Typography } from "antd";
+import { DownOutlined, UpOutlined } from "@ant-design/icons";
+import { Button, Input, Popconfirm, Tag, Typography } from "antd";
 import clsx from "clsx";
 import { ReactNode, useState } from "react";
-import { DownOutlined, UpOutlined } from "@ant-design/icons";
 
 interface SearchConfig {
 	placeholder?: string;
@@ -91,25 +91,27 @@ const PageHeader = ({
 				className
 			)}
 		>
-			<div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 sm:gap-3 md:gap-4">
-				<div className="flex items-center gap-2">
+			{/* 标题行 */}
+			<div className="flex items-center justify-between gap-2">
+				<div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
 					{collapsible && (
 						<Button
 							type="text"
 							icon={collapsed ? <DownOutlined /> : <UpOutlined />}
 							onClick={() => setCollapsed(!collapsed)}
-							className="p-0 h-auto"
+							className="p-0 h-auto text-gray-500 hover:text-gray-700 flex-shrink-0"
 						/>
 					)}
 					{collapsed ? (
-						<span className="text-base font-medium text-gray-800">{title}</span>
+						<span className="text-sm sm:text-base font-medium text-gray-800 truncate">{title}</span>
 					) : (
 						<Typography.Title
 							level={2}
 							className={clsx(
-								"text-base sm:text-lg md:text-xl",
+								"text-sm sm:text-lg md:text-xl",
 								"font-semibold text-gray-800",
-								"mb-0 sm:mb-0.5 md:mb-1"
+								"mb-0 sm:mb-0.5 md:mb-1",
+								"truncate"
 							)}
 						>
 							{title}
@@ -117,103 +119,109 @@ const PageHeader = ({
 					)}
 				</div>
 				{!collapsed && (
-					<Space direction="vertical" size="small" className="w-full sm:w-auto" split={null}>
-						{search && (
-							<Input.Search
-								placeholder={search.placeholder || "搜索..."}
-								value={search.value}
-								onChange={e => search.onChange?.(e.target.value)}
-								onSearch={search.onSearch}
-								allowClear
+					<div className="flex-shrink-0">
+						{actionButton && (
+							<Button
+								type={actionButton.type || "primary"}
+								danger={actionButton.danger}
+								disabled={actionButton.disabled}
+								icon={actionButton.icon}
+								onClick={actionButton.onClick}
 								className={clsx(
-									"w-full sm:w-48 md:w-56 lg:w-64",
-									"h-7 sm:h-8 md:h-9",
+									"h-8 sm:h-8 md:h-9",
+									"px-2.5 sm:px-4 md:px-6",
 									"rounded-lg",
-									"border-gray-200",
-									"focus:border-blue-500",
-									"focus:ring-1 focus:ring-blue-500",
+									"shadow-sm hover:shadow-md",
 									"transition-all duration-300",
+									"flex items-center justify-center gap-1 sm:gap-2",
 									"text-xs sm:text-sm",
-									search.className
+									actionButton.className
 								)}
-								style={search.style}
-							/>
+							>
+								{actionButton.text}
+							</Button>
 						)}
-						<Space className="w-full sm:w-auto justify-end sm:justify-start" size="small">
-							{selectMode && (
-								<>
-									<Button
-										type={selectMode.enabled ? "primary" : "default"}
-										onClick={selectMode.onToggle}
-										className={clsx(
-											"w-full sm:w-auto",
-											"h-7 sm:h-8 md:h-9",
-											"px-3 sm:px-4 md:px-6",
-											"rounded-lg",
-											"shadow-sm hover:shadow-md",
-											"transition-all duration-300",
-											"flex items-center gap-1 sm:gap-2",
-											"text-xs sm:text-sm",
-											selectMode.enabled && "bg-blue-500 hover:bg-blue-600 border-none"
-										)}
-									>
-										{selectMode.enabled ? "退出选择" : "批量选择"}
-									</Button>
-									{selectMode.enabled && selectMode.onBatchDelete && (
-										<Popconfirm
-											title="确定要删除选中的记录吗？"
-											description={`已选择 ${selectMode.selectedCount} 条记录，删除后将无法恢复`}
-											onConfirm={selectMode.onBatchDelete}
-											okText="确定"
-											cancelText="取消"
-										>
-											<Button
-												danger
-												disabled={selectMode.selectedCount === 0}
-												className={clsx(
-													"w-full sm:w-auto",
-													"h-7 sm:h-8 md:h-9",
-													"px-3 sm:px-4 md:px-6",
-													"rounded-lg",
-													"shadow-sm hover:shadow-md",
-													"transition-all duration-300",
-													"flex items-center gap-1 sm:gap-2",
-													"text-xs sm:text-sm"
-												)}
-											>
-												批量删除
-											</Button>
-										</Popconfirm>
-									)}
-								</>
+					</div>
+				)}
+			</div>
+
+			{/* 操作区域 */}
+			{!collapsed && (
+				<div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 md:gap-4">
+					{search && (
+						<Input.Search
+							placeholder={search.placeholder || "搜索..."}
+							value={search.value}
+							onChange={e => search.onChange?.(e.target.value)}
+							onSearch={search.onSearch}
+							allowClear
+							className={clsx(
+								"w-full sm:w-48 md:w-56 lg:w-64",
+								"h-8 sm:h-8 md:h-9",
+								"rounded-lg",
+								"border-gray-200",
+								"focus:border-blue-500",
+								"focus:ring-1 focus:ring-blue-500",
+								"transition-all duration-300",
+								"text-xs sm:text-sm",
+								search.className
 							)}
-							{actionButton && (
+							style={search.style}
+						/>
+					)}
+					<div className="flex flex-wrap gap-1.5 sm:gap-3">
+						{selectMode && (
+							<>
 								<Button
-									type={actionButton.type || "primary"}
-									danger={actionButton.danger}
-									disabled={actionButton.disabled}
-									icon={actionButton.icon}
-									onClick={actionButton.onClick}
+									type={selectMode.enabled ? "primary" : "default"}
+									onClick={selectMode.onToggle}
 									className={clsx(
 										"w-full sm:w-auto",
-										"h-7 sm:h-8 md:h-9",
-										"px-3 sm:px-4 md:px-6",
+										"h-8 sm:h-8 md:h-9",
+										"px-2.5 sm:px-4 md:px-6",
 										"rounded-lg",
 										"shadow-sm hover:shadow-md",
 										"transition-all duration-300",
-										"flex items-center gap-1 sm:gap-2",
+										"flex items-center justify-center gap-1 sm:gap-2",
 										"text-xs sm:text-sm",
-										actionButton.className
+										selectMode.enabled && "bg-blue-500 hover:bg-blue-600 border-none"
 									)}
 								>
-									{actionButton.text}
+									{selectMode.enabled ? "退出选择" : "批量选择"}
 								</Button>
-							)}
-							{extra}
-						</Space>
-					</Space>
-				)}
-			</div>
+								{selectMode.enabled && selectMode.onBatchDelete && (
+									<Popconfirm
+										title="确定要删除选中的记录吗？"
+										description={`已选择 ${selectMode.selectedCount} 条记录，删除后将无法恢复`}
+										onConfirm={selectMode.onBatchDelete}
+										okText="确定"
+										cancelText="取消"
+									>
+										<Button
+											danger
+											disabled={selectMode.selectedCount === 0}
+											className={clsx(
+												"w-full sm:w-auto",
+												"h-8 sm:h-8 md:h-9",
+												"px-2.5 sm:px-4 md:px-6",
+												"rounded-lg",
+												"shadow-sm hover:shadow-md",
+												"transition-all duration-300",
+												"flex items-center justify-center gap-1 sm:gap-2",
+												"text-xs sm:text-sm"
+											)}
+										>
+											批量删除
+										</Button>
+									</Popconfirm>
+								)}
+							</>
+						)}
+						{extra}
+					</div>
+				</div>
+			)}
+
 			{!collapsed && (
 				<>
 					{description && (
