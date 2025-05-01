@@ -32,7 +32,8 @@ export const Icons = {
 	PlantIcon: React.lazy(() => import("@/components/icons/PlantIcon")),
 	DiseaseIcon: React.lazy(() => import("@/components/icons/DiseaseIcon")),
 	BugOutlined: React.lazy(() => import("@ant-design/icons/BugOutlined")),
-	MessageOutlined: React.lazy(() => import("@ant-design/icons/MessageOutlined"))
+	MessageOutlined: React.lazy(() => import("@ant-design/icons/MessageOutlined")),
+	ExceptionOutlined: React.lazy(() => import("@ant-design/icons/ExceptionOutlined"))
 } as const;
 
 export type IconComponentProps = {

@@ -47,6 +47,15 @@ const diagnosisRoutes: RouteObjectEx[] = [
 			title: "反馈历史",
 			key: "diagnosis-feedback"
 		}
+	},
+	{
+		path: "/diagnosis/feedback/handle",
+		element: lazyLoad(React.lazy(() => import("@/views/diagnosis/FeedbackHandle"))),
+		meta: {
+			requiresAuth: true,
+			title: "反馈处理",
+			key: "diagnosis-feedback-handle"
+		}
 	}
 ];
 
