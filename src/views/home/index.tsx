@@ -7,6 +7,7 @@ import {
 	DatabaseOutlined,
 	FileSearchOutlined,
 	HistoryOutlined,
+	MessageOutlined,
 	SettingOutlined,
 	TeamOutlined,
 	ToolOutlined
@@ -52,6 +53,20 @@ const HomeIndex: React.FC = () => {
 			description: "基于AI的病害诊断系统，快速识别作物病害",
 			path: "/diagnosis/history",
 			roles: ["user", "expert", "admin"]
+		},
+		{
+			title: "反馈历史",
+			icon: <MessageOutlined className="text-2xl" />,
+			description: "查看反馈历史，查看问题记录",
+			path: "/diagnosis/feedback",
+			roles: ["expert", "admin", "user"]
+		},
+		{
+			title: "反馈处理",
+			icon: <MessageOutlined className="text-2xl" />,
+			description: "处理用户反馈，解决用户疑问",
+			path: "/diagnosis/feedback/handle",
+			roles: ["expert", "admin"]
 		},
 		{
 			title: "模型预览",
