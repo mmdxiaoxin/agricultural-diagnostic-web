@@ -20,7 +20,7 @@ import TextCell from "@/components/Table/TextCell";
 import { DIAGNOSIS_CLASS_NAME_ZH_CN } from "@/constants/diagnosis";
 import { DIAGNOSIS_STATUS_COLOR, DIAGNOSIS_STATUS_TEXT } from "@/constants/status";
 import { useAppSelector } from "@/hooks";
-import { DeleteOutlined, ReloadOutlined } from "@ant-design/icons";
+import { DeleteOutlined, EyeOutlined, MessageOutlined, ReloadOutlined } from "@ant-design/icons";
 import { Button, message, Popconfirm, Select, Space, Table, Tag, Tooltip, Typography } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import clsx from "clsx";
@@ -261,6 +261,7 @@ const DiagnosisHistoryPage: React.FC = () => {
 			render: (_, record) => (
 				<Space wrap className="flex-col lg:flex-row">
 					<Button
+						icon={<EyeOutlined />}
 						type="link"
 						onClick={() => handleViewDetail(record)}
 						className="text-blue-500 hover:text-blue-600"
@@ -268,6 +269,7 @@ const DiagnosisHistoryPage: React.FC = () => {
 						查看
 					</Button>
 					<Button
+						icon={<MessageOutlined />}
 						type="link"
 						onClick={() => feedbackModalRef.current?.open(record.id)}
 						className="text-blue-500 hover:text-blue-600"
