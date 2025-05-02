@@ -340,7 +340,7 @@ const UserManage = () => {
 								</div>
 							</div>
 						),
-						rowExpandable: record => true,
+						rowExpandable: _ => true,
 						expandIcon: ({ expanded, onExpand, record }) => (
 							<Tooltip title={expanded ? "收起" : "展开"}>
 								<Button
