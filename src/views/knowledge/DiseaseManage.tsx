@@ -135,8 +135,10 @@ const DiseaseManage: React.FC = () => {
 		{
 			title: "操作",
 			key: "action",
+			fixed: "right",
+			responsive: ["xs", "sm", "md", "lg", "xl", "xxl"],
 			render: (_: any, record) => (
-				<Space size="middle">
+				<Space wrap className="flex-col sm:flex-row">
 					<Tooltip title="预览">
 						<Button
 							type="link"
@@ -156,8 +158,7 @@ const DiseaseManage: React.FC = () => {
 						<Button type="link" icon={<DeleteOutlined />} danger />
 					</Popconfirm>
 				</Space>
-			),
-			fixed: "right"
+			)
 		}
 	];
 

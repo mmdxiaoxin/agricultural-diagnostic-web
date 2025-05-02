@@ -78,7 +78,21 @@ const CropModal = forwardRef<CropModalRef, CropModalProps>(({ onReset, onSubmit 
 	};
 
 	return (
-		<Modal open={visible} title={getTitle(type)} onCancel={handleCancel} footer={null}>
+		<Modal
+			open={visible}
+			title={getTitle(type)}
+			onCancel={handleCancel}
+			footer={null}
+			width={{
+				xs: "90%",
+				sm: "90%",
+				md: "50%",
+				lg: "50%",
+				xl: "40%",
+				xxl: "30%"
+			}}
+			style={{ height: "100%", overflowY: "auto" }}
+		>
 			<Form
 				form={form}
 				name="crop_information"

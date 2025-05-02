@@ -2,8 +2,10 @@ import { Crop } from "@/api/interface/knowledge/crop"; // 假设您有一个 Cro
 import { deleteCrop, getCropsList } from "@/api/modules/Knowledge";
 import CropModal, { CropModalRef } from "@/components/Modal/CropModal";
 import PageHeader from "@/components/PageHeader";
+import TextCell from "@/components/Table/TextCell";
 import { DeleteOutlined, EditOutlined, PlusOutlined } from "@ant-design/icons";
 import { Button, Card, message, Modal, Space, Table, Tooltip } from "antd";
+import { ColumnType } from "antd/es/table";
 import clsx from "clsx";
 import React, { useEffect, useRef, useState } from "react";
 
@@ -79,28 +81,34 @@ const CropManage: React.FC = () => {
 		});
 	};
 
-	const columns = [
+	const columns: ColumnType<Crop>[] = [
 		{
 			title: "作物名称",
 			dataIndex: "name",
 			key: "name",
-			render: (text: string) => <span className="font-medium">{text}</span>
+			render: text => <TextCell className="font-medium" text={text} />,
+			responsive: ["xs", "sm", "md", "lg", "xl", "xxl"]
 		},
 		{
 			title: "学名",
 			dataIndex: "scientificName",
-			key: "scientificName"
+			key: "scientificName",
+			render: text => <TextCell text={text} />,
+			responsive: ["sm", "md", "lg", "xl", "xxl"]
 		},
 		{
 			title: "生长阶段",
 			dataIndex: "growthStage",
-			key: "growthStage"
+			key: "growthStage",
+			render: text => <TextCell text={text} />,
+			responsive: ["md", "lg", "xl", "xxl"]
 		},
 		{
 			title: "操作",
 			key: "action",
-			render: (_: any, record: Crop) => (
-				<Space size="middle">
+			responsive: ["xs", "sm", "md", "lg", "xl", "xxl"],
+			render: (_: string, record) => (
+				<Space wrap className="flex flex-col sm:flex-row">
 					<Tooltip title="编辑">
 						<Button type="link" icon={<EditOutlined />} onClick={() => handleEditCrop(record)} />
 					</Tooltip>
@@ -155,6 +163,7 @@ const CropManage: React.FC = () => {
 					dataSource={crops}
 					loading={loading}
 					rowKey="id"
+					scroll={{ x: "max-content" }}
 					pagination={{
 						current: params.page,
 						pageSize: params.pageSize,
