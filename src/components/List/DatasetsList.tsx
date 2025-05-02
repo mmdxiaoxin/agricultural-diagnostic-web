@@ -22,7 +22,7 @@ const DatasetsList: React.FC<DatasetsListProps> = ({
 	isPublic = false
 }) => {
 	return (
-		<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6 p-4">
+		<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6 lg:p-4">
 			{datasets?.map((dataset, index) => (
 				<DatasetCard
 					key={dataset.id}

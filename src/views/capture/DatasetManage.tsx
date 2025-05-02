@@ -8,13 +8,9 @@ import {
 	updateDatasetAccess
 } from "@/api/modules";
 import DatasetsList from "@/components/List/DatasetsList";
-import {
-	DownloadOutlined,
-	FolderAddOutlined,
-	PlusOutlined,
-	SearchOutlined
-} from "@ant-design/icons";
-import { Button, FloatButton, Input, message, Spin, Tabs, Tooltip } from "antd";
+import PageHeader from "@/components/PageHeader";
+import { DownloadOutlined, FolderAddOutlined, PlusOutlined } from "@ant-design/icons";
+import { FloatButton, message, Spin, Tabs, Tooltip } from "antd";
 import clsx from "clsx";
 import { motion } from "framer-motion";
 import React, { useEffect, useRef, useState } from "react";
@@ -226,10 +222,28 @@ const DatasetManage: React.FC<DatasetManageProps> = () => {
 				"overflow-y-auto"
 			)}
 		>
+			<PageHeader
+				title="数据集管理"
+				description={`共 ${datasets.length} 个数据集`}
+				search={{
+					placeholder: "搜索数据集...",
+					value: searchText,
+					onChange: value => setSearchText(value),
+					onSearch: () => {},
+					className: "w-64"
+				}}
+				actionButton={{
+					text: "新增数据集",
+					icon: <PlusOutlined />,
+					onClick: handleAdd,
+					type: "primary"
+				}}
+			/>
+
 			<div
 				className={clsx(
 					"flex flex-col gap-6",
-					"mb-6 p-6",
+					"mb-6 p-2 lg:p-6",
 					"rounded-2xl",
 					"bg-white",
 					"shadow-sm",
@@ -238,45 +252,6 @@ const DatasetManage: React.FC<DatasetManageProps> = () => {
 					"hover:shadow-md"
 				)}
 			>
-				<div className="flex justify-between items-center">
-					<div className="flex flex-col">
-						<h2 className="text-2xl font-semibold text-gray-800 mb-2">数据集管理</h2>
-						<p className="text-gray-500">共 {datasets.length} 个数据集</p>
-					</div>
-					<div className="flex items-center gap-4">
-						<Input
-							placeholder="搜索数据集..."
-							prefix={<SearchOutlined className="text-gray-400" />}
-							value={searchText}
-							onChange={e => setSearchText(e.target.value)}
-							className={clsx(
-								"w-64",
-								"rounded-lg",
-								"border-gray-200",
-								"focus:border-blue-500",
-								"focus:ring-1 focus:ring-blue-500",
-								"transition-all duration-300"
-							)}
-						/>
-						<Button
-							type="primary"
-							icon={<PlusOutlined />}
-							onClick={handleAdd}
-							className={clsx(
-								"px-6 h-10",
-								"rounded-lg",
-								"bg-blue-500 hover:bg-blue-600",
-								"border-none",
-								"shadow-sm hover:shadow-md",
-								"transition-all duration-300",
-								"flex items-center gap-2"
-							)}
-						>
-							新增数据集
-						</Button>
-					</div>
-				</div>
-
 				<Tabs
 					activeKey={activeTab}
 					onChange={handleTabChange}
