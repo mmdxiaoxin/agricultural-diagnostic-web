@@ -409,7 +409,7 @@ const FileManage: React.FC<FileManageProps> = () => {
 		switch (activeKey) {
 			case "1": // 数据筛选
 				return (
-					<Flex gap={4}>
+					<Flex gap={4} className="flex-wrap">
 						<Dropdown
 							menu={{ items: accessItems, onClick: handleBatchAccessChange }}
 							trigger={["click"]}
@@ -423,7 +423,8 @@ const FileManage: React.FC<FileManageProps> = () => {
 									"border-none",
 									"shadow-sm hover:shadow-md",
 									"transition-all duration-300",
-									"flex items-center gap-2"
+									"flex items-center gap-2",
+									"w-full sm:w-auto mb-2 sm:mb-0"
 								)}
 							>
 								修改权限
@@ -446,7 +447,8 @@ const FileManage: React.FC<FileManageProps> = () => {
 									"border-none",
 									"shadow-sm hover:shadow-md",
 									"transition-all duration-300",
-									"flex items-center gap-2"
+									"flex items-center gap-2",
+									"w-full sm:w-auto"
 								)}
 							>
 								批量删除
@@ -458,7 +460,7 @@ const FileManage: React.FC<FileManageProps> = () => {
 				return null; // 上传组件内部已有按钮
 			case "3": // 下载列表
 				return (
-					<Flex gap={4}>
+					<Flex gap={4} className="flex-wrap">
 						<Button
 							type="primary"
 							className={clsx(
@@ -468,7 +470,8 @@ const FileManage: React.FC<FileManageProps> = () => {
 								"border-none",
 								"shadow-sm hover:shadow-md",
 								"transition-all duration-300",
-								"flex items-center gap-2"
+								"flex items-center gap-2",
+								"w-full sm:w-auto"
 							)}
 							onClick={handleBatchDownload}
 							loading={downloadLoading}
@@ -486,7 +489,7 @@ const FileManage: React.FC<FileManageProps> = () => {
 		switch (activeKey) {
 			case "1": // 数据筛选
 				return (
-					<Flex gap={4}>
+					<Flex gap={4} className="flex-wrap">
 						<Button
 							icon={<FolderOutlined />}
 							className={clsx(
@@ -496,7 +499,8 @@ const FileManage: React.FC<FileManageProps> = () => {
 								"border-none",
 								"shadow-sm hover:shadow-md",
 								"transition-all duration-300",
-								"flex items-center gap-2"
+								"flex items-center gap-2",
+								"w-full sm:w-auto mt-2 sm:mt-0"
 							)}
 							onClick={() => navigate("/capture/dataset/create")}
 						>
@@ -517,7 +521,7 @@ const FileManage: React.FC<FileManageProps> = () => {
 		<div
 			className={clsx(
 				"h-full w-full",
-				"p-6",
+				"p-2 sm:p-6",
 				"rounded-2xl",
 				"flex flex-col",
 				"bg-gradient-to-br from-white to-gray-50",
@@ -544,7 +548,7 @@ const FileManage: React.FC<FileManageProps> = () => {
 			<div
 				className={clsx(
 					"flex-1",
-					"p-6",
+					"p-2 sm:p-6",
 					"rounded-2xl",
 					"bg-white",
 					"shadow-sm",
@@ -553,7 +557,7 @@ const FileManage: React.FC<FileManageProps> = () => {
 					"hover:shadow-md"
 				)}
 			>
-				<div className="flex justify-between items-center mb-6">
+				<div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
 					{renderLeftActionButtons()}
 					{renderRightActionButtons()}
 				</div>

@@ -122,13 +122,13 @@ const FileManagePanel: React.FC<FileManagePanelProps> = ({
 				{
 					key: "1",
 					label: (
-						<div className="flex items-center justify-between w-full pr-4">
+						<div className="flex flex-col sm:flex-row items-start sm:items-center justify-between w-full pr-4 gap-2">
 							<div className="flex items-center gap-2">
 								<SettingOutlined className="text-lg text-gray-500" />
 								<span className="text-base font-medium">文件管理功能区</span>
 							</div>
 							{!isExpanded && (
-								<div className="flex items-center gap-4">
+								<div className="flex flex-wrap items-center gap-2">
 									{tabItems.map(item => (
 										<button
 											key={item.key}
@@ -152,13 +152,13 @@ const FileManagePanel: React.FC<FileManagePanelProps> = ({
 					),
 					children: (
 						<div className="flex flex-col gap-6">
-							<div className="flex justify-between items-center">
+							<div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
 								<div className="flex flex-col">
-									<h2 className="text-2xl font-semibold text-gray-800 mb-2">文件管理</h2>
+									<h2 className="text-xl sm:text-2xl font-semibold text-gray-800 mb-2">文件管理</h2>
 									<p className="text-gray-500">共 {fileList.length} 个文件</p>
 								</div>
 								{activeKey !== "1" && (
-									<div className="flex items-center gap-4">
+									<div className="flex items-center gap-4 w-full sm:w-auto">
 										<Input
 											placeholder="搜索文件..."
 											prefix={<SearchOutlined className="text-gray-400" />}
@@ -168,7 +168,7 @@ const FileManagePanel: React.FC<FileManagePanelProps> = ({
 											}
 											onPressEnter={() => onSearch({ ...filterParams, page: 1, pageSize: 10 })}
 											className={clsx(
-												"w-64",
+												"w-full sm:w-64",
 												"rounded-lg",
 												"border-gray-200",
 												"focus:border-blue-500",
