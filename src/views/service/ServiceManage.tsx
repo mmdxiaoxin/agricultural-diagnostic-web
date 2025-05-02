@@ -190,7 +190,7 @@ const ServiceManage: React.FC = () => {
 			align: "center",
 			fixed: "right",
 			render: (_: unknown, record: RemoteService) => (
-				<Space wrap className={clsx("xs:w-40 lg:w-80")}>
+				<Space wrap className="flex flex-col sm:flex-row">
 					<Tooltip title="快速配置">
 						<Button
 							onClick={() => handleQuickConfig(record)}

@@ -121,7 +121,7 @@ const ServiceDetail: React.FC<ServiceDetailProps> = ({ service }) => {
 			title: "操作",
 			key: "action",
 			render: (_, record) => (
-				<Space wrap className="xs:w-21 lg:w-42">
+				<Space wrap className="flex flex-col sm:flex-row">
 					<Button type="link" onClick={() => handleEditConfig(record)}>
 						编辑
 					</Button>
@@ -197,7 +197,7 @@ const ServiceDetail: React.FC<ServiceDetailProps> = ({ service }) => {
 			title: "操作",
 			key: "action",
 			render: (_, record) => (
-				<Space wrap className="xs:w-21 lg:w-42">
+				<Space wrap className="flex flex-col sm:flex-row">
 					<Button type="link" onClick={() => handleEditInterface(record)}>
 						编辑
 					</Button>
