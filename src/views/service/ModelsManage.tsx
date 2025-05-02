@@ -1,14 +1,15 @@
 import { RemoteService } from "@/api/interface/service";
 import { callRemoteInterface, getRemotes } from "@/api/modules/service";
+import ModelDetailModal, { ModelDetailModalRef } from "@/components/Modal/ModelDetailModal";
 import PageHeader from "@/components/PageHeader";
 import TextCell from "@/components/Table/TextCell";
 import type { ModelConfig } from "@/typings/model";
 import { DownloadOutlined } from "@ant-design/icons";
-import { Button, Form, message, Select, Table, Tag } from "antd";
+import { Button, Form, message, Select, Space, Table, Tag } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import clsx from "clsx";
 import dayjs from "dayjs";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const ModelsManage = () => {
 	const [models, setModels] = useState<ModelConfig[]>([]);
@@ -22,6 +23,8 @@ const ModelsManage = () => {
 		pageSize: 10,
 		total: 0
 	});
+
+	const modelDetailModalRef = useRef<ModelDetailModalRef>(null);
 
 	// 获取服务列表
 	const fetchServices = async () => {
@@ -99,20 +102,23 @@ const ModelsManage = () => {
 		fetchModels(selectedService, selectedInterface);
 	};
 
+	const handleViewModel = (record: ModelConfig) => {
+		modelDetailModalRef.current?.open(record);
+	};
+
 	const columns: ColumnsType<ModelConfig> = [
 		{
 			title: "模型名称",
 			dataIndex: "name",
 			key: "name",
-			fixed: "left",
-			render: (text: string) => (
-				<TextCell className="text-gray-800 font-medium" text={text} maxLength={10} />
-			)
+			responsive: ["xs", "sm", "md", "lg", "xl", "xxl"],
+			render: (text: string) => <TextCell className="text-gray-800 font-medium" text={text} />
 		},
 		{
 			title: "模型类型",
 			dataIndex: "model_type",
 			key: "model_type",
+			responsive: ["sm", "md", "lg", "xl", "xxl"],
 			render: (type, record) => (
 				<Tag
 					color={type === "yolo" ? "blue" : type === "resnet" ? "green" : "purple"}
@@ -126,6 +132,7 @@ const ModelsManage = () => {
 			title: "版本",
 			dataIndex: "version",
 			key: "version",
+			responsive: ["md", "lg", "xl", "xxl"],
 			render: (text: string) => <TextCell text={`v${text}`} className="text-gray-600" />
 		},
 		{
@@ -133,28 +140,44 @@ const ModelsManage = () => {
 			dataIndex: "description",
 			key: "description",
 			ellipsis: true,
+			responsive: ["lg", "xl", "xxl"],
 			render: (text: string) => <TextCell text={text || "-"} className="text-gray-600" />
 		},
 		{
 			title: "创建时间",
 			dataIndex: "createdAt",
 			key: "createdAt",
+			responsive: ["lg", "xl", "xxl"],
 			render: (text: string) => <TextCell text={dayjs(text).format("YYYY-MM-DD HH:mm:ss")} />
 		},
 		{
 			title: "更新时间",
 			dataIndex: "updatedAt",
 			key: "updatedAt",
+			responsive: ["lg", "xl", "xxl"],
 			render: (text: string) => <TextCell text={dayjs(text).format("YYYY-MM-DD HH:mm:ss")} />
 		},
 		{
 			title: "状态",
 			dataIndex: "status",
 			key: "status",
+			responsive: ["xl", "xxl"],
 			render: (status: string) => (
 				<Tag color={status === "active" ? "green" : "red"} className="px-3 py-1 rounded-full">
 					{status === "active" ? "已激活" : "未激活"}
 				</Tag>
+			)
+		},
+		{
+			title: "操作",
+			key: "action",
+			responsive: ["xs", "sm", "md", "lg", "xl", "xxl"],
+			render: (_, record) => (
+				<Space wrap className="flex flex-col sm:flex-row">
+					<Button type="link" onClick={() => handleViewModel(record)}>
+						查看
+					</Button>
+				</Space>
 			)
 		}
 	];
@@ -275,6 +298,8 @@ const ModelsManage = () => {
 						</Form.Item>
 					</div>
 				</Form>
+
+				<ModelDetailModal ref={modelDetailModalRef} />
 
 				<div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
 					<Table
