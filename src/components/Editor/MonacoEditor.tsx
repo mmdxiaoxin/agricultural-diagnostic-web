@@ -232,4 +232,6 @@ const MonacoEditor: React.FC<MonacoEditorProps> = ({
 	);
 };
 
+MonacoEditor.displayName = "MonacoEditor";
+
 export default MonacoEditor;

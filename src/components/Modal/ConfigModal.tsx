@@ -7,7 +7,7 @@ import InterfaceListModal, { InterfaceListModalRef } from "./InterfaceListModal"
 
 // 使用 React.lazy 动态导入 Monaco Editor
 const MonacoEditor = React.lazy(() =>
-	import("@/components/Editor").then(module => {
+	import("@/components/Editor/MonacoEditor").then(module => {
 		// 预加载 monaco-editor
 		import("monaco-editor").then(monaco => {
 			// 配置 monaco loader
