@@ -93,7 +93,7 @@ const UserManage = () => {
 			title: "状态",
 			dataIndex: "status",
 			key: "status",
-			responsive: ["lg", "xl", "xxl"],
+			responsive: ["md", "lg", "xl", "xxl"],
 			render: (_, { status, id }) => {
 				return (
 					<Popover
