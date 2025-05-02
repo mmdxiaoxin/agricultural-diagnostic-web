@@ -257,7 +257,6 @@ const DiagnosisHistoryPage: React.FC = () => {
 			title: "操作",
 			key: "action",
 			align: "center",
-			fixed: "right",
 			render: (_, record) => (
 				<Space wrap className="flex-col lg:flex-row">
 					<Button
