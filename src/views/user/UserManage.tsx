@@ -239,7 +239,7 @@ const UserManage = () => {
 				}}
 				statistics={{
 					label: "用户总数：",
-					value: userList.length
+					value: pagination?.total ?? 0
 				}}
 			/>
 
