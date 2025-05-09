@@ -1,6 +1,6 @@
 import { RoleItem } from "@/api/interface";
 import { Form, Input, Modal } from "antd";
-import { forwardRef, useImperativeHandle, useRef, useState } from "react";
+import { forwardRef, useImperativeHandle, useState } from "react";
 
 export interface RoleModalRef {
 	open: (role?: RoleItem) => void;
