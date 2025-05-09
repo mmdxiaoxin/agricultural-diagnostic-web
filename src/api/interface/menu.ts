@@ -17,3 +17,8 @@ export type ResMenuDetail = MenuItem;
 export type ReqCreateMenuItem = Omit<MenuItem, "id" | "parent">;
 
 export type ReqUpdateMenuItem = Partial<ReqCreateMenuItem>;
+
+export type ReqConfigureMenuRoles = {
+	menuId: number;
+	roleIds: number[];
+};

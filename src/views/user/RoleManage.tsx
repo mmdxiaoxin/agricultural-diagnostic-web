@@ -2,12 +2,14 @@ import { RoleItem, RoleListParams } from "@/api/interface";
 import { createRole, deleteRoleById, getRoleList, updateRole } from "@/api/modules/role";
 import PageHeader from "@/components/PageHeader";
 import RoleModal, { RoleModalRef } from "@/components/Modal/RoleModal";
+import MenuConfigModal, { MenuConfigModalRef } from "@/components/Modal/MenuConfigModal";
 import TextCell from "@/components/Table/TextCell";
 import {
 	DeleteOutlined,
 	EditOutlined,
 	PlusOutlined,
-	QuestionCircleOutlined
+	QuestionCircleOutlined,
+	SettingOutlined
 } from "@ant-design/icons";
 import {
 	Button,
@@ -27,6 +29,7 @@ import { useEffect, useRef, useState } from "react";
 
 const RoleManage: React.FC = () => {
 	const modalRef = useRef<RoleModalRef>(null);
+	const menuConfigRef = useRef<MenuConfigModalRef>(null);
 	const [loading, setLoading] = useState(false);
 	const [queryParams, setQueryParams] = useState<RoleListParams>({ page: 1, pageSize: 10 });
 	const [roleList, setRoleList] = useState<RoleItem[]>([]);
@@ -93,6 +96,10 @@ const RoleManage: React.FC = () => {
 		}
 	};
 
+	const handleConfigMenu = (role: RoleItem) => {
+		menuConfigRef.current?.open(role.id);
+	};
+
 	const columns: TableProps<RoleItem>["columns"] = [
 		{
 			title: "角色名称",
@@ -141,6 +148,16 @@ const RoleManage: React.FC = () => {
 							className="text-blue-500 hover:text-blue-600"
 						>
 							编辑
+						</Button>
+					</Tooltip>
+					<Tooltip title="配置菜单">
+						<Button
+							type="link"
+							icon={<SettingOutlined />}
+							onClick={() => handleConfigMenu(record)}
+							className="text-green-500 hover:text-green-600"
+						>
+							配置菜单
 						</Button>
 					</Tooltip>
 					<Tooltip title="删除角色">
@@ -283,6 +300,7 @@ const RoleManage: React.FC = () => {
 			</Modal>
 
 			<RoleModal ref={modalRef} onSave={handleSave} />
+			<MenuConfigModal ref={menuConfigRef} onSuccess={() => fetchData(queryParams)} />
 		</div>
 	);
 };

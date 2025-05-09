@@ -1,5 +1,11 @@
 import http from "@/api";
-import { ReqCreateMenuItem, ReqUpdateMenuItem, ResMenuDetail, ResMenuList } from "../interface";
+import {
+	ReqConfigureMenuRoles,
+	ReqCreateMenuItem,
+	ReqUpdateMenuItem,
+	ResMenuDetail,
+	ResMenuList
+} from "../interface";
 
 // * 获取权限路由
 export const getAuthRoutes = () => http.get<Menu.MenuOptions[]>(`/menu/routes`);
@@ -18,3 +24,7 @@ export const deleteMenu = (id: number) => http.delete(`/menu/${id}`);
 
 // * 更新菜单
 export const updateMenu = (id: number, data: ReqUpdateMenuItem) => http.put(`/menu/${id}`, data);
+
+// * 配置菜单角色关联
+export const configureMenuRoles = (data: ReqConfigureMenuRoles) =>
+	http.post(`/menu/configure-roles`, data);
