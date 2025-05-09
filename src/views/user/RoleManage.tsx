@@ -1,6 +1,7 @@
 import { RoleItem, RoleListParams } from "@/api/interface";
 import { createRole, deleteRoleById, getRoleList, updateRole } from "@/api/modules/role";
 import PageHeader from "@/components/PageHeader";
+import RoleModal, { RoleModalRef } from "@/components/Modal/RoleModal";
 import TextCell from "@/components/Table/TextCell";
 import {
 	DeleteOutlined,
@@ -22,9 +23,10 @@ import {
 } from "antd";
 import clsx from "clsx";
 import dayjs from "dayjs";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const RoleManage: React.FC = () => {
+	const modalRef = useRef<RoleModalRef>(null);
 	const [loading, setLoading] = useState(false);
 	const [queryParams, setQueryParams] = useState<RoleListParams>({ page: 1, pageSize: 10 });
 	const [roleList, setRoleList] = useState<RoleItem[]>([]);
@@ -74,6 +76,21 @@ const RoleManage: React.FC = () => {
 		setModalVisible(false);
 		setEditingRole(null);
 		form.resetFields();
+	};
+
+	const handleSave = async (values: any) => {
+		try {
+			if (values.id) {
+				await updateRole(values.id, values);
+				message.success("角色更新成功 🎉");
+			} else {
+				await createRole(values);
+				message.success("角色创建成功 🎉");
+			}
+			fetchData(queryParams);
+		} catch (error: any) {
+			message.error(error.message);
+		}
 	};
 
 	const columns: TableProps<RoleItem>["columns"] = [
@@ -189,11 +206,7 @@ const RoleManage: React.FC = () => {
 				actionButton={{
 					text: "添加新角色",
 					icon: <PlusOutlined />,
-					onClick: () => {
-						setEditingRole(null);
-						form.resetFields();
-						setModalVisible(true);
-					}
+					onClick: () => modalRef.current?.open()
 				}}
 				statistics={{
 					label: "角色总数：",
@@ -268,6 +281,8 @@ const RoleManage: React.FC = () => {
 					</Form.Item>
 				</Form>
 			</Modal>
+
+			<RoleModal ref={modalRef} onSave={handleSave} />
 		</div>
 	);
 };
