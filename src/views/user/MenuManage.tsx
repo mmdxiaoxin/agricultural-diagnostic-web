@@ -1,7 +1,8 @@
 import { MenuItem } from "@/api/interface";
 import { createMenu, deleteMenu, getMenuList, updateMenu } from "@/api/modules/menu";
-import PageHeader from "@/components/PageHeader";
+import IconComponent, { Icons } from "@/components/IconComponent";
 import MenuModal, { MenuModalRef } from "@/components/Modal/MenuModal";
+import PageHeader from "@/components/PageHeader";
 import TextCell from "@/components/Table/TextCell";
 import {
 	DeleteOutlined,
@@ -59,7 +60,8 @@ const MenuManage: React.FC = () => {
 			title: "图标",
 			dataIndex: "icon",
 			key: "icon",
-			align: "center"
+			align: "center",
+			render: (icon: string) => (icon ? <IconComponent name={icon as keyof typeof Icons} /> : "-")
 		},
 		{
 			title: "路由路径",
@@ -68,10 +70,18 @@ const MenuManage: React.FC = () => {
 			align: "center"
 		},
 		{
+			title: "父级菜单",
+			dataIndex: "parent",
+			key: "parent",
+			align: "center",
+			render: (parent: MenuItem | null) => <TextCell text={parent?.title || "无"} />
+		},
+		{
 			title: "排序",
 			dataIndex: "sort",
 			key: "sort",
-			align: "center"
+			align: "center",
+			sorter: (a, b) => a.sort - b.sort
 		},
 		{
 			title: "外链",
@@ -100,6 +110,7 @@ const MenuManage: React.FC = () => {
 						<Popconfirm
 							placement="top"
 							title="确定要删除吗？"
+							description="删除后无法恢复，且会同时删除所有子菜单"
 							okButtonProps={{ danger: true }}
 							okText="确认"
 							cancelText="取消"
@@ -177,6 +188,11 @@ const MenuManage: React.FC = () => {
 					dataSource={menuList}
 					scroll={{ x: "max-content" }}
 					className={clsx("rounded-lg", "overflow-hidden", "border border-gray-100")}
+					expandable={{
+						defaultExpandAllRows: true,
+						expandRowByClick: true
+					}}
+					pagination={false}
 				/>
 			</div>
 
