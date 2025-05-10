@@ -78,11 +78,6 @@ const ConfigModal = forwardRef<ConfigModalRef, ConfigModalProps>(
 		};
 
 		const handleSave = async (values: any) => {
-			if (!serviceId) {
-				message.error("服务ID不能为空");
-				return;
-			}
-
 			try {
 				setLoading(true);
 				const config = JSON.parse(configContent);
@@ -92,6 +87,10 @@ const ConfigModal = forwardRef<ConfigModalRef, ConfigModalProps>(
 				};
 
 				if (modalMode === "edit" && values.id) {
+					if (!serviceId) {
+						message.error("服务ID不能为空");
+						return;
+					}
 					await updateRemoteConfig(serviceId, values.id, submitData);
 					message.success("更新配置成功");
 				} else {
