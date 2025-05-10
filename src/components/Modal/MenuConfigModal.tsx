@@ -74,9 +74,20 @@ const MenuConfigModal = forwardRef<MenuConfigModalRef, MenuConfigModalProps>(
 
 			setLoading(true);
 			try {
+				// 获取所有选中的节点（包括父节点）
+				const allSelectedKeys = new Set<number>();
+				const processNode = (node: DataNode) => {
+					if (selectedKeys.includes(node.key as number)) {
+						allSelectedKeys.add(node.key as number);
+						// 递归处理子节点
+						node.children?.forEach(child => processNode(child));
+					}
+				};
+				menuTree.forEach(node => processNode(node));
+
 				const response = await configureMenuRoles({
 					roleId: currentRoleId.current,
-					menuIds: selectedKeys
+					menuIds: Array.from(allSelectedKeys)
 				});
 
 				if (response.code !== 200) throw new Error(response.message);
