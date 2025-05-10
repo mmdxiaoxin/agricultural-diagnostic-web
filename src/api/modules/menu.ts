@@ -27,4 +27,4 @@ export const updateMenu = (id: number, data: ReqUpdateMenuItem) => http.put(`/me
 
 // * 配置菜单角色关联
 export const configureMenuRoles = (data: ReqConfigureMenuRoles) =>
-	http.post(`/menu/configure-roles`, data);
+	http.post(`/menu/configure-menus`, data);

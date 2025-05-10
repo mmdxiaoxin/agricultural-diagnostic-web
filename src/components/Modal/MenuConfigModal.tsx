@@ -1,9 +1,8 @@
 import { MenuItem } from "@/api/interface";
-import { getMenuList } from "@/api/modules/menu";
-import { configureMenuRoles } from "@/api/modules/menu";
-import { forwardRef, useImperativeHandle, useRef, useState } from "react";
+import { configureMenuRoles, getMenuList } from "@/api/modules/menu";
 import { Modal, Tree, message } from "antd";
 import type { DataNode } from "antd/es/tree";
+import { forwardRef, useImperativeHandle, useRef, useState } from "react";
 
 export interface MenuConfigModalRef {
 	open: (roleId: number) => void;
@@ -76,8 +75,8 @@ const MenuConfigModal = forwardRef<MenuConfigModalRef, MenuConfigModalProps>(
 			setLoading(true);
 			try {
 				const response = await configureMenuRoles({
-					menuId: currentRoleId.current,
-					roleIds: selectedKeys
+					roleId: currentRoleId.current,
+					menuIds: selectedKeys
 				});
 
 				if (response.code !== 200) throw new Error(response.message);
