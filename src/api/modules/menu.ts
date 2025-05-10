@@ -1,6 +1,5 @@
 import http from "@/api";
 import {
-	MenuItem,
 	ReqConfigureMenuRoles,
 	ReqCreateMenuItem,
 	ReqUpdateMenuItem,
