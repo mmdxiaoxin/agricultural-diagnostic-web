@@ -1,11 +1,13 @@
 import { FileMeta } from "@/api/interface";
 import { getAllFiles } from "@/api/modules/file";
 import type { GetProp, TableColumnsType, TableProps, TransferProps } from "antd";
-import { Flex, Table, Transfer, Spin } from "antd";
+import { Flex, Table, Transfer, Spin, Typography } from "antd";
 import React, { useEffect, useState } from "react";
 import FilePreview from "../Table/FilePreview";
 import FileTypeTag from "../Table/FileTypeTag";
 import clsx from "clsx";
+
+const { Text } = Typography;
 
 type TransferItem = GetProp<TransferProps, "dataSource">[number];
 type TableRowSelection<T extends object> = TableProps<T>["rowSelection"];
@@ -22,7 +24,17 @@ const TableTransfer: React.FC<TableTransferProps> = props => {
 		<Transfer
 			rowKey={item => item.id}
 			style={{ width: "100%" }}
-			className="dataset-transfer"
+			className={clsx(
+				"dataset-transfer",
+				"flex flex-col lg:flex-row",
+				"gap-4",
+				"p-4",
+				"bg-white",
+				"rounded-xl",
+				"shadow-sm",
+				"hover:shadow-md",
+				"transition-all duration-300"
+			)}
 			{...restProps}
 		>
 			{({
@@ -44,29 +56,52 @@ const TableTransfer: React.FC<TableTransferProps> = props => {
 				};
 
 				return (
-					<Table
-						rowSelection={rowSelection}
-						columns={columns}
-						dataSource={filteredItems}
-						pagination={{ pageSize: 9 }}
-						size="middle"
+					<div
 						className={clsx(
+							"w-full",
+							"flex flex-col",
+							"gap-2",
+							"p-4",
+							"bg-gray-50",
 							"rounded-lg",
-							"border border-gray-100",
-							"shadow-sm",
-							"hover:shadow-md",
-							"transition-all duration-300"
+							"border border-gray-100"
 						)}
-						style={{ pointerEvents: listDisabled ? "none" : undefined }}
-						onRow={({ key, disabled: itemDisabled }) => ({
-							onClick: () => {
-								if (itemDisabled || listDisabled) {
-									return;
+					>
+						<Text className="text-gray-600 font-medium mb-2">
+							{direction === "left" ? "可选文件" : "已选文件"}
+						</Text>
+						<Table
+							rowSelection={rowSelection}
+							columns={columns}
+							dataSource={filteredItems}
+							pagination={{
+								pageSize: 9,
+								showSizeChanger: false,
+								className: "mt-4"
+							}}
+							size="middle"
+							className={clsx(
+								"rounded-lg",
+								"bg-white",
+								"shadow-sm",
+								"hover:shadow-md",
+								"transition-all duration-300"
+							)}
+							style={{
+								pointerEvents: listDisabled ? "none" : undefined,
+								width: "100%"
+							}}
+							scroll={{ x: "max-content" }}
+							onRow={({ key, disabled: itemDisabled }) => ({
+								onClick: () => {
+									if (itemDisabled || listDisabled) {
+										return;
+									}
+									onItemSelect(key, !listSelectedKeys.includes(key));
 								}
-								onItemSelect(key, !listSelectedKeys.includes(key));
-							}
-						})}
-					/>
+							})}
+						/>
+					</div>
 				);
 			}}
 		</Transfer>
@@ -77,12 +112,16 @@ const columns: TableColumnsType<FileMeta> = [
 	{
 		dataIndex: "originalFileName",
 		title: "文件名",
-		render: (value, record) => <FilePreview meta={record} text={value} />
+		render: (value, record) => <FilePreview meta={record} text={value} />,
+		width: "60%",
+		ellipsis: true
 	},
 	{
 		dataIndex: "fileType",
 		title: "文件类型",
-		render: (type: string) => <FileTypeTag type={type} />
+		render: (type: string) => <FileTypeTag type={type} />,
+		width: "40%",
+		align: "center"
 	}
 ];
 
@@ -131,6 +170,11 @@ const DatasetTransfer: React.FC<DatasetTransferProps> = ({ value, onChange }) =>
 					leftColumns={columns}
 					rightColumns={columns}
 					className="dataset-transfer"
+					operations={["选择", "取消"]}
+					listStyle={{
+						width: "100%",
+						height: "100%"
+					}}
 				/>
 			)}
 		</Flex>
