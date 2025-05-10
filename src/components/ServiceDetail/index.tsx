@@ -62,11 +62,13 @@ const ServiceDetail: React.FC<ServiceDetailProps> = ({ service }) => {
 	}, [service]);
 
 	const handleAddConfig = () => {
-		configModalRef.current?.open("create");
+		if (!service?.id) return;
+		configModalRef.current?.open("create", service.id);
 	};
 
 	const handleEditConfig = (record: RemoteConfig) => {
-		configModalRef.current?.open("edit", record);
+		if (!service?.id) return;
+		configModalRef.current?.open("edit", service.id, record);
 	};
 
 	const handleCopyConfig = async (record: RemoteConfig) => {

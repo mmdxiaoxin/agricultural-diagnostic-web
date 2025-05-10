@@ -24,7 +24,7 @@ export type ConfigModalProps = {
 };
 
 export type ConfigModalRef = {
-	open: (mode: "create" | "edit", values?: RemoteConfig) => void;
+	open: (mode: "create" | "edit", serviceId: number, values?: RemoteConfig) => void;
 	close: () => void;
 };
 
@@ -47,10 +47,10 @@ const ConfigModal = forwardRef<ConfigModalRef, ConfigModalProps>(
 			[]
 		);
 
-		const handleOpen = (mode: "create" | "edit", values?: RemoteConfig) => {
+		const handleOpen = (mode: "create" | "edit", serviceId: number, values?: RemoteConfig) => {
 			setModalMode(mode);
 			setIsModalVisible(true);
-			setServiceId(values?.id || 0);
+			setServiceId(serviceId);
 
 			if (values) {
 				form.setFieldsValue(values);
