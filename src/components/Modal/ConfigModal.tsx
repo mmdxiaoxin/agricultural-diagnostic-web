@@ -12,7 +12,12 @@ const MonacoEditor = React.lazy(() =>
 		const monaco = await import("monaco-editor");
 		// 配置 monaco loader
 		const { loader } = await import("@monaco-editor/react");
-		loader.config({ monaco });
+		loader.config({
+			paths: {
+				vs: "/monaco-editor/min/vs"
+			},
+			monaco
+		});
 		return module;
 	})
 );
