@@ -185,7 +185,7 @@ const DiseaseManage: React.FC = () => {
 				}}
 				statistics={{
 					label: "共",
-					value: `${diseases.length} 个病害`
+					value: `${total} 个病害`
 				}}
 				actionButton={{
 					text: "添加病害",

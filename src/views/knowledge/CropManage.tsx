@@ -162,7 +162,7 @@ const CropManage: React.FC = () => {
 				}}
 				statistics={{
 					label: "共",
-					value: `${crops.length} 个作物`
+					value: `${total} 个作物`
 				}}
 				actionButton={{
 					text: "添加作物",
