@@ -1,5 +1,6 @@
 import http from "@/api";
 import {
+	MenuItem,
 	ReqConfigureMenuRoles,
 	ReqCreateMenuItem,
 	ReqUpdateMenuItem,
@@ -28,3 +29,6 @@ export const updateMenu = (id: number, data: ReqUpdateMenuItem) => http.put(`/me
 // * 配置菜单角色关联
 export const configureMenuRoles = (data: ReqConfigureMenuRoles) =>
 	http.post(`/menu/configure-menus`, data);
+
+// * 获取角色下的菜单ID列表
+export const getRoleMenuById = (roleId: number) => http.get<number[]>(`/menu/role/${roleId}`);

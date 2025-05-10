@@ -1,5 +1,5 @@
 import { MenuItem } from "@/api/interface";
-import { configureMenuRoles, getMenuList } from "@/api/modules/menu";
+import { configureMenuRoles, getMenuList, getRoleMenuById } from "@/api/modules/menu";
 import { Modal, Tree, message } from "antd";
 import type { DataNode } from "antd/es/tree";
 import { forwardRef, useImperativeHandle, useRef, useState } from "react";
@@ -24,7 +24,19 @@ const MenuConfigModal = forwardRef<MenuConfigModalRef, MenuConfigModalProps>(
 			open: async (roleId: number) => {
 				currentRoleId.current = roleId;
 				setVisible(true);
-				await fetchMenuTree();
+				try {
+					// 并行获取菜单树和角色已有菜单
+					const [_, roleMenusResponse] = await Promise.all([
+						fetchMenuTree(),
+						getRoleMenuById(roleId)
+					]);
+
+					if (roleMenusResponse.code === 200) {
+						setSelectedKeys(roleMenusResponse.data || []);
+					}
+				} catch (error: any) {
+					message.error(error.message);
+				}
 			}
 		}));
 
@@ -35,8 +47,10 @@ const MenuConfigModal = forwardRef<MenuConfigModalRef, MenuConfigModalProps>(
 
 				const treeData = formatMenuTree(response.data || []);
 				setMenuTree(treeData);
+				return response;
 			} catch (error: any) {
 				message.error(error.message);
+				throw error;
 			}
 		};
 
@@ -113,8 +127,14 @@ const MenuConfigModal = forwardRef<MenuConfigModalRef, MenuConfigModalProps>(
 			>
 				<Tree
 					checkable
-					checkedKeys={selectedKeys}
-					onCheck={checkedKeys => setSelectedKeys(checkedKeys as number[])}
+					checkedKeys={selectedKeys || []}
+					onCheck={checkedKeys => {
+						if (Array.isArray(checkedKeys)) {
+							setSelectedKeys(checkedKeys as number[]);
+						} else {
+							setSelectedKeys([]);
+						}
+					}}
 					treeData={menuTree}
 					height={400}
 					className="overflow-auto"
