@@ -77,7 +77,7 @@ const DatasetDetail: React.FC<DatasetDetailProps> = ({ mode }) => {
 			<div
 				className={clsx(
 					"flex flex-col gap-6",
-					"mb-6 p-6",
+					"mb-6 p-4 lg:p-6",
 					"rounded-2xl",
 					"bg-white",
 					"shadow-sm",
@@ -118,11 +118,11 @@ const DatasetDetail: React.FC<DatasetDetailProps> = ({ mode }) => {
 						label="数据集名称"
 						name="name"
 						rules={[{ required: true, message: "请输入数据集名称" }]}
-						className="mb-6"
+						className="mb-4 lg:mb-6"
 					>
 						<Input showCount maxLength={25} className="rounded-lg" placeholder="请输入数据集名称" />
 					</Form.Item>
-					<Form.Item label="数据集描述" name="description" className="mb-6">
+					<Form.Item label="数据集描述" name="description" className="mb-4 lg:mb-6">
 						<Input.TextArea
 							showCount
 							maxLength={100}
@@ -131,7 +131,7 @@ const DatasetDetail: React.FC<DatasetDetailProps> = ({ mode }) => {
 							rows={4}
 						/>
 					</Form.Item>
-					<Form.Item label="选择文件" name="fileIds" className="mb-6" required>
+					<Form.Item label="选择文件" name="fileIds" className="mb-4 lg:mb-6" required>
 						<div className="w-full">
 							<DatasetTransfer
 								value={fileIds}
