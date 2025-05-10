@@ -97,11 +97,25 @@ const CropManage: React.FC = () => {
 			responsive: ["sm", "md", "lg", "xl", "xxl"]
 		},
 		{
-			title: "生长阶段",
-			dataIndex: "growthStage",
-			key: "growthStage",
+			title: "作物类型",
+			dataIndex: "cropType",
+			key: "cropType",
 			render: text => <TextCell text={text} />,
 			responsive: ["md", "lg", "xl", "xxl"]
+		},
+		{
+			title: "生长周期",
+			dataIndex: "growthCycle",
+			key: "growthCycle",
+			render: text => <TextCell text={text} />,
+			responsive: ["lg", "xl", "xxl"]
+		},
+		{
+			title: "适宜种植区域",
+			dataIndex: "suitableArea",
+			key: "suitableArea",
+			render: text => <TextCell text={text} />,
+			responsive: ["lg", "xl", "xxl"]
 		},
 		{
 			title: "操作",

@@ -29,8 +29,18 @@ export type ReqCropList = {
 
 export type ReqCreateCrop = {
 	name: string;
-	scientificName: string;
-	growthStage: string;
+	scientificName?: string;
+	growthStage?: string;
+	cropType?: string;
+	imageUrl?: string;
+	alias?: string;
+	description?: string;
+	origin?: string;
+	growthHabits?: string;
+	growthCycle?: string;
+	suitableArea?: string;
+	suitableSeason?: string;
+	suitableSoil?: string;
 };
 
 export type ReqUpdateCrop = Partial<ReqCreateCrop>;

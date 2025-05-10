@@ -1,6 +1,6 @@
 import { Crop } from "@/api/interface/knowledge";
 import { createCrop, updateCrop } from "@/api/modules/Knowledge";
-import { Button, Form, Input, message, Modal } from "antd";
+import { Button, Card, Form, Input, message, Modal, Space, Tabs } from "antd";
 import { forwardRef, useImperativeHandle, useState } from "react";
 
 export interface CropModalProps {
@@ -15,8 +15,18 @@ export interface CropModalRef {
 
 type CropModalForm = {
 	name: string;
-	scientificName: string;
-	growthStage: string;
+	scientificName?: string;
+	growthStage?: string;
+	cropType?: string;
+	imageUrl?: string;
+	alias?: string;
+	description?: string;
+	origin?: string;
+	growthHabits?: string;
+	growthCycle?: string;
+	suitableArea?: string;
+	suitableSeason?: string;
+	suitableSoil?: string;
 };
 
 const CropModal = forwardRef<CropModalRef, CropModalProps>(({ onReset, onSubmit }, ref) => {
@@ -77,6 +87,86 @@ const CropModal = forwardRef<CropModalRef, CropModalProps>(({ onReset, onSubmit 
 		}
 	};
 
+	const items = [
+		{
+			key: "basic",
+			label: "基本信息",
+			children: (
+				<Card className="mb-4">
+					<Form.Item
+						label="作物名称"
+						name="name"
+						rules={[{ required: true, message: "请输入作物名称" }]}
+					>
+						<Input />
+					</Form.Item>
+
+					<Form.Item label="学名" name="scientificName">
+						<Input />
+					</Form.Item>
+
+					<Form.Item label="作物类型" name="cropType">
+						<Input />
+					</Form.Item>
+
+					<Form.Item label="作物别名" name="alias">
+						<Input />
+					</Form.Item>
+
+					<Form.Item label="作物图片" name="imageUrl">
+						<Input />
+					</Form.Item>
+				</Card>
+			)
+		},
+		{
+			key: "growth",
+			label: "生长信息",
+			children: (
+				<Card className="mb-4">
+					<Form.Item label="生长阶段" name="growthStage">
+						<Input />
+					</Form.Item>
+
+					<Form.Item label="生长周期" name="growthCycle">
+						<Input />
+					</Form.Item>
+
+					<Form.Item label="生长习性" name="growthHabits">
+						<Input.TextArea rows={4} />
+					</Form.Item>
+
+					<Form.Item label="作物描述" name="description">
+						<Input.TextArea rows={4} />
+					</Form.Item>
+				</Card>
+			)
+		},
+		{
+			key: "environment",
+			label: "种植环境",
+			children: (
+				<Card className="mb-4">
+					<Form.Item label="产地" name="origin">
+						<Input />
+					</Form.Item>
+
+					<Form.Item label="适宜种植区域" name="suitableArea">
+						<Input />
+					</Form.Item>
+
+					<Form.Item label="适宜种植季节" name="suitableSeason">
+						<Input />
+					</Form.Item>
+
+					<Form.Item label="适宜种植土壤" name="suitableSoil">
+						<Input />
+					</Form.Item>
+				</Card>
+			)
+		}
+	];
+
 	return (
 		<Modal
 			open={visible}
@@ -84,14 +174,13 @@ const CropModal = forwardRef<CropModalRef, CropModalProps>(({ onReset, onSubmit 
 			onCancel={handleCancel}
 			footer={null}
 			width={{
-				xs: "90%",
+				xs: "95%",
 				sm: "90%",
-				md: "50%",
-				lg: "50%",
-				xl: "40%",
-				xxl: "30%"
+				md: "80%",
+				lg: "70%",
+				xl: 800,
+				xxl: 800
 			}}
-			style={{ height: "100%", overflowY: "auto" }}
 		>
 			<Form
 				form={form}
@@ -99,29 +188,24 @@ const CropModal = forwardRef<CropModalRef, CropModalProps>(({ onReset, onSubmit 
 				onFinish={handleFinish}
 				labelCol={{ span: 6 }}
 				wrapperCol={{ span: 18 }}
-				style={{ height: "100%", overflowY: "auto" }}
+				layout="vertical"
 			>
-				<Form.Item
-					label="作物名称"
-					name="name"
-					rules={[{ required: true, message: "请输入作物名称" }]}
-				>
-					<Input />
-				</Form.Item>
+				<Tabs
+					items={items}
+					defaultActiveKey="basic"
+					className="crop-form-tabs"
+					tabPosition="left"
+					style={{ minHeight: "500px" }}
+				/>
 
-				<Form.Item label="学名" name="scientificName">
-					<Input />
-				</Form.Item>
-
-				<Form.Item label="生长阶段" name="growthStage">
-					<Input />
-				</Form.Item>
-
-				<Form.Item wrapperCol={{ span: 24, offset: 6 }}>
-					<Button type="primary" htmlType="submit" loading={loading}>
-						提交
-					</Button>
-				</Form.Item>
+				<div className="flex justify-end mt-4">
+					<Space>
+						<Button onClick={handleCancel}>取消</Button>
+						<Button type="primary" htmlType="submit" loading={loading}>
+							提交
+						</Button>
+					</Space>
+				</div>
 			</Form>
 		</Modal>
 	);
