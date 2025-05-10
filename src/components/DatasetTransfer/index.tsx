@@ -26,9 +26,9 @@ const TableTransfer: React.FC<TableTransferProps> = props => {
 			style={{ width: "100%" }}
 			className={clsx(
 				"dataset-transfer",
-				"flex flex-col lg:flex-row",
+				"flex flex-col",
 				"gap-4",
-				"p-4",
+				"p-2 lg:p-4",
 				"bg-white",
 				"rounded-xl",
 				"shadow-sm",
@@ -61,7 +61,7 @@ const TableTransfer: React.FC<TableTransferProps> = props => {
 							"w-full",
 							"flex flex-col",
 							"gap-2",
-							"p-4",
+							"p-2 lg:p-4",
 							"bg-gray-50",
 							"rounded-lg",
 							"border border-gray-100"
@@ -77,9 +77,11 @@ const TableTransfer: React.FC<TableTransferProps> = props => {
 							pagination={{
 								pageSize: 9,
 								showSizeChanger: false,
-								className: "mt-4"
+								className: "mt-4",
+								responsive: true,
+								size: "small"
 							}}
-							size="middle"
+							size="small"
 							className={clsx(
 								"rounded-lg",
 								"bg-white",
