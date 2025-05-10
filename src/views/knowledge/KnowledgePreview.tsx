@@ -25,11 +25,11 @@ const KnowledgePreview: React.FC = () => {
 	// 处理URL参数
 	useEffect(() => {
 		const diseaseId = searchParams.get("id");
-		if (diseaseId) {
-			// 如果URL中有id参数，直接加载该病害数据
+		if (diseaseId && !selectedDisease) {
+			// 只在初始加载时获取病害数据
 			fetchDiseaseById(parseInt(diseaseId));
 		}
-	}, [searchParams]);
+	}, [searchParams, selectedDisease]);
 
 	useEffect(() => {
 		fetchCrops();
@@ -102,7 +102,7 @@ const KnowledgePreview: React.FC = () => {
 		// 更新URL参数
 		const newSearchParams = new URLSearchParams(searchParams);
 		newSearchParams.set("id", disease.id.toString());
-		setSearchParams(newSearchParams);
+		setSearchParams(newSearchParams, { replace: true });
 	};
 
 	const handleSearch = () => {
