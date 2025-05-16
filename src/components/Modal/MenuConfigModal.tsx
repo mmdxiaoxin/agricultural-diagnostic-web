@@ -90,13 +90,24 @@ const MenuConfigModal = forwardRef<MenuConfigModalRef, MenuConfigModalProps>(
 			try {
 				// 获取所有选中的节点（包括父节点）
 				const allSelectedKeys = new Set<number>();
-				const processNode = (node: DataNode) => {
+
+				// 递归处理节点，确保包含所有父节点
+				const processNode = (node: DataNode, parentKey?: number) => {
 					if (selectedKeys.includes(node.key as number)) {
 						allSelectedKeys.add(node.key as number);
+						// 如果当前节点被选中，添加其父节点
+						if (parentKey) {
+							allSelectedKeys.add(parentKey);
+						}
 						// 递归处理子节点
-						node.children?.forEach(child => processNode(child));
+						node.children?.forEach(child => processNode(child, node.key as number));
+					} else {
+						// 即使当前节点未被选中，也要检查其子节点
+						node.children?.forEach(child => processNode(child, node.key as number));
 					}
 				};
+
+				// 处理所有根节点
 				menuTree.forEach(node => processNode(node));
 
 				const response = await configureMenuRoles({
