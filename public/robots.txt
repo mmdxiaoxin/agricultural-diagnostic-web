@@ -1,0 +1,28 @@
+ # 允许所有搜索引擎爬虫访问
+User-agent: *
+Allow: /
+
+# 设置爬虫访问频率
+Crawl-delay: 10
+
+# 禁止爬取特定目录
+Disallow: /api/
+Disallow: /admin/
+Disallow: /private/
+
+# 指定sitemap位置（如果将来需要）
+# Sitemap: https://your-domain.com/sitemap.xml
+
+# 针对特定搜索引擎的规则
+User-agent: Googlebot
+Allow: /
+Crawl-delay: 5
+
+User-agent: Bingbot
+Allow: /
+Crawl-delay: 5
+
+# 禁止爬取开发相关文件
+Disallow: /*.js$
+Disallow: /*.css$
+Disallow: /*.map$
