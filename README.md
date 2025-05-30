@@ -1,26 +1,48 @@
-# 农业病害智能诊断系统
+# 🌾 农业病害智能诊断系统
+
+<div align="center">
+
+[![React](https://img.shields.io/badge/React-18-blue?style=flat-square&logo=react)](https://reactjs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?style=flat-square&logo=typescript)](https://www.typescriptlang.org/)
+[![Vite](https://img.shields.io/badge/Vite-5-purple?style=flat-square&logo=vite)](https://vitejs.dev/)
+[![Ant Design](https://img.shields.io/badge/Ant%20Design-5-blue?style=flat-square&logo=ant-design)](https://ant.design/)
+[![License](https://img.shields.io/badge/License-AGPL%203.0-green?style=flat-square)](LICENSE)
 
 基于 React + TypeScript + Vite 构建的现代化农业病害诊断平台，为农业生产提供智能化的解决方案。
 
-## 系统特点
+[在线演示](https://your-demo-url.com) · [问题反馈](https://github.com/mmdxiaoxin/agricultural-diagnostic-web/issues) · [更新日志](CHANGELOG.md)
 
-- 🧠 **智能诊断**：基于深度学习算法，快速准确地识别作物病害，提供专业的诊断建议
-- 📚 **知识库**：丰富的病害知识库，包含详细的病害信息、防治方法和用药建议
-- 📊 **数据管理**：完善的数据管理系统，支持数据采集、存储、分析和可视化
+</div>
 
-## 主要功能
+## ✨ 系统特点
 
-- **数据采集**：支持多种数据采集方式，包括图像、视频和传感器数据
-- **数据管理**：高效管理农业数据，支持数据分类、标签和搜索
-- **病害诊断**：基于 AI 的病害诊断系统，快速识别作物病害
-- **图片分析**：专业的图像分析工具，支持多种图像处理功能
-- **模型管理**：管理 AI 模型，支持模型训练、评估和部署
-- **病害知识库**：丰富的病害知识库，包含详细的病害信息和防治方法
-- **系统配置**：系统配置和管理，包括用户权限、系统参数等
-- **用户管理**：用户账户管理，支持用户注册、权限分配等
-- **诊断服务**：管理诊断服务，配置诊断服务调用
+<div align="center">
 
-## 技术栈
+|                         🧠 智能诊断                          |                        📚 知识库                         |                     📊 数据管理                      |
+| :----------------------------------------------------------: | :------------------------------------------------------: | :--------------------------------------------------: |
+| 基于深度学习算法，快速准确地识别作物病害，提供专业的诊断建议 | 丰富的病害知识库，包含详细的病害信息、防治方法和用药建议 | 完善的数据管理系统，支持数据采集、存储、分析和可视化 |
+
+</div>
+
+## 🚀 主要功能
+
+<div align="center">
+
+| 功能模块          | 说明                                             |
+| :---------------- | :----------------------------------------------- |
+| 🔍 **数据采集**   | 支持多种数据采集方式，包括图像、视频和传感器数据 |
+| 📁 **数据管理**   | 高效管理农业数据，支持数据分类、标签和搜索       |
+| 🏥 **病害诊断**   | 基于 AI 的病害诊断系统，快速识别作物病害         |
+| 🖼️ **图片分析**   | 专业的图像分析工具，支持多种图像处理功能         |
+| 🤖 **模型管理**   | 管理 AI 模型，支持模型训练、评估和部署           |
+| 📖 **病害知识库** | 丰富的病害知识库，包含详细的病害信息和防治方法   |
+| ⚙️ **系统配置**   | 系统配置和管理，包括用户权限、系统参数等         |
+| 👥 **用户管理**   | 用户账户管理，支持用户注册、权限分配等           |
+| 🔧 **诊断服务**   | 管理诊断服务，配置诊断服务调用                   |
+
+</div>
+
+## 🛠️ 技术栈
 
 ### 核心框架
 
@@ -60,24 +82,15 @@
 - 🖼️ [Vite Plugin Imagemin](https://github.com/anncwb/vite-plugin-imagemin) - 图片压缩插件
 - 📦 [Vite Plugin Compression](https://github.com/anncwb/vite-plugin-compression) - Gzip 压缩插件
 
-## 开始使用
+## 🌐 浏览器兼容性
 
-### 环境要求
+<div align="center">
 
-- Node.js >= 16.0.0
-- pnpm >= 8.0.0
-- Nginx >= 1.18.0 (生产环境)
+| Chrome | Firefox | Safari | Edge  |  iOS  | Android |
+| :----: | :-----: | :----: | :---: | :---: | :-----: |
+| >= 60  |  >= 60  | >= 12  | >= 79 | >= 12 |  >= 7   |
 
-### 浏览器兼容性
-
-本项目支持以下浏览器：
-
-- Chrome >= 60
-- Firefox >= 60
-- Safari >= 12
-- Edge >= 79
-- iOS >= 12
-- Android >= 7
+</div>
 
 具体支持范围：
 
@@ -88,6 +101,14 @@
 - 不支持 Opera Mini
 
 项目使用 `@vitejs/plugin-legacy` 插件自动生成兼容性代码，确保在较旧的浏览器中也能正常运行。
+
+## 🚀 开始使用
+
+### 环境要求
+
+- Node.js >= 16.0.0
+- pnpm >= 8.0.0
+- Nginx >= 1.18.0 (生产环境)
 
 ### 安装与运行
 
@@ -133,9 +154,9 @@ pnpm lint
 pnpm prettier
 ```
 
-### 生产环境部署
+## 📦 生产环境部署
 
-#### 1. 构建项目
+### 1. 构建项目
 
 ```bash
 # 安装依赖
@@ -147,7 +168,7 @@ pnpm build
 
 构建完成后，会在项目根目录生成 `dist` 文件夹，包含所有静态资源。
 
-#### 2. Nginx 配置
+### 2. Nginx 配置
 
 1. 安装 Nginx（如果尚未安装）
 
@@ -233,7 +254,7 @@ sudo nginx -t
 sudo systemctl restart nginx
 ```
 
-#### 3. SSL 配置（推荐）
+### 3. SSL 配置（推荐）
 
 1. 安装 Certbot
 
@@ -253,7 +274,7 @@ sudo certbot --nginx -d your-domain.com
 
 3. 证书自动续期（Certbot 会自动配置）
 
-#### 4. 部署检查清单
+### 4. 部署检查清单
 
 - [ ] 确保所有环境变量已正确配置
 - [ ] 检查 API 接口地址配置
@@ -264,7 +285,7 @@ sudo certbot --nginx -d your-domain.com
 - [ ] 验证缓存策略
 - [ ] 测试性能表现
 
-#### 5. 监控与维护
+### 5. 监控与维护
 
 1. 日志查看
 
@@ -294,7 +315,7 @@ htop
 - 检查磁盘空间
 - 备份重要数据
 
-## 项目结构
+## 📁 项目结构
 
 ```
 src/
@@ -310,11 +331,11 @@ src/
 └── views/         # 页面组件
 ```
 
-## 贡献指南
+## 🤝 贡献指南
 
 欢迎提交 Pull Request 或创建 Issue 来帮助改进项目。
 
-## 许可证
+## 📄 许可证
 
 本项目采用 [GNU Affero General Public License v3.0](LICENSE) 许可证。
 
