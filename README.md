@@ -66,6 +66,7 @@
 
 - Node.js >= 16.0.0
 - pnpm >= 8.0.0
+- Nginx >= 1.18.0 (生产环境)
 
 ### 安装与运行
 
@@ -110,6 +111,158 @@ pnpm lint
 ```bash
 pnpm prettier
 ```
+
+### 生产环境部署
+
+#### 1. 构建项目
+
+```bash
+# 安装依赖
+pnpm install
+
+# 构建生产版本
+pnpm build
+```
+
+构建完成后，会在项目根目录生成 `dist` 文件夹，包含所有静态资源。
+
+#### 2. Nginx 配置
+
+1. 安装 Nginx（如果尚未安装）
+
+```bash
+# Ubuntu/Debian
+sudo apt update
+sudo apt install nginx
+
+# CentOS
+sudo yum install nginx
+```
+
+2. 创建 Nginx 配置文件
+
+```bash
+sudo vim /etc/nginx/conf.d/agricultural-diagnostic.conf
+```
+
+3. 添加以下配置内容：
+
+```nginx
+server {
+    listen 80;
+    server_name your-domain.com;  # 替换为您的域名
+    root /path/to/your/dist;      # 替换为您的项目 dist 目录的绝对路径
+    index index.html;
+
+    # Gzip 压缩配置
+    gzip on;
+    gzip_min_length 1k;
+    gzip_comp_level 6;
+    gzip_types text/plain text/css text/javascript application/json application/javascript application/x-javascript application/xml;
+    gzip_vary on;
+    gzip_disable "MSIE [1-6]\.";
+
+    # 安全相关配置
+    add_header X-Frame-Options "SAMEORIGIN";
+    add_header X-XSS-Protection "1; mode=block";
+    add_header X-Content-Type-Options "nosniff";
+
+    # 缓存配置
+    location ~* \.(jpg|jpeg|png|gif|ico|css|js)$ {
+        expires 7d;
+        add_header Cache-Control "public, no-transform";
+    }
+
+    # 主应用配置
+    location / {
+        try_files $uri $uri/ /index.html;
+        add_header Cache-Control "no-cache, no-store, must-revalidate";
+    }
+
+    # API 代理配置（如果需要）
+    location /api/ {
+        proxy_pass http://your-backend-server:port/;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+    }
+}
+```
+
+4. 检查 Nginx 配置是否正确
+
+```bash
+sudo nginx -t
+```
+
+5. 重启 Nginx 服务
+
+```bash
+sudo systemctl restart nginx
+```
+
+#### 3. SSL 配置（推荐）
+
+1. 安装 Certbot
+
+```bash
+# Ubuntu/Debian
+sudo apt install certbot python3-certbot-nginx
+
+# CentOS
+sudo yum install certbot python3-certbot-nginx
+```
+
+2. 获取 SSL 证书
+
+```bash
+sudo certbot --nginx -d your-domain.com
+```
+
+3. 证书自动续期（Certbot 会自动配置）
+
+#### 4. 部署检查清单
+
+- [ ] 确保所有环境变量已正确配置
+- [ ] 检查 API 接口地址配置
+- [ ] 验证静态资源是否正确加载
+- [ ] 测试所有主要功能
+- [ ] 检查错误日志
+- [ ] 确认 SSL 证书状态
+- [ ] 验证缓存策略
+- [ ] 测试性能表现
+
+#### 5. 监控与维护
+
+1. 日志查看
+
+```bash
+# Nginx 访问日志
+sudo tail -f /var/log/nginx/access.log
+
+# Nginx 错误日志
+sudo tail -f /var/log/nginx/error.log
+```
+
+2. 性能监控
+
+```bash
+# 查看 Nginx 进程状态
+ps aux | grep nginx
+
+# 查看系统资源使用情况
+htop
+```
+
+3. 定期维护任务
+
+- 定期更新 SSL 证书
+- 清理日志文件
+- 更新系统包
+- 检查磁盘空间
+- 备份重要数据
 
 ## 项目结构
 
