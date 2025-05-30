@@ -147,6 +147,15 @@ sudo vim /etc/nginx/conf.d/agricultural-diagnostic.conf
 
 3. 添加以下配置内容：
 
+项目提供了多个 Nginx 配置示例，位于 `src/assets/nginx` 目录下：
+
+- `https2.conf` - 基础 HTTPS 配置
+- `https3.conf` - HTTP/3 配置
+- `https2-withBrotli.conf` - 支持 Brotli 压缩的 HTTPS 配置
+- `https3-withBrotli.conf` - 支持 Brotli 压缩的 HTTP/3 配置
+
+您可以根据需求选择合适的配置文件作为参考。以下是一个基础配置示例：
+
 ```nginx
 server {
     listen 80;
