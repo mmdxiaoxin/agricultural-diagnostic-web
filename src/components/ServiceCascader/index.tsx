@@ -1,25 +1,34 @@
 import { RemoteService } from "@/api/interface";
+import type { CascaderProps } from "antd";
 import { Cascader, Typography } from "antd";
 import clsx from "clsx";
 import React from "react";
 
 const { Text } = Typography;
 
-export interface ServiceCascaderProps {
+type CascaderOption = {
+	value: number;
+	label: string;
+	disabled: boolean;
+	children?: CascaderOption[];
+};
+
+export interface ServiceCascaderProps
+	extends Omit<CascaderProps<CascaderOption>, "options" | "value" | "onChange"> {
 	serviceList: RemoteService[];
 	value?: [number, number];
 	onChange?: (value: [number, number] | undefined) => void;
-	className?: string;
 }
 
 const ServiceCascader: React.FC<ServiceCascaderProps> = ({
 	serviceList,
 	value,
 	onChange,
-	className
+	className,
+	...restProps
 }) => {
 	// 构建级联选择器的选项
-	const cascaderOptions = serviceList.map(service => ({
+	const cascaderOptions: CascaderOption[] = serviceList.map(service => ({
 		value: service.id,
 		label: service.serviceName,
 		disabled: service.status !== "active",
@@ -41,8 +50,10 @@ const ServiceCascader: React.FC<ServiceCascaderProps> = ({
 
 	return (
 		<Cascader
+			{...restProps}
 			options={cascaderOptions}
 			allowClear={false}
+			multiple={false}
 			onChange={handleChange}
 			placeholder="请选择诊断服务和配置"
 			className={clsx("w-full", className)}

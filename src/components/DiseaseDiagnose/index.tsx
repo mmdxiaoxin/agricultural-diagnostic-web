@@ -162,11 +162,13 @@ const DiseaseDiagnose: React.FC<DiseaseDiagnoseProps> = ({
 		<Card title="图片诊断" className="max-w-3xl" variant="borderless">
 			<Space direction="vertical" className="w-full" size="large">
 				{type === "test" ? (
-					<ServiceCascader
-						serviceList={serviceList}
-						value={serviceId && configId ? [serviceId, configId] : undefined}
-						onChange={handleServiceChange}
-					/>
+					<div ref={selectRef}>
+						<ServiceCascader
+							serviceList={serviceList}
+							value={serviceId && configId ? [serviceId, configId] : undefined}
+							onChange={handleServiceChange}
+						/>
+					</div>
 				) : (
 					<div ref={selectRef}>
 						<Select
