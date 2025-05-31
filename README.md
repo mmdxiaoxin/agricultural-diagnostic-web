@@ -224,6 +224,8 @@ pnpm prettier
 
 项目提供了快速部署脚本，可以一键完成构建和部署过程：
 
+#### Linux/macOS 部署
+
 ```bash
 # 给脚本添加执行权限
 chmod +x scripts/deploy.sh
@@ -232,14 +234,27 @@ chmod +x scripts/deploy.sh
 ./scripts/deploy.sh
 ```
 
+#### Windows 部署
+
+```powershell
+# 以管理员身份运行 PowerShell
+# 运行部署脚本
+.\scripts\deploy.ps1
+```
+
 部署脚本会自动执行以下操作：
 - 构建项目
-- 检查并创建目标目录（默认为 `/var/www/agricultural-diagnostic-web`）
+- 检查并创建目标目录
+  - Linux/macOS: `/var/www/agricultural-diagnostic-web`
+  - Windows: `C:\inetpub\wwwroot\agricultural-diagnostic-web`
 - 清空目标目录
 - 复制构建文件
 - 设置正确的文件权限
+- Windows 版本还会提示是否重启 IIS
 
-如果需要修改部署目标目录，可以编辑 `scripts/deploy.sh` 文件中的 `TARGET_DIR` 变量。
+如果需要修改部署目标目录：
+- Linux/macOS: 编辑 `scripts/deploy.sh` 文件中的 `TARGET_DIR` 变量
+- Windows: 编辑 `scripts/deploy.ps1` 文件中的 `$TARGET_DIR` 变量
 
 ### 2. 手动构建项目
 
