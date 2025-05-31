@@ -37,8 +37,8 @@ export interface DiseaseDiagnoseProps {
 	buttonRef?: React.RefObject<HTMLButtonElement>;
 }
 
-const DiseaseDiagnose: React.FC<DiseaseDiagnoseProps> = ({ 
-	onPredict, 
+const DiseaseDiagnose: React.FC<DiseaseDiagnoseProps> = ({
+	onPredict,
 	type = "image",
 	selectRef,
 	uploadRef,

@@ -3,16 +3,47 @@ import DiagnosisHistoryList, {
 	DiagnosisHistoryListRef
 } from "@/components/List/DiagnosisHistoryList";
 import PageHeader from "@/components/PageHeader";
-import { Col, Row } from "antd";
+import { Col, Row, Tour } from "antd";
+import type { TourProps } from "antd";
 import clsx from "clsx";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 
 const DiagnosisTest = () => {
 	const diagnosisListRef = useRef<DiagnosisHistoryListRef>(null);
+	const [open, setOpen] = useState<boolean>(false);
+	
+	// 添加 ref 用于 Tour
+	const serviceRef = useRef<HTMLDivElement>(null);
+	const uploadRef = useRef<HTMLDivElement>(null);
+	const buttonRef = useRef<HTMLButtonElement>(null);
+	const listRef = useRef<HTMLDivElement>(null);
 
 	const handlePredict = (_: File) => {
 		diagnosisListRef.current?.init();
 	};
+
+	const steps: TourProps['steps'] = [
+		{
+			title: '选择诊断服务',
+			description: '在这里选择要测试的诊断服务和配置',
+			target: () => serviceRef.current as HTMLElement,
+		},
+		{
+			title: '上传图片',
+			description: '您可以通过文件上传或拍照的方式上传植物图片',
+			target: () => uploadRef.current as HTMLElement,
+		},
+		{
+			title: '开始检测',
+			description: '点击按钮开始进行诊断服务测试',
+			target: () => buttonRef.current as HTMLElement,
+		},
+		{
+			title: '诊断历史',
+			description: '这里可以查看您的历史诊断记录',
+			target: () => listRef.current as HTMLElement,
+		},
+	];
 
 	return (
 		<div
@@ -25,7 +56,11 @@ const DiagnosisTest = () => {
 				"overflow-y-auto"
 			)}
 		>
-			<PageHeader title="诊断服务测试" description="上传图片测试诊断服务" />
+			<PageHeader 
+				title="诊断服务测试" 
+				description="上传图片测试诊断服务"
+				onHelpClick={() => setOpen(true)}
+			/>
 
 			<Row gutter={12} className="flex-1 min-h-0">
 				<Col xs={24} sm={24} md={24} lg={12} xl={12} xxl={12} className="h-full">
@@ -38,11 +73,18 @@ const DiagnosisTest = () => {
 							"[scrollbar-width:none]"
 						)}
 					>
-						<DiseaseDiagnose onPredict={handlePredict} type="test" />
+						<DiseaseDiagnose 
+							onPredict={handlePredict} 
+							type="test"
+							selectRef={serviceRef}
+							uploadRef={uploadRef}
+							buttonRef={buttonRef}
+						/>
 					</div>
 				</Col>
 				<Col xs={24} sm={24} md={24} lg={12} xl={12} xxl={12} className="h-full">
 					<div
+						ref={listRef}
 						className={clsx(
 							"h-full bg-white rounded-2xl shadow-sm md:border border-gray-100",
 							"lg:overflow-y-auto",
@@ -55,6 +97,12 @@ const DiagnosisTest = () => {
 					</div>
 				</Col>
 			</Row>
+
+			<Tour
+				open={open}
+				onClose={() => setOpen(false)}
+				steps={steps}
+			/>
 		</div>
 	);
 };
