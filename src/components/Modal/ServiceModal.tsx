@@ -83,8 +83,15 @@ const ServiceModal = forwardRef<ServiceModalRef, ServiceModalProps>(({ onCancel,
 					<Input />
 				</Form.Item>
 
-				<Form.Item label="服务类型" name="serviceType">
-					<Input />
+				<Form.Item
+					label="服务类型"
+					name="serviceType"
+					rules={[{ required: true, message: "请选择服务类型" }]}
+				>
+					<Select>
+						<Select.Option value="RESTful">RESTful</Select.Option>
+						<Select.Option value="gRPC">gRPC</Select.Option>
+					</Select>
 				</Form.Item>
 
 				<Form.Item label="服务描述" name="description">
