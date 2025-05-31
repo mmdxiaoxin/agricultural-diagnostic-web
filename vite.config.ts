@@ -49,7 +49,7 @@ export default defineConfig((mode: ConfigEnv): UserConfig => {
 				"@dnd-kit/modifiers",
 				"@dnd-kit/accessibility"
 			],
-			exclude: ["monaco-editor", "@monaco-editor/react", "jspdf", "html2canvas"]
+			exclude: ["@monaco-editor/react", "jspdf", "html2canvas"]
 		},
 		build: {
 			outDir: "dist",
@@ -62,31 +62,14 @@ export default defineConfig((mode: ConfigEnv): UserConfig => {
 				output: {
 					entryFileNames: "assets/js/[name]-[hash].js",
 					assetFileNames: "assets/[ext]/[name]-[hash].[ext]",
-					manualChunks: {
-						// React 核心
-						vendor: ["react", "react-dom", "react-router"],
-						// Redux 相关
-						redux: ["@reduxjs/toolkit", "react-redux", "redux-persist"],
-						// DnD Kit 相关
-						dnd: [
-							"@dnd-kit/core",
-							"@dnd-kit/sortable",
-							"@dnd-kit/utilities",
-							"@dnd-kit/modifiers",
-							"@dnd-kit/accessibility"
-						],
-						// 图表相关
-						charts: ["echarts"],
-						// 工具库
-						utils: ["dayjs", "qs", "spark-md5"]
-					},
-					// 自动分包配置
 					chunkFileNames: chunkInfo => {
 						const id = chunkInfo.name;
 						if (id?.includes("node_modules")) {
 							return "assets/js/vendor/[name]-[hash].js";
 						} else if (id?.includes("src/components")) {
 							return "assets/js/components/[name]-[hash].js";
+						} else if (id?.includes("src/views")) {
+							return "assets/js/views/[name]-[hash].js";
 						} else {
 							return "assets/js/[name]-[hash].js";
 						}

@@ -1,5 +1,5 @@
-import Editor, { loader, OnChange, OnMount } from "@monaco-editor/react";
-import React, { useCallback, useMemo, useEffect } from "react";
+import Editor, { OnChange, OnMount } from "@monaco-editor/react";
+import React, { useCallback, useMemo } from "react";
 
 // 编辑器主题类型
 export type EditorTheme = "light" | "vs-dark" | "hc-black";
@@ -126,13 +126,6 @@ const MonacoEditor: React.FC<MonacoEditorProps> = ({
 	className,
 	style
 }) => {
-	// 在组件挂载时动态加载 monaco
-	useEffect(() => {
-		import("monaco-editor").then(monaco => {
-			loader.config({ monaco });
-		});
-	}, []);
-
 	// 合并默认配置和用户配置
 	const mergedOptions = useMemo(
 		() => ({
@@ -154,10 +147,9 @@ const MonacoEditor: React.FC<MonacoEditorProps> = ({
 				}
 
 				// 设置快捷键
-				import("monaco-editor").then(monaco => {
-					editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS, () => {
-						onSave?.(value);
-					});
+				editor.addCommand(2048 | 49, () => {
+					// Ctrl/Cmd + S
+					onSave?.(value);
 				});
 
 				onMount?.(editor);
