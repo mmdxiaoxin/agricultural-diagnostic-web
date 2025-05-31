@@ -32,9 +32,18 @@ import ServiceCascader from "../ServiceCascader";
 export interface DiseaseDiagnoseProps {
 	type?: "image" | "test";
 	onPredict?: (image: File) => void;
+	selectRef?: React.RefObject<HTMLDivElement>;
+	uploadRef?: React.RefObject<HTMLDivElement>;
+	buttonRef?: React.RefObject<HTMLButtonElement>;
 }
 
-const DiseaseDiagnose: React.FC<DiseaseDiagnoseProps> = ({ onPredict, type = "image" }) => {
+const DiseaseDiagnose: React.FC<DiseaseDiagnoseProps> = ({ 
+	onPredict, 
+	type = "image",
+	selectRef,
+	uploadRef,
+	buttonRef
+}) => {
 	const [selectedImage, setSelectedImage] = useState<File | null>(null);
 	const [fileList, setFileList] = useState<UploadFile[]>([]);
 	const [detectionResults, setDetectionResults] = useState<DiagnoseResult>();
@@ -159,22 +168,24 @@ const DiseaseDiagnose: React.FC<DiseaseDiagnoseProps> = ({ onPredict, type = "im
 						onChange={handleServiceChange}
 					/>
 				) : (
-					<Select
-						placeholder="请选择诊断支持"
-						className="w-full"
-						onChange={handleSupportChange}
-						value={
-							supportList.find(
-								item => item.value.serviceId === serviceId && item.value.configId === configId
-							)?.key
-						}
-					>
-						{supportList.map(item => (
-							<Select.Option key={item.key} value={item.key}>
-								{item.key}
-							</Select.Option>
-						))}
-					</Select>
+					<div ref={selectRef}>
+						<Select
+							placeholder="请选择诊断支持"
+							className="w-full"
+							onChange={handleSupportChange}
+							value={
+								supportList.find(
+									item => item.value.serviceId === serviceId && item.value.configId === configId
+								)?.key
+							}
+						>
+							{supportList.map(item => (
+								<Select.Option key={item.key} value={item.key}>
+									{item.key}
+								</Select.Option>
+							))}
+						</Select>
+					</div>
 				)}
 				{/* 图片选择与预览 */}
 				<Card size="small" className="bg-gray-50">
@@ -190,35 +201,37 @@ const DiseaseDiagnose: React.FC<DiseaseDiagnoseProps> = ({ onPredict, type = "im
 									</span>
 								),
 								children: (
-									<Upload
-										accept="image/*"
-										beforeUpload={file => {
-											setSelectedImage(file);
-											setDetectionResults(undefined); // 清空上一次的检测结果
-											const reader = new FileReader();
-											reader.onload = e => setPreviewUrl(e.target?.result as string);
-											reader.readAsDataURL(file);
-											return false;
-										}}
-										showUploadList={false}
-										fileList={fileList}
-										onChange={handleChange}
-										listType="picture"
-										className="text-center"
-									>
-										<Button
-											icon={<UploadOutlined />}
-											className={clsx(
-												"px-6 h-10",
-												"rounded-lg",
-												"shadow-sm hover:shadow-md",
-												"transition-all duration-300",
-												"flex items-center gap-2"
-											)}
+									<div ref={uploadRef}>
+										<Upload
+											accept="image/*"
+											beforeUpload={file => {
+												setSelectedImage(file);
+												setDetectionResults(undefined); // 清空上一次的检测结果
+												const reader = new FileReader();
+												reader.onload = e => setPreviewUrl(e.target?.result as string);
+												reader.readAsDataURL(file);
+												return false;
+											}}
+											showUploadList={false}
+											fileList={fileList}
+											onChange={handleChange}
+											listType="picture"
+											className="text-center"
 										>
-											选择图片
-										</Button>
-									</Upload>
+											<Button
+												icon={<UploadOutlined />}
+												className={clsx(
+													"px-6 h-10",
+													"rounded-lg",
+													"shadow-sm hover:shadow-md",
+													"transition-all duration-300",
+													"flex items-center gap-2"
+												)}
+											>
+												选择图片
+											</Button>
+										</Upload>
+									</div>
 								)
 							},
 							{
@@ -255,6 +268,7 @@ const DiseaseDiagnose: React.FC<DiseaseDiagnoseProps> = ({ onPredict, type = "im
 
 				{/* 上传按钮 */}
 				<Button
+					ref={buttonRef}
 					type="primary"
 					onClick={handleUploadAndPredict}
 					disabled={!selectedImage || loading || !serviceId || !configId}

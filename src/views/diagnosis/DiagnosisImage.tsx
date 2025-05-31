@@ -11,6 +11,12 @@ import { useRef, useState } from "react";
 const DiagnosisImage = () => {
 	const diagnosisListRef = useRef<DiagnosisHistoryListRef>(null);
 	const [open, setOpen] = useState<boolean>(false);
+	
+	// 添加 ref 用于 Tour
+	const selectRef = useRef<HTMLDivElement>(null);
+	const uploadRef = useRef<HTMLDivElement>(null);
+	const buttonRef = useRef<HTMLButtonElement>(null);
+	const listRef = useRef<HTMLDivElement>(null);
 
 	const handlePredict = (_: File) => {
 		diagnosisListRef.current?.init();
@@ -20,22 +26,22 @@ const DiagnosisImage = () => {
 		{
 			title: '选择诊断支持',
 			description: '在这里选择您需要的诊断支持类型',
-			target: () => document.querySelector('.ant-select') as HTMLElement,
+			target: () => selectRef.current as HTMLElement,
 		},
 		{
 			title: '上传图片',
 			description: '您可以通过文件上传或拍照的方式上传植物图片',
-			target: () => document.querySelector('.ant-upload') as HTMLElement,
+			target: () => uploadRef.current as HTMLElement,
 		},
 		{
 			title: '开始检测',
 			description: '点击按钮开始进行植物病害诊断',
-			target: () => document.querySelector('.ant-btn-primary') as HTMLElement,
+			target: () => buttonRef.current as HTMLElement,
 		},
 		{
 			title: '诊断历史',
 			description: '这里可以查看您的历史诊断记录',
-			target: () => document.querySelector('.ant-list') as HTMLElement,
+			target: () => listRef.current as HTMLElement,
 		},
 	];
 
@@ -67,11 +73,17 @@ const DiagnosisImage = () => {
 							"[scrollbar-width:none]"
 						)}
 					>
-						<DiseaseDiagnose onPredict={handlePredict} />
+						<DiseaseDiagnose 
+							onPredict={handlePredict} 
+							selectRef={selectRef}
+							uploadRef={uploadRef}
+							buttonRef={buttonRef}
+						/>
 					</div>
 				</Col>
 				<Col xs={24} sm={24} md={24} lg={12} xl={12} xxl={12} className="h-full">
 					<div
+						ref={listRef}
 						className={clsx(
 							"h-full bg-white rounded-2xl shadow-sm md:border border-gray-100",
 							"lg:overflow-y-auto",
@@ -89,7 +101,6 @@ const DiagnosisImage = () => {
 				open={open}
 				onClose={() => setOpen(false)}
 				steps={steps}
-				type="primary"
 			/>
 		</div>
 	);
