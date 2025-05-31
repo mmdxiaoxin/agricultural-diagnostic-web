@@ -1,4 +1,4 @@
-import IconComponent from "@/components/IconComponent";
+import IconComponent from "@/components/icons/IconComponent";
 import { HOME_URL } from "@/config/config";
 import { useAppDispatch, useAppSelector } from "@/hooks";
 import { layoutRoute } from "@/routes";

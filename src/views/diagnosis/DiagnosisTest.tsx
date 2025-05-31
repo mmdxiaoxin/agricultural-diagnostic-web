@@ -11,7 +11,7 @@ import { useRef, useState } from "react";
 const DiagnosisTest = () => {
 	const diagnosisListRef = useRef<DiagnosisHistoryListRef>(null);
 	const [open, setOpen] = useState<boolean>(false);
-	
+
 	// 添加 ref 用于 Tour
 	const serviceRef = useRef<HTMLDivElement>(null);
 	const uploadRef = useRef<HTMLDivElement>(null);
@@ -22,27 +22,27 @@ const DiagnosisTest = () => {
 		diagnosisListRef.current?.init();
 	};
 
-	const steps: TourProps['steps'] = [
+	const steps: TourProps["steps"] = [
 		{
-			title: '选择诊断服务',
-			description: '在这里选择要测试的诊断服务和配置',
-			target: () => serviceRef.current as HTMLElement,
+			title: "选择诊断服务",
+			description: "在这里选择要测试的诊断服务和配置",
+			target: () => serviceRef.current as HTMLElement
 		},
 		{
-			title: '上传图片',
-			description: '您可以通过文件上传或拍照的方式上传植物图片',
-			target: () => uploadRef.current as HTMLElement,
+			title: "上传图片",
+			description: "您可以通过文件上传或拍照的方式上传植物图片",
+			target: () => uploadRef.current as HTMLElement
 		},
 		{
-			title: '开始检测',
-			description: '点击按钮开始进行诊断服务测试',
-			target: () => buttonRef.current as HTMLElement,
+			title: "开始检测",
+			description: "点击按钮开始进行诊断服务测试",
+			target: () => buttonRef.current as HTMLElement
 		},
 		{
-			title: '诊断历史',
-			description: '这里可以查看您的历史诊断记录',
-			target: () => listRef.current as HTMLElement,
-		},
+			title: "诊断历史",
+			description: "这里可以查看您的历史诊断记录",
+			target: () => listRef.current as HTMLElement
+		}
 	];
 
 	return (
@@ -56,8 +56,8 @@ const DiagnosisTest = () => {
 				"overflow-y-auto"
 			)}
 		>
-			<PageHeader 
-				title="诊断服务测试" 
+			<PageHeader
+				title="诊断服务测试"
 				description="上传图片测试诊断服务"
 				onHelpClick={() => setOpen(true)}
 			/>
@@ -73,8 +73,8 @@ const DiagnosisTest = () => {
 							"[scrollbar-width:none]"
 						)}
 					>
-						<DiseaseDiagnose 
-							onPredict={handlePredict} 
+						<DiseaseDiagnose
+							onPredict={handlePredict}
 							type="test"
 							selectRef={serviceRef}
 							uploadRef={uploadRef}
@@ -98,11 +98,7 @@ const DiagnosisTest = () => {
 				</Col>
 			</Row>
 
-			<Tour
-				open={open}
-				onClose={() => setOpen(false)}
-				steps={steps}
-			/>
+			<Tour open={open} onClose={() => setOpen(false)} steps={steps} />
 		</div>
 	);
 };

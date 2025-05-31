@@ -1,5 +1,5 @@
 import { getAuthRoutes } from "@/api/modules/menu";
-import IconComponent, { Icons } from "@/components/IconComponent";
+import IconComponent, { Icons } from "@/components/icons/IconComponent";
 import { useAppDispatch } from "@/hooks/useAppDispatch";
 import { useAppSelector } from "@/hooks/useAppSelector";
 import { RouteObjectEx } from "@/routes/interface";

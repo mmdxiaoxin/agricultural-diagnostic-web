@@ -25,8 +25,8 @@ import {
 } from "antd";
 import { ColumnsType } from "antd/es/table";
 import React, { useEffect, useRef, useState } from "react";
-import QuickCopy from "../Table/QuickCopy";
-import TextCell from "../Table/TextCell";
+import QuickCopy from "./Table/QuickCopy";
+import TextCell from "./Table/TextCell";
 
 export type ServiceDetailProps = {
 	service?: RemoteService;

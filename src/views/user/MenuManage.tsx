@@ -1,6 +1,6 @@
 import { MenuItem } from "@/api/interface";
 import { createMenu, deleteMenu, getMenuList, updateMenu } from "@/api/modules/menu";
-import IconComponent, { Icons } from "@/components/IconComponent";
+import IconComponent, { Icons } from "@/components/icons/IconComponent";
 import MenuModal, { MenuModalRef } from "@/components/Modal/MenuModal";
 import PageHeader from "@/components/PageHeader";
 import TextCell from "@/components/Table/TextCell";

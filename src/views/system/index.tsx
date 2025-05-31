@@ -1,5 +1,5 @@
 import { getAuthRoutes } from "@/api/modules";
-import IconComponent, { Icons } from "@/components/IconComponent";
+import IconComponent, { Icons } from "@/components/icons/IconComponent";
 import { useAppDispatch, useAppSelector } from "@/hooks";
 import { setComponentSize, setLanguage, setThemeConfig } from "@/store/modules/globalSlice";
 import { setCollapse } from "@/store/modules/menuSlice";

@@ -5,7 +5,7 @@ import clsx from "clsx";
 import dayjs from "dayjs";
 import { HTMLMotionProps, motion } from "framer-motion";
 import React from "react";
-import IconComponent, { Icons } from "../IconComponent";
+import IconComponent, { Icons } from "../icons/IconComponent";
 
 // 组件属性接口
 interface FileCardProps extends Omit<HTMLMotionProps<"div">, "onDrag"> {

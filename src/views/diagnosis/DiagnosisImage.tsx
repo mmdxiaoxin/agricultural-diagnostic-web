@@ -11,7 +11,7 @@ import { useRef, useState } from "react";
 const DiagnosisImage = () => {
 	const diagnosisListRef = useRef<DiagnosisHistoryListRef>(null);
 	const [open, setOpen] = useState<boolean>(false);
-	
+
 	// 添加 ref 用于 Tour
 	const selectRef = useRef<HTMLDivElement>(null);
 	const uploadRef = useRef<HTMLDivElement>(null);
@@ -22,27 +22,27 @@ const DiagnosisImage = () => {
 		diagnosisListRef.current?.init();
 	};
 
-	const steps: TourProps['steps'] = [
+	const steps: TourProps["steps"] = [
 		{
-			title: '选择诊断支持',
-			description: '在这里选择您需要的诊断支持类型',
-			target: () => selectRef.current as HTMLElement,
+			title: "选择诊断支持",
+			description: "在这里选择您需要的诊断支持类型",
+			target: () => selectRef.current as HTMLElement
 		},
 		{
-			title: '上传图片',
-			description: '您可以通过文件上传或拍照的方式上传植物图片',
-			target: () => uploadRef.current as HTMLElement,
+			title: "上传图片",
+			description: "您可以通过文件上传或拍照的方式上传植物图片",
+			target: () => uploadRef.current as HTMLElement
 		},
 		{
-			title: '开始检测',
-			description: '点击按钮开始进行植物病害诊断',
-			target: () => buttonRef.current as HTMLElement,
+			title: "开始检测",
+			description: "点击按钮开始进行植物病害诊断",
+			target: () => buttonRef.current as HTMLElement
 		},
 		{
-			title: '诊断历史',
-			description: '这里可以查看您的历史诊断记录',
-			target: () => listRef.current as HTMLElement,
-		},
+			title: "诊断历史",
+			description: "这里可以查看您的历史诊断记录",
+			target: () => listRef.current as HTMLElement
+		}
 	];
 
 	return (
@@ -56,8 +56,8 @@ const DiagnosisImage = () => {
 				"overflow-y-auto"
 			)}
 		>
-			<PageHeader 
-				title="植物病害诊断" 
+			<PageHeader
+				title="植物病害诊断"
 				description="上传植物图片进行智能诊断"
 				onHelpClick={() => setOpen(true)}
 			/>
@@ -73,8 +73,8 @@ const DiagnosisImage = () => {
 							"[scrollbar-width:none]"
 						)}
 					>
-						<DiseaseDiagnose 
-							onPredict={handlePredict} 
+						<DiseaseDiagnose
+							onPredict={handlePredict}
 							selectRef={selectRef}
 							uploadRef={uploadRef}
 							buttonRef={buttonRef}
@@ -97,11 +97,7 @@ const DiagnosisImage = () => {
 				</Col>
 			</Row>
 
-			<Tour
-				open={open}
-				onClose={() => setOpen(false)}
-				steps={steps}
-			/>
+			<Tour open={open} onClose={() => setOpen(false)} steps={steps} />
 		</div>
 	);
 };

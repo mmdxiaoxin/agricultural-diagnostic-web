@@ -1,4 +1,4 @@
-import IconComponent, { Icons } from "@/components/IconComponent";
+import IconComponent, { Icons } from "@/components/icons/IconComponent";
 import { HOME_URL } from "@/config/config";
 import { useAppSelector } from "@/hooks/useAppSelector";
 import { Breadcrumb, BreadcrumbProps, Space } from "antd";
