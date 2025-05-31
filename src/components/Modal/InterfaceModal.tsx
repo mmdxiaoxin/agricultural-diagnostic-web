@@ -8,6 +8,7 @@ import {
 	message,
 	Modal,
 	Popconfirm,
+	Select,
 	Space,
 	Table,
 	TableProps
@@ -292,8 +293,19 @@ const InterfaceModal = forwardRef<InterfaceModalRef, InterfaceModalProps>(
 									<Input placeholder="请输入接口名称" />
 								</Form.Item>
 
-								<Form.Item label="接口类型" name="type">
-									<Input placeholder="请输入接口类型" />
+								<Form.Item
+									label="接口类型"
+									name="type"
+									rules={[{ required: true, message: "请选择接口类型" }]}
+								>
+									<Select placeholder="请选择接口类型">
+										<Select.Option value="http">HTTP</Select.Option>
+										<Select.Option value="https">HTTPS</Select.Option>
+										<Select.Option value="ws">WebSocket</Select.Option>
+										<Select.Option value="wss">WebSocket Secure</Select.Option>
+										<Select.Option value="grpc">gRPC</Select.Option>
+										<Select.Option value="graphql">GraphQL</Select.Option>
+									</Select>
 								</Form.Item>
 
 								<Form.Item label="接口地址" name="url">
