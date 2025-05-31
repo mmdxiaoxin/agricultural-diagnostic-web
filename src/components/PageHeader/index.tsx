@@ -1,4 +1,4 @@
-import { DownOutlined, UpOutlined } from "@ant-design/icons";
+import { DownOutlined, UpOutlined, QuestionCircleOutlined } from "@ant-design/icons";
 import { Button, Input, Popconfirm, Tag, Typography } from "antd";
 import clsx from "clsx";
 import { ReactNode, useState } from "react";
@@ -60,6 +60,9 @@ interface PageHeaderProps {
 
 	// 自定义内容
 	children?: ReactNode;
+
+	// 帮助按钮
+	onHelpClick?: () => void;
 }
 
 const PageHeader = ({
@@ -73,7 +76,8 @@ const PageHeader = ({
 	extra,
 	children,
 	collapsible = true,
-	defaultCollapsed = false
+	defaultCollapsed = false,
+	onHelpClick
 }: PageHeaderProps) => {
 	const [collapsed, setCollapsed] = useState(defaultCollapsed);
 
@@ -119,7 +123,15 @@ const PageHeader = ({
 					)}
 				</div>
 				{!collapsed && (
-					<div className="flex-shrink-0">
+					<div className="flex-shrink-0 flex items-center gap-2">
+						{onHelpClick && (
+							<Button
+								type="text"
+								icon={<QuestionCircleOutlined />}
+								onClick={onHelpClick}
+								className="text-gray-500 hover:text-gray-700"
+							/>
+						)}
 						{actionButton && (
 							<Button
 								type={actionButton.type || "primary"}
