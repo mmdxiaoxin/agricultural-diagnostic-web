@@ -14,6 +14,20 @@
 
 </div>
 
+## 📸 项目预览
+
+<div align="center">
+  <img src="docs/preview/dashboard.png" alt="仪表盘" width="800"/>
+  <br/>
+  <em>系统仪表盘</em>
+</div>
+
+<div align="center">
+  <img src="docs/preview/diagnosis.png" alt="病害诊断" width="800"/>
+  <br/>
+  <em>病害诊断界面</em>
+</div>
+
 ## ✨ 系统特点
 
 <div align="center">
@@ -109,6 +123,56 @@
 - Node.js >= 16.0.0
 - pnpm >= 8.0.0
 - Nginx >= 1.18.0 (生产环境)
+
+### 开发环境配置
+
+1. 安装 VSCode 插件
+
+   - ESLint
+   - Prettier
+   - TypeScript Vue Plugin (Volar)
+   - Tailwind CSS IntelliSense
+   - GitLens
+
+2. 配置 VSCode 设置
+
+```json
+{
+	"editor.formatOnSave": true,
+	"editor.defaultFormatter": "esbenp.prettier-vscode",
+	"editor.codeActionsOnSave": {
+		"source.fixAll.eslint": true
+	},
+	"typescript.tsdk": "node_modules/typescript/lib"
+}
+```
+
+3. 配置 Git 提交规范
+
+```bash
+# 安装 husky
+pnpm add -D husky lint-staged @commitlint/cli @commitlint/config-conventional
+
+# 初始化 husky
+npx husky install
+
+# 添加 commit-msg hook
+npx husky add .husky/commit-msg 'npx --no -- commitlint --edit $1'
+```
+
+4. 配置环境变量
+
+```bash
+# .env.development
+VITE_APP_TITLE=农业病害智能诊断系统
+VITE_APP_API_BASE_URL=http://localhost:3000
+VITE_APP_UPLOAD_URL=http://localhost:3000/upload
+
+# .env.production
+VITE_APP_TITLE=农业病害智能诊断系统
+VITE_APP_API_BASE_URL=https://api.your-domain.com
+VITE_APP_UPLOAD_URL=https://api.your-domain.com/upload
+```
 
 ### 安装与运行
 
@@ -347,3 +411,113 @@ src/
 4. 必须包含完整的许可证文本
 
 更多详细信息请查看 [LICENSE](LICENSE) 文件。
+
+## ❓ 常见问题
+
+### 1. 开发环境问题
+
+#### Q: 启动开发服务器时报错
+
+A: 请检查：
+
+- Node.js 版本是否符合要求
+- 是否已安装所有依赖
+- 端口是否被占用
+- 环境变量是否正确配置
+
+#### Q: 热更新不生效
+
+A: 请检查：
+
+- Vite 配置是否正确
+- 是否使用了正确的文件扩展名
+- 是否有语法错误
+
+### 2. 构建问题
+
+#### Q: 构建失败
+
+A: 请检查：
+
+- 依赖是否完整
+- 是否有类型错误
+- 是否有语法错误
+- 是否有循环依赖
+
+#### Q: 构建后的文件过大
+
+A: 可以：
+
+- 使用 `rollup-plugin-visualizer` 分析打包体积
+- 检查是否有重复依赖
+- 优化图片资源
+- 使用动态导入
+
+### 3. 部署问题
+
+#### Q: 部署后页面空白
+
+A: 请检查：
+
+- Nginx 配置是否正确
+- 静态资源路径是否正确
+- 是否有跨域问题
+- 控制台是否有错误
+
+#### Q: 部署后接口报错
+
+A: 请检查：
+
+- 接口地址是否正确
+- 是否有跨域问题
+- 服务器防火墙配置
+- 网络连接是否正常
+
+## 📈 性能优化
+
+### 1. 构建优化
+
+- 使用 `vite-plugin-compression` 进行 Gzip/Brotli 压缩
+- 使用 `vite-plugin-imagemin` 压缩图片资源
+- 配置 `build.rollupOptions.output.manualChunks` 进行代码分割
+- 使用 `@vitejs/plugin-legacy` 提供浏览器兼容性支持
+
+### 2. 运行时优化
+
+- 使用 React.lazy 和 Suspense 实现组件懒加载
+- 使用 useMemo 和 useCallback 优化性能
+- 使用虚拟列表优化长列表渲染
+- 使用 Web Workers 处理复杂计算
+
+### 3. 缓存优化
+
+- 配置合理的缓存策略
+- 使用 Service Worker 实现离线缓存
+- 使用 IndexedDB 存储大量数据
+- 使用 localStorage 存储用户配置
+
+## 🔐 安全建议
+
+### 1. 前端安全
+
+- 使用 HTTPS
+- 实现 CSP 策略
+- 防止 XSS 攻击
+- 防止 CSRF 攻击
+- 敏感数据加密
+
+### 2. 部署安全
+
+- 定期更新依赖
+- 配置防火墙
+- 使用 WAF
+- 限制文件上传
+- 配置访问控制
+
+### 3. 数据安全
+
+- 数据加密传输
+- 敏感信息脱敏
+- 定期数据备份
+- 访问日志记录
+- 权限精细控制
