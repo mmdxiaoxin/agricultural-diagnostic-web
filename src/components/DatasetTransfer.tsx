@@ -3,8 +3,8 @@ import { getAllFiles } from "@/api/modules/file";
 import type { GetProp, TableColumnsType, TableProps, TransferProps } from "antd";
 import { Flex, Table, Transfer, Spin, Typography } from "antd";
 import React, { useEffect, useState } from "react";
-import FilePreview from "../Table/FilePreview";
-import FileTypeTag from "../Table/FileTypeTag";
+import FilePreview from "./Table/FilePreview";
+import FileTypeTag from "./Table/FileTypeTag";
 import clsx from "clsx";
 
 const { Text } = Typography;

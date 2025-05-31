@@ -22,12 +22,12 @@ import {
 } from "antd";
 import clsx from "clsx";
 import React, { useEffect, useRef, useState } from "react";
-import CameraUpload from "../CameraUpload";
-import DiagnosisMatchResultCard from "../Card/DiagnosisMatchResultCard";
-import DiagnosisResultCard from "../Card/DiagnosisResultCard";
-import DetectImage from "../DetectImage";
-import FeedbackSubmitModal, { DiagnosisFeedbackModalRef } from "../Modal/FeedbackSubmitModal";
-import ServiceCascader from "../ServiceCascader";
+import CameraUpload from "./CameraUpload";
+import DiagnosisMatchResultCard from "./Card/DiagnosisMatchResultCard";
+import DiagnosisResultCard from "./Card/DiagnosisResultCard";
+import DetectImage from "./DetectImage";
+import FeedbackSubmitModal, { DiagnosisFeedbackModalRef } from "./Modal/FeedbackSubmitModal";
+import ServiceCascader from "./ServiceCascader";
 
 export interface DiseaseDiagnoseProps {
 	type?: "image" | "test";
