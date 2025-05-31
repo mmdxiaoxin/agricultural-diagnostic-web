@@ -224,7 +224,22 @@ pnpm prettier
 
 项目提供了快速部署脚本，可以一键完成构建和部署过程：
 
-#### Linux/macOS 部署
+#### 使用 pnpm 命令部署
+
+```bash
+# 默认使用 Linux 部署脚本
+pnpm run deploy
+
+# 指定使用 Linux 部署脚本
+pnpm run deploy:linux
+
+# 指定使用 Windows 部署脚本
+pnpm run deploy:windows
+```
+
+#### 直接运行脚本
+
+##### Linux/macOS 部署
 
 ```bash
 # 给脚本添加执行权限
@@ -234,7 +249,7 @@ chmod +x scripts/deploy.sh
 ./scripts/deploy.sh
 ```
 
-#### Windows 部署
+##### Windows 部署
 
 ```powershell
 # 以管理员身份运行 PowerShell
