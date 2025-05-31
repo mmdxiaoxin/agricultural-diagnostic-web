@@ -63,12 +63,12 @@ export default defineConfig((mode: ConfigEnv): UserConfig => {
 					entryFileNames: "assets/js/[name]-[hash].js",
 					assetFileNames: "assets/[ext]/[name]-[hash].[ext]",
 					chunkFileNames: chunkInfo => {
-						const id = chunkInfo.name;
+						const id = chunkInfo.facadeModuleId;
 						if (id?.includes("node_modules")) {
 							return "assets/js/vendor/[name]-[hash].js";
-						} else if (id?.includes("src/components")) {
+						} else if (id?.includes("/components/")) {
 							return "assets/js/components/[name]-[hash].js";
-						} else if (id?.includes("src/views")) {
+						} else if (id?.includes("/views/")) {
 							return "assets/js/views/[name]-[hash].js";
 						} else {
 							return "assets/js/[name]-[hash].js";
