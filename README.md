@@ -255,6 +255,7 @@ sudo vim /etc/nginx/conf.d/agricultural-diagnostic.conf
 
 项目提供了多个 Nginx 配置示例，位于 `src/assets/nginx` 目录下：
 
+- `http.conf` - 基础 HTTP 配置（仅 HTTP 1.1）
 - `https2.conf` - 基础 HTTPS 配置
 - `https3.conf` - HTTP/3 配置
 - `https2-withBrotli.conf` - 支持 Brotli 压缩的 HTTPS 配置
@@ -265,7 +266,6 @@ sudo vim /etc/nginx/conf.d/agricultural-diagnostic.conf
 ```nginx
 server {
     listen 80;
-    server_name your-domain.com;  # 替换为您的域名
     root /path/to/your/dist;      # 替换为您的项目 dist 目录的绝对路径
     index index.html;
 
