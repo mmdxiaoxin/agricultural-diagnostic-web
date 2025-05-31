@@ -220,7 +220,30 @@ pnpm prettier
 
 ## 📦 生产环境部署
 
-### 1. 构建项目
+### 1. 快速部署
+
+项目提供了快速部署脚本，可以一键完成构建和部署过程：
+
+```bash
+# 给脚本添加执行权限
+chmod +x scripts/deploy.sh
+
+# 运行部署脚本
+./scripts/deploy.sh
+```
+
+部署脚本会自动执行以下操作：
+- 构建项目
+- 检查并创建目标目录（默认为 `/var/www/agricultural-diagnostic-web`）
+- 清空目标目录
+- 复制构建文件
+- 设置正确的文件权限
+
+如果需要修改部署目标目录，可以编辑 `scripts/deploy.sh` 文件中的 `TARGET_DIR` 变量。
+
+### 2. 手动构建项目
+
+1. 构建项目
 
 ```bash
 # 安装依赖
@@ -232,7 +255,7 @@ pnpm build
 
 构建完成后，会在项目根目录生成 `dist` 文件夹，包含所有静态资源。
 
-### 2. Nginx 配置
+### 3. Nginx 配置
 
 1. 安装 Nginx（如果尚未安装）
 
@@ -318,7 +341,7 @@ sudo nginx -t
 sudo systemctl restart nginx
 ```
 
-### 3. SSL 配置（推荐）
+### 4. SSL 配置（推荐）
 
 1. 安装 Certbot
 
@@ -338,7 +361,7 @@ sudo certbot --nginx -d your-domain.com
 
 3. 证书自动续期（Certbot 会自动配置）
 
-### 4. 部署检查清单
+### 5. 部署检查清单
 
 - [ ] 确保所有环境变量已正确配置
 - [ ] 检查 API 接口地址配置
@@ -349,7 +372,7 @@ sudo certbot --nginx -d your-domain.com
 - [ ] 验证缓存策略
 - [ ] 测试性能表现
 
-### 5. 监控与维护
+### 6. 监控与维护
 
 1. 日志查看
 
