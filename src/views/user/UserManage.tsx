@@ -50,7 +50,11 @@ const UserManage = () => {
 			const res = await resetUserById(user_id);
 			if (res.code !== 200) throw new Error(res.message);
 			message.success("密码重置成功 🎉");
-			fetchData(queryParams);
+			setUserList(prevList =>
+				prevList.map(user =>
+					user.id === user_id ? { ...user, updatedAt: new Date().toISOString() } : user
+				)
+			);
 		} catch (error: any) {
 			message.error(error.message);
 		}
@@ -60,7 +64,8 @@ const UserManage = () => {
 		try {
 			await deleteUserById(user_id);
 			message.success("用户删除成功 🎉");
-			fetchData(queryParams);
+			setUserList(prevList => prevList.filter(user => user.id !== user_id));
+			setPagination(prev => (prev ? { ...prev, total: (prev.total || 0) - 1 } : prev));
 		} catch (error: any) {
 			message.error(error.message);
 		}
@@ -356,7 +361,21 @@ const UserManage = () => {
 				/>
 			</div>
 
-			<UserInfoDrawer ref={infoDrawerRef} onSave={() => fetchData(queryParams)} />
+			<UserInfoDrawer
+				ref={infoDrawerRef}
+				onSave={updatedUser => {
+					if (updatedUser) {
+						setUserList(prevList =>
+							prevList.map(user =>
+								user.id === updatedUser.id ? { ...user, ...updatedUser } : user
+							)
+						);
+					} else {
+						// 如果是新增用户，需要重新获取列表
+						fetchData(queryParams);
+					}
+				}}
+			/>
 		</div>
 	);
 };
