@@ -122,6 +122,28 @@ const ConfigHelpDrawer = forwardRef<ConfigHelpDrawerRef>((_, ref) => {
   ]
 }`}
 					</pre>
+					<Text strong>示例说明：</Text>
+					<ul className="list-disc list-inside mt-2">
+						<li>这是一个典型的异步任务处理流程配置</li>
+						<li>
+							第一个请求（id=5）是一个单次请求，用于提交任务：
+							<ul className="list-disc list-inside ml-4">
+								<li>提交图片文件进行分析</li>
+								<li>指定模型版本和名称</li>
+								<li>通过next=[2]指定后续执行轮询请求</li>
+							</ul>
+						</li>
+						<li>
+							第二个请求（id=2）是一个轮询请求，用于获取任务结果：
+							<ul className="list-disc list-inside ml-4">
+								<li>使用模板语法从第一个请求的响应中获取task_id</li>
+								<li>每5秒轮询一次，最多尝试5次</li>
+								<li>当data.status等于"success"时停止轮询</li>
+								<li>整个轮询过程最多持续100秒（timeout）</li>
+							</ul>
+						</li>
+						<li>最终结果将使用id=2的请求响应作为输出（result=2）</li>
+					</ul>
 				</Paragraph>
 
 				<Title level={4}>⚙️ 配置字段说明</Title>
