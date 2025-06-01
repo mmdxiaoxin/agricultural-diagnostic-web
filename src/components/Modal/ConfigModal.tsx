@@ -1,9 +1,11 @@
 import { RemoteConfig, RemoteInterface } from "@/api/interface";
 import { createRemoteConfig, updateRemoteConfig } from "@/api/modules";
-import { Button, Form, Input, message, Modal, Select, Space, Spin } from "antd";
+import { Button, Form, Input, message, Modal, Select, Space, Spin, Tooltip } from "antd";
+import { QuestionCircleOutlined } from "@ant-design/icons";
 import clsx from "clsx";
 import React, { forwardRef, Suspense, useImperativeHandle, useRef, useState } from "react";
 import InterfaceListModal, { InterfaceListModalRef } from "./InterfaceListModal";
+import { DEFAULT_CONFIG_TEMPLATE } from "@/constants/configTemplate";
 
 // 使用 React.lazy 动态导入 Monaco Editor
 const MonacoEditor = React.lazy(() =>
@@ -214,7 +216,34 @@ const ConfigModal = forwardRef<ConfigModalRef, ConfigModalProps>(
 							)}
 						>
 							<div className="mb-4">
-								<h3 className="text-lg font-medium text-gray-800">配置内容</h3>
+								<div className="flex items-center justify-between">
+									<h3 className="text-lg font-medium text-gray-800">配置内容</h3>
+									<Tooltip
+										title={
+											<div className="max-w-[300px]">
+												<p className="mb-2">💡 配置说明：</p>
+												<ul className="list-disc list-inside space-y-1">
+													<li>配置支持单次请求和轮询请求</li>
+													<li>使用 {"{{#id.field}}"} 引用其他请求的结果</li>
+													<li>轮询请求可以设置超时时间和重试次数</li>
+												</ul>
+											</div>
+										}
+										placement="left"
+									>
+										<QuestionCircleOutlined className="text-gray-400 hover:text-gray-600 cursor-help" />
+									</Tooltip>
+								</div>
+								<div className="mt-2">
+									<Button
+										type="primary"
+										onClick={() => {
+											setConfigContent(JSON.stringify(DEFAULT_CONFIG_TEMPLATE, null, 2));
+										}}
+									>
+										使用模板
+									</Button>
+								</div>
 							</div>
 							<div className={clsx("flex-1", "w-full")}>
 								<Suspense fallback={<Spin size="large" tip="加载编辑器中..." />}>
