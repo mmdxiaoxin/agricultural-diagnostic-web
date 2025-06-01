@@ -13,11 +13,10 @@ import userReducer from "./modules/userSlice";
 const persistConfig = {
 	key: "root",
 	storage,
-	whitelist: ["auth", "tour"]
+	whitelist: ["auth"]
 };
 
 const persistedAuthReducer = persistReducer(persistConfig, authReducer);
-const persistedTourReducer = persistReducer(persistConfig, tourReducer);
 
 // 创建 Redux store
 export const store = configureStore({
@@ -28,7 +27,7 @@ export const store = configureStore({
 		tabs: tabsReducer,
 		breadcrumb: breadcrumbReducer,
 		global: globalReducer,
-		tour: persistedTourReducer
+		tour: tourReducer
 	},
 	devTools: process.env.NODE_ENV !== "production",
 	middleware: getDefaultMiddleware =>
