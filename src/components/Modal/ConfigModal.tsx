@@ -15,6 +15,29 @@ const MonacoEditor = React.lazy(() =>
 				vs: "/monaco-editor/min/vs"
 			}
 		});
+
+		// 配置 worker
+		(window as any).MonacoEnvironment = {
+			getWorkerUrl: function (_moduleId: any, label: string) {
+				switch (label) {
+					case "json":
+						return "/monaco-editor/min/vs/language/json/jsonWorker.js";
+					case "javascript":
+					case "typescript":
+						return "/monaco-editor/min/vs/language/typescript/tsWorker.js";
+					case "html":
+					case "handlebars":
+					case "razor":
+						return "/monaco-editor/min/vs/language/html/htmlWorker.js";
+					case "css":
+					case "scss":
+					case "less":
+						return "/monaco-editor/min/vs/language/css/cssWorker.js";
+					default:
+						return "/monaco-editor/min/vs/editor/editor.main.js";
+				}
+			}
+		};
 		return module;
 	})
 );
