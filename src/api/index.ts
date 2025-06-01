@@ -74,23 +74,6 @@ class RequestHttp {
 					token && config.headers.set("Authorization", `Bearer ${token}`);
 				}
 
-				// 尝试从缓存获取数据
-				if (config.method?.toLowerCase() === "get" && !config.noCache) {
-					const cachedData = await apiCache.getCache(
-						config.url || "",
-						config.method,
-						config.params
-					);
-					if (cachedData) {
-						NProgress.done();
-						config.loading && tryHideFullScreenLoading();
-						return Promise.reject({
-							__CACHE_HIT__: true,
-							data: cachedData
-						} as CustomAxiosError);
-					}
-				}
-
 				return config;
 			},
 			(error: AxiosError) => {
@@ -129,26 +112,38 @@ class RequestHttp {
 				return data;
 			},
 			async (error: CustomAxiosError) => {
-				// 处理缓存命中
-				if (error.__CACHE_HIT__) {
-					return error.data;
-				}
-
 				const { response, config } = error;
 				NProgress.done();
 				tryHideFullScreenLoading();
 
-				// 请求超时或网络错误时尝试重试
+				// 请求超时或网络错误时尝试使用缓存
 				if (
 					(error.message.indexOf("timeout") !== -1 ||
 						error.message.indexOf("Network Error") !== -1) &&
-					config.retryCount !== 0
+					config.method?.toLowerCase() === "get" &&
+					!config.noCache
 				) {
-					config.retryCount = (config.retryCount || this.retryCount) - 1;
+					try {
+						const cachedData = await apiCache.getCache(
+							config.url || "",
+							config.method,
+							config.params
+						);
+						if (cachedData) {
+							console.log("Using cached data due to network error");
+							return cachedData;
+						}
+					} catch (cacheError) {
+						console.error("Failed to get cache:", cacheError);
+					}
 
-					// 延迟重试
-					await new Promise(resolve => setTimeout(resolve, this.retryDelay));
-					return this.service(config);
+					// 如果缓存不存在，尝试重试
+					if (config.retryCount !== 0) {
+						config.retryCount = (config.retryCount || this.retryCount) - 1;
+						// 延迟重试
+						await new Promise(resolve => setTimeout(resolve, this.retryDelay));
+						return this.service(config);
+					}
 				}
 
 				if (error.message.indexOf("timeout") !== -1) {
