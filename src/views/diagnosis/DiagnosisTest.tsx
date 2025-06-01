@@ -3,12 +3,16 @@ import DiagnosisHistoryList, {
 	DiagnosisHistoryListRef
 } from "@/components/List/DiagnosisHistoryList";
 import PageHeader from "@/components/PageHeader";
-import { Col, Row, Tour } from "antd";
+import { useAppDispatch, useAppSelector } from "@/hooks";
+import { markDiagnosisTestTourShown } from "@/store/modules/tourSlice";
 import type { TourProps } from "antd";
+import { Col, Row, Tour } from "antd";
 import clsx from "clsx";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
-const DiagnosisTest = () => {
+const DiagnosisTest: React.FC = () => {
+	const dispatch = useAppDispatch();
+	const hasShownTour = useAppSelector(state => state.tour.hasShownDiagnosisTestTour);
 	const diagnosisListRef = useRef<DiagnosisHistoryListRef>(null);
 	const [open, setOpen] = useState<boolean>(false);
 
@@ -18,8 +22,22 @@ const DiagnosisTest = () => {
 	const buttonRef = useRef<HTMLButtonElement>(null);
 	const listRef = useRef<HTMLDivElement>(null);
 
+	// 首次访问时自动显示 Tour
+	useEffect(() => {
+		if (!hasShownTour) {
+			setTimeout(() => {
+				setOpen(true);
+			}, 500);
+		}
+	}, [hasShownTour]);
+
 	const handlePredict = (_: File) => {
 		diagnosisListRef.current?.init();
+	};
+
+	const handleTourClose = () => {
+		setOpen(false);
+		dispatch(markDiagnosisTestTourShown());
 	};
 
 	const steps: TourProps["steps"] = [
@@ -98,7 +116,7 @@ const DiagnosisTest = () => {
 				</Col>
 			</Row>
 
-			<Tour open={open} onClose={() => setOpen(false)} steps={steps} />
+			<Tour open={open} onClose={handleTourClose} steps={steps} />
 		</div>
 	);
 };
