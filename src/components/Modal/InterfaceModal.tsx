@@ -1,5 +1,7 @@
 import { RemoteInterface } from "@/api/interface";
 import { createRemoteInterface, updateRemoteInterface } from "@/api/modules/service";
+import { QuestionCircleOutlined } from "@ant-design/icons";
+import type { TourProps } from "antd";
 import {
 	Button,
 	Divider,
@@ -15,9 +17,7 @@ import {
 	Tooltip,
 	Tour
 } from "antd";
-import type { TourProps } from "antd";
-import { FileTextOutlined, QuestionCircleOutlined } from "@ant-design/icons";
-import { forwardRef, useImperativeHandle, useState, useRef } from "react";
+import { forwardRef, useImperativeHandle, useRef, useState } from "react";
 
 export type InterfaceModalProps = {
 	onSave?: (values: any) => void;
@@ -323,10 +323,10 @@ const InterfaceModal = forwardRef<InterfaceModalRef, InterfaceModalProps>(
 					xl: "75%",
 					xxl: "70%"
 				}}
-				className="interface-modal"
+				className="lg:top-10"
 			>
 				<Form form={form} onFinish={handleSave} layout="vertical">
-					<div className="flex flex-col lg:flex-row gap-6">
+					<div className="flex flex-col lg:flex-row gap-6 lg:h-[calc(100vh-200px)]">
 						{/* 左侧基本信息 */}
 						<div className="flex-1">
 							<div className="mb-6">
