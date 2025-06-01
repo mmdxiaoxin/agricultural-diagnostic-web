@@ -1,4 +1,15 @@
-export interface BaseDBSchema {
+import {
+	openDB,
+	DBSchema,
+	IDBPDatabase,
+	StoreNames,
+	StoreValue,
+	StoreKey,
+	IndexNames,
+	IndexKey
+} from "idb";
+
+export interface BaseDBSchema extends DBSchema {
 	[key: string]: {
 		key: string;
 		value: any;
@@ -22,8 +33,13 @@ export interface DBConfig {
 	}>;
 }
 
+interface StoreItem {
+	key: string;
+	value: any;
+}
+
 export class BaseDB<T extends BaseDBSchema> {
-	private db: IDBDatabase | null = null;
+	private db: IDBPDatabase<T> | null = null;
 	private config: DBConfig;
 
 	constructor(config: DBConfig) {
@@ -33,132 +49,74 @@ export class BaseDB<T extends BaseDBSchema> {
 	async init(): Promise<void> {
 		if (this.db) return;
 
-		return new Promise((resolve, reject) => {
-			const request = indexedDB.open(this.config.name, this.config.version);
-
-			request.onerror = () => reject(request.error);
-			request.onsuccess = () => {
-				this.db = request.result;
-				resolve();
-			};
-
-			request.onupgradeneeded = event => {
-				const db = request.result;
-				const oldVersion = event.oldVersion;
-				const newVersion = event.newVersion;
-
+		this.db = await openDB<T>(this.config.name, this.config.version, {
+			upgrade: (db, oldVersion, newVersion) => {
 				if (oldVersion < (newVersion ?? 0)) {
 					this.config.stores.forEach(store => {
-						if (!db.objectStoreNames.contains(store.name)) {
-							const objectStore = db.createObjectStore(store.name, { keyPath: "key" });
+						if (!db.objectStoreNames.contains(store.name as StoreNames<T>)) {
+							const objectStore = db.createObjectStore(store.name as StoreNames<T>, {
+								keyPath: "key"
+							});
 							store.indexes?.forEach(index => {
-								objectStore.createIndex(index.name, index.keyPath);
+								objectStore.createIndex(index.name as IndexNames<T, StoreNames<T>>, index.keyPath);
 							});
 						}
 					});
 				}
-			};
+			}
 		});
 	}
 
-	async put<K extends keyof T>(storeName: K, value: T[K]["value"], key: string): Promise<void> {
+	async put<K extends StoreNames<T>>(storeName: K, value: any, key: string): Promise<void> {
 		await this.init();
-		return new Promise((resolve, reject) => {
-			const transaction = this.db!.transaction(storeName as string, "readwrite");
-			const store = transaction.objectStore(storeName as string);
-			const request = store.put({ key, value });
-
-			request.onerror = () => reject(request.error);
-			request.onsuccess = () => resolve();
-		});
+		await this.db!.put(storeName, { key, value } as StoreValue<T, K>);
 	}
 
-	async get<K extends keyof T>(storeName: K, key: string): Promise<T[K]["value"] | undefined> {
+	async get<K extends StoreNames<T>>(storeName: K, key: StoreKey<T, K>): Promise<any | undefined> {
 		await this.init();
-		return new Promise((resolve, reject) => {
-			const transaction = this.db!.transaction(storeName as string, "readonly");
-			const store = transaction.objectStore(storeName as string);
-			const request = store.get(key);
-
-			request.onerror = () => reject(request.error);
-			request.onsuccess = () => resolve(request.result?.value);
-		});
+		const result = (await this.db!.get(storeName, key)) as StoreItem | undefined;
+		return result?.value;
 	}
 
-	async delete<K extends keyof T>(storeName: K, key: string): Promise<void> {
+	async delete<K extends StoreNames<T>>(storeName: K, key: StoreKey<T, K>): Promise<void> {
 		await this.init();
-		return new Promise((resolve, reject) => {
-			const transaction = this.db!.transaction(storeName as string, "readwrite");
-			const store = transaction.objectStore(storeName as string);
-			const request = store.delete(key);
-
-			request.onerror = () => reject(request.error);
-			request.onsuccess = () => resolve();
-		});
+		await this.db!.delete(storeName, key);
 	}
 
-	async clear<K extends keyof T>(storeName: K): Promise<void> {
+	async clear<K extends StoreNames<T>>(storeName: K): Promise<void> {
 		await this.init();
-		return new Promise((resolve, reject) => {
-			const transaction = this.db!.transaction(storeName as string, "readwrite");
-			const store = transaction.objectStore(storeName as string);
-			const request = store.clear();
-
-			request.onerror = () => reject(request.error);
-			request.onsuccess = () => resolve();
-		});
+		await this.db!.clear(storeName);
 	}
 
-	async getAll<K extends keyof T>(storeName: K): Promise<T[K]["value"][]> {
+	async getAll<K extends StoreNames<T>>(storeName: K): Promise<any[]> {
 		await this.init();
-		return new Promise((resolve, reject) => {
-			const transaction = this.db!.transaction(storeName as string, "readonly");
-			const store = transaction.objectStore(storeName as string);
-			const request = store.getAll();
-
-			request.onerror = () => reject(request.error);
-			request.onsuccess = () => resolve(request.result.map(item => item.value));
-		});
+		const results = (await this.db!.getAll(storeName)) as StoreItem[];
+		return results.map(item => item.value);
 	}
 
-	async getByIndex<K extends keyof T>(
+	async getByIndex<K extends StoreNames<T>>(
 		storeName: K,
-		indexName: keyof T[K]["indexes"],
-		value: T[K]["indexes"][keyof T[K]["indexes"]]
-	): Promise<T[K]["value"][]> {
+		indexName: IndexNames<T, K>,
+		value: IndexKey<T, K, IndexNames<T, K>>
+	): Promise<any[]> {
 		await this.init();
-		return new Promise((resolve, reject) => {
-			const transaction = this.db!.transaction(storeName as string, "readonly");
-			const store = transaction.objectStore(storeName as string);
-			const index = store.index(indexName as string);
-			const request = index.getAll(value as IDBValidKey);
-
-			request.onerror = () => reject(request.error);
-			request.onsuccess = () => resolve(request.result.map(item => item.value));
-		});
+		const results = (await this.db!.getAllFromIndex(storeName, indexName, value)) as StoreItem[];
+		return results.map(item => item.value);
 	}
 
-	async cursor<K extends keyof T>(
+	async cursor<K extends StoreNames<T>>(
 		storeName: K,
-		callback: (value: T[K]["value"], key: string) => Promise<void> | void
+		callback: (value: any, key: string) => Promise<void> | void
 	): Promise<void> {
 		await this.init();
-		return new Promise((resolve, reject) => {
-			const transaction = this.db!.transaction(storeName as string, "readonly");
-			const store = transaction.objectStore(storeName as string);
-			const request = store.openCursor();
+		const tx = this.db!.transaction(storeName, "readonly");
+		const store = tx.objectStore(storeName);
+		let cursor = await store.openCursor();
 
-			request.onerror = () => reject(request.error);
-			request.onsuccess = () => {
-				const cursor = request.result;
-				if (cursor) {
-					Promise.resolve(callback(cursor.value.value, cursor.value.key))
-						.then(() => cursor.continue())
-						.catch(reject);
-				} else {
-					resolve();
-				}
-			};
-		});
+		while (cursor) {
+			const item = cursor.value as StoreItem;
+			await callback(item.value, item.key);
+			cursor = await cursor.continue();
+		}
 	}
 }
