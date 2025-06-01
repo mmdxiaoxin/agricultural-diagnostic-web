@@ -2,6 +2,7 @@ import { RemoteInterface } from "@/api/interface";
 import { createRemoteInterface, updateRemoteInterface } from "@/api/modules/service";
 import { useAppDispatch, useAppSelector } from "@/hooks";
 import { markInterfaceModalTourShown } from "@/store/modules/tourSlice";
+import { QuestionCircleOutlined, SettingOutlined } from "@ant-design/icons";
 import {
 	Button,
 	Divider,
@@ -14,12 +15,12 @@ import {
 	Space,
 	Table,
 	TableProps,
+	Tooltip,
 	Tour,
-	TourProps,
-	Tooltip
+	TourProps
 } from "antd";
-import { forwardRef, useImperativeHandle, useState } from "react";
-import { QuestionCircleOutlined } from "@ant-design/icons";
+import { forwardRef, useImperativeHandle, useRef, useState } from "react";
+import InterfaceHelpDrawer, { InterfaceHelpDrawerRef } from "../Drawer/InterfaceHelpDrawer";
 
 export type InterfaceModalProps = {
 	onSave?: (values: any) => void;
@@ -85,6 +86,7 @@ const InterfaceModal = forwardRef<InterfaceModalRef, InterfaceModalProps>(
 		const [configs, setConfigs] = useState<{ key: string; value: string }[]>([]);
 		const [currentServiceId, setCurrentServiceId] = useState<number>();
 		const [tourOpen, setTourOpen] = useState(false);
+		const helpDrawerRef = useRef<InterfaceHelpDrawerRef>(null);
 
 		// Tour 步骤配置
 		const tourSteps: TourProps["steps"] = [
@@ -320,119 +322,132 @@ const InterfaceModal = forwardRef<InterfaceModalRef, InterfaceModalProps>(
 		);
 
 		return (
-			<Modal
-				title={
-					<div className="flex items-center gap-2">
-						{modalMode === "edit" ? "编辑接口" : "添加接口"}
-						<Tooltip title="查看使用指南">
-							<Button
-								type="text"
-								icon={<QuestionCircleOutlined />}
-								onClick={() => setTourOpen(true)}
-								className="flex items-center justify-center"
-							/>
-						</Tooltip>
-					</div>
-				}
-				open={isModalVisible}
-				onCancel={handleClose}
-				footer={null}
-				width={{
-					xs: "95%",
-					sm: "90%",
-					md: "85%",
-					lg: "80%",
-					xl: "75%",
-					xxl: "70%"
-				}}
-				className="lg:top-10"
-			>
-				<Form form={form} onFinish={handleSave} layout="vertical">
-					<div className="flex flex-col lg:flex-row gap-6 lg:h-[calc(100vh-200px)]">
-						{/* 左侧基本信息 */}
-						<div className="flex-1">
-							<div className="mb-6">
-								<h3 className="text-lg font-medium text-gray-800 mb-4">基本信息</h3>
-								<Form.Item name="id" hidden />
-								<Form.Item
-									label="接口名称"
-									name="name"
-									rules={[{ required: true, message: "请输入接口名称" }]}
-								>
-									<Input id="interface-name-input" placeholder="请输入接口名称" />
-								</Form.Item>
-
-								<Form.Item
-									label="接口类型"
-									name="type"
-									rules={[{ required: true, message: "请选择接口类型" }]}
-								>
-									<Select id="interface-type-select" placeholder="请选择接口类型">
-										<Select.Option value="http">HTTP</Select.Option>
-										<Select.Option value="https">HTTPS</Select.Option>
-										<Select.Option value="ws">WebSocket</Select.Option>
-										<Select.Option value="wss">WebSocket Secure</Select.Option>
-										<Select.Option value="grpc">gRPC</Select.Option>
-										<Select.Option value="graphql">GraphQL</Select.Option>
-									</Select>
-								</Form.Item>
-
-								<Form.Item label="接口地址" name="url">
-									<Input id="interface-url-input" placeholder="请输入接口地址" />
-								</Form.Item>
-
-								<Form.Item label="接口描述" name="description">
-									<Input.TextArea
-										id="interface-description-input"
-										placeholder="请输入接口描述"
-										rows={4}
-										className="resize-none"
-									/>
-								</Form.Item>
-							</div>
-
-							<Divider className="lg:hidden" />
-
-							<div className="flex justify-end">
-								<Button type="primary" htmlType="submit">
-									保存
-								</Button>
-							</div>
-						</div>
-
-						{/* 右侧配置表格 */}
-						<div className="flex-1 lg:border-l lg:border-gray-100 lg:pl-6">
-							<div className="flex items-center justify-between mb-4">
-								<h3 className="text-lg font-medium text-gray-800">接口配置</h3>
+			<>
+				<Modal
+					title={
+						<div className="flex items-center gap-2">
+							{modalMode === "edit" ? "编辑接口" : "添加接口"}
+							<Tooltip title="查看使用指南">
 								<Button
-									id="interface-add-config-button"
-									type="primary"
-									onClick={handleAddRow}
-									disabled={editingKey !== null}
-									className="bg-blue-500 hover:bg-blue-600 border-none"
-								>
-									添加配置项
-								</Button>
-							</div>
-							<div id="interface-config-table" className="overflow-x-auto">
-								<Table
-									components={{
-										body: { cell: EditableCell }
-									}}
-									bordered
-									dataSource={configs}
-									columns={mergedColumns}
-									rowClassName="editable-row"
-									pagination={false}
-									className="rounded-lg"
-									scroll={{ x: "max-content" }}
+									type="text"
+									icon={<QuestionCircleOutlined />}
+									onClick={() => setTourOpen(true)}
+									className="flex items-center justify-center"
 								/>
+							</Tooltip>
+						</div>
+					}
+					open={isModalVisible}
+					onCancel={handleClose}
+					footer={null}
+					width={{
+						xs: "95%",
+						sm: "90%",
+						md: "85%",
+						lg: "80%",
+						xl: "75%",
+						xxl: "70%"
+					}}
+					className="lg:top-10"
+				>
+					<Form form={form} onFinish={handleSave} layout="vertical">
+						<div className="flex flex-col lg:flex-row gap-6 lg:h-[calc(100vh-200px)]">
+							{/* 左侧基本信息 */}
+							<div className="flex-1">
+								<div className="mb-6">
+									<h3 className="text-lg font-medium text-gray-800 mb-4">基本信息</h3>
+									<Form.Item name="id" hidden />
+									<Form.Item
+										label="接口名称"
+										name="name"
+										rules={[{ required: true, message: "请输入接口名称" }]}
+									>
+										<Input id="interface-name-input" placeholder="请输入接口名称" />
+									</Form.Item>
+
+									<Form.Item
+										label="接口类型"
+										name="type"
+										rules={[{ required: true, message: "请选择接口类型" }]}
+									>
+										<Select id="interface-type-select" placeholder="请选择接口类型">
+											<Select.Option value="http">HTTP</Select.Option>
+											<Select.Option value="https">HTTPS</Select.Option>
+											<Select.Option value="ws">WebSocket</Select.Option>
+											<Select.Option value="wss">WebSocket Secure</Select.Option>
+											<Select.Option value="grpc">gRPC</Select.Option>
+											<Select.Option value="graphql">GraphQL</Select.Option>
+										</Select>
+									</Form.Item>
+
+									<Form.Item label="接口地址" name="url">
+										<Input id="interface-url-input" placeholder="请输入接口地址" />
+									</Form.Item>
+
+									<Form.Item label="接口描述" name="description">
+										<Input.TextArea
+											id="interface-description-input"
+											placeholder="请输入接口描述"
+											rows={4}
+											className="resize-none"
+										/>
+									</Form.Item>
+								</div>
+
+								<Divider className="lg:hidden" />
+
+								<div className="flex justify-end">
+									<Button type="primary" htmlType="submit">
+										保存
+									</Button>
+								</div>
+							</div>
+
+							{/* 右侧配置表格 */}
+							<div className="flex-1 lg:border-l lg:border-gray-100 lg:pl-6">
+								<div className="flex items-center justify-between mb-4">
+									<div className="flex items-center gap-2">
+										<h3 className="text-lg font-medium text-gray-800">接口配置</h3>
+										<Tooltip title="查看配置说明">
+											<Button
+												type="text"
+												icon={<SettingOutlined />}
+												onClick={() => helpDrawerRef.current?.open()}
+												className="flex items-center justify-center"
+											/>
+										</Tooltip>
+									</div>
+									<Button
+										id="interface-add-config-button"
+										type="primary"
+										onClick={handleAddRow}
+										disabled={editingKey !== null}
+										className="bg-blue-500 hover:bg-blue-600 border-none"
+									>
+										添加配置项
+									</Button>
+								</div>
+								<div id="interface-config-table" className="overflow-x-auto">
+									<Table
+										components={{
+											body: { cell: EditableCell }
+										}}
+										bordered
+										dataSource={configs}
+										columns={mergedColumns}
+										rowClassName="editable-row"
+										pagination={false}
+										className="rounded-lg"
+										scroll={{ x: "max-content" }}
+									/>
+								</div>
 							</div>
 						</div>
-					</div>
-				</Form>
+					</Form>
+				</Modal>
 				<Tour open={tourOpen} onClose={handleTourClose} steps={tourSteps} />
-			</Modal>
+				<InterfaceHelpDrawer ref={helpDrawerRef} />
+			</>
 		);
 	}
 );
