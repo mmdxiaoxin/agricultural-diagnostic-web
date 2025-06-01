@@ -78,6 +78,8 @@ class RequestHttp {
 				if (config.method?.toLowerCase() === "get" && !config.noCache) {
 					const cachedData = await apiCache.get(config.url || "", config.method, config.params);
 					if (cachedData) {
+						NProgress.done();
+						config.loading && tryHideFullScreenLoading();
 						return Promise.reject({
 							__CACHE_HIT__: true,
 							data: cachedData
@@ -88,6 +90,8 @@ class RequestHttp {
 				return config;
 			},
 			(error: AxiosError) => {
+				NProgress.done();
+				tryHideFullScreenLoading();
 				return Promise.reject(error);
 			}
 		);
