@@ -58,7 +58,10 @@ export class BaseDB<T extends BaseDBSchema> {
 								keyPath: "key"
 							});
 							store.indexes?.forEach(index => {
-								objectStore.createIndex(index.name as IndexNames<T, StoreNames<T>>, index.keyPath);
+								objectStore.createIndex(
+									index.name as IndexNames<T, StoreNames<T>>,
+									`value.${index.keyPath}`
+								);
 							});
 						}
 					});

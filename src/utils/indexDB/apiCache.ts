@@ -43,11 +43,12 @@ export class ApiCache extends BaseDB<ApiCacheSchema> {
 	async setCache(url: string, method: string, data: any, params?: any): Promise<void> {
 		try {
 			const key = this.generateKey(url, method, params);
+			const timestamp = Date.now();
 			await this.put(
 				"apiCache",
 				{
 					data,
-					timestamp: Date.now(),
+					timestamp,
 					url,
 					method,
 					params
