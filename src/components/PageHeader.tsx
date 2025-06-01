@@ -1,5 +1,5 @@
 import { DownOutlined, UpOutlined, QuestionCircleOutlined } from "@ant-design/icons";
-import { Button, Input, Popconfirm, Tag, Typography } from "antd";
+import { Button, Input, Popconfirm, Tag, Typography, Tooltip } from "antd";
 import clsx from "clsx";
 import { ReactNode, useState } from "react";
 
@@ -63,6 +63,7 @@ interface PageHeaderProps {
 
 	// 帮助按钮
 	onHelpClick?: () => void;
+	helpTooltip?: string; // 帮助按钮的提示文本
 }
 
 const PageHeader = ({
@@ -77,7 +78,8 @@ const PageHeader = ({
 	children,
 	collapsible = true,
 	defaultCollapsed = false,
-	onHelpClick
+	onHelpClick,
+	helpTooltip = "点击查看帮助信息" // 默认提示文本
 }: PageHeaderProps) => {
 	const [collapsed, setCollapsed] = useState(defaultCollapsed);
 
@@ -125,12 +127,20 @@ const PageHeader = ({
 				{!collapsed && (
 					<div className="flex-shrink-0 flex items-center gap-2">
 						{onHelpClick && (
-							<Button
-								type="text"
-								icon={<QuestionCircleOutlined />}
-								onClick={onHelpClick}
-								className="text-gray-500 hover:text-gray-700"
-							/>
+							<Tooltip title={helpTooltip}>
+								<Button
+									type="text"
+									icon={<QuestionCircleOutlined className="text-lg" />}
+									onClick={onHelpClick}
+									className={clsx(
+										"p-1.5",
+										"text-blue-500 hover:text-blue-600",
+										"hover:bg-blue-50",
+										"rounded-full",
+										"transition-all duration-300"
+									)}
+								/>
+							</Tooltip>
 						)}
 						{actionButton && (
 							<Button
