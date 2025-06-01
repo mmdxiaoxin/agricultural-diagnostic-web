@@ -19,6 +19,7 @@ import {
 } from "antd";
 import clsx from "clsx";
 import React, { forwardRef, Suspense, useImperativeHandle, useRef, useState } from "react";
+import ConfigHelpDrawer, { ConfigHelpDrawerRef } from "../Drawer/ConfigHelpDrawer";
 import InterfaceListModal, { InterfaceListModalRef } from "./InterfaceListModal";
 
 // 使用 React.lazy 动态导入 Monaco Editor
@@ -79,6 +80,7 @@ const ConfigModal = forwardRef<ConfigModalRef, ConfigModalProps>(
 		const [loading, setLoading] = useState(false);
 		const [serviceId, setServiceId] = useState(0);
 		const interfaceModalRef = useRef<InterfaceListModalRef>(null);
+		const helpDrawerRef = useRef<ConfigHelpDrawerRef>(null);
 		const [tourOpen, setTourOpen] = useState(false);
 
 		// Tour 步骤配置
@@ -309,20 +311,12 @@ const ConfigModal = forwardRef<ConfigModalRef, ConfigModalProps>(
 								<div className="flex items-center justify-between">
 									<h3 className="text-lg font-medium text-gray-800">配置内容</h3>
 									<Space>
-										<Tooltip
-											title={
-												<div className="max-w-[300px]">
-													<p className="mb-2">💡 配置说明：</p>
-													<ul className="list-disc list-inside space-y-1">
-														<li>配置支持单次请求和轮询请求</li>
-														<li>使用 {"{{#id.field}}"} 引用其他请求的结果</li>
-														<li>轮询请求可以设置超时时间和重试次数</li>
-													</ul>
-												</div>
-											}
-											placement="left"
-										>
-											<Button type="primary" icon={<InfoCircleOutlined />} />
+										<Tooltip title="查看配置说明">
+											<Button
+												type="primary"
+												icon={<InfoCircleOutlined />}
+												onClick={() => helpDrawerRef.current?.open()}
+											/>
 										</Tooltip>
 										<Tooltip title="使用预设模板快速配置">
 											<Button
@@ -365,6 +359,7 @@ const ConfigModal = forwardRef<ConfigModalRef, ConfigModalProps>(
 					</div>
 				</Form>
 				<InterfaceListModal ref={interfaceModalRef} interfaces={interfaces} />
+				<ConfigHelpDrawer ref={helpDrawerRef} />
 				<Tour open={tourOpen} onClose={handleTourClose} steps={tourSteps} />
 			</Modal>
 		);
