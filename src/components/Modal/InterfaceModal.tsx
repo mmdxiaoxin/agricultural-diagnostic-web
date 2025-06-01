@@ -11,9 +11,13 @@ import {
 	Select,
 	Space,
 	Table,
-	TableProps
+	TableProps,
+	Tooltip,
+	Tour
 } from "antd";
-import { forwardRef, useImperativeHandle, useState } from "react";
+import type { TourProps } from "antd";
+import { FileTextOutlined, QuestionCircleOutlined } from "@ant-design/icons";
+import { forwardRef, useImperativeHandle, useState, useRef } from "react";
 
 export type InterfaceModalProps = {
 	onSave?: (values: any) => void;
@@ -76,6 +80,49 @@ const InterfaceModal = forwardRef<InterfaceModalRef, InterfaceModalProps>(
 		const [editingKey, setEditingKey] = useState<string | null>(null);
 		const [configs, setConfigs] = useState<{ key: string; value: string }[]>([]);
 		const [currentServiceId, setCurrentServiceId] = useState<number>();
+
+		// Tour 相关状态
+		const [tourOpen, setTourOpen] = useState<boolean>(false);
+		const nameRef = useRef<HTMLDivElement>(null);
+		const typeRef = useRef<HTMLDivElement>(null);
+		const urlRef = useRef<HTMLDivElement>(null);
+		const descriptionRef = useRef<HTMLDivElement>(null);
+		const configTableRef = useRef<HTMLDivElement>(null);
+		const addConfigRef = useRef<HTMLButtonElement>(null);
+
+		// Tour 步骤配置
+		const steps: TourProps["steps"] = [
+			{
+				title: "接口名称",
+				description: "输入接口的名称，用于标识不同的接口",
+				target: () => nameRef.current as HTMLElement
+			},
+			{
+				title: "接口类型",
+				description: "选择接口的类型，支持 HTTP、HTTPS、WebSocket 等多种协议",
+				target: () => typeRef.current as HTMLElement
+			},
+			{
+				title: "接口地址",
+				description: "输入接口的访问地址，例如：https://api.example.com/v1",
+				target: () => urlRef.current as HTMLElement
+			},
+			{
+				title: "接口描述",
+				description: "添加接口的详细描述，帮助其他用户理解接口的用途",
+				target: () => descriptionRef.current as HTMLElement
+			},
+			{
+				title: "添加配置项",
+				description: "点击此按钮添加新的配置项",
+				target: () => addConfigRef.current as HTMLElement
+			},
+			{
+				title: "配置项列表",
+				description: "在这里管理接口的配置项，支持添加、编辑和删除操作",
+				target: () => configTableRef.current as HTMLElement
+			}
+		];
 
 		useImperativeHandle(
 			ref,
@@ -290,7 +337,9 @@ const InterfaceModal = forwardRef<InterfaceModalRef, InterfaceModalProps>(
 									name="name"
 									rules={[{ required: true, message: "请输入接口名称" }]}
 								>
-									<Input placeholder="请输入接口名称" />
+									<div ref={nameRef}>
+										<Input placeholder="请输入接口名称" />
+									</div>
 								</Form.Item>
 
 								<Form.Item
@@ -298,22 +347,28 @@ const InterfaceModal = forwardRef<InterfaceModalRef, InterfaceModalProps>(
 									name="type"
 									rules={[{ required: true, message: "请选择接口类型" }]}
 								>
-									<Select placeholder="请选择接口类型">
-										<Select.Option value="http">HTTP</Select.Option>
-										<Select.Option value="https">HTTPS</Select.Option>
-										<Select.Option value="ws">WebSocket</Select.Option>
-										<Select.Option value="wss">WebSocket Secure</Select.Option>
-										<Select.Option value="grpc">gRPC</Select.Option>
-										<Select.Option value="graphql">GraphQL</Select.Option>
-									</Select>
+									<div ref={typeRef}>
+										<Select placeholder="请选择接口类型">
+											<Select.Option value="http">HTTP</Select.Option>
+											<Select.Option value="https">HTTPS</Select.Option>
+											<Select.Option value="ws">WebSocket</Select.Option>
+											<Select.Option value="wss">WebSocket Secure</Select.Option>
+											<Select.Option value="grpc">gRPC</Select.Option>
+											<Select.Option value="graphql">GraphQL</Select.Option>
+										</Select>
+									</div>
 								</Form.Item>
 
 								<Form.Item label="接口地址" name="url">
-									<Input placeholder="请输入接口地址" />
+									<div ref={urlRef}>
+										<Input placeholder="请输入接口地址" />
+									</div>
 								</Form.Item>
 
 								<Form.Item label="接口描述" name="description">
-									<Input.TextArea placeholder="请输入接口描述" rows={4} className="resize-none" />
+									<div ref={descriptionRef}>
+										<Input.TextArea placeholder="请输入接口描述" rows={4} className="resize-none" />
+									</div>
 								</Form.Item>
 							</div>
 
@@ -330,16 +385,26 @@ const InterfaceModal = forwardRef<InterfaceModalRef, InterfaceModalProps>(
 						<div className="flex-1 lg:border-l lg:border-gray-100 lg:pl-6">
 							<div className="flex items-center justify-between mb-4">
 								<h3 className="text-lg font-medium text-gray-800">接口配置</h3>
-								<Button
-									type="primary"
-									onClick={handleAddRow}
-									disabled={editingKey !== null}
-									className="bg-blue-500 hover:bg-blue-600 border-none"
-								>
-									添加配置项
-								</Button>
+								<Space>
+									<Tooltip title="使用帮助">
+										<Button
+											type="primary"
+											icon={<QuestionCircleOutlined />}
+											onClick={() => setTourOpen(true)}
+										/>
+									</Tooltip>
+									<Button
+										type="primary"
+										onClick={handleAddRow}
+										disabled={editingKey !== null}
+										className="bg-blue-500 hover:bg-blue-600 border-none"
+										ref={addConfigRef}
+									>
+										添加配置项
+									</Button>
+								</Space>
 							</div>
-							<div className="overflow-x-auto">
+							<div className="overflow-x-auto" ref={configTableRef}>
 								<Table
 									components={{
 										body: { cell: EditableCell }
@@ -356,6 +421,7 @@ const InterfaceModal = forwardRef<InterfaceModalRef, InterfaceModalProps>(
 						</div>
 					</div>
 				</Form>
+				<Tour open={tourOpen} onClose={() => setTourOpen(false)} steps={steps} />
 			</Modal>
 		);
 	}
