@@ -98,20 +98,33 @@ export class ApiCache extends BaseDB<ApiCacheSchema> {
 
 	// 获取所有过期的缓存
 	async getExpiredCache(): Promise<Array<{ key: string; value: any }>> {
-		const expired: Array<{ key: string; value: any }> = [];
-		await this.cursor("apiCache", async (value, key) => {
-			if (Date.now() - value.timestamp > this.CACHE_DURATION) {
-				expired.push({ key, value });
-			}
-		});
-		return expired;
+		try {
+			const expiredTimestamp = Date.now() - this.CACHE_DURATION;
+			// 使用 by-timestamp 索引获取所有过期的缓存
+			const expired = await this.getByIndex("apiCache", "by-timestamp", expiredTimestamp);
+			return expired.map(item => ({
+				key: this.generateKey(item.url, item.method, item.params),
+				value: item
+			}));
+		} catch (error) {
+			console.error("Failed to get expired cache:", error);
+			return [];
+		}
 	}
 
 	// 清理过期的缓存
 	async cleanExpiredCache(): Promise<void> {
-		const expired = await this.getExpiredCache();
-		for (const { key } of expired) {
-			await this.delete("apiCache", key);
+		try {
+			const expiredTimestamp = Date.now() - this.CACHE_DURATION;
+			// 使用 by-timestamp 索引直接删除过期的缓存
+			const expired = await this.getByIndex("apiCache", "by-timestamp", expiredTimestamp);
+
+			// 使用事务批量删除
+			for (const item of expired) {
+				await this.delete("apiCache", this.generateKey(item.url, item.method, item.params));
+			}
+		} catch (error) {
+			console.error("Failed to clean expired cache:", error);
 		}
 	}
 
@@ -128,8 +141,10 @@ export class ApiCache extends BaseDB<ApiCacheSchema> {
 	// 获取最近的缓存
 	async getRecentCache(limit: number = 10): Promise<any[]> {
 		try {
-			const all = await this.getAll("apiCache");
-			return all.sort((a, b) => b.timestamp - a.timestamp).slice(0, limit);
+			// 使用 by-timestamp 索引获取最近的缓存
+			const all = await this.getByIndex("apiCache", "by-timestamp", 0);
+			// 由于索引是按时间戳升序排列的，我们需要反转数组并限制数量
+			return all.reverse().slice(0, limit);
 		} catch (error) {
 			console.error("Failed to get recent cache:", error);
 			return [];
