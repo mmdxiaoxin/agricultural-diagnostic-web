@@ -1,11 +1,23 @@
 import { RemoteConfig, RemoteInterface } from "@/api/interface";
 import { createRemoteConfig, updateRemoteConfig } from "@/api/modules";
-import { Button, Form, Input, message, Modal, Select, Space, Spin, Tooltip } from "antd";
+import { DEFAULT_CONFIG_TEMPLATE } from "@/constants/configTemplate";
 import { QuestionCircleOutlined } from "@ant-design/icons";
+import {
+	Button,
+	Form,
+	Input,
+	message,
+	Modal,
+	Select,
+	Space,
+	Spin,
+	Tooltip,
+	Tour,
+	TourProps
+} from "antd";
 import clsx from "clsx";
 import React, { forwardRef, Suspense, useImperativeHandle, useRef, useState } from "react";
 import InterfaceListModal, { InterfaceListModalRef } from "./InterfaceListModal";
-import { DEFAULT_CONFIG_TEMPLATE } from "@/constants/configTemplate";
 
 // 使用 React.lazy 动态导入 Monaco Editor
 const MonacoEditor = React.lazy(() =>
@@ -63,6 +75,41 @@ const ConfigModal = forwardRef<ConfigModalRef, ConfigModalProps>(
 		const [loading, setLoading] = useState(false);
 		const [serviceId, setServiceId] = useState(0);
 		const interfaceModalRef = useRef<InterfaceListModalRef>(null);
+		const [tourOpen, setTourOpen] = useState(false);
+
+		// Tour 步骤配置
+		const tourSteps: TourProps["steps"] = [
+			{
+				title: "配置名称",
+				description: "在这里输入配置的名称，这是必填项",
+				target: () => document.getElementById("config-name-input")!
+			},
+			{
+				title: "配置描述",
+				description: "在这里添加配置的详细描述信息",
+				target: () => document.getElementById("config-description-input")!
+			},
+			{
+				title: "配置状态",
+				description: "选择配置的启用或禁用状态",
+				target: () => document.getElementById("config-status-select")!
+			},
+			{
+				title: "接口列表",
+				description: "点击这里可以查看相关的接口列表",
+				target: () => document.getElementById("config-interface-list")!
+			},
+			{
+				title: "配置内容",
+				description: "在这里编辑配置的具体内容，支持 JSON 格式",
+				target: () => document.getElementById("config-editor")!
+			},
+			{
+				title: "使用模板",
+				description: "点击这里可以使用预设的配置模板",
+				target: () => document.getElementById("config-template-button")!
+			}
+		];
 
 		useImperativeHandle(
 			ref,
@@ -92,6 +139,13 @@ const ConfigModal = forwardRef<ConfigModalRef, ConfigModalProps>(
 			} else {
 				form.resetFields();
 				setConfigContent("{}");
+			}
+
+			// 如果是创建模式，自动开启 Tour
+			if (mode === "create") {
+				setTimeout(() => {
+					setTourOpen(true);
+				}, 500);
 			}
 		};
 
@@ -168,11 +222,16 @@ const ConfigModal = forwardRef<ConfigModalRef, ConfigModalProps>(
 									name="name"
 									rules={[{ required: true, message: "请输入配置名称" }]}
 								>
-									<Input placeholder="请输入配置名称" />
+									<Input id="config-name-input" placeholder="请输入配置名称" />
 								</Form.Item>
 
 								<Form.Item label="配置描述" name="description">
-									<Input.TextArea placeholder="请输入配置描述" rows={4} className="resize-none" />
+									<Input.TextArea
+										id="config-description-input"
+										placeholder="请输入配置描述"
+										rows={4}
+										className="resize-none"
+									/>
 								</Form.Item>
 
 								<Form.Item
@@ -181,6 +240,7 @@ const ConfigModal = forwardRef<ConfigModalRef, ConfigModalProps>(
 									rules={[{ required: true, message: "请选择配置状态" }]}
 								>
 									<Select
+										id="config-status-select"
 										placeholder="请选择配置状态"
 										options={[
 											{ label: "启用", value: "active" },
@@ -192,6 +252,7 @@ const ConfigModal = forwardRef<ConfigModalRef, ConfigModalProps>(
 								{/* 接口列表按钮 */}
 								<Form.Item>
 									<Button
+										id="config-interface-list"
 										type="link"
 										onClick={() => interfaceModalRef.current?.open()}
 										className="px-0"
@@ -242,6 +303,7 @@ const ConfigModal = forwardRef<ConfigModalRef, ConfigModalProps>(
 								</div>
 								<div className="mt-2">
 									<Button
+										id="config-template-button"
 										type="primary"
 										onClick={() => {
 											setConfigContent(JSON.stringify(DEFAULT_CONFIG_TEMPLATE, null, 2));
@@ -251,7 +313,7 @@ const ConfigModal = forwardRef<ConfigModalRef, ConfigModalProps>(
 									</Button>
 								</div>
 							</div>
-							<div className={clsx("flex-1", "w-full")}>
+							<div id="config-editor" className={clsx("flex-1", "w-full")}>
 								<Suspense fallback={<Spin size="large" tip="加载编辑器中..." />}>
 									<MonacoEditor
 										language="json"
@@ -279,6 +341,7 @@ const ConfigModal = forwardRef<ConfigModalRef, ConfigModalProps>(
 					</div>
 				</Form>
 				<InterfaceListModal ref={interfaceModalRef} interfaces={interfaces} />
+				<Tour open={tourOpen} onClose={() => setTourOpen(false)} steps={tourSteps} />
 			</Modal>
 		);
 	}
