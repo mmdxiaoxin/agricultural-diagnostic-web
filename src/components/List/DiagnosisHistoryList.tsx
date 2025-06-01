@@ -105,7 +105,7 @@ const DiagnosisHistoryList = forwardRef<DiagnosisHistoryListRef, DiagnosisHistor
 		const loadMore = useMemo(
 			() =>
 				!initLoading && !loading && hasMore ? (
-					<div className="text-center mt-3 h-8 leading-8">
+					<div className="text-center mt-3 h-8 leading-8 mb-3">
 						<Button onClick={onLoadMore}>加载更多</Button>
 					</div>
 				) : null,
