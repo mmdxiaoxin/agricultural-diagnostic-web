@@ -13,13 +13,18 @@ import axios, {
 } from "axios";
 import { checkStatus } from "./helper/checkStatus";
 import { ApiResponse } from "./interface";
+import { apiCache } from "@/utils/cache/indexDB";
 
 export interface CustomInternalAxiosRequestConfig extends InternalAxiosRequestConfig {
 	loading?: boolean;
 	toast?: boolean;
+	noCache?: boolean;
+	retryCount?: number;
 }
 export interface CustomAxiosError extends AxiosError {
 	config: CustomInternalAxiosRequestConfig;
+	__CACHE_HIT__?: boolean;
+	data?: any;
 }
 export type GetConfig = Omit<AxiosRequestConfig, "params"> & {
 	loading?: boolean;
@@ -49,12 +54,15 @@ const config = {
 
 class RequestHttp {
 	service: AxiosInstance;
+	private retryCount: number = 3; // 重试次数
+	private retryDelay: number = 1000; // 重试延迟（毫秒）
+
 	public constructor(config: AxiosRequestConfig) {
 		// 实例化axios
 		this.service = axios.create(config);
 
 		this.service.interceptors.request.use(
-			(config: CustomInternalAxiosRequestConfig) => {
+			async (config: CustomInternalAxiosRequestConfig) => {
 				NProgress.start();
 
 				// 当前请求不需要显示 loading，在 api 服务中通过指定的第三个参数: { loading: false } 来控制
@@ -65,6 +73,18 @@ class RequestHttp {
 				if (config.headers && typeof config.headers.set === "function") {
 					token && config.headers.set("Authorization", `Bearer ${token}`);
 				}
+
+				// 尝试从缓存获取数据
+				if (config.method?.toLowerCase() === "get" && !config.noCache) {
+					const cachedData = await apiCache.get(config.url || "", config.method, config.params);
+					if (cachedData) {
+						return Promise.reject({
+							__CACHE_HIT__: true,
+							data: cachedData
+						} as CustomAxiosError);
+					}
+				}
+
 				return config;
 			},
 			(error: AxiosError) => {
@@ -73,10 +93,15 @@ class RequestHttp {
 		);
 
 		this.service.interceptors.response.use(
-			(response: AxiosResponse & { config: CustomInternalAxiosRequestConfig }) => {
+			async (response: AxiosResponse & { config: CustomInternalAxiosRequestConfig }) => {
 				const { data, config } = response;
 				NProgress.done();
 				config.loading && tryHideFullScreenLoading();
+
+				// 缓存成功的响应
+				if (config.method?.toLowerCase() === "get" && !config.noCache) {
+					await apiCache.set(config.url || "", config.method, data, config.params);
+				}
 
 				// * 全局错误信息拦截（防止下载文件得时候返回数据流，没有code，直接报错）
 				if (
@@ -93,15 +118,35 @@ class RequestHttp {
 				return data;
 			},
 			async (error: CustomAxiosError) => {
-				const { response } = error;
+				// 处理缓存命中
+				if (error.__CACHE_HIT__) {
+					return error.data;
+				}
+
+				const { response, config } = error;
 				NProgress.done();
 				tryHideFullScreenLoading();
 
-				// 请求超时单独判断，请求超时没有 response
-				if (error.message.indexOf("timeout") !== -1) message.error("请求超时，请稍后再试");
-				if (error.message.indexOf("Network Error") !== -1) message.error("网络错误！请您稍后重试");
+				// 请求超时或网络错误时尝试重试
+				if (
+					(error.message.indexOf("timeout") !== -1 ||
+						error.message.indexOf("Network Error") !== -1) &&
+					config.retryCount !== 0
+				) {
+					config.retryCount = (config.retryCount || this.retryCount) - 1;
 
-				// 根据响应的错误状态码，做不同的处理
+					// 延迟重试
+					await new Promise(resolve => setTimeout(resolve, this.retryDelay));
+					return this.service(config);
+				}
+
+				if (error.message.indexOf("timeout") !== -1) {
+					message.error("请求超时，请稍后再试");
+				}
+				if (error.message.indexOf("Network Error") !== -1) {
+					message.error("网络错误！请您稍后重试");
+				}
+
 				if (response) {
 					// 登录失效（status == 401）
 					if (response.status == ResultEnum.UNAUTHORIZED) {

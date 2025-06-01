@@ -56,6 +56,9 @@ importers:
       html2canvas:
         specifier: ^1.4.1
         version: 1.4.1
+      idb:
+        specifier: ^8.0.3
+        version: 8.0.3
       jspdf:
         specifier: ^3.0.1
         version: 3.0.1
@@ -2917,6 +2920,9 @@ packages:
   human-signals@5.0.0:
     resolution: {integrity: sha512-AXcZb6vzzrFAUE61HnN4mpLqd/cSIwNQjtNWR0euPm6y0iqx3G4gOXaIDdtdDwZmhwe82LA6+zinmW4UBWVePQ==}
     engines: {node: '>=16.17.0'}
+
+  idb@8.0.3:
+    resolution: {integrity: sha512-LtwtVyVYO5BqRvcsKuB2iUMnHwPVByPCXFXOpuU96IZPPoPN6xjOGxZQ74pgSVVLQWtUOYgyeL4GE98BY5D3wg==}
 
   identifier-regex@1.0.0:
     resolution: {integrity: sha512-Rcy5cjBOM9iTR+Vwy0Llyip9u0cA99T1yiWOhDW/+PDaTQhyski0tMovsipQ/FRNDkudjLWusJ/IMVIlG5WZnQ==}
@@ -8031,6 +8037,8 @@ snapshots:
   human-signals@3.0.1: {}
 
   human-signals@5.0.0: {}
+
+  idb@8.0.3: {}
 
   identifier-regex@1.0.0:
     dependencies:
