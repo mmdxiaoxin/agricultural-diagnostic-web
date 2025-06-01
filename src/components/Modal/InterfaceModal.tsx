@@ -1,5 +1,7 @@
 import { RemoteInterface } from "@/api/interface";
 import { createRemoteInterface, updateRemoteInterface } from "@/api/modules/service";
+import { useAppDispatch, useAppSelector } from "@/hooks";
+import { markInterfaceModalTourShown } from "@/store/modules/tourSlice";
 import {
 	Button,
 	Divider,
@@ -72,6 +74,8 @@ const EditableCell: React.FC<React.PropsWithChildren<EditableCellProps>> = ({
 
 const InterfaceModal = forwardRef<InterfaceModalRef, InterfaceModalProps>(
 	({ onCancel, onSave }, ref) => {
+		const dispatch = useAppDispatch();
+		const hasShownTour = useAppSelector(state => state.tour.hasShownInterfaceModalTour);
 		const [form] = Form.useForm();
 		const [isModalVisible, setIsModalVisible] = useState(false);
 		const [modalMode, setModalMode] = useState<"create" | "edit">("create");
@@ -139,8 +143,8 @@ const InterfaceModal = forwardRef<InterfaceModalRef, InterfaceModalProps>(
 				setConfigs([]);
 			}
 
-			// 如果是创建模式，自动开启 Tour
-			if (mode === "create") {
+			// 如果是创建模式且用户未看过 Tour，则自动开启
+			if (!hasShownTour) {
 				setTimeout(() => {
 					setTourOpen(true);
 				}, 500);
@@ -155,6 +159,12 @@ const InterfaceModal = forwardRef<InterfaceModalRef, InterfaceModalProps>(
 			setCurrentServiceId(undefined);
 			setTourOpen(false);
 			onCancel?.();
+		};
+
+		const handleTourClose = () => {
+			setTourOpen(false);
+			// 标记用户已经看过 Tour
+			dispatch(markInterfaceModalTourShown());
 		};
 
 		const handleSave = async (values: any) => {
@@ -407,7 +417,7 @@ const InterfaceModal = forwardRef<InterfaceModalRef, InterfaceModalProps>(
 						</div>
 					</div>
 				</Form>
-				<Tour open={tourOpen} onClose={() => setTourOpen(false)} steps={tourSteps} />
+				<Tour open={tourOpen} onClose={handleTourClose} steps={tourSteps} />
 			</Modal>
 		);
 	}

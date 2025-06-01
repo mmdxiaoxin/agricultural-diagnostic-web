@@ -1,6 +1,8 @@
 import { RemoteConfig, RemoteInterface } from "@/api/interface";
 import { createRemoteConfig, updateRemoteConfig } from "@/api/modules";
 import { DEFAULT_CONFIG_TEMPLATE } from "@/constants/configTemplate";
+import { useAppDispatch, useAppSelector } from "@/hooks";
+import { markConfigModalTourShown } from "@/store/modules/tourSlice";
 import { QuestionCircleOutlined } from "@ant-design/icons";
 import {
 	Button,
@@ -68,6 +70,8 @@ export type ConfigModalRef = {
 
 const ConfigModal = forwardRef<ConfigModalRef, ConfigModalProps>(
 	({ onSuccess, interfaces = [] }, ref) => {
+		const dispatch = useAppDispatch();
+		const hasShownTour = useAppSelector(state => state.tour.hasShownConfigModalTour);
 		const [form] = Form.useForm();
 		const [isModalVisible, setIsModalVisible] = useState(false);
 		const [modalMode, setModalMode] = useState<"create" | "edit">("create");
@@ -141,8 +145,8 @@ const ConfigModal = forwardRef<ConfigModalRef, ConfigModalProps>(
 				setConfigContent("{}");
 			}
 
-			// 如果是创建模式，自动开启 Tour
-			if (mode === "create") {
+			// 如果是创建模式且用户未看过 Tour，则自动开启
+			if (!hasShownTour) {
 				setTimeout(() => {
 					setTourOpen(true);
 				}, 500);
@@ -154,7 +158,14 @@ const ConfigModal = forwardRef<ConfigModalRef, ConfigModalProps>(
 			form.resetFields();
 			setConfigContent("{}");
 			setLoading(false);
+			setTourOpen(false);
 			interfaceModalRef.current?.close();
+		};
+
+		const handleTourClose = () => {
+			setTourOpen(false);
+			// 标记用户已经看过 Tour
+			dispatch(markConfigModalTourShown());
 		};
 
 		const handleSave = async (values: any) => {
@@ -341,7 +352,7 @@ const ConfigModal = forwardRef<ConfigModalRef, ConfigModalProps>(
 					</div>
 				</Form>
 				<InterfaceListModal ref={interfaceModalRef} interfaces={interfaces} />
-				<Tour open={tourOpen} onClose={() => setTourOpen(false)} steps={tourSteps} />
+				<Tour open={tourOpen} onClose={handleTourClose} steps={tourSteps} />
 			</Modal>
 		);
 	}

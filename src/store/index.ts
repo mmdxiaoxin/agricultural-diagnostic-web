@@ -6,16 +6,18 @@ import breadcrumbReducer from "./modules/breadcrumbSlice";
 import globalReducer from "./modules/globalSlice";
 import menuReducer from "./modules/menuSlice";
 import tabsReducer from "./modules/tabsSlice";
+import tourReducer from "./modules/tourSlice";
 import userReducer from "./modules/userSlice";
 
 // 设置持久化配置
 const persistConfig = {
 	key: "root",
 	storage,
-	whitelist: ["auth"]
+	whitelist: ["auth", "tour"]
 };
 
 const persistedAuthReducer = persistReducer(persistConfig, authReducer);
+const persistedTourReducer = persistReducer(persistConfig, tourReducer);
 
 // 创建 Redux store
 export const store = configureStore({
@@ -25,7 +27,8 @@ export const store = configureStore({
 		menu: menuReducer,
 		tabs: tabsReducer,
 		breadcrumb: breadcrumbReducer,
-		global: globalReducer
+		global: globalReducer,
+		tour: persistedTourReducer
 	},
 	devTools: process.env.NODE_ENV !== "production",
 	middleware: getDefaultMiddleware =>
