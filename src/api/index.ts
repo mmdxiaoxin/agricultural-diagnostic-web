@@ -13,7 +13,7 @@ import axios, {
 } from "axios";
 import { checkStatus } from "./helper/checkStatus";
 import { ApiResponse } from "./interface";
-import { apiCache } from "@/utils/cache/indexDB";
+import { apiCache } from "@/utils/indexDB/apiCache";
 
 export interface CustomInternalAxiosRequestConfig extends InternalAxiosRequestConfig {
 	loading?: boolean;
@@ -76,7 +76,11 @@ class RequestHttp {
 
 				// 尝试从缓存获取数据
 				if (config.method?.toLowerCase() === "get" && !config.noCache) {
-					const cachedData = await apiCache.get(config.url || "", config.method, config.params);
+					const cachedData = await apiCache.getCache(
+						config.url || "",
+						config.method,
+						config.params
+					);
 					if (cachedData) {
 						NProgress.done();
 						config.loading && tryHideFullScreenLoading();
@@ -104,7 +108,7 @@ class RequestHttp {
 
 				// 缓存成功的响应
 				if (config.method?.toLowerCase() === "get" && !config.noCache) {
-					await apiCache.set(config.url || "", config.method, data, config.params);
+					await apiCache.setCache(config.url || "", config.method, data, config.params);
 				}
 
 				// * 全局错误信息拦截（防止下载文件得时候返回数据流，没有code，直接报错）
