@@ -1,7 +1,8 @@
 import { RemoteConfig, RemoteInterface } from "@/api/interface";
 import { createRemoteConfig, updateRemoteConfig } from "@/api/modules";
-import { Button, Form, Input, message, Modal, Select, Space, Spin, Tooltip } from "antd";
-import { QuestionCircleOutlined } from "@ant-design/icons";
+import { Button, Form, Input, message, Modal, Select, Space, Spin, Tooltip, Tour } from "antd";
+import type { TourProps } from "antd";
+import { QuestionCircleOutlined, FileTextOutlined } from "@ant-design/icons";
 import clsx from "clsx";
 import React, { forwardRef, Suspense, useImperativeHandle, useRef, useState } from "react";
 import InterfaceListModal, { InterfaceListModalRef } from "./InterfaceListModal";
@@ -63,6 +64,49 @@ const ConfigModal = forwardRef<ConfigModalRef, ConfigModalProps>(
 		const [loading, setLoading] = useState(false);
 		const [serviceId, setServiceId] = useState(0);
 		const interfaceModalRef = useRef<InterfaceListModalRef>(null);
+
+		// Tour 相关状态
+		const [tourOpen, setTourOpen] = useState<boolean>(false);
+		const nameRef = useRef<HTMLDivElement>(null);
+		const descriptionRef = useRef<HTMLDivElement>(null);
+		const statusRef = useRef<HTMLDivElement>(null);
+		const interfaceListRef = useRef<HTMLDivElement>(null);
+		const configEditorRef = useRef<HTMLDivElement>(null);
+		const templateRef = useRef<HTMLButtonElement>(null);
+
+		// Tour 步骤配置
+		const steps: TourProps["steps"] = [
+			{
+				title: "配置名称",
+				description: "在这里输入配置的名称，用于标识不同的配置",
+				target: () => nameRef.current as HTMLElement
+			},
+			{
+				title: "配置描述",
+				description: "添加配置的详细描述，帮助其他用户理解配置的用途",
+				target: () => descriptionRef.current as HTMLElement
+			},
+			{
+				title: "配置状态",
+				description: "选择配置的状态，可以启用或禁用该配置",
+				target: () => statusRef.current as HTMLElement
+			},
+			{
+				title: "接口列表",
+				description: "查看和管理与该配置相关的接口列表",
+				target: () => interfaceListRef.current as HTMLElement
+			},
+			{
+				title: "配置模板",
+				description: "使用预设的配置模板快速创建配置",
+				target: () => templateRef.current as HTMLElement
+			},
+			{
+				title: "配置编辑器",
+				description: "在这里编辑配置的具体内容，支持 JSON 格式",
+				target: () => configEditorRef.current as HTMLElement
+			}
+		];
 
 		useImperativeHandle(
 			ref,
@@ -168,11 +212,15 @@ const ConfigModal = forwardRef<ConfigModalRef, ConfigModalProps>(
 									name="name"
 									rules={[{ required: true, message: "请输入配置名称" }]}
 								>
-									<Input placeholder="请输入配置名称" />
+									<div ref={nameRef}>
+										<Input placeholder="请输入配置名称" />
+									</div>
 								</Form.Item>
 
 								<Form.Item label="配置描述" name="description">
-									<Input.TextArea placeholder="请输入配置描述" rows={4} className="resize-none" />
+									<div ref={descriptionRef}>
+										<Input.TextArea placeholder="请输入配置描述" rows={4} className="resize-none" />
+									</div>
 								</Form.Item>
 
 								<Form.Item
@@ -180,24 +228,28 @@ const ConfigModal = forwardRef<ConfigModalRef, ConfigModalProps>(
 									name="status"
 									rules={[{ required: true, message: "请选择配置状态" }]}
 								>
-									<Select
-										placeholder="请选择配置状态"
-										options={[
-											{ label: "启用", value: "active" },
-											{ label: "禁用", value: "inactive" }
-										]}
-									/>
+									<div ref={statusRef}>
+										<Select
+											placeholder="请选择配置状态"
+											options={[
+												{ label: "启用", value: "active" },
+												{ label: "禁用", value: "inactive" }
+											]}
+										/>
+									</div>
 								</Form.Item>
 
 								{/* 接口列表按钮 */}
 								<Form.Item>
-									<Button
-										type="link"
-										onClick={() => interfaceModalRef.current?.open()}
-										className="px-0"
-									>
-										查看接口列表 ({interfaces.length})
-									</Button>
+									<div ref={interfaceListRef}>
+										<Button
+											type="link"
+											onClick={() => interfaceModalRef.current?.open()}
+											className="px-0"
+										>
+											查看接口列表 ({interfaces.length})
+										</Button>
+									</div>
 								</Form.Item>
 							</div>
 
@@ -224,34 +276,28 @@ const ConfigModal = forwardRef<ConfigModalRef, ConfigModalProps>(
 							<div className="mb-4">
 								<div className="flex items-center justify-between">
 									<h3 className="text-lg font-medium text-gray-800">配置内容</h3>
-									<Tooltip
-										title={
-											<div className="max-w-[300px]">
-												<p className="mb-2">💡 配置说明：</p>
-												<ul className="list-disc list-inside space-y-1">
-													<li>配置支持单次请求和轮询请求</li>
-													<li>使用 {"{{#id.field}}"} 引用其他请求的结果</li>
-													<li>轮询请求可以设置超时时间和重试次数</li>
-												</ul>
-											</div>
-										}
-										placement="left"
-									>
-										<QuestionCircleOutlined className="text-gray-400 hover:text-gray-600 cursor-help" />
-									</Tooltip>
-								</div>
-								<div className="mt-2">
-									<Button
-										type="primary"
-										onClick={() => {
-											setConfigContent(JSON.stringify(DEFAULT_CONFIG_TEMPLATE, null, 2));
-										}}
-									>
-										使用模板
-									</Button>
+									<Space>
+										<Tooltip title="使用模板">
+											<Button
+												type="primary"
+												icon={<FileTextOutlined />}
+												onClick={() => {
+													setConfigContent(JSON.stringify(DEFAULT_CONFIG_TEMPLATE, null, 2));
+												}}
+												ref={templateRef}
+											/>
+										</Tooltip>
+										<Tooltip title="使用帮助">
+											<Button
+												type="primary"
+												icon={<QuestionCircleOutlined />}
+												onClick={() => setTourOpen(true)}
+											/>
+										</Tooltip>
+									</Space>
 								</div>
 							</div>
-							<div className={clsx("flex-1", "w-full")}>
+							<div className={clsx("flex-1", "w-full")} ref={configEditorRef}>
 								<Suspense fallback={<Spin size="large" tip="加载编辑器中..." />}>
 									<MonacoEditor
 										language="json"
@@ -279,6 +325,7 @@ const ConfigModal = forwardRef<ConfigModalRef, ConfigModalProps>(
 					</div>
 				</Form>
 				<InterfaceListModal ref={interfaceModalRef} interfaces={interfaces} />
+				<Tour open={tourOpen} onClose={() => setTourOpen(false)} steps={steps} />
 			</Modal>
 		);
 	}
