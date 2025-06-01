@@ -116,6 +116,11 @@ const InterfaceModal = forwardRef<InterfaceModalRef, InterfaceModalProps>(
 				target: () => document.getElementById("interface-config-table")!
 			},
 			{
+				title: "配置说明",
+				description: "点击这里可以查看接口配置的详细说明，包括所有可用的配置项和最佳实践",
+				target: () => document.getElementById("interface-config-help-button")!
+			},
+			{
 				title: "添加配置项",
 				description: "点击这里可以添加新的配置项，配置项以键值对的形式存储",
 				target: () => document.getElementById("interface-add-config-button")!
@@ -410,6 +415,7 @@ const InterfaceModal = forwardRef<InterfaceModalRef, InterfaceModalProps>(
 										<h3 className="text-lg font-medium text-gray-800">接口配置</h3>
 										<Tooltip title="查看配置说明">
 											<Button
+												id="interface-config-help-button"
 												type="text"
 												icon={<SettingOutlined />}
 												onClick={() => helpDrawerRef.current?.open()}
