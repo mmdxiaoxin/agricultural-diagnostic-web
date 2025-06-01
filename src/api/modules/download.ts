@@ -41,7 +41,8 @@ export const downloadFileByUrl = async (
 
 		// 构建下载链接
 		const baseUrl = import.meta.env.VITE_API_URL || window.location.origin;
-		let downloadUrl = `${baseUrl}/api/file/access-link/${response.data.token}`;
+		const apiPrefix = import.meta.env.PROD ? "/api" : "";
+		let downloadUrl = `${baseUrl}${apiPrefix}/file/access-link/${response.data.token}`;
 		if (fileName) {
 			downloadUrl += `?filename=${encodeURIComponent(fileName)}`;
 		}
