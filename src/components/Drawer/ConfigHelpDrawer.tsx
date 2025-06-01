@@ -149,6 +149,22 @@ const ConfigHelpDrawer = forwardRef<ConfigHelpDrawerRef>((_, ref) => {
 				</Paragraph>
 
 				<Paragraph>
+					<Text strong>参数模板解析：</Text>
+					<ul className="list-disc list-inside mt-2">
+						<li>
+							支持使用 <code>{"{{#id.field.path}}"}</code> 格式的模板语法
+						</li>
+						<li>模板会从指定id的接口响应中获取对应字段的值</li>
+						<li>
+							例如：<code>{"{{#5.data.task_id}}"}</code> 表示获取id为5的接口响应中data.task_id的值
+						</li>
+						<li>
+							模板解析支持嵌套字段访问，如：<code>{"{{#5.data.result.items[0].id}}"}</code>
+						</li>
+					</ul>
+				</Paragraph>
+
+				<Paragraph>
 					<Text strong>轮询特有字段：</Text>
 					<ul className="list-disc list-inside mt-2">
 						<li>interval: 轮询间隔（毫秒）</li>
