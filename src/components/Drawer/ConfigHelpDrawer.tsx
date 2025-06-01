@@ -1,6 +1,5 @@
-import { FileTextOutlined } from "@ant-design/icons";
-import { Button, Drawer, Space, Typography } from "antd";
-import React, { forwardRef, useImperativeHandle, useState } from "react";
+import { Drawer, Typography } from "antd";
+import { forwardRef, useImperativeHandle, useState } from "react";
 
 const { Title, Paragraph, Text } = Typography;
 
