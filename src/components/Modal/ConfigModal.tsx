@@ -114,6 +114,11 @@ const ConfigModal = forwardRef<ConfigModalRef, ConfigModalProps>(
 				title: "使用模板",
 				description: "点击这里可以使用预设的配置模板",
 				target: () => document.getElementById("config-template-button")!
+			},
+			{
+				title: "配置说明",
+				description: "点击这里可以查看详细的配置说明文档，包括配置格式、字段说明、模板语法等",
+				target: () => document.getElementById("config-help-button")!
 			}
 		];
 
@@ -313,6 +318,7 @@ const ConfigModal = forwardRef<ConfigModalRef, ConfigModalProps>(
 									<Space>
 										<Tooltip title="查看配置说明">
 											<Button
+												id="config-help-button"
 												type="primary"
 												icon={<InfoCircleOutlined />}
 												onClick={() => helpDrawerRef.current?.open()}
