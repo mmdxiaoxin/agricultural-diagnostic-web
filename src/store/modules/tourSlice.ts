@@ -6,6 +6,7 @@ interface TourState {
 	hasShownInterfaceModalTour: boolean;
 	hasShownDiagnosisImageTour: boolean;
 	hasShownDiagnosisTestTour: boolean;
+	hasShownExternalSourceTour: boolean;
 }
 
 // 从 localStorage 获取初始状态
@@ -16,7 +17,8 @@ const getInitialState = (): TourState => {
 			hasShownConfigModalTour: false,
 			hasShownInterfaceModalTour: false,
 			hasShownDiagnosisImageTour: false,
-			hasShownDiagnosisTestTour: false
+			hasShownDiagnosisTestTour: false,
+			hasShownExternalSourceTour: false
 		}
 	);
 };
@@ -40,6 +42,10 @@ const tourSlice = createSlice({
 		markDiagnosisTestTourShown: state => {
 			state.hasShownDiagnosisTestTour = true;
 			localSet("tour-state", state);
+		},
+		markExternalSourceTourShown: state => {
+			state.hasShownExternalSourceTour = true;
+			localSet("tour-state", state);
 		}
 	}
 });
@@ -48,6 +54,7 @@ export const {
 	markConfigModalTourShown,
 	markInterfaceModalTourShown,
 	markDiagnosisImageTourShown,
-	markDiagnosisTestTourShown
+	markDiagnosisTestTourShown,
+	markExternalSourceTourShown
 } = tourSlice.actions;
 export default tourSlice.reducer;
