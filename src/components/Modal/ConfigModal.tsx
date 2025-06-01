@@ -3,7 +3,7 @@ import { createRemoteConfig, updateRemoteConfig } from "@/api/modules";
 import { DEFAULT_CONFIG_TEMPLATE } from "@/constants/configTemplate";
 import { useAppDispatch, useAppSelector } from "@/hooks";
 import { markConfigModalTourShown } from "@/store/modules/tourSlice";
-import { QuestionCircleOutlined } from "@ant-design/icons";
+import { FileTextOutlined, InfoCircleOutlined } from "@ant-design/icons";
 import {
 	Button,
 	Form,
@@ -207,7 +207,7 @@ const ConfigModal = forwardRef<ConfigModalRef, ConfigModalProps>(
 						<Tooltip title="查看使用指南">
 							<Button
 								type="text"
-								icon={<QuestionCircleOutlined />}
+								icon={<InfoCircleOutlined />}
 								onClick={() => setTourOpen(true)}
 								className="flex items-center justify-center"
 							/>
@@ -308,32 +308,33 @@ const ConfigModal = forwardRef<ConfigModalRef, ConfigModalProps>(
 							<div className="mb-4">
 								<div className="flex items-center justify-between">
 									<h3 className="text-lg font-medium text-gray-800">配置内容</h3>
-									<Tooltip
-										title={
-											<div className="max-w-[300px]">
-												<p className="mb-2">💡 配置说明：</p>
-												<ul className="list-disc list-inside space-y-1">
-													<li>配置支持单次请求和轮询请求</li>
-													<li>使用 {"{{#id.field}}"} 引用其他请求的结果</li>
-													<li>轮询请求可以设置超时时间和重试次数</li>
-												</ul>
-											</div>
-										}
-										placement="left"
-									>
-										<QuestionCircleOutlined className="text-gray-400 hover:text-gray-600 cursor-help" />
-									</Tooltip>
-								</div>
-								<div className="mt-2">
-									<Button
-										id="config-template-button"
-										type="primary"
-										onClick={() => {
-											setConfigContent(JSON.stringify(DEFAULT_CONFIG_TEMPLATE, null, 2));
-										}}
-									>
-										使用模板
-									</Button>
+									<Space>
+										<Tooltip
+											title={
+												<div className="max-w-[300px]">
+													<p className="mb-2">💡 配置说明：</p>
+													<ul className="list-disc list-inside space-y-1">
+														<li>配置支持单次请求和轮询请求</li>
+														<li>使用 {"{{#id.field}}"} 引用其他请求的结果</li>
+														<li>轮询请求可以设置超时时间和重试次数</li>
+													</ul>
+												</div>
+											}
+											placement="left"
+										>
+											<Button type="primary" icon={<InfoCircleOutlined />} />
+										</Tooltip>
+										<Tooltip title="使用预设模板快速配置">
+											<Button
+												id="config-template-button"
+												type="primary"
+												icon={<FileTextOutlined />}
+												onClick={() => {
+													setConfigContent(JSON.stringify(DEFAULT_CONFIG_TEMPLATE, null, 2));
+												}}
+											/>
+										</Tooltip>
+									</Space>
 								</div>
 							</div>
 							<div id="config-editor" className={clsx("flex-1", "w-full")}>
