@@ -15,9 +15,11 @@ import {
 	Table,
 	TableProps,
 	Tour,
-	TourProps
+	TourProps,
+	Tooltip
 } from "antd";
 import { forwardRef, useImperativeHandle, useState } from "react";
+import { QuestionCircleOutlined } from "@ant-design/icons";
 
 export type InterfaceModalProps = {
 	onSave?: (values: any) => void;
@@ -319,7 +321,19 @@ const InterfaceModal = forwardRef<InterfaceModalRef, InterfaceModalProps>(
 
 		return (
 			<Modal
-				title={modalMode === "edit" ? "编辑接口" : "添加接口"}
+				title={
+					<div className="flex items-center gap-2">
+						{modalMode === "edit" ? "编辑接口" : "添加接口"}
+						<Tooltip title="查看使用指南">
+							<Button
+								type="text"
+								icon={<QuestionCircleOutlined />}
+								onClick={() => setTourOpen(true)}
+								className="flex items-center justify-center"
+							/>
+						</Tooltip>
+					</div>
+				}
 				open={isModalVisible}
 				onCancel={handleClose}
 				footer={null}

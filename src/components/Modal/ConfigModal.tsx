@@ -201,7 +201,19 @@ const ConfigModal = forwardRef<ConfigModalRef, ConfigModalProps>(
 
 		return (
 			<Modal
-				title={modalMode === "edit" ? "编辑配置" : "添加配置"}
+				title={
+					<div className="flex items-center gap-2">
+						{modalMode === "edit" ? "编辑配置" : "添加配置"}
+						<Tooltip title="查看使用指南">
+							<Button
+								type="text"
+								icon={<QuestionCircleOutlined />}
+								onClick={() => setTourOpen(true)}
+								className="flex items-center justify-center"
+							/>
+						</Tooltip>
+					</div>
+				}
 				open={isModalVisible}
 				onCancel={handleClose}
 				footer={null}
