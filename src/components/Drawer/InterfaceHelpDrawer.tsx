@@ -1,4 +1,4 @@
-import { Drawer, Typography } from "antd";
+import { Drawer, Table, Typography } from "antd";
 import { forwardRef, useImperativeHandle, useState } from "react";
 
 const { Title, Paragraph, Text } = Typography;
@@ -17,6 +17,67 @@ const InterfaceHelpDrawer = forwardRef<InterfaceHelpDrawerRef>((_, ref) => {
 		close: () => setOpen(false),
 		toggle: () => setOpen(prev => !prev)
 	}));
+
+	const configExampleData = [
+		{
+			key: "method",
+			value: "POST"
+		},
+		{
+			key: "prefix",
+			value: "/api/v1"
+		},
+		{
+			key: "path",
+			value: "/diagnosis/result"
+		},
+		{
+			key: "headers",
+			value: `{
+  "Authorization": "Bearer xxx",
+  "Content-Type": "application/json"
+}`
+		},
+		{
+			key: "timeout",
+			value: "5000"
+		},
+		{
+			key: "contentType",
+			value: "application/json"
+		},
+		{
+			key: "responseType",
+			value: "json"
+		},
+		{
+			key: "maxContentLength",
+			value: "1000000"
+		},
+		{
+			key: "withCredentials",
+			value: "true"
+		}
+	];
+
+	const columns = [
+		{
+			title: "配置项",
+			dataIndex: "key",
+			width: "40%"
+		},
+		{
+			title: "示例值",
+			dataIndex: "value",
+			width: "60%",
+			render: (text: string) => {
+				if (text.includes("{")) {
+					return <pre className="bg-gray-50 p-2 rounded-lg">{text}</pre>;
+				}
+				return text;
+			}
+		}
+	];
 
 	return (
 		<Drawer
@@ -82,24 +143,14 @@ const InterfaceHelpDrawer = forwardRef<InterfaceHelpDrawerRef>((_, ref) => {
 				</Paragraph>
 
 				<Title level={4}>🔍 配置示例</Title>
-				<Paragraph>
-					<pre className="bg-gray-50 p-4 rounded-lg mt-2">
-						{`{
-  "method": "POST",
-  "prefix": "/api/v1",
-  "path": "/diagnosis/result",
-  "headers": {
-    "Authorization": "Bearer xxx",
-    "Content-Type": "application/json"
-  },
-  "timeout": 5000,
-  "contentType": "application/json",
-  "responseType": "json",
-  "maxContentLength": 1000000,
-  "withCredentials": true
-}`}
-					</pre>
-				</Paragraph>
+				<Table
+					columns={columns}
+					dataSource={configExampleData}
+					pagination={false}
+					bordered
+					size="small"
+					className="mt-2"
+				/>
 			</Typography>
 		</Drawer>
 	);
