@@ -148,10 +148,16 @@ const ConfigModal = forwardRef<ConfigModalRef, ConfigModalProps>(
 					xl: "70%",
 					xxl: "60%"
 				}}
-				className="config-modal"
+				className="lg:top-10"
 			>
 				<Form form={form} onFinish={handleSave} layout="vertical">
-					<div className={clsx("flex flex-col lg:flex-row", "gap-4 lg:gap-6")}>
+					<div
+						className={clsx(
+							"flex flex-col lg:flex-row",
+							"gap-4 lg:gap-6",
+							"lg:h-[calc(100vh-200px)]"
+						)}
+					>
 						{/* 左侧基本信息 */}
 						<div className="flex-1">
 							<div className="mb-6">
