@@ -108,7 +108,10 @@ class RequestHttp {
 
 				// 缓存成功的响应
 				if (config.method?.toLowerCase() === "get" && !config.noCache) {
-					await apiCache.setCache(config.url || "", config.method, data, config.params);
+					// 异步缓存数据，不等待缓存完成
+					apiCache.setCache(config.url || "", config.method, data, config.params).catch(error => {
+						console.error("Failed to cache API response:", error);
+					});
 				}
 
 				// * 全局错误信息拦截（防止下载文件得时候返回数据流，没有code，直接报错）
