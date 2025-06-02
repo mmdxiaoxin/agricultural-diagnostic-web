@@ -33,7 +33,7 @@ export const downloadFileByUrl = async (
 ): Promise<void> => {
 	try {
 		const response = await http.get<{ token: string }>(
-			`/file/download-token/${fileId}`,
+			`/api/file/download-token/${fileId}`,
 			{},
 			{ loading: false }
 		);
@@ -87,7 +87,7 @@ export const downloadFile = async (
 		console.log("开始下载文件:", fileId);
 		let lastLoaded = 0;
 		const response = await http.get_blob(
-			`/file/download/${fileId}`,
+			`/api/file/download/${fileId}`,
 			{},
 			{
 				loading: false,
@@ -171,7 +171,7 @@ export const downloadMultipleFiles = async (
 ) => {
 	if (options.compressMode) {
 		const response = await http.post_blob(
-			"/file/download",
+			"/api/file/download",
 			{ fileIds },
 			{
 				loading: false,

@@ -72,7 +72,7 @@ export const uploadSingleFile = async (file: File | RcFile) => {
 	const formData = new FormData();
 	formData.append("file", file);
 
-	return http.post<ResUploadFile>("/file/upload/single", formData, {
+	return http.post<ResUploadFile>("/api/file/upload/single", formData, {
 		headers: {
 			"Content-Type": "multipart/form-data"
 		},
@@ -123,7 +123,7 @@ const createUploadTask = async (
 	fileType: string
 ) => {
 	const taskResp = await http.post<ResCreateTask>(
-		"/file/upload/create",
+		"/api/file/upload/create",
 		{
 			fileName: file.name,
 			fileSize: file.size,
@@ -146,7 +146,7 @@ const uploadChunk = async (taskId: string, fileMd5: string, chunkIndex: number, 
 	formData.append("fileMd5", fileMd5);
 	formData.append("chunkIndex", chunkIndex.toString());
 	formData.append("chunk", chunk);
-	return http.post("/file/upload/chunk", formData, {
+	return http.post("/api/file/upload/chunk", formData, {
 		loading: false
 	});
 };
@@ -206,7 +206,7 @@ const uploadFileChunks = async (
 
 // 3. 完成上传
 const completeUpload = async (taskId: string) => {
-	const response = await http.post("/file/upload/complete", { taskId }, { loading: false });
+	const response = await http.post("/api/file/upload/complete", { taskId }, { loading: false });
 	if (response.code !== 200 && response.code !== 201) {
 		throw new CompleteError(response.message);
 	}
@@ -226,7 +226,7 @@ const retryUpload = async (
 
 	while (retryCount < maxRetryCount) {
 		const taskStatusResp = await http.get<ResTaskStatus>(
-			`/file/upload/status/${taskId}`,
+			`/api/file/upload/status/${taskId}`,
 			{},
 			{ loading: false }
 		);

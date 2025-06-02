@@ -9,21 +9,21 @@ import {
 } from "../interface";
 
 // * 获取角色字典
-export const getRoleDict = () => http.get<ResAuthDict>(`/role/dict`, {}, { loading: false });
+export const getRoleDict = () => http.get<ResAuthDict>(`/api/role/dict`, {}, { loading: false });
 
 // * 获取角色列表
 export const getRoleList = (params: RoleListParams) =>
-	http.get<RoleListResponse>(`/role/list`, params);
+	http.get<RoleListResponse>(`/api/role/list`, params);
 
 // * 获取角色详情
-export const getRoleById = (id: number) => http.get<RoleItem>(`/role/${id}`);
+export const getRoleById = (id: number) => http.get<RoleItem>(`/api/role/${id}`);
 
 // * 创建角色
-export const createRole = (params: CreateRoleParams) => http.post<RoleItem>(`/role`, params);
+export const createRole = (params: CreateRoleParams) => http.post<RoleItem>(`/api/role`, params);
 
 // * 更新角色
 export const updateRole = (id: number, params: UpdateRoleParams) =>
-	http.put<RoleItem>(`/role/${id}`, params);
+	http.put<RoleItem>(`/api/role/${id}`, params);
 
 // * 删除角色
-export const deleteRoleById = (id: number) => http.delete(`/role/${id}`);
+export const deleteRoleById = (id: number) => http.delete(`/api/role/${id}`);

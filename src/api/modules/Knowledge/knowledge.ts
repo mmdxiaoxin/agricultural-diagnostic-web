@@ -9,25 +9,25 @@ import {
 
 // * 获取全部病害知识
 export const getKnowledge = () => {
-	return http.get<Disease[]>("/knowledge", {}, { loading: false });
+	return http.get<Disease[]>("/api/knowledge", {}, { loading: false });
 };
 
 // * 获取病害知识列表
 export const getKnowledgeList = (params: ReqDiseaseList) => {
-	return http.get<PageData<Disease>>("/knowledge/list", params, { loading: false });
+	return http.get<PageData<Disease>>("/api/knowledge/list", params, { loading: false });
 };
 
 // * 创建病害知识
 export const createKnowledge = (data: ReqCreateDisease) => {
-	return http.post<Disease>("/knowledge", data, { loading: false });
+	return http.post<Disease>("/api/knowledge", data, { loading: false });
 };
 
 // * 更新病害知识
 export const updateKnowledge = (id: number | string, data: ReqUpdateDisease) => {
-	return http.put<Disease>(`/knowledge/${id}`, data, { loading: false });
+	return http.put<Disease>(`/api/knowledge/${id}`, data, { loading: false });
 };
 
 // * 删除病害知识
 export const deleteKnowledge = (id: number | string) => {
-	return http.delete<null>(`/knowledge/${id}`, {}, { loading: false });
+	return http.delete<null>(`/api/knowledge/${id}`, {}, { loading: false });
 };
