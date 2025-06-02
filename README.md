@@ -171,7 +171,7 @@ VITE_API_URL=/api
 NODE_ENV=production
 
 # API 配置
-# VITE_API_URL=http://47.93.13.123/api  # 不需要配置，网站交互使用 host
+# VITE_API_URL=http://47.93.13.123  # 默认不需要配置，因为网站默认交互使用 host
 ```
 
 #### 配置说明
