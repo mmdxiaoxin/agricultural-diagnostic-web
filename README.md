@@ -124,55 +124,82 @@
 - pnpm >= 8.0.0
 - Nginx >= 1.18.0 (生产环境)
 
-### 开发环境配置
+### 环境变量配置
 
-1. 安装 VSCode 插件
+项目支持以下环境变量配置：
 
-   - ESLint
-   - Prettier
-   - TypeScript Vue Plugin (Volar)
-   - Tailwind CSS IntelliSense
-   - GitLens
+| 变量名              | 类型    | 说明                 | 默认值           |
+| ------------------- | ------- | -------------------- | ---------------- |
+| VITE_API_URL        | string  | API 接口地址         | -                |
+| VITE_PORT           | number  | 开发服务器端口       | 8080             |
+| VITE_OPEN           | boolean | 是否自动打开浏览器   | true             |
+| VITE_GLOB_APP_TITLE | string  | 应用标题             | 病害智能诊断系统 |
+| VITE_DROP_CONSOLE   | boolean | 是否移除 console     | true             |
+| VITE_BUILD_GZIP     | boolean | 是否启用 Gzip 压缩   | false            |
+| VITE_REPORT         | boolean | 是否生成打包分析报告 | false            |
 
-2. 配置 VSCode 设置
-
-```json
-{
-	"editor.formatOnSave": true,
-	"editor.defaultFormatter": "esbenp.prettier-vscode",
-	"editor.codeActionsOnSave": {
-		"source.fixAll.eslint": true
-	},
-	"typescript.tsdk": "node_modules/typescript/lib"
-}
-```
-
-3. 配置 Git 提交规范
+#### 基础环境配置 (.env)
 
 ```bash
-# 安装 husky
-pnpm add -D husky lint-staged @commitlint/cli @commitlint/config-conventional
+# 应用标题
+VITE_GLOB_APP_TITLE=病害智能诊断系统
 
-# 初始化 husky
-npx husky install
+# 开发服务器配置
+VITE_PORT=8080
+VITE_OPEN=true
 
-# 添加 commit-msg hook
-npx husky add .husky/commit-msg 'npx --no -- commitlint --edit $1'
+# 构建配置
+VITE_REPORT=false
+VITE_BUILD_GZIP=false
+VITE_DROP_CONSOLE=true
 ```
 
-4. 配置环境变量
+#### 开发环境配置 (.env.development.local)
 
 ```bash
-# .env.development
-VITE_APP_TITLE=农业病害智能诊断系统
-VITE_APP_API_BASE_URL=http://localhost:3000
-VITE_APP_UPLOAD_URL=http://localhost:3000/upload
+# 环境配置
+NODE_ENV=development
 
-# .env.production
-VITE_APP_TITLE=农业病害智能诊断系统
-VITE_APP_API_BASE_URL=https://api.your-domain.com
-VITE_APP_UPLOAD_URL=https://api.your-domain.com/upload
+# API 配置
+VITE_API_URL=/api
 ```
+
+#### 生产环境配置 (.env.production.local)
+
+```bash
+# 环境配置
+NODE_ENV=production
+
+# API 配置
+# VITE_API_URL=http://47.93.13.123/api  # 不需要配置，网站交互使用 host
+```
+
+#### 配置说明
+
+1. **基础配置 (.env)**
+
+   - `VITE_GLOB_APP_TITLE`: 应用标题，将显示在浏览器标签页和页面标题中
+   - `VITE_PORT`: 开发服务器端口号
+   - `VITE_OPEN`: 是否在启动开发服务器时自动打开浏览器
+   - `VITE_REPORT`: 是否生成构建分析报告
+   - `VITE_BUILD_GZIP`: 是否启用 Gzip 压缩
+   - `VITE_DROP_CONSOLE`: 是否在生产构建时移除 console 语句
+
+2. **开发环境配置 (.env.development.local)**
+
+   - `NODE_ENV`: 设置为 development
+   - `VITE_API_URL`: 开发环境 API 地址，默认为 `/api`
+
+3. **生产环境配置 (.env.production.local)**
+   - `NODE_ENV`: 设置为 production
+   - `VITE_API_URL`: 生产环境 API 地址（可选，默认使用 host）
+
+#### 注意事项
+
+1. 所有环境变量必须以 `VITE_` 开头，否则将无法被 Vite 识别
+2. 修改环境变量后需要重启开发服务器才能生效
+3. `.env.local` 文件通常包含敏感信息，不会被提交到版本控制系统
+4. 生产环境 API 地址建议使用相对路径，通过 Nginx 配置进行代理
 
 ### 安装与运行
 
@@ -258,6 +285,7 @@ chmod +x scripts/deploy.sh
 ```
 
 部署脚本会自动执行以下操作：
+
 - 构建项目
 - 检查并创建目标目录
   - Linux/macOS: `/var/www/agricultural-diagnostic-web`
@@ -268,6 +296,7 @@ chmod +x scripts/deploy.sh
 - Windows 版本还会提示是否重启 IIS
 
 如果需要修改部署目标目录：
+
 - Linux/macOS: 编辑 `scripts/deploy.sh` 文件中的 `TARGET_DIR` 变量
 - Windows: 编辑 `scripts/deploy.ps1` 文件中的 `$TARGET_DIR` 变量
 
