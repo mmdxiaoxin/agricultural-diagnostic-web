@@ -48,6 +48,9 @@ function Write-Info {
     Write-ColorOutput Cyan "[INFO] $Message"
 }
 
+# 获取脚本所在目录的父目录（项目根目录）
+$PROJECT_ROOT = Split-Path -Parent (Split-Path -Parent $MyInvocation.MyCommand.Path)
+
 # 检查是否以管理员权限运行
 $isAdmin = ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
 if (-not $isAdmin) {
@@ -60,6 +63,7 @@ if (-not $isAdmin) {
 Write-Title "开始构建项目"
 Write-Info "运行 npm run build..."
 try {
+    Set-Location $PROJECT_ROOT
     npm run build
     if ($LASTEXITCODE -ne 0) {
         throw "构建失败"
@@ -108,7 +112,7 @@ catch {
 Write-Title "复制文件到目标目录"
 Write-Info "正在复制文件..."
 try {
-    Copy-Item -Path "dist\*" -Destination $TARGET_DIR -Recurse -Force
+    Copy-Item -Path "$PROJECT_ROOT\dist\*" -Destination $TARGET_DIR -Recurse -Force
     Write-Success "文件复制完成！"
 }
 catch {
